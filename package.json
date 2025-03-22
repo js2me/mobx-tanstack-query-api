@@ -1,0 +1,54 @@
+{
+  "name": "mobx-tanstack-query-api",
+  "version": "0.0.1",
+  "scripts": {
+    "clean": "rimraf dist",
+    "lint:check": "eslint . --fix",
+    "ts:check": "tsc --noEmit",
+    "check": "npm run lint:check && npm run ts:check",
+    "prebuild": "npm run clean && npm run check",
+    "build": "tsc && node ./post-build.mjs",
+    "pub:patch": "PUBLISH=true PUBLISH_VERSION=patch pnpm run build",
+    "pub:minor": "PUBLISH=true PUBLISH_VERSION=minor pnpm run build",
+    "pub:major": "PUBLISH=true PUBLISH_VERSION=major pnpm run build",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "dev": "pnpm test:watch",
+    "playground": "node ./playground/index.mjs"
+  },
+  "keywords": [],
+  "author": "js2me",
+  "license": "MIT",
+  "description": "",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/js2me/mobx-tanstack-query-api/issues"
+  },
+  "homepage": "https://github.com/js2me/mobx-tanstack-query-api",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/js2me/mobx-tanstack-query-api"
+  },
+  "peerDependencies": {
+    "@tanstack/query-core": "^5.68.0",
+    "mobx": "^6.13.6",
+    "mobx-tanstack-query": "^4.2.5"
+  },
+  "dependencies": {
+    "swagger-typescript-api": "^13.0.23",
+    "yummies": "^3.0.36"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.11",
+    "eslint": "^8.57.1",
+    "js2me-eslint-config": "^1.0.7",
+    "js2me-exports-post-build-script": "^2.0.17",
+    "jsdom": "^26.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "unplugin-swc": "^1.5.1",
+    "vitest": "^3.0.5"
+  },
+  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903"
+}
