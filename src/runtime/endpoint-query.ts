@@ -91,7 +91,7 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
   static buildOptionsFromInput(endpoint: AnyEndpoint, input: any) {
     return {
       enabled: !!input,
-      queryKey: input ? endpoint.getQueryKey(input) : ('__SKIP__' as any),
+      queryKey: input ? endpoint.getQueryKey(input) : (['__SKIP__'] as any),
     };
   }
 
