@@ -239,8 +239,8 @@ new ${importFileParams.requestInfo.exportName}<
             ]).join(',')}
         ],
     },
-    ${importFileParams.httpClient.exportName},
     ${importFileParams.queryClient.exportName},
+    ${importFileParams.httpClient.exportName},
 )  
 `
       .split('\n')
