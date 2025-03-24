@@ -282,6 +282,8 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
     fileName: 'index.ts',
     withPrefix: false,
     content: `
+/* eslint-disable */
+/* tslint:disable */
 export * from './data-contracts';
 export * from './endpoints';    
 `,
