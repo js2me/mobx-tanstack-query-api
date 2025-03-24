@@ -41,7 +41,6 @@
     "yummies": "^3.0.36"
   },
   "devDependencies": {
-    "mobx-tanstack-query-api": "workspace:*",
     "@types/node": "^20.17.11",
     "eslint": "^8.57.1",
     "js2me-eslint-config": "^1.0.7",

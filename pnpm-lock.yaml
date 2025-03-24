@@ -39,9 +39,6 @@ importers:
       jsdom:
         specifier: ^26.0.0
         version: 26.0.0
-      mobx-tanstack-query-api:
-        specifier: workspace:*
-        version: 'link:'
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
