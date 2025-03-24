@@ -43,8 +43,7 @@ export const dataContractsTmpl = async ({
     );
   }
 
-  return await formatTSContent(`
-/* eslint-disable */
+  return await formatTSContent(`/* eslint-disable */
 /* tslint:disable */
 
 ${contractDefinitions.join('\n\n')}

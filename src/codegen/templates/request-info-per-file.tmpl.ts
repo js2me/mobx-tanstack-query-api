@@ -60,8 +60,7 @@ export const requestInfoPerFileTmpl = async ({
 
   return {
     reservedDataContractNames: dataContractNamesInThisFile,
-    content: await formatTSContent(`
-      /* eslint-disable */
+    content: await formatTSContent(`/* eslint-disable */
       /* tslint:disable */
       import { RequestParams } from "mobx-tanstack-query-api";
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";

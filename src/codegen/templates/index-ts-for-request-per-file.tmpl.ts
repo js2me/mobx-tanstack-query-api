@@ -15,8 +15,7 @@ export interface IndexTsForRequestPerFileTmplParams extends GenerateApiOutput {
 export const indexTsForRequestPerFileTmpl = async ({
   generatedRequestFileNames,
 }: IndexTsForRequestPerFileTmplParams) => {
-  return `
-/* eslint-disable */
+  return `/* eslint-disable */
 /* tslint:disable */
 ${generatedRequestFileNames.map((fileName) => `export * from './${fileName.replace('.ts', '')}';`).join('\n')}
 `;
