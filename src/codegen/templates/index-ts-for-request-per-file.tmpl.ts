@@ -16,6 +16,8 @@ export const indexTsForRequestPerFileTmpl = async ({
   generatedRequestFileNames,
 }: IndexTsForRequestPerFileTmplParams) => {
   return `
+/* eslint-disable */
+/* tslint:disable */
 ${generatedRequestFileNames.map((fileName) => `export * from './${fileName.replace('.ts', '')}';`).join('\n')}
 `;
 };
