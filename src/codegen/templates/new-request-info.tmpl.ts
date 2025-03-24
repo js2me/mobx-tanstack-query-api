@@ -200,7 +200,7 @@ export const newRequestInfoTmpl = ({
   return {
     reservedDataContractNames,
     content: `
-new ${importFileParams.requestInfo.exportName}<
+new ${importFileParams.endpoint.exportName}<
   ${requestOutputDataTypes.join('|') || 'any'},
   ${requestOutputErrorType},
   ${requestInputType},

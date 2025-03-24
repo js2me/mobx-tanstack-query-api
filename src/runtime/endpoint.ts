@@ -18,7 +18,7 @@ import type {
   HttpResponse,
 } from './http-client.js';
 
-export interface RequestInfo<
+export interface Endpoint<
   TData,
   TError,
   TInput extends AnyObject,
@@ -26,10 +26,10 @@ export interface RequestInfo<
 > {
   (
     ...params: TParams
-  ): ReturnType<RequestInfo<TData, TError, TInput, TParams>['request']>;
+  ): ReturnType<Endpoint<TData, TError, TInput, TParams>['request']>;
 }
 
-export class RequestInfo<
+export class Endpoint<
   TData,
   TError,
   TInput extends AnyObject,
@@ -60,7 +60,7 @@ export class RequestInfo<
     // Создаем функцию-обертку
     const callable = function (this: any, ...params: TParams) {
       return instance.request.apply(instance, params);
-    } as unknown as RequestInfo<TData, TError, TInput, TParams, TMetaData>;
+    } as unknown as Endpoint<TData, TError, TInput, TParams, TMetaData>;
 
     // Копируем прототип
     Object.setPrototypeOf(callable, new.target.prototype);

@@ -37,7 +37,7 @@ export interface QueryApiParams {
 
   queryClient: 'builtin' | ImportFileParams;
 
-  requestInfo: 'builtin' | ImportFileParams;
+  endpoint: 'builtin' | ImportFileParams;
 
   httpClient: 'builtin' | ImportFileParams;
 
@@ -77,13 +77,13 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
             path: 'mobx-tanstack-query-api/builtin',
           }
         : inputParams.queryClient,
-    requestInfo:
-      typeof inputParams.requestInfo === 'string'
+    endpoint:
+      typeof inputParams.endpoint === 'string'
         ? {
-            exportName: 'RequestInfo',
+            exportName: 'Endpoint',
             path: 'mobx-tanstack-query-api',
           }
-        : inputParams.requestInfo,
+        : inputParams.endpoint,
     httpClient:
       typeof inputParams.httpClient === 'string'
         ? {
@@ -104,7 +104,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
       'templates/create-request-info-instance.ejs',
     ),
     outputDir: output,
-    outputRequestsDir: path.resolve(output, 'requests'),
+    outputEndpoints: path.resolve(output, 'endpoints'),
   };
 
   const codegenParams: Partial<GenerateApiParamsFromSwagger> = {
@@ -204,7 +204,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
   codegenFs.cleanDir(output);
   codegenFs.createDir(output);
 
-  codegenFs.createDir(paths.outputRequestsDir);
+  codegenFs.createDir(paths.outputEndpoints);
 
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
@@ -238,7 +238,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
     fileNamesWithRequestInfo.push(fileName);
 
     codegenFs.createFile({
-      path: paths.outputRequestsDir,
+      path: paths.outputEndpoints,
       fileName,
       withPrefix: false,
       content: requestInfoPerFileContent,
@@ -266,7 +266,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
   });
 
   codegenFs.createFile({
-    path: paths.outputRequestsDir,
+    path: paths.outputEndpoints,
     fileName: 'index.ts',
     withPrefix: false,
     content: await indexTsForRequestPerFileTmpl({
@@ -283,7 +283,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
     withPrefix: false,
     content: `
 export * from './data-contracts';
-export * from './requests';    
+export * from './endpoints';    
 `,
   });
 };

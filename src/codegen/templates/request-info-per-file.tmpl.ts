@@ -61,7 +61,7 @@ export const requestInfoPerFileTmpl = async ({
       /* eslint-disable */
       /* tslint:disable */
       import { RequestParams } from "mobx-tanstack-query-api";
-      import { ${importFileParams.requestInfo.exportName} } from "${importFileParams.requestInfo.path}";
+      import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
       ${
