@@ -10,7 +10,11 @@ import {
   MobxQuery,
   MobxQueryConfig,
 } from 'mobx-tanstack-query';
-import { AnyObject, MaybeFalsy } from 'yummies/utils/types';
+import {
+  AllPropertiesOptional,
+  AnyObject,
+  MaybeFalsy,
+} from 'yummies/utils/types';
 
 import type {
   FullRequestParams,
@@ -253,18 +257,30 @@ export class Endpoint<
     );
   }
 
-  toMutation({
-    ...options
-  }: Omit<
-    MobxMutationConfig<HttpResponse<TData, TError>, TInput, TError>,
-    'queryClient' | 'mutationFn'
-  >) {
-    return new MobxMutation<HttpResponse<TData, TError>, TInput, TError>({
+  toMutation<TMutationMeta extends AnyObject | void = void>(
+    options: Omit<
+      MobxMutationConfig<HttpResponse<TData, TError>, TInput, TError>,
+      'queryClient' | 'mutationFn'
+    >,
+  ) {
+    type MutationInputType = TInput &
+      (TMutationMeta extends void
+        ? // eslint-disable-next-line @typescript-eslint/ban-types
+          {}
+        : AllPropertiesOptional<TMutationMeta> extends true
+          ? { meta?: TMutationMeta }
+          : { meta: TMutationMeta });
+
+    return new MobxMutation<
+      HttpResponse<TData, TError>,
+      MutationInputType,
+      TError
+    >({
       ...options,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       queryClient: this.queryClient,
-      mutationFn: (input: TInput) =>
+      mutationFn: (input: MutationInputType) =>
         this.request(...this.buildParamsFromInput(input)),
     });
   }
