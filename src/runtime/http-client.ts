@@ -88,7 +88,7 @@ export class HttpClient<TMeta = unknown> {
     this.baseUrl = config?.baseUrl ?? '';
     this.meta = config?.meta ?? null;
     this.interceptor = config?.interceptor;
-    this.fetch = config?.fetch ?? fetch;
+    this.fetch = config?.fetch ?? fetch.bind(globalThis);
     this.customBuildUrl = config?.buildUrl;
     this.customToQueryString = config?.toQueryString;
 
