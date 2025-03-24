@@ -54,10 +54,11 @@ export class EndpointMutation<
       // @ts-expect-error
       queryClient,
       mutationFn: async (input) => {
-        const response = (await endpoint.request(
+        console.info('ffffffffffffffffffff', input);
+        const response = await endpoint.request(
           ...endpoint.getParamsFromInput(input),
-        )) as any;
-        return response;
+        );
+        return response as any;
       },
     });
   }
