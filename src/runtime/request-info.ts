@@ -4,7 +4,12 @@ import {
   QueryClient,
   QueryFunctionContext,
 } from '@tanstack/query-core';
-import { MobxQuery, MobxQueryConfig } from 'mobx-tanstack-query';
+import {
+  MobxMutation,
+  MobxMutationConfig,
+  MobxQuery,
+  MobxQueryConfig,
+} from 'mobx-tanstack-query';
 import { AnyObject, MaybeFalsy } from 'yummies/utils/types';
 
 import type {
@@ -246,6 +251,22 @@ export class RequestInfo<
       },
       options,
     );
+  }
+
+  toMutation({
+    ...options
+  }: Omit<
+    MobxMutationConfig<HttpResponse<TData, TError>, TInput, TError>,
+    'queryClient' | 'mutationFn'
+  >) {
+    return new MobxMutation<HttpResponse<TData, TError>, TInput, TError>({
+      ...options,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      queryClient: this.queryClient,
+      mutationFn: (input: TInput) =>
+        this.request(...this.buildParamsFromInput(input)),
+    });
   }
 
   toQuery({

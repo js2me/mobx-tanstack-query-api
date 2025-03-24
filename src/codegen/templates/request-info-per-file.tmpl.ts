@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-await-expression-member */
 import {
   ParsedRoute,
   GenerateApiConfiguration,
@@ -10,6 +11,7 @@ import type {
   QueryApiParams,
 } from '../index.js';
 
+import { dataContractTmpl } from './data-contract.tmpl.js';
 import { newRequestInfoTmpl } from './new-request-info.tmpl.js';
 import { requestInfoJSDocTmpl } from './request-info-jsdoc.tmpl.js';
 
@@ -39,8 +41,22 @@ export const requestInfoPerFileTmpl = async ({
       importFileParams,
     });
 
+  const dataContactNames = new Set(
+    Object.keys(
+      (configuration.config.swaggerSchema as any)?.components?.schemas,
+    ).map((schemaName) => utils.formatModelName(schemaName)),
+  );
+
+  const dataContractNamesInThisFile: string[] = [];
+
+  reservedDataContractNames.forEach((reservedDataContractName) => {
+    if (!dataContactNames.has(reservedDataContractName)) {
+      dataContractNamesInThisFile.push(reservedDataContractName);
+    }
+  });
+
   return {
-    reservedDataContractNames,
+    reservedDataContractNames: dataContractNamesInThisFile,
     content: await formatTSContent(`
       /* eslint-disable */
       /* tslint:disable */
@@ -49,12 +65,32 @@ export const requestInfoPerFileTmpl = async ({
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
       ${
-        reservedDataContractNames.length > 0
+        configuration.modelTypes.length > 0
           ? `
-      import { ${reservedDataContractNames.join(', ')} } from "./data-contracts.ts";
+      import { ${configuration.modelTypes
+        .map((it) => it.name)
+        .filter((it) => !dataContractNamesInThisFile.includes(it))
+        .join(', ')} } from "./data-contracts.ts";
       `
           : ''
       }
+
+      ${(
+        await Promise.all(
+          dataContractNamesInThisFile.map(async (dataContractName) => {
+            const modelType = configuration.modelTypes.find(
+              (modelType) => modelType.name === dataContractName,
+            )!;
+            const contractType = await dataContractTmpl({
+              configuration,
+              contract: modelType,
+              addExportKeyword: true,
+            });
+
+            return contractType;
+          }),
+        )
+      ).join('\n\n')}
       
       ${requestInfoJSDocTmpl({
         route,
