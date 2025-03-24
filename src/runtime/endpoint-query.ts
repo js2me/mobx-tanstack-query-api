@@ -46,7 +46,7 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
         ...queryOptions.meta,
       },
       options: ({ options }) => {
-        const willEnableManually = options.enabled === false;
+        const willEnableManually = options?.enabled === false;
         const input = getInput();
         return this.buildOptionsFromInput(willEnableManually && input);
       },
