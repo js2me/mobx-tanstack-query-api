@@ -1,6 +1,10 @@
 import { QueryClient } from '@tanstack/query-core';
 import { MobxMutation, MobxMutationConfig } from 'mobx-tanstack-query';
-import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
+import {
+  AllPropertiesOptional,
+  AnyObject,
+  Unpromise,
+} from 'yummies/utils/types';
 
 import {
   AnyEndpoint,
@@ -25,7 +29,7 @@ export interface EndpointMutationOptions<
   TMutationMeta extends AnyObject | void = void,
 > extends Omit<
     MobxMutationConfig<
-      InferEndpointResponse<TEndpoint>,
+      Unpromise<InferEndpointResponse<TEndpoint>>,
       EndpointMutationInput<InferEndpointInput<TEndpoint>, TMutationMeta>,
       InferEndpointError<TEndpoint>
     >,
@@ -36,7 +40,7 @@ export class EndpointMutation<
   TEndpoint extends AnyEndpoint,
   TMutationMeta extends AnyObject | void = void,
 > extends MobxMutation<
-  InferEndpointResponse<TEndpoint>,
+  Unpromise<InferEndpointResponse<TEndpoint>>,
   EndpointMutationInput<InferEndpointInput<TEndpoint>, TMutationMeta>
 > {
   constructor(
@@ -49,8 +53,11 @@ export class EndpointMutation<
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       queryClient,
-      mutationFn: (input) => {
-        return endpoint.request(...endpoint.getParamsFromInput(input)) as any;
+      mutationFn: async (input) => {
+        const response = (await endpoint.request(
+          ...endpoint.getParamsFromInput(input),
+        )) as any;
+        return response;
       },
     });
   }

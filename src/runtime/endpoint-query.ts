@@ -6,7 +6,7 @@ import {
   MobxQueryConfig,
   MobxQueryDynamicOptions,
 } from 'mobx-tanstack-query';
-import { MaybeFalsy } from 'yummies/utils/types';
+import { MaybeFalsy, Unpromise } from 'yummies/utils/types';
 
 import {
   AnyEndpoint,
@@ -18,7 +18,7 @@ import {
 export interface EndpointQueryOptions<TEndpoint extends AnyEndpoint>
   extends Omit<
     MobxQueryConfig<
-      InferEndpointResponse<TEndpoint>,
+      Unpromise<InferEndpointResponse<TEndpoint>>,
       InferEndpointError<TEndpoint>
     >,
     'options' | 'queryFn' | 'queryClient'
@@ -27,7 +27,7 @@ export interface EndpointQueryOptions<TEndpoint extends AnyEndpoint>
 }
 
 export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
-  InferEndpointResponse<TEndpoint>,
+  Unpromise<InferEndpointResponse<TEndpoint>>,
   InferEndpointError<TEndpoint>
 > {
   constructor(
@@ -64,14 +64,14 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
 
         // @ts-ignore
         const response = await endpoint.request(...args);
-        return response as InferEndpointResponse<TEndpoint>;
+        return response as Unpromise<InferEndpointResponse<TEndpoint>>;
       },
     });
   }
 
   async setInput(
     input: MaybeFalsy<InferEndpointInput<TEndpoint>>,
-  ): Promise<InferEndpointResponse<TEndpoint>> {
+  ): Promise<Unpromise<InferEndpointResponse<TEndpoint>>> {
     this.update(this.buildOptionsFromInput(input));
     await when(() => !this.result.isFetching);
     return this.result.data!;
@@ -80,7 +80,7 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
   protected buildOptionsFromInput(
     input: MaybeFalsy<InferEndpointInput<TEndpoint>>,
   ): MobxQueryDynamicOptions<
-    InferEndpointResponse<TEndpoint>,
+    Unpromise<InferEndpointResponse<TEndpoint>>,
     InferEndpointError<TEndpoint>
   > {
     return {
