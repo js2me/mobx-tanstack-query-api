@@ -48,7 +48,10 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
       options: ({ options }) => {
         const willEnableManually = options?.enabled === false;
         const input = getInput();
-        return this.buildOptionsFromInput(willEnableManually && input);
+        return EndpointQuery.buildOptionsFromInput(
+          endpoint,
+          willEnableManually && input,
+        );
       },
       queryFn: async (ctx) => {
         const args = this.buildParamsFromContext(ctx as any);
@@ -85,16 +88,20 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
     return this.result.data!;
   }
 
+  static buildOptionsFromInput(endpoint: AnyEndpoint, input: any) {
+    return {
+      enabled: !!input,
+      queryKey: input ? endpoint.getQueryKey(input) : ('__SKIP__' as any),
+    };
+  }
+
   protected buildOptionsFromInput(
     input: MaybeFalsy<InferEndpointInput<TEndpoint>>,
   ): MobxQueryDynamicOptions<
     Unpromise<InferEndpointResponse<TEndpoint>>,
     InferEndpointError<TEndpoint>
   > {
-    return {
-      enabled: !!input,
-      queryKey: input ? this.endpoint.getQueryKey(input) : ('__SKIP__' as any),
-    };
+    return EndpointQuery.buildOptionsFromInput(this.endpoint, input);
   }
 
   protected buildParamsFromContext(ctx: QueryFunctionContext<any, any>) {
