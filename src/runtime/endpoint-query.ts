@@ -69,6 +69,14 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
     });
   }
 
+  get data() {
+    return this.result.data?.data;
+  }
+
+  get error() {
+    return this.result.data?.error;
+  }
+
   async setInput(
     input: MaybeFalsy<InferEndpointInput<TEndpoint>>,
   ): Promise<Unpromise<InferEndpointResponse<TEndpoint>>> {
