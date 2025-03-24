@@ -41,14 +41,12 @@ export interface QueryApiParams {
 
   httpClient: 'builtin' | ImportFileParams;
 
-  getRequestInfoMeta?: (route: ParsedRoute) => {
+  getEndpointMeta?: (route: ParsedRoute) => {
     typeName: string;
     importTypePath: string;
     tmplData: string;
   };
   getRequestMeta?: (route: ParsedRoute) => {
-    typeName: string;
-    importTypePath: string;
     tmplData: string;
   };
 }

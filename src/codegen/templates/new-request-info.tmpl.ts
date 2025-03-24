@@ -176,7 +176,7 @@ export const newRequestInfoTmpl = ({
     .join(', ')}
 ]`;
 
-  const requestInfoMeta = apiParams.getRequestInfoMeta?.(route);
+  const requestInfoMeta = apiParams.getEndpointMeta?.(route);
   const requestMeta = apiParams.getRequestMeta?.(route);
   const resultPath =
     (apiParams.requestPathPrefix ?? '') +
