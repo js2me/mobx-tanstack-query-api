@@ -80,7 +80,12 @@ export const requestInfoPerFileTmpl = async ({
           dataContractNamesInThisFile.map(async (dataContractName) => {
             const modelType = configuration.modelTypes.find(
               (modelType) => modelType.name === dataContractName,
-            )!;
+            );
+
+            if (!modelType) {
+              return '';
+            }
+
             const contractType = await dataContractTmpl({
               configuration,
               contract: modelType,
@@ -90,7 +95,9 @@ export const requestInfoPerFileTmpl = async ({
             return contractType;
           }),
         )
-      ).join('\n\n')}
+      )
+        .filter(Boolean)
+        .join('\n\n')}
       
       ${requestInfoJSDocTmpl({
         route,
