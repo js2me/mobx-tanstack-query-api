@@ -72,12 +72,11 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
     });
   }
 
-  get data() {
-    return this.result.data?.data;
-  }
-
-  get error() {
-    return this.result.data?.error;
+  get response() {
+    if (this.options.queryKey[0] === '__SKIP__') {
+      return null;
+    }
+    return this.result.data?.data ?? null;
   }
 
   async setInput(
