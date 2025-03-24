@@ -61,6 +61,12 @@ export const isHttpResponse = (
   'data' in response &&
   (!status || response.status === status);
 
+export const isHttpBadResponse = (
+  response: unknown,
+): response is HttpResponse<null, any> => {
+  return isHttpResponse(response) && !response.ok;
+};
+
 export class HttpClient<TMeta = unknown> {
   public baseUrl: string = '';
   public meta: TMeta | null = null;
