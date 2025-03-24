@@ -16,7 +16,6 @@ export const indexTsForRequestPerFileTmpl = async ({
   generatedRequestFileNames,
 }: IndexTsForRequestPerFileTmplParams) => {
   return `
-export * from './data-contracts';
 ${generatedRequestFileNames.map((fileName) => `export * from './${fileName.replace('.ts', '')}';`).join('\n')}
 `;
 };

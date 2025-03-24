@@ -103,6 +103,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
       __dirname,
       'templates/create-request-info-instance.ejs',
     ),
+    outputDir: output,
     outputRequestsDir: path.resolve(output, 'requests'),
   };
 
@@ -203,7 +204,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
   codegenFs.cleanDir(output);
   codegenFs.createDir(output);
 
-  codegenFs.createDir(paths.outputRequestsDir.toString());
+  codegenFs.createDir(paths.outputRequestsDir);
 
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
@@ -237,7 +238,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
     fileNamesWithRequestInfo.push(fileName);
 
     codegenFs.createFile({
-      path: paths.outputRequestsDir.toString(),
+      path: paths.outputRequestsDir,
       fileName,
       withPrefix: false,
       content: requestInfoPerFileContent,
@@ -258,14 +259,14 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
   });
 
   codegenFs.createFile({
-    path: paths.outputRequestsDir.toString(),
+    path: paths.outputDir,
     fileName: 'data-contracts.ts',
     withPrefix: false,
     content: dataContractsContent,
   });
 
   codegenFs.createFile({
-    path: paths.outputRequestsDir.toString(),
+    path: paths.outputRequestsDir,
     fileName: 'index.ts',
     withPrefix: false,
     content: await indexTsForRequestPerFileTmpl({
@@ -274,5 +275,15 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
       codegenProcess,
       generatedRequestFileNames: fileNamesWithRequestInfo,
     }),
+  });
+
+  codegenFs.createFile({
+    path: paths.outputDir,
+    fileName: 'index.ts',
+    withPrefix: false,
+    content: `
+export * from './data-contracts';
+export * from './requests';    
+`,
   });
 };

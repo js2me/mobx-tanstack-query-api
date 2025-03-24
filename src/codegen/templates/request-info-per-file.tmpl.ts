@@ -70,7 +70,7 @@ export const requestInfoPerFileTmpl = async ({
       import { ${configuration.modelTypes
         .map((it) => it.name)
         .filter((it) => !dataContractNamesInThisFile.includes(it))
-        .join(', ')} } from "./data-contracts.ts";
+        .join(', ')} } from "../data-contracts.ts";
       `
           : ''
       }
