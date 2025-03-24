@@ -72,7 +72,7 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
     });
   }
 
-  get response() {
+  get response(): Unpromise<InferEndpointResponse<TEndpoint>> | null {
     if (this.options.queryKey[0] === '__SKIP__') {
       return null;
     }
