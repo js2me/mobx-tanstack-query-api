@@ -2,32 +2,45 @@ import {
   InvalidateOptions,
   InvalidateQueryFilters,
   QueryClient,
-  QueryFunctionContext,
 } from '@tanstack/query-core';
-import {
-  MobxMutation,
-  MobxMutationConfig,
-  MobxQuery,
-  MobxQueryConfig,
-} from 'mobx-tanstack-query';
-import { AnyObject, MaybeFalsy } from 'yummies/utils/types';
+import { AnyObject } from 'yummies/utils/types';
 
-import { EndpointMutationInput } from './endpoint.types.js';
+import {
+  EndpointMutation,
+  EndpointMutationOptions,
+} from './endpoint-mutation.js';
+import { EndpointQuery, EndpointQueryOptions } from './endpoint-query.js';
 import type {
   FullRequestParams,
   HttpClient,
   HttpResponse,
 } from './http-client.js';
 
+export interface EndpointConfiguration<
+  TParams extends any[] = any[],
+  TMetaData extends AnyObject = AnyObject,
+> {
+  operationId: string;
+  meta?: TMetaData;
+  params: (...params: TParams) => FullRequestParams;
+  keys: (
+    | string
+    | { name: string; param: number }
+    | { name: string; rest: true }
+  )[];
+  tags: string[];
+}
+
 export interface Endpoint<
   TData,
   TError,
   TInput extends AnyObject,
   TParams extends any[] = any[],
+  TMetaData extends AnyObject = AnyObject,
 > {
   (
     ...params: TParams
-  ): ReturnType<Endpoint<TData, TError, TInput, TParams>['request']>;
+  ): ReturnType<Endpoint<TData, TError, TInput, TParams, TMetaData>['request']>;
 }
 
 export class Endpoint<
@@ -40,21 +53,11 @@ export class Endpoint<
   meta!: TMetaData;
 
   constructor(
-    protected cfg: {
-      operationId: string;
-      meta?: TMetaData;
-      params: (...params: TParams) => FullRequestParams;
-      keys: (
-        | string
-        | { name: string; param: number }
-        | { name: string; rest: true }
-      )[];
-      tags: string[];
-    },
+    public configuration: EndpointConfiguration<TParams, TMetaData>,
     protected queryClient: QueryClient,
     protected http: HttpClient,
   ) {
-    this.meta = cfg.meta ?? ({} as TMetaData);
+    this.meta = configuration.meta ?? ({} as TMetaData);
     // Сохраняем оригинальный инстанс
     const instance = this;
 
@@ -80,20 +83,20 @@ export class Endpoint<
     return callable;
   }
 
+  private _hasRestParam?: boolean;
   private get hasRestParam(): boolean {
-    return this.cfg.keys.some((key) => {
-      if (typeof key !== 'string' && 'rest' in key) {
-        return true;
-      }
-    });
+    if (this._hasRestParam === undefined) {
+      this._hasRestParam = this.configuration.keys.some((key) => {
+        if (typeof key !== 'string' && 'rest' in key) {
+          return true;
+        }
+      });
+    }
+
+    return this._hasRestParam;
   }
 
-  protected buildParamsFromContext(ctx: QueryFunctionContext<any, any>) {
-    const input = this.buildInputFromQueryKey(ctx.queryKey);
-    return this.buildParamsFromInput(input);
-  }
-
-  protected buildParamsFromInput(input: TInput): TParams {
+  getParamsFromInput(input: TInput): TParams {
     const args: any[] = [];
 
     const restParams: any = {};
@@ -102,7 +105,7 @@ export class Endpoint<
       args[0] = restParams;
     }
 
-    this.cfg.keys.forEach((key) => {
+    this.configuration.keys.forEach((key) => {
       if (typeof key === 'object') {
         if (key.name === 'request') {
           args.push(input[key.name]);
@@ -119,10 +122,33 @@ export class Endpoint<
     return args as TParams;
   }
 
-  protected buildQueryKeyFromInput(input: TInput): any[] {
+  getFullUrl(input: TInput): string {
+    const params = this.configuration.params(...this.getParamsFromInput(input));
+    return this.http.buildUrl(params);
+  }
+
+  getPath(input: TInput): string {
+    return this.configuration.params(...this.getParamsFromInput(input)).path;
+  }
+
+  get tags() {
+    return this.configuration.tags;
+  }
+
+  get operationId() {
+    return this.configuration.operationId;
+  }
+
+  request(...params: TParams) {
+    return this.http.request<TData, TError>(
+      this.configuration.params(...params),
+    );
+  }
+
+  getQueryKey(input: TInput): any[] {
     const restParams: AnyObject = this.hasRestParam ? { ...input } : {};
 
-    return this.cfg.keys.map((key) => {
+    return this.configuration.keys.map((key) => {
       if (typeof key === 'string') {
         return key;
       }
@@ -141,55 +167,6 @@ export class Endpoint<
     });
   }
 
-  protected buildInputFromQueryKey(queryKey: any[]): TInput {
-    const input: AnyObject = {};
-
-    this.cfg.keys.forEach((key, index) => {
-      const keyPart = queryKey[index];
-
-      if (typeof key === 'string') {
-        return;
-      }
-
-      if (key.name === 'request') {
-        input[key.name] = keyPart;
-        return;
-      }
-
-      if ('rest' in key) {
-        Object.assign(input, keyPart);
-        return;
-      }
-
-      if ('param' in key) {
-        input[key.name] = keyPart;
-      }
-    });
-
-    return input as TInput;
-  }
-
-  getFullUrl(input: TInput): string {
-    const params = this.cfg.params(...this.buildParamsFromInput(input));
-    return this.http.buildUrl(params);
-  }
-
-  getPath(input: TInput): string {
-    return this.cfg.params(...this.buildParamsFromInput(input)).path;
-  }
-
-  getTags() {
-    return this.cfg.tags;
-  }
-
-  request(...params: TParams) {
-    return this.http.request<TData, TError>(this.cfg.params(...params));
-  }
-
-  toQueryKey(input: TInput): any[] {
-    return this.buildQueryKeyFromInput(input);
-  }
-
   invalidateByOperationId(
     filters?: Omit<
       InvalidateQueryFilters<HttpResponse<TData, TError>>,
@@ -202,7 +179,7 @@ export class Endpoint<
         ...filters,
         predicate: (query) => {
           if (query.meta?.operationId) {
-            return query.meta?.operationId === this.cfg.operationId;
+            return query.meta?.operationId === this.configuration.operationId;
           }
 
           return false;
@@ -219,14 +196,12 @@ export class Endpoint<
     >,
     options?: InvalidateOptions,
   ) {
-    const tags = this.getTags();
-
     return this.queryClient.invalidateQueries(
       {
         ...filters,
         predicate: (query) => {
           if (Array.isArray(query.meta?.tags)) {
-            return query.meta.tags.some((tag) => tags.includes(tag));
+            return query.meta.tags.some((tag) => this.tags.includes(tag));
           }
 
           return false;
@@ -247,7 +222,7 @@ export class Endpoint<
     return this.queryClient.invalidateQueries<HttpResponse<TData, TError>>(
       {
         ...filters,
-        queryKey: this.toQueryKey(input).slice(0, filters?.queryKeyIndex),
+        queryKey: this.getQueryKey(input).slice(0, filters?.queryKeyIndex),
         exact: filters?.exact ?? false,
       },
       options,
@@ -255,70 +230,12 @@ export class Endpoint<
   }
 
   toMutation<TMutationMeta extends AnyObject | void = void>(
-    options: Omit<
-      MobxMutationConfig<
-        HttpResponse<TData, TError>,
-        EndpointMutationInput<TInput, TMutationMeta>,
-        TError
-      >,
-      'queryClient' | 'mutationFn'
-    >,
+    options: EndpointMutationOptions<typeof this, TMutationMeta>,
   ) {
-    return new MobxMutation<
-      HttpResponse<TData, TError>,
-      EndpointMutationInput<TInput, TMutationMeta>,
-      TError
-    >({
-      ...options,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      queryClient: this.queryClient,
-      mutationFn: (input) => this.request(...this.buildParamsFromInput(input)),
-    });
+    return new EndpointMutation(this, this.queryClient, options);
   }
 
-  toQuery({
-    input: getInput,
-    ...options
-  }: Omit<
-    MobxQueryConfig<HttpResponse<TData, TError>, TError>,
-    'options' | 'queryFn' | 'queryClient'
-  > & {
-    input: () => MaybeFalsy<TInput>;
-  }) {
-    return new MobxQuery<HttpResponse<TData, TError>, TError>({
-      ...options,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      queryClient: this.queryClient,
-      options: () => {
-        const input = getInput();
-
-        return {
-          meta: {
-            tags: this.getTags(),
-            operationId: this.cfg.operationId,
-            ...options.meta,
-          },
-          enabled: !!input,
-          queryKey: input ? this.toQueryKey(input) : ('__SKIP__' as any),
-        };
-      },
-      queryFn: async (ctx) => {
-        const args = this.buildParamsFromContext(ctx as any);
-        const requestParamsIndex = args.length - 1;
-
-        if (args[requestParamsIndex]) {
-          if (!args[requestParamsIndex].signal) {
-            args[requestParamsIndex].signal = ctx.signal;
-          }
-        } else {
-          args[requestParamsIndex] = { signal: ctx.signal };
-        }
-
-        const response = await this.request(...args);
-        return response;
-      },
-    });
+  toQuery(options: EndpointQueryOptions<typeof this>) {
+    return new EndpointQuery(this, this.queryClient, options);
   }
 }
