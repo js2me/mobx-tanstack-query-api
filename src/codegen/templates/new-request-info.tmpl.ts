@@ -126,9 +126,17 @@ export const newRequestInfoTmpl = ({
     return {
       type: 'static',
       value: param,
-      i,
     };
   });
+
+  const dataParamStruct =
+    payload == null
+      ? null
+      : {
+          type: 'dynamic',
+          key: payload.name,
+          param: lastDynamicStructPos++,
+        };
 
   const queryParamStruct =
     query == null
@@ -236,6 +244,10 @@ new ${importFileParams.endpoint.exportName}<
                 }
                 return `"${struct.value}"`;
               }),
+              dataParamStruct &&
+                `
+                { name: "${dataParamStruct.key}", param: ${dataParamStruct.param} }
+              `,
               queryParamStruct &&
                 `{ name: "${queryParamStruct.key}", rest: true }`,
               requestConfigParam &&
