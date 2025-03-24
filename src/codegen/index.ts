@@ -3,22 +3,43 @@ import {
   ParsedRoute,
   generateApi as generateApiFromSwagger,
 } from 'swagger-typescript-api';
-import { AnyObject } from 'yummies/utils/types';
+import { AnyObject, KeyOfByValue } from 'yummies/utils/types';
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { dataContractsTmpl } from './templates/data-contracts.tmpl.js';
+import { indexTsForRequestPerFileTmpl } from './templates/index-ts-for-request-per-file.tmpl.js';
 import { requestInfoPerFileTmpl } from './templates/request-info-per-file.tmpl.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(__filename);
 
+export type CodegenProcess = Parameters<
+  Exclude<
+    Required<Extract<GenerateApiParamsFromSwagger, { input: string }>['hooks']>,
+    undefined
+  >['onInit']
+>[1];
+
+export interface ImportFileParams {
+  path: string;
+  exportName: string;
+}
+
 export interface QueryApiParams {
   requestPathPrefix?: string;
   requestPathSuffix?: string;
   requestInfoPrefix?: string;
   outputType: 'request-info-per-file';
+  addPathSegmentToRouteName?: boolean | number;
+
+  queryClient: 'builtin' | ImportFileParams;
+
+  requestInfo: 'builtin' | ImportFileParams;
+
+  httpClient: 'builtin' | ImportFileParams;
 
   getRequestInfoMeta?: (route: ParsedRoute) => {
     typeName: string;
@@ -32,6 +53,11 @@ export interface QueryApiParams {
   };
 }
 
+export type AllImportFileParams = Record<
+  KeyOfByValue<Required<QueryApiParams>, 'builtin' | ImportFileParams>,
+  ImportFileParams
+>;
+
 type GenerateApiParams = Omit<
   GenerateApiParamsFromSwagger,
   'output' | 'moduleNameFirstTag' | 'moduleNameIndex' | 'url' | 'input' | 'spec'
@@ -43,6 +69,29 @@ type GenerateApiParams = Omit<
 export const generateApi = async (inputParams: GenerateApiParams) => {
   const { output, input, ...params } = inputParams;
 
+  const importFileParams: AllImportFileParams = {
+    queryClient:
+      typeof inputParams.queryClient === 'string'
+        ? {
+            exportName: 'queryClient',
+            path: 'mobx-tanstack-query-api/builtin',
+          }
+        : inputParams.queryClient,
+    requestInfo:
+      typeof inputParams.requestInfo === 'string'
+        ? {
+            exportName: 'RequestInfo',
+            path: 'mobx-tanstack-query-api',
+          }
+        : inputParams.requestInfo,
+    httpClient:
+      typeof inputParams.httpClient === 'string'
+        ? {
+            exportName: 'http',
+            path: 'mobx-tanstack-query-api/builtin',
+          }
+        : inputParams.httpClient,
+  };
   const paths = {
     templates: path.resolve(__dirname, 'templates'),
     requestInfoClass: path.resolve(
@@ -86,14 +135,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
     ...params,
   };
 
-  let codegenProcess!: Parameters<
-    Exclude<
-      Required<
-        Extract<GenerateApiParamsFromSwagger, { input: string }>['hooks']
-      >,
-      undefined
-    >['onInit']
-  >[1];
+  let codegenProcess!: CodegenProcess;
 
   const inputData: AnyObject = {};
 
@@ -110,6 +152,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
     hooks: {
       onInit: (configuration, codeGenProcessFromInit) => {
         codegenProcess = codeGenProcessFromInit;
+
         return codegenParams?.hooks?.onInit?.(
           configuration,
           codeGenProcessFromInit,
@@ -123,8 +166,37 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
         });
         return codegenParams?.hooks?.onPrepareConfig?.(config);
       },
+      onFormatRouteName: (routeInfo, usageRouteName) => {
+        let formattedRouteName = usageRouteName;
+
+        if (
+          inputParams.addPathSegmentToRouteName === true ||
+          typeof inputParams.addPathSegmentToRouteName === 'number'
+        ) {
+          const pathSegmentForSuffix =
+            typeof inputParams.addPathSegmentToRouteName === 'number'
+              ? inputParams.addPathSegmentToRouteName
+              : 0;
+
+          const pathSegments = routeInfo.route.split('/').filter(Boolean);
+          const { _ } = codegenProcess.getRenderTemplateData().utils;
+
+          formattedRouteName = _.camelCase(
+            `${pathSegments[pathSegmentForSuffix] || ''}_${formattedRouteName}`,
+          );
+        }
+
+        return (
+          codegenParams?.hooks?.onFormatRouteName?.(
+            routeInfo,
+            formattedRouteName,
+          ) ?? formattedRouteName
+        );
+      },
     },
   });
+
+  const { _ } = codegenProcess.getRenderTemplateData().utils;
 
   const codegenFs = codegenProcess.fileSystem as any;
 
@@ -139,18 +211,68 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
       'routes' in routeGroup ? routeGroup.routes : routeGroup,
     );
 
+  const reservedDataContractNamesMap = new Map<string, number>();
+
+  const fileNamesWithRequestInfo: string[] = [];
+
   for await (const route of allRoutes) {
-    const requestInfoPerFileContent = await requestInfoPerFileTmpl({
-      ...generated,
-      route,
-      apiParams: inputParams,
+    const { content: requestInfoPerFileContent, reservedDataContractNames } =
+      await requestInfoPerFileTmpl({
+        ...generated,
+        route,
+        apiParams: inputParams,
+        codegenProcess,
+        importFileParams,
+      });
+
+    reservedDataContractNames.forEach((name) => {
+      reservedDataContractNamesMap.set(
+        name,
+        (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+      );
     });
+
+    const fileName = `${_.kebabCase(route.routeName.usage)}.ts`;
+
+    fileNamesWithRequestInfo.push(fileName);
 
     codegenFs.createFile({
       path: paths.outputRequestsDir.toString(),
-      fileName: `${generated.configuration.utils._.kebabCase(route.routeName.usage)}.ts`,
+      fileName,
       withPrefix: false,
       content: requestInfoPerFileContent,
     });
   }
+
+  const excludedDataContractNames = Array.from(
+    reservedDataContractNamesMap.entries(),
+  )
+    .filter(([_, count]) => count === 1)
+    .map(([name]) => name);
+
+  const dataContractsContent = await dataContractsTmpl({
+    ...generated,
+    apiParams: inputParams,
+    codegenProcess,
+    excludedDataContractNames,
+  });
+
+  codegenFs.createFile({
+    path: paths.outputRequestsDir.toString(),
+    fileName: 'data-contracts.ts',
+    withPrefix: false,
+    content: dataContractsContent,
+  });
+
+  codegenFs.createFile({
+    path: paths.outputRequestsDir.toString(),
+    fileName: 'index.ts',
+    withPrefix: false,
+    content: await indexTsForRequestPerFileTmpl({
+      ...generated,
+      apiParams: inputParams,
+      codegenProcess,
+      generatedRequestFileNames: fileNamesWithRequestInfo,
+    }),
+  });
 };

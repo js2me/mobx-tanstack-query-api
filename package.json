@@ -37,10 +37,11 @@
     "mobx-tanstack-query": "^4.2.5"
   },
   "dependencies": {
-    "swagger-typescript-api": "^13.0.23",
+    "swagger-typescript-api": "13.0.23",
     "yummies": "^3.0.36"
   },
   "devDependencies": {
+    "mobx-tanstack-query-api": "workspace:*",
     "@types/node": "^20.17.11",
     "eslint": "^8.57.1",
     "js2me-eslint-config": "^1.0.7",

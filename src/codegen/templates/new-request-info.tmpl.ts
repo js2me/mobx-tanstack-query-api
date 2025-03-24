@@ -1,20 +1,21 @@
 import { GenerateApiConfiguration, ParsedRoute } from 'swagger-typescript-api';
 import { AnyObject } from 'yummies/utils/types';
 
-import type { QueryApiParams } from '../index.js';
+import type { AllImportFileParams, QueryApiParams } from '../index.js';
 
 export interface NewRequestInfoTmplParams {
   route: ParsedRoute;
   configuration: GenerateApiConfiguration;
   apiParams: QueryApiParams;
+  importFileParams: AllImportFileParams;
 }
 
 // RequestParams["type"]
 const requestContentKind: AnyObject = {
-  URL_ENCODED: 'application/x-www-form-urlencoded',
-  FORM_DATA: 'multipart/form-data',
-  TEXT: 'text/plain',
-  BINARY: 'application/octet-stream',
+  URL_ENCODED: '"application/x-www-form-urlencoded"',
+  FORM_DATA: '"multipart/form-data"',
+  TEXT: '"text/plain"',
+  BINARY: '"application/octet-stream"',
 };
 // RequestParams["format"]
 const responseContentKind: AnyObject = {
@@ -28,6 +29,7 @@ export const newRequestInfoTmpl = ({
   route,
   configuration,
   apiParams,
+  importFileParams,
 }: NewRequestInfoTmplParams) => {
   const { utils } = configuration;
   const { _ } = utils;
@@ -90,8 +92,7 @@ export const newRequestInfoTmpl = ({
     );
   };
 
-  const requestOutputDataType =
-    positiveResponseTypes.map((it) => it.type).join('|') || 'any';
+  const requestOutputDataTypes = positiveResponseTypes.map((it) => it.type);
   const requestOutputErrorType = routeResponse.errorType;
 
   let requestInputCombinedType: RequestParam | undefined;
@@ -187,9 +188,20 @@ export const newRequestInfoTmpl = ({
   const responseFormat =
     responseContentKind[responseBodyInfo.success?.schema?.contentKind] || null;
 
-  return `
-new RequestInfo<
-  ${requestOutputDataType},
+  const reservedDataContractNames: string[] = _.uniq([
+    ...requestOutputDataTypes,
+    requestOutputErrorType,
+    ...getArgs({
+      withRequestParams: true,
+      withPayload: true,
+    }).map((it) => it.type),
+  ]);
+
+  return {
+    reservedDataContractNames,
+    content: `
+new ${importFileParams.requestInfo.exportName}<
+  ${requestOutputDataTypes.join('|') || 'any'},
   ${requestOutputErrorType},
   ${requestInputType},
   ${requestKeyType},
@@ -226,7 +238,14 @@ new RequestInfo<
                 `{ name: "${requestConfigParam.name}", param: ${lastDynamicStructPos} }`,
             ]).join(',')}
         ],
-    }
+    },
+    ${importFileParams.httpClient.exportName},
+    ${importFileParams.queryClient.exportName},
 )  
-`;
+`
+      .split('\n')
+      .map((it) => it.trim())
+      .filter(Boolean)
+      .join('\n'),
+  };
 };

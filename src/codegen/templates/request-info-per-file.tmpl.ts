@@ -4,7 +4,11 @@ import {
   GenerateApiOutput,
 } from 'swagger-typescript-api';
 
-import type { QueryApiParams } from '../index.js';
+import type {
+  AllImportFileParams,
+  CodegenProcess,
+  QueryApiParams,
+} from '../index.js';
 
 import { newRequestInfoTmpl } from './new-request-info.tmpl.js';
 import { requestInfoJSDocTmpl } from './request-info-jsdoc.tmpl.js';
@@ -13,6 +17,8 @@ export interface RequestInfoPerFileTmplParams extends GenerateApiOutput {
   route: ParsedRoute;
   configuration: GenerateApiConfiguration;
   apiParams: QueryApiParams;
+  codegenProcess: CodegenProcess;
+  importFileParams: AllImportFileParams;
 }
 
 export const requestInfoPerFileTmpl = async ({
@@ -20,32 +26,42 @@ export const requestInfoPerFileTmpl = async ({
   configuration,
   apiParams,
   formatTSContent,
+  importFileParams,
 }: RequestInfoPerFileTmplParams) => {
-  const dataContractNames = configuration.modelTypes.map((it) => it.name);
   const { utils } = configuration;
   const { _ } = utils;
 
-  return await formatTSContent(`
-/* eslint-disable */
-/* tslint:disable */
-import { RequestInfo, RequestParams } from "mobx-tanstack-query-api";
-${
-  dataContractNames.length > 0
-    ? `
-import { ${dataContractNames.join(', ')} } from "./data-contracts.ts";
-`
-    : ''
-}
+  const { content: requestInfoInstanceContent, reservedDataContractNames } =
+    newRequestInfoTmpl({
+      route,
+      configuration,
+      apiParams,
+      importFileParams,
+    });
 
-${requestInfoJSDocTmpl({
-  route,
-  configuration,
-  apiParams,
-})}
-export const ${_.camelCase(route.routeName.usage)} = ${newRequestInfoTmpl({
-    route,
-    configuration,
-    apiParams,
-  })}
-    `);
+  return {
+    reservedDataContractNames,
+    content: await formatTSContent(`
+      /* eslint-disable */
+      /* tslint:disable */
+      import { RequestParams } from "mobx-tanstack-query-api";
+      import { ${importFileParams.requestInfo.exportName} } from "${importFileParams.requestInfo.path}";
+      import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
+      import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
+      ${
+        reservedDataContractNames.length > 0
+          ? `
+      import { ${reservedDataContractNames.join(', ')} } from "./data-contracts.ts";
+      `
+          : ''
+      }
+      
+      ${requestInfoJSDocTmpl({
+        route,
+        configuration,
+        apiParams,
+      })}
+      export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}
+      `),
+  };
 };
