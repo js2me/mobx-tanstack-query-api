@@ -23,6 +23,10 @@ export type CodegenProcess = Parameters<
   >['onInit']
 >[1];
 
+export type CodegenDataUtils = ReturnType<
+  CodegenProcess['getRenderTemplateData']
+>['utils'];
+
 export interface ImportFileParams {
   path: string;
   exportName: string;
@@ -41,12 +45,18 @@ export interface QueryApiParams {
 
   httpClient: 'builtin' | ImportFileParams;
 
-  getEndpointMeta?: (route: ParsedRoute) => {
+  getEndpointMeta?: (
+    route: ParsedRoute,
+    utils: CodegenDataUtils,
+  ) => {
     typeName: string;
     importTypePath: string;
     tmplData: string;
   };
-  getRequestMeta?: (route: ParsedRoute) => {
+  getRequestMeta?: (
+    route: ParsedRoute,
+    utils: CodegenDataUtils,
+  ) => {
     tmplData: string;
   };
 }
@@ -195,7 +205,8 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
     },
   });
 
-  const { _ } = codegenProcess.getRenderTemplateData().utils;
+  const utils = codegenProcess.getRenderTemplateData().utils;
+  const { _ } = utils;
 
   const codegenFs = codegenProcess.fileSystem as any;
 
@@ -222,6 +233,7 @@ export const generateApi = async (inputParams: GenerateApiParams) => {
         apiParams: inputParams,
         codegenProcess,
         importFileParams,
+        utils,
       });
 
     reservedDataContractNames.forEach((name) => {

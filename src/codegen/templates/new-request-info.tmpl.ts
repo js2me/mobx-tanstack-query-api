@@ -1,13 +1,18 @@
 import { GenerateApiConfiguration, ParsedRoute } from 'swagger-typescript-api';
 import { AnyObject } from 'yummies/utils/types';
 
-import type { AllImportFileParams, QueryApiParams } from '../index.js';
+import type {
+  AllImportFileParams,
+  CodegenDataUtils,
+  QueryApiParams,
+} from '../index.js';
 
 export interface NewRequestInfoTmplParams {
   route: ParsedRoute;
   configuration: GenerateApiConfiguration;
   apiParams: QueryApiParams;
   importFileParams: AllImportFileParams;
+  utils: CodegenDataUtils;
 }
 
 // RequestParams["type"]
@@ -27,11 +32,10 @@ const responseContentKind: AnyObject = {
 
 export const newRequestInfoTmpl = ({
   route,
-  configuration,
   apiParams,
   importFileParams,
+  utils,
 }: NewRequestInfoTmplParams) => {
-  const { utils } = configuration;
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
     (it) => +it.status >= 200 && +it.status < 300,
@@ -176,8 +180,8 @@ export const newRequestInfoTmpl = ({
     .join(', ')}
 ]`;
 
-  const requestInfoMeta = apiParams.getEndpointMeta?.(route);
-  const requestMeta = apiParams.getRequestMeta?.(route);
+  const requestInfoMeta = apiParams.getEndpointMeta?.(route, utils);
+  const requestMeta = apiParams.getRequestMeta?.(route, utils);
   const resultPath =
     (apiParams.requestPathPrefix ?? '') +
     path +

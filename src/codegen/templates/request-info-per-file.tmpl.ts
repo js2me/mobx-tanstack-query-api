@@ -7,6 +7,7 @@ import {
 
 import type {
   AllImportFileParams,
+  CodegenDataUtils,
   CodegenProcess,
   QueryApiParams,
 } from '../index.js';
@@ -21,6 +22,7 @@ export interface RequestInfoPerFileTmplParams extends GenerateApiOutput {
   apiParams: QueryApiParams;
   codegenProcess: CodegenProcess;
   importFileParams: AllImportFileParams;
+  utils: CodegenDataUtils;
 }
 
 export const requestInfoPerFileTmpl = async ({
@@ -29,8 +31,8 @@ export const requestInfoPerFileTmpl = async ({
   apiParams,
   formatTSContent,
   importFileParams,
+  utils,
 }: RequestInfoPerFileTmplParams) => {
-  const { utils } = configuration;
   const { _ } = utils;
 
   const { content: requestInfoInstanceContent, reservedDataContractNames } =
@@ -39,6 +41,7 @@ export const requestInfoPerFileTmpl = async ({
       configuration,
       apiParams,
       importFileParams,
+      utils,
     });
 
   const dataContactNames = new Set(
