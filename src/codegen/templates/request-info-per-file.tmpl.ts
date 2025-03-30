@@ -106,6 +106,7 @@ export const requestInfoPerFileTmpl = async ({
         configuration,
         apiParams,
       })}
+      /*#__PURE__*/
       export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}
       `),
   };
