@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { QueryClient, QueryFunctionContext } from '@tanstack/query-core';
-import { when } from 'mobx';
+import { makeObservable, observable, runInAction, when } from 'mobx';
 import {
   MobxQuery,
   MobxQueryConfig,
@@ -18,7 +18,7 @@ import {
 export interface EndpointQueryOptions<TEndpoint extends AnyEndpoint>
   extends Omit<
     MobxQueryConfig<
-      Unpromise<InferEndpointResponse<TEndpoint>>,
+      Unpromise<InferEndpointResponse<TEndpoint>>['data'],
       InferEndpointError<TEndpoint>
     >,
     'options' | 'queryFn' | 'queryClient'
@@ -27,9 +27,11 @@ export interface EndpointQueryOptions<TEndpoint extends AnyEndpoint>
 }
 
 export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
-  Unpromise<InferEndpointResponse<TEndpoint>>,
+  Unpromise<InferEndpointResponse<TEndpoint>>['data'],
   InferEndpointError<TEndpoint>
 > {
+  response: Unpromise<InferEndpointResponse<TEndpoint>> | null = null;
+
   constructor(
     private endpoint: TEndpoint,
     queryClient: QueryClient,
@@ -54,6 +56,9 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
         );
       },
       queryFn: async (ctx) => {
+        runInAction(() => {
+          this.response = null;
+        });
         const args = this.buildParamsFromContext(ctx as any);
         const requestParamsIndex = args.length - 1;
 
@@ -67,16 +72,21 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
 
         // @ts-ignore
         const response = await endpoint.request(...args);
-        return response as Unpromise<InferEndpointResponse<TEndpoint>>;
+
+        runInAction(() => {
+          this.response = response as Unpromise<
+            InferEndpointResponse<TEndpoint>
+          >;
+        });
+
+        return response.data as Unpromise<
+          InferEndpointResponse<TEndpoint>
+        >['data'];
       },
     });
-  }
 
-  get response(): Unpromise<InferEndpointResponse<TEndpoint>> | null {
-    if (this.options.queryKey[0] === '__SKIP__') {
-      return null;
-    }
-    return this.result.data?.data ?? null;
+    observable.ref(this, 'lastResponse');
+    makeObservable(this);
   }
 
   async setInput(
