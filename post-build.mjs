@@ -1,4 +1,6 @@
 import { postBuildScript, publishScript } from 'js2me-exports-post-build-script';
+import { copyFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 postBuildScript({
   buildDir: 'dist',
@@ -7,6 +9,12 @@ postBuildScript({
   filesToCopy: ['LICENSE', 'README.md'],
   updateVersion: process.env.PUBLISH_VERSION,
   onDone: (versionsDiff, _, packageJson, { targetPackageJson }) => {
+    // Копируем bin.ts в bin.mjs в папку dist
+    copyFileSync(
+      resolve('dist/cli', 'bin.js'),
+      resolve('dist/cli', 'bin.mjs')
+    );
+
     if (process.env.PUBLISH) {
       publishScript({
         nextVersion: versionsDiff?.next ?? packageJson.version,

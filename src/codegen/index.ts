@@ -66,7 +66,7 @@ export type AllImportFileParams = Record<
   ImportFileParams
 >;
 
-type GenerateApiParams = Omit<
+export type GenerateApiParams = Omit<
   GenerateApiParamsFromSwagger,
   'output' | 'moduleNameFirstTag' | 'moduleNameIndex' | 'url' | 'input' | 'spec'
 > & {

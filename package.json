@@ -23,6 +23,7 @@
   "license": "MIT",
   "description": "",
   "type": "module",
+  "bin": "cli/bin.mjs",
   "bugs": {
     "url": "https://github.com/js2me/mobx-tanstack-query-api/issues"
   },
