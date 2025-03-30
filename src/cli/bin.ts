@@ -5,9 +5,11 @@ import path from 'node:path';
 
 import { generateApi, GenerateApiParams } from '../codegen/index.js';
 
+import { defineConfig } from './define-config.js';
+
 const projectDir = process.cwd();
 
-let generateApiParams: GenerateApiParams;
+let generateApiParams: GenerateApiParams[];
 
 let module: any;
 
@@ -21,10 +23,12 @@ if (existsSync(path.resolve(projectDir, 'api-codegen.config.js'))) {
   throw new Error('api-codegen.config.(js|mjs|json) not found');
 }
 
-if (module.default && 'links' in module.default) {
+if (module.default) {
   generateApiParams = module.default;
 } else {
-  throw new Error('api-codegen.config.(js|mjs|json) is not valid');
+  throw new Error(
+    'api-codegen.config.(js|mjs|json) is not valid, This file should return object - result of the defineConfig function',
+  );
 }
 
-generateApi(generateApiParams);
+defineConfig(generateApiParams).forEach(generateApi);
