@@ -41,6 +41,11 @@ export interface GenerateQueryApiParams {
   requestPathSuffix?: string;
   requestInfoPrefix?: string;
 
+  formatExportGroupName?: (
+    groupName: string,
+    utils: CodegenDataUtils,
+  ) => string;
+
   /**
    * Group endpoints and collect it into object
    */
@@ -160,7 +165,7 @@ export const generateApi = async (
       __dirname,
       'templates/create-request-info-instance.ejs',
     ),
-    outputDir: params.output,
+    outputDir: path.resolve(process.cwd(), params.output),
   };
 
   const codegenParams: Partial<GenerateApiParamsFromSwagger> = {
@@ -270,7 +275,10 @@ export const generateApi = async (
 
   const reservedDataContractNamesMap = new Map<string, number>();
 
+  const collectedExportFiles: string[] = [];
+
   if (params.groupBy == null) {
+    collectedExportFiles.push('endpoints');
     // #region кодогенерация 1 эндпоинт - 1 файл без группировки
     codegenFs.createDir(path.resolve(params.output, 'endpoints'));
 
@@ -345,7 +353,7 @@ export const generateApi = async (
       }
 
       if (group == null) {
-        group = '_other';
+        group = 'other';
       }
 
       if (!groupsMap.has(group)) {
@@ -401,32 +409,32 @@ export const generateApi = async (
         });
       }
 
-      if (routes.length > 0) {
-        codegenFs.createFile({
-          path: path.resolve(params.output, _.kebabCase(groupName)),
-          fileName: 'index.ts',
-          withPrefix: false,
-          content: `${LINTERS_IGNORE}
-export * from './endpoints';    
-  `,
-        });
+      const exportGroupName = params.formatExportGroupName
+        ? params.formatExportGroupName(_.camelCase(groupName), utils)
+        : _.camelCase(groupName);
 
-        codegenFs.createFile({
-          path: path.resolve(
-            params.output,
-            _.kebabCase(groupName),
-            'endpoints',
-          ),
-          fileName: 'index.ts',
-          withPrefix: false,
-          content: await indexTsForRequestPerFileTmpl({
-            ...generated,
-            apiParams: params,
-            codegenProcess,
-            generatedRequestFileNames: fileNamesWithRequestInfo,
-          }),
-        });
-      }
+      codegenFs.createFile({
+        path: path.resolve(params.output, _.kebabCase(groupName)),
+        fileName: 'index.ts',
+        withPrefix: false,
+        content: `${LINTERS_IGNORE}
+export * as ${exportGroupName} from './endpoints';
+`,
+      });
+
+      codegenFs.createFile({
+        path: path.resolve(params.output, _.kebabCase(groupName), 'endpoints'),
+        fileName: 'index.ts',
+        withPrefix: false,
+        content: await indexTsForRequestPerFileTmpl({
+          ...generated,
+          apiParams: params,
+          codegenProcess,
+          generatedRequestFileNames: fileNamesWithRequestInfo,
+        }),
+      });
+
+      collectedExportFiles.push(_.kebabCase(groupName));
     }
     // #endregion
   }
@@ -463,7 +471,7 @@ export * from './endpoints';
       withPrefix: false,
       content: `${LINTERS_IGNORE}
 export * from './data-contracts';
-export * from './endpoints';    
+${collectedExportFiles.map((fileName) => `export * from './${fileName}';`).join('\n')}
   `,
     });
     codegenFs.createFile({
@@ -481,7 +489,7 @@ export * as ${namespace} from './__exports';
       withPrefix: false,
       content: `${LINTERS_IGNORE}
 export * from './data-contracts';
-export * from './endpoints';    
+${collectedExportFiles.map((fileName) => `export * from './${fileName}';`).join('\n')}
 `,
     });
   }
