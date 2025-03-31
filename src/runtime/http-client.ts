@@ -70,17 +70,17 @@ export const isHttpBadResponse = (
 export class HttpClient<TMeta = unknown> {
   public baseUrl: string = '';
   public meta: TMeta | null = null;
-  private interceptor?: HttpClientConfig<TMeta>['interceptor'];
-  private fetch: typeof fetch;
-  private customBuildUrl: HttpClientConfig<TMeta>['buildUrl'];
-  private customToQueryString: HttpClientConfig<TMeta>['toQueryString'];
-
-  private baseApiParams: RequestParams = {
+  public baseApiParams: RequestParams = {
     credentials: 'same-origin',
     headers: {},
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
   };
+
+  private interceptor?: HttpClientConfig<TMeta>['interceptor'];
+  private fetch: typeof fetch;
+  private customBuildUrl: HttpClientConfig<TMeta>['buildUrl'];
+  private customToQueryString: HttpClientConfig<TMeta>['toQueryString'];
 
   badResponse: unknown = null;
 
@@ -91,6 +91,10 @@ export class HttpClient<TMeta = unknown> {
     this.fetch = config?.fetch ?? fetch.bind(globalThis);
     this.customBuildUrl = config?.buildUrl;
     this.customToQueryString = config?.toQueryString;
+    this.baseApiParams = {
+      ...this.baseApiParams,
+      ...config?.baseApiParams,
+    };
 
     Object.assign(this.contentFormatters, config?.contentFormatters ?? {});
 
