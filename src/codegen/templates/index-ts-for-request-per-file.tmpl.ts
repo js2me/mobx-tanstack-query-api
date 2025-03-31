@@ -3,11 +3,13 @@ import {
   GenerateApiOutput,
 } from 'swagger-typescript-api';
 
-import { CodegenProcess, QueryApiParams } from '../index.js';
+import { CodegenProcess, GenerateQueryApiParams } from '../index.js';
+
+import { LINTERS_IGNORE } from './constants.js';
 
 export interface IndexTsForRequestPerFileTmplParams extends GenerateApiOutput {
   configuration: GenerateApiConfiguration;
-  apiParams: QueryApiParams;
+  apiParams: GenerateQueryApiParams;
   codegenProcess: CodegenProcess;
   generatedRequestFileNames: string[];
 }
@@ -15,8 +17,7 @@ export interface IndexTsForRequestPerFileTmplParams extends GenerateApiOutput {
 export const indexTsForRequestPerFileTmpl = async ({
   generatedRequestFileNames,
 }: IndexTsForRequestPerFileTmplParams) => {
-  return `/* eslint-disable */
-/* tslint:disable */
+  return `${LINTERS_IGNORE}
 ${generatedRequestFileNames.map((fileName) => `export * from './${fileName.replace('.ts', '')}';`).join('\n')}
 `;
 };

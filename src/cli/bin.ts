@@ -3,13 +3,13 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-import { generateApi, GenerateApiParams } from '../codegen/index.js';
+import { generateApi, GenerateQueryApiParams } from '../codegen/index.js';
 
 import { defineConfig } from './define-config.js';
 
 const projectDir = process.cwd();
 
-let generateApiParams: GenerateApiParams[];
+let generateApiParams: GenerateQueryApiParams[];
 
 let module: any;
 

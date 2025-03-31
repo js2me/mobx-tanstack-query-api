@@ -1,12 +1,12 @@
 import { ParsedRoute, GenerateApiConfiguration } from 'swagger-typescript-api';
 import { AnyObject } from 'yummies/utils/types';
 
-import { QueryApiParams } from '../index.js';
+import { GenerateQueryApiParams } from '../index.js';
 
 export interface RequestInfoJSDocTmplParams {
   route: ParsedRoute;
   configuration: GenerateApiConfiguration;
-  apiParams: QueryApiParams;
+  apiParams: GenerateQueryApiParams;
   offset?: number;
 }
 

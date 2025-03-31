@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "swagger-typescript-api": "13.0.23",
-    "yummies": "^3.0.36"
+    "yummies": "^3.0.37"
   },
   "devDependencies": {
     "@types/node": "^20.17.11",

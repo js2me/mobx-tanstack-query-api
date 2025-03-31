@@ -3,18 +3,19 @@ import {
   GenerateApiOutput,
 } from 'swagger-typescript-api';
 
-import type { CodegenProcess, QueryApiParams } from '../index.js';
+import type { CodegenProcess, GenerateQueryApiParams } from '../index.js';
 
+import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 
 export interface DataContractsTmplParams extends GenerateApiOutput {
   configuration: GenerateApiConfiguration;
-  apiParams: QueryApiParams;
+  apiParams: GenerateQueryApiParams;
   codegenProcess: CodegenProcess;
   excludedDataContractNames?: string[];
 }
 
-export const dataContractsTmpl = async ({
+export const dataContractsFileTmpl = async ({
   configuration,
   formatTSContent,
   excludedDataContractNames,
@@ -43,8 +44,7 @@ export const dataContractsTmpl = async ({
     );
   }
 
-  return await formatTSContent(`/* eslint-disable */
-/* tslint:disable */
+  return await formatTSContent(`${LINTERS_IGNORE}
 
 ${contractDefinitions.join('\n\n')}
   `);

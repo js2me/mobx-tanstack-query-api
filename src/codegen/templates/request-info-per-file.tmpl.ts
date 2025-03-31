@@ -9,9 +9,10 @@ import type {
   AllImportFileParams,
   CodegenDataUtils,
   CodegenProcess,
-  QueryApiParams,
+  GenerateQueryApiParams,
 } from '../index.js';
 
+import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 import { newRequestInfoTmpl } from './new-request-info.tmpl.js';
 import { requestInfoJSDocTmpl } from './request-info-jsdoc.tmpl.js';
@@ -19,10 +20,11 @@ import { requestInfoJSDocTmpl } from './request-info-jsdoc.tmpl.js';
 export interface RequestInfoPerFileTmplParams extends GenerateApiOutput {
   route: ParsedRoute;
   configuration: GenerateApiConfiguration;
-  apiParams: QueryApiParams;
+  apiParams: GenerateQueryApiParams;
   codegenProcess: CodegenProcess;
   importFileParams: AllImportFileParams;
   utils: CodegenDataUtils;
+  relativePathDataContracts: string;
 }
 
 export const requestInfoPerFileTmpl = async ({
@@ -32,6 +34,7 @@ export const requestInfoPerFileTmpl = async ({
   formatTSContent,
   importFileParams,
   utils,
+  relativePathDataContracts,
 }: RequestInfoPerFileTmplParams) => {
   const { _ } = utils;
 
@@ -60,8 +63,7 @@ export const requestInfoPerFileTmpl = async ({
 
   return {
     reservedDataContractNames: dataContractNamesInThisFile,
-    content: await formatTSContent(`/* eslint-disable */
-      /* tslint:disable */
+    content: await formatTSContent(`${LINTERS_IGNORE}
       import { RequestParams } from "mobx-tanstack-query-api";
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
@@ -72,7 +74,7 @@ export const requestInfoPerFileTmpl = async ({
       import { ${configuration.modelTypes
         .map((it) => it.name)
         .filter((it) => !dataContractNamesInThisFile.includes(it))
-        .join(', ')} } from "../data-contracts";
+        .join(', ')} } from "${relativePathDataContracts}";
       `
           : ''
       }

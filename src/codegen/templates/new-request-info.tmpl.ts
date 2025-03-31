@@ -4,13 +4,13 @@ import { AnyObject } from 'yummies/utils/types';
 import type {
   AllImportFileParams,
   CodegenDataUtils,
-  QueryApiParams,
+  GenerateQueryApiParams,
 } from '../index.js';
 
 export interface NewRequestInfoTmplParams {
   route: ParsedRoute;
   configuration: GenerateApiConfiguration;
-  apiParams: QueryApiParams;
+  apiParams: GenerateQueryApiParams;
   importFileParams: AllImportFileParams;
   utils: CodegenDataUtils;
 }
