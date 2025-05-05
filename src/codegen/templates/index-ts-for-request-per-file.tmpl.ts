@@ -1,14 +1,11 @@
-import {
-  GenerateApiConfiguration,
-  GenerateApiOutput,
-} from 'swagger-typescript-api';
+import { AnyObject } from 'yummies/utils/types';
 
 import { CodegenProcess, GenerateQueryApiParams } from '../index.js';
 
 import { LINTERS_IGNORE } from './constants.js';
 
-export interface IndexTsForRequestPerFileTmplParams extends GenerateApiOutput {
-  configuration: GenerateApiConfiguration;
+export interface IndexTsForRequestPerFileTmplParams extends AnyObject {
+  configuration: AnyObject;
   apiParams: GenerateQueryApiParams;
   codegenProcess: CodegenProcess;
   generatedRequestFileNames: string[];

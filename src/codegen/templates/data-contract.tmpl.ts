@@ -1,8 +1,8 @@
-import { GenerateApiConfiguration, ModelType } from 'swagger-typescript-api';
+import { AnyObject } from 'yummies/utils/types';
 
 export interface DataContractTmplParams {
-  configuration: GenerateApiConfiguration;
-  contract: ModelType;
+  configuration: AnyObject;
+  contract: AnyObject;
   addExportKeyword?: boolean;
 }
 

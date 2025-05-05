@@ -1,4 +1,3 @@
-import { GenerateApiConfiguration, ParsedRoute } from 'swagger-typescript-api';
 import { AnyObject } from 'yummies/utils/types';
 
 import type {
@@ -8,8 +7,8 @@ import type {
 } from '../index.js';
 
 export interface NewRequestInfoTmplParams {
-  route: ParsedRoute;
-  configuration: GenerateApiConfiguration;
+  route: AnyObject;
+  configuration: AnyObject;
   apiParams: GenerateQueryApiParams;
   importFileParams: AllImportFileParams;
   utils: CodegenDataUtils;
@@ -38,7 +37,7 @@ export const newRequestInfoTmpl = ({
 }: NewRequestInfoTmplParams) => {
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
-    (it) => +it.status >= 200 && +it.status < 300,
+    (it: AnyObject) => +it.status >= 200 && +it.status < 300,
   );
 
   const { requestBodyInfo, responseBodyInfo } = route as AnyObject;
@@ -92,11 +91,13 @@ export const newRequestInfoTmpl = ({
         withPayload && payload,
         withRequestConfigParam && requestConfigParam,
       ]),
-      [(o) => o.optional],
+      [(o: AnyObject) => o.optional],
     );
   };
 
-  const requestOutputDataTypes = positiveResponseTypes.map((it) => it.type);
+  const requestOutputDataTypes = positiveResponseTypes.map(
+    (it: AnyObject) => it.type,
+  );
   const requestOutputErrorType = routeResponse.errorType;
 
   let requestInputCombinedType: RequestParam | undefined;
@@ -233,7 +234,7 @@ new ${importFileParams.endpoint.exportName}<
         }),
         operationId: "${raw.operationId}",
         tags: [
-          ${raw.tags?.map((tag) => `"${tag}"`).join(',')}
+          ${raw.tags?.map((tag: string) => `"${tag}"`).join(',')}
         ],
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
         keys: [

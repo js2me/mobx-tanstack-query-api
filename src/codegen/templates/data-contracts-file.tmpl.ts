@@ -1,15 +1,12 @@
-import {
-  GenerateApiConfiguration,
-  GenerateApiOutput,
-} from 'swagger-typescript-api';
+import { AnyObject } from 'yummies/utils/types';
 
 import type { CodegenProcess, GenerateQueryApiParams } from '../index.js';
 
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 
-export interface DataContractsTmplParams extends GenerateApiOutput {
-  configuration: GenerateApiConfiguration;
+export interface DataContractsTmplParams extends AnyObject {
+  configuration: AnyObject;
   apiParams: GenerateQueryApiParams;
   codegenProcess: CodegenProcess;
   excludedDataContractNames?: string[];

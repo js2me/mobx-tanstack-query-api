@@ -1,9 +1,5 @@
 /* eslint-disable unicorn/no-await-expression-member */
-import {
-  ParsedRoute,
-  GenerateApiConfiguration,
-  GenerateApiOutput,
-} from 'swagger-typescript-api';
+import { AnyObject } from 'yummies/utils/types';
 
 import type {
   AllImportFileParams,
@@ -17,9 +13,9 @@ import { dataContractTmpl } from './data-contract.tmpl.js';
 import { newRequestInfoTmpl } from './new-request-info.tmpl.js';
 import { requestInfoJSDocTmpl } from './request-info-jsdoc.tmpl.js';
 
-export interface RequestInfoPerFileTmplParams extends GenerateApiOutput {
-  route: ParsedRoute;
-  configuration: GenerateApiConfiguration;
+export interface RequestInfoPerFileTmplParams extends AnyObject {
+  route: AnyObject;
+  configuration: AnyObject;
   apiParams: GenerateQueryApiParams;
   codegenProcess: CodegenProcess;
   importFileParams: AllImportFileParams;
@@ -72,8 +68,8 @@ export const requestInfoPerFileTmpl = async ({
         configuration.modelTypes.length > 0
           ? `
       import { ${configuration.modelTypes
-        .map((it) => it.name)
-        .filter((it) => !dataContractNamesInThisFile.includes(it))
+        .map((it: AnyObject) => it.name)
+        .filter((it: any) => !dataContractNamesInThisFile.includes(it))
         .join(', ')} } from "${relativePathDataContracts}";
       `
           : ''
@@ -83,7 +79,7 @@ export const requestInfoPerFileTmpl = async ({
         await Promise.all(
           dataContractNamesInThisFile.map(async (dataContractName) => {
             const modelType = configuration.modelTypes.find(
-              (modelType) => modelType.name === dataContractName,
+              (modelType: AnyObject) => modelType.name === dataContractName,
             );
 
             if (!modelType) {

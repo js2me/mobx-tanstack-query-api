@@ -1,8 +1,4 @@
-import {
-  GenerateApiParams as GenerateApiParamsFromSwagger,
-  ParsedRoute,
-  generateApi as generateApiFromSwagger,
-} from 'swagger-typescript-api';
+import { generateApi as generateApiFromSwagger } from 'swagger-typescript-api';
 import { AnyObject, KeyOfByValue } from 'yummies/utils/types';
 
 import path from 'node:path';
@@ -17,16 +13,8 @@ const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(__filename);
 
-export type CodegenProcess = Parameters<
-  Exclude<
-    Required<Extract<GenerateApiParamsFromSwagger, { input: string }>['hooks']>,
-    undefined
-  >['onInit']
->[1];
-
-export type CodegenDataUtils = ReturnType<
-  CodegenProcess['getRenderTemplateData']
->['utils'];
+export type CodegenDataUtils = AnyObject;
+export type CodegenProcess = AnyObject;
 
 export interface ImportFileParams {
   path: string;
@@ -41,16 +29,13 @@ export interface GenerateQueryApiParams {
   requestPathSuffix?: string;
   requestInfoPrefix?: string;
 
-  formatExportGroupName?: (
-    groupName: string,
-    utils: CodegenDataUtils,
-  ) => string;
+  formatExportGroupName?: (groupName: string, utils: AnyObject) => string;
 
   /**
    * Group endpoints and collect it into object
    */
   groupBy?:
-    | ((route: ParsedRoute) => string)
+    | ((route: AnyObject) => string)
     | `path-segment`
     | `path-segment-${number}`
     | `tag`
@@ -72,7 +57,7 @@ export interface GenerateQueryApiParams {
    *
    * namespaceName.login.toMutation()
    */
-  namespace?: string | ((utils: CodegenDataUtils) => string);
+  namespace?: string | ((utils: AnyObject) => string);
 
   /**
    * Example:
@@ -90,32 +75,23 @@ export interface GenerateQueryApiParams {
   httpClient?: 'builtin' | ImportFileParams;
 
   getEndpointMeta?: (
-    route: ParsedRoute,
-    utils: CodegenDataUtils,
+    route: AnyObject,
+    utils: AnyObject,
   ) => {
     typeName: string;
     importTypePath: string;
     tmplData: string;
   };
   getRequestMeta?: (
-    route: ParsedRoute,
-    utils: CodegenDataUtils,
+    route: AnyObject,
+    utils: AnyObject,
   ) => {
     tmplData: string;
   };
 
-  requestOptions?: GenerateApiParamsFromSwagger['requestOptions'];
+  requestOptions?: AnyObject;
 
-  otherCodegenParams?: Omit<
-    GenerateApiParamsFromSwagger,
-    | 'requestOptions'
-    | 'output'
-    | 'moduleNameFirstTag'
-    | 'moduleNameIndex'
-    | 'url'
-    | 'input'
-    | 'spec'
-  >;
+  otherCodegenParams?: AnyObject;
 }
 
 export type AllImportFileParams = Record<
@@ -168,7 +144,7 @@ export const generateApi = async (
     outputDir: path.resolve(process.cwd(), params.output),
   };
 
-  const codegenParams: Partial<GenerateApiParamsFromSwagger> = {
+  const codegenParams: Partial<AnyObject> = {
     httpClientType: 'fetch',
     cleanOutput: true,
     modular: true,
@@ -186,7 +162,7 @@ export const generateApi = async (
     moduleNameFirstTag: true,
     sortTypes: true,
     templates: paths.templates.toString(),
-    primitiveTypeConstructs: (constructs) => {
+    primitiveTypeConstructs: (constructs: AnyObject) => {
       return {
         ...(constructs as any),
         object: () => `Record<string, any>`,
@@ -198,7 +174,7 @@ export const generateApi = async (
     ...params.otherCodegenParams,
   };
 
-  let codegenProcess!: CodegenProcess;
+  let codegenProcess!: any;
 
   const inputData: AnyObject = {};
 
@@ -331,7 +307,7 @@ export const generateApi = async (
     // #region кодогенерация с группировкой
 
     // #region разбиение роутов по группам
-    const groupsMap = new Map<string, ParsedRoute[]>();
+    const groupsMap = new Map<string, AnyObject[]>();
 
     allRoutes.forEach((route) => {
       let group: string | undefined;
