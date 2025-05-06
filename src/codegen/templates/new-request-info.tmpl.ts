@@ -65,9 +65,12 @@ export const newRequestInfoTmpl = ({
     defaultValue: '{}',
   };
 
-  const inputParams = [...pathParams, query, requestConfigParam].filter(
-    Boolean,
-  );
+  const inputParams = [
+    ...pathParams,
+    payload,
+    query,
+    requestConfigParam,
+  ].filter(Boolean);
 
   const getArgs = ({
     withPayload,
