@@ -12,7 +12,7 @@ import {
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import { EndpointQuery, EndpointQueryOptions } from './endpoint-query.js';
 import { EndpointConfiguration } from './endpoint.types.js';
-import type { HttpClient } from './http-client.js';
+import type { HttpClient, HttpResponse } from './http-client.js';
 
 export interface Endpoint<
   TData,
@@ -171,19 +171,31 @@ export class Endpoint<
     );
   }
 
-  toMutation<TMutationMeta extends AnyObject | void = void>(
-    // @ts-expect-error
-    options: EndpointMutationOptions<typeof this, TMutationMeta>,
+  toMutation<TOutput = TData, TMutationMeta extends AnyObject | void = void>(
+    options: EndpointMutationOptions<
+      TOutput,
+      TInput,
+      HttpResponse<TData, TError>,
+      TError,
+      TMutationMeta
+    >,
   ) {
     return new EndpointMutation(this, this.queryClient, options);
   }
 
-  // @ts-expect-error
-  toQuery<TOutput>(options: EndpointQueryOptions<TOutput, typeof this>) {
-    return new EndpointQuery<TOutput, typeof this>(
-      this,
-      this.queryClient,
-      options,
-    );
+  toQuery<TOutput = TData>(
+    options: EndpointQueryOptions<
+      TOutput,
+      TInput,
+      HttpResponse<TData, TError>,
+      TError
+    >,
+  ) {
+    return new EndpointQuery<
+      TOutput,
+      TInput,
+      HttpResponse<TData, TError>,
+      TError
+    >(this, this.queryClient, options);
   }
 }

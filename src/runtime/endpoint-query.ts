@@ -2,40 +2,61 @@
 import { QueryFunctionContext } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction, when } from 'mobx';
 import { MobxQuery, MobxQueryConfig } from 'mobx-tanstack-query';
-import { Maybe, MaybeFalsy, Unpromise } from 'yummies/utils/types';
+import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
-import {
-  AnyEndpoint,
-  InferEndpointError,
-  InferEndpointInput,
-  InferEndpointResponse,
-} from './endpoint.types.js';
-import { RequestParams } from './http-client.js';
+import { AnyEndpoint } from './endpoint.types.js';
+import { AnyHttpResponse, RequestParams } from './http-client.js';
 
-export type EndpointQueryOptions<TOutput, TEndpoint extends AnyEndpoint> = {
-  input?: () => MaybeFalsy<InferEndpointInput<TEndpoint>>;
-  transform?: (
-    response: Unpromise<InferEndpointResponse<TEndpoint>>,
-  ) => TOutput;
+export type EndpointQueryOptions<
+  TOutput,
+  TInput extends AnyObject,
+  TResponse extends AnyHttpResponse,
+  TError,
+> = {
+  input?: () => MaybeFalsy<TInput>;
+  transform?: (response: TResponse) => TOutput | Promise<TOutput>;
 } & Omit<
-  MobxQueryConfig<TOutput, InferEndpointError<TEndpoint>>,
+  MobxQueryConfig<NoInfer<TOutput>, NoInfer<TError>>,
   'options' | 'queryFn' | 'queryClient'
 >;
 
+const buildOptionsFromInput = (
+  endpoint: AnyEndpoint,
+  input: MaybeFalsy<AnyObject>,
+) => {
+  const { requiredParams } = endpoint.configuration;
+  let hasRequiredParams = false;
+
+  if (requiredParams.length > 0) {
+    hasRequiredParams =
+      !!input && requiredParams.every((param) => param in input);
+  } else {
+    hasRequiredParams = true;
+  }
+
+  return {
+    enabled: hasRequiredParams,
+    queryKey: endpoint.getQueryKey(input || {}),
+  };
+};
+
 export class EndpointQuery<
   TOutput,
-  TEndpoint extends AnyEndpoint,
-> extends MobxQuery<TOutput, InferEndpointError<TEndpoint>> {
-  response: Unpromise<InferEndpointResponse<TEndpoint>> | null = null;
+  TInput extends AnyObject,
+  TResponse extends AnyHttpResponse,
+  TError,
+> extends MobxQuery<NoInfer<TOutput>, NoInfer<TError>> {
+  response: TResponse | null = null;
 
   constructor(
-    private endpoint: TEndpoint,
+    private endpoint: AnyEndpoint,
     queryClient: EndpointQueryClient,
     {
       input: getInput,
+      transform: transformResponse,
       ...queryOptions
-    }: EndpointQueryOptions<TOutput, TEndpoint>,
+    }: EndpointQueryOptions<TOutput, TInput, TResponse, TError>,
   ) {
     super({
       ...queryOptions,
@@ -47,16 +68,14 @@ export class EndpointQuery<
       },
       options: ({ options }) => {
         const willEnableManually = options?.enabled === false;
-        const input = (getInput?.() || {}) as Partial<
-          InferEndpointInput<TEndpoint>
-        >;
-        const builtOptions = this.buildOptionsFromInput(input);
+        const input = (getInput?.() || {}) as Partial<TInput>;
+        const builtOptions = buildOptionsFromInput(endpoint, input);
 
         return {
           ...options,
           ...builtOptions,
           enabled: willEnableManually ? false : builtOptions.enabled,
-        };
+        } as any;
       },
       queryFn: async (ctx): Promise<TOutput> => {
         runInAction(() => {
@@ -83,14 +102,16 @@ export class EndpointQuery<
         const response = await endpoint.request(fixedInput);
 
         runInAction(() => {
-          this.response = response as Unpromise<
-            InferEndpointResponse<TEndpoint>
-          >;
+          this.response = response as TResponse;
         });
 
-        return response.data as Unpromise<
-          InferEndpointResponse<TEndpoint>
-        >['data'];
+        let output = response.data as TOutput;
+
+        if (transformResponse) {
+          output = await transformResponse(response as TResponse);
+        }
+
+        return output;
       },
     });
 
@@ -98,35 +119,14 @@ export class EndpointQuery<
     makeObservable(this);
   }
 
-  async setInput(
-    input: MaybeFalsy<InferEndpointInput<TEndpoint>>,
-  ): Promise<Unpromise<InferEndpointResponse<TEndpoint>>> {
-    this.update(this.buildOptionsFromInput(input));
+  async setInput(input: MaybeFalsy<TInput>): Promise<TResponse> {
+    this.update(buildOptionsFromInput(this.endpoint, input));
     await when(() => !this.result.isFetching);
     // @ts-ignore
     return this.result.data!;
   }
 
-  buildOptionsFromInput(
-    input: MaybeFalsy<Partial<InferEndpointInput<TEndpoint>>>,
-  ) {
-    const { requiredParams } = this.endpoint.configuration;
-    let hasRequiredParams = false;
-
-    if (requiredParams.length > 0) {
-      hasRequiredParams =
-        !!input && requiredParams.every((param) => param in input);
-    } else {
-      hasRequiredParams = true;
-    }
-
-    return {
-      enabled: hasRequiredParams,
-      queryKey: this.endpoint.getQueryKey(input || {}),
-    };
-  }
-
   protected getInputFromContext(ctx: QueryFunctionContext<any, any>) {
-    return (ctx.queryKey[2] || {}) as InferEndpointInput<TEndpoint>;
+    return (ctx.queryKey[2] || {}) as TInput;
   }
 }

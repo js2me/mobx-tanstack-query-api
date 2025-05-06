@@ -11,11 +11,7 @@ export interface EndpointConfiguration<
   pathDeclaration: string;
   meta?: TMetaData;
   requiredParams: string[];
-  params: (
-    ...args: AllPropertiesOptional<TInput> extends true
-      ? [input: Partial<TInput>]
-      : [input: TInput]
-  ) => FullRequestParams;
+  params: (input: Partial<TInput>) => FullRequestParams;
   tags: string[];
 }
 

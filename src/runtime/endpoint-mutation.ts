@@ -1,17 +1,9 @@
 import { MobxMutation, MobxMutationConfig } from 'mobx-tanstack-query';
-import {
-  AllPropertiesOptional,
-  AnyObject,
-  Unpromise,
-} from 'yummies/utils/types';
+import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
-import {
-  AnyEndpoint,
-  InferEndpointError,
-  InferEndpointInput,
-  InferEndpointResponse,
-} from './endpoint.types.js';
+import { AnyEndpoint } from './endpoint.types.js';
+import { AnyHttpResponse } from './http-client.js';
 
 export type EndpointMutationInput<
   TBaseInput extends AnyObject,
@@ -24,38 +16,59 @@ export type EndpointMutationInput<
       ? { meta?: TMutationMeta }
       : { meta: TMutationMeta });
 
-export interface EndpointMutationOptions<
-  TEndpoint extends AnyEndpoint,
+export type EndpointMutationOptions<
+  TOutput,
+  TInput extends AnyObject,
+  TResponse extends AnyHttpResponse,
+  TError,
   TMutationMeta extends AnyObject | void = void,
-> extends Omit<
-    MobxMutationConfig<
-      Unpromise<InferEndpointResponse<TEndpoint>>,
-      EndpointMutationInput<InferEndpointInput<TEndpoint>, TMutationMeta>,
-      InferEndpointError<TEndpoint>
-    >,
-    'queryClient' | 'mutationFn'
-  > {}
+> = {
+  transform?: (response: TResponse) => TOutput | Promise<TOutput>;
+} & Omit<
+  MobxMutationConfig<
+    NoInfer<TOutput>,
+    EndpointMutationInput<NoInfer<TInput>, NoInfer<TMutationMeta>>,
+    NoInfer<TError>
+  >,
+  'queryClient' | 'mutationFn'
+>;
 
 export class EndpointMutation<
-  TEndpoint extends AnyEndpoint,
+  TOutput,
+  TInput extends AnyObject,
+  TResponse extends AnyHttpResponse,
+  TError,
   TMutationMeta extends AnyObject | void = void,
-> extends MobxMutation<
-  Unpromise<InferEndpointResponse<TEndpoint>>,
-  EndpointMutationInput<InferEndpointInput<TEndpoint>, TMutationMeta>
-> {
+> extends MobxMutation<TOutput, EndpointMutationInput<TInput, TMutationMeta>> {
   constructor(
-    private endpoint: TEndpoint,
+    private endpoint: AnyEndpoint,
     queryClient: EndpointQueryClient,
-    options: EndpointMutationOptions<TEndpoint, TMutationMeta>,
+    {
+      transform: transformResponse,
+      ...mutationOptions
+    }: EndpointMutationOptions<
+      TOutput,
+      TInput,
+      TResponse,
+      TError,
+      TMutationMeta
+    >,
   ) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     super({
-      ...options,
+      ...mutationOptions,
       queryClient,
       mutationFn: async (input) => {
         const response = await endpoint.request(input);
-        return response as any;
+
+        let output = response.data as TOutput;
+
+        if (transformResponse) {
+          output = await transformResponse(response as TResponse);
+        }
+
+        return output;
       },
     });
   }
