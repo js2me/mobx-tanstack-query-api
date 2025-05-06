@@ -8,6 +8,7 @@ module.exports = {
     "unicorn/no-this-assignment": 'off', 
     "sonarjs/argument-type": 'off', 
     "sonarjs/prefer-function-type": 'off', 
-    'unicorn/prefer-spread': 'off'
+    'unicorn/prefer-spread': 'off',
+    'sonarjs/deprecation': 'off'
   }
 };

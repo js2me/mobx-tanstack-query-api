@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   InvalidateOptions,
   InvalidateQueryFilters,
 } from '@tanstack/query-core';
-import { AnyObject } from 'yummies/utils/types';
+import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
 
 import {
   EndpointMutation,
@@ -10,46 +11,32 @@ import {
 } from './endpoint-mutation.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import { EndpointQuery, EndpointQueryOptions } from './endpoint-query.js';
-import type { FullRequestParams, HttpClient } from './http-client.js';
-
-export interface EndpointConfiguration<
-  TParams extends any[] = any[],
-  TMetaData extends AnyObject = AnyObject,
-> {
-  operationId: string;
-  meta?: TMetaData;
-  params: (...params: TParams) => FullRequestParams;
-  keys: (
-    | string
-    | { name: string; param: number }
-    | { name: string; rest: true }
-  )[];
-  tags: string[];
-}
+import { EndpointConfiguration } from './endpoint.types.js';
+import type { HttpClient } from './http-client.js';
 
 export interface Endpoint<
   TData,
   TError,
   TInput extends AnyObject,
-  TParams extends any[] = any[],
   TMetaData extends AnyObject = AnyObject,
 > {
   (
-    ...params: TParams
-  ): ReturnType<Endpoint<TData, TError, TInput, TParams, TMetaData>['request']>;
+    ...args: AllPropertiesOptional<TInput> extends true
+      ? [input?: TInput]
+      : [input: TInput]
+  ): ReturnType<Endpoint<TData, TError, TInput, TMetaData>['request']>;
 }
 
 export class Endpoint<
   TData,
   TError,
   TInput extends AnyObject,
-  TParams extends any[] = any[],
   TMetaData extends AnyObject = AnyObject,
 > {
   meta!: TMetaData;
 
   constructor(
-    public configuration: EndpointConfiguration<TParams, TMetaData>,
+    public configuration: EndpointConfiguration<NoInfer<TInput>, TMetaData>,
     protected queryClient: EndpointQueryClient,
     protected http: HttpClient,
   ) {
@@ -58,9 +45,14 @@ export class Endpoint<
     const instance = this;
 
     // Создаем функцию-обертку
-    const callable = function (this: any, ...params: TParams) {
-      return instance.request.apply(instance, params);
-    } as unknown as Endpoint<TData, TError, TInput, TParams, TMetaData>;
+    const callable = function (
+      this: any,
+      ...args: AllPropertiesOptional<TInput> extends true
+        ? [input?: TInput]
+        : [input: TInput]
+    ) {
+      return instance.request.apply(instance, args);
+    } as unknown as Endpoint<TData, TError, TInput, TMetaData>;
 
     // Копируем прототип
     Object.setPrototypeOf(callable, new.target.prototype);
@@ -79,88 +71,69 @@ export class Endpoint<
     return callable;
   }
 
-  private _hasRestParam?: boolean;
-  private get hasRestParam(): boolean {
-    if (this._hasRestParam === undefined) {
-      this._hasRestParam = this.configuration.keys.some((key) => {
-        if (typeof key !== 'string' && 'rest' in key) {
-          return true;
-        }
-      });
-    }
-
-    return this._hasRestParam;
-  }
-
-  getParamsFromInput(input: TInput): TParams {
-    const args: any[] = [];
-
-    const restParams: any = {};
-
-    if (this.hasRestParam) {
-      args[0] = restParams;
-    }
-
-    this.configuration.keys.forEach((key) => {
-      if (typeof key === 'object') {
-        if (key.name === 'request') {
-          args.push(input[key.name]);
-        } else if (this.hasRestParam) {
-          if ('rest' in key) {
-            Object.assign(restParams, input);
-          }
-        } else if ('param' in key) {
-          args[key.param] = input[key.name];
-        }
-      }
-    });
-
-    return args as TParams;
-  }
-
-  getFullUrl(input: TInput): string {
-    const params = this.configuration.params(...this.getParamsFromInput(input));
+  getFullUrl(
+    ...args: AllPropertiesOptional<TInput> extends true
+      ? [input?: TInput]
+      : [input: TInput]
+  ): string {
+    const params = this.configuration.params(args[0] ?? ({} as TInput));
     return this.http.buildUrl(params);
   }
 
-  getPath(input: TInput): string {
-    return this.configuration.params(...this.getParamsFromInput(input)).path;
+  getPath(
+    ...args: AllPropertiesOptional<TInput> extends true
+      ? [input?: TInput]
+      : [input: TInput]
+  ): string {
+    const params = this.configuration.params(args[0] ?? ({} as TInput));
+    return params.path;
   }
 
   get tags() {
     return this.configuration.tags;
   }
 
+  get pathDeclaration() {
+    return this.configuration.pathDeclaration;
+  }
+
   get operationId() {
     return this.configuration.operationId;
   }
 
-  request(...params: TParams) {
+  request(
+    ...args: AllPropertiesOptional<TInput> extends true
+      ? [input?: TInput]
+      : [input: TInput]
+  ) {
     return this.http.request<TData, TError>(
-      this.configuration.params(...params),
+      this.configuration.params(args[0] ?? ({} as TInput)),
     );
   }
 
-  getQueryKey(input: TInput): any[] {
-    const restParams: AnyObject = this.hasRestParam ? { ...input } : {};
+  getQueryKey(
+    ...args: AllPropertiesOptional<TInput> extends true
+      ? [input?: TInput]
+      : [input: TInput]
+  ): any[] {
+    const input = args[0] ?? ({} as TInput);
 
-    return this.configuration.keys.map((key) => {
-      if (typeof key === 'string') {
-        return key;
-      }
+    return [
+      this.configuration.operationId,
+      this.configuration.pathDeclaration,
+      input,
+    ];
+  }
 
-      if (this.hasRestParam) {
-        if ('rest' in key) {
-          return restParams;
-        } else {
-          const param = restParams[key.name];
-          delete restParams[key.name];
-          return param;
-        }
-      } else {
-        return input[key.name];
-      }
-    });
+  invalidateByPath(
+    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
+    options?: InvalidateOptions,
+  ) {
+    return this.queryClient.invalidateByPath(
+      this.configuration.pathDeclaration,
+      filters,
+      options,
+    );
   }
 
   invalidateByOperationId(
@@ -199,11 +172,13 @@ export class Endpoint<
   }
 
   toMutation<TMutationMeta extends AnyObject | void = void>(
+    // @ts-expect-error
     options: EndpointMutationOptions<typeof this, TMutationMeta>,
   ) {
     return new EndpointMutation(this, this.queryClient, options);
   }
 
+  // @ts-expect-error
   toQuery<TOutput>(options: EndpointQueryOptions<TOutput, typeof this>) {
     return new EndpointQuery<TOutput, typeof this>(
       this,

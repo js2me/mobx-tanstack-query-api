@@ -68,15 +68,13 @@ export const newRequestInfoTmpl = ({
   const getArgs = ({
     withPayload,
     withRequestConfigParam,
-    withRequestParams,
   }: {
     withPayload?: boolean;
     withRequestConfigParam?: boolean;
-    withRequestParams?: boolean;
   }): RequestParam[] => {
     return _.sortBy(
       _.compact([
-        ...(withRequestParams && requestParams
+        ...(requestParams
           ? [
               {
                 name:
@@ -95,6 +93,13 @@ export const newRequestInfoTmpl = ({
     );
   };
 
+  const tags = (raw.tags || []).filter(Boolean);
+  const allArgs = getArgs({
+    withPayload: true,
+    withRequestConfigParam: true,
+  });
+  const requiredArgs = allArgs.filter((it) => !it.optional);
+
   const requestOutputDataTypes = positiveResponseTypes.map(
     (it: AnyObject) => it.type,
   );
@@ -102,42 +107,11 @@ export const newRequestInfoTmpl = ({
 
   let requestInputCombinedType: RequestParam | undefined;
 
-  const requestInfoFnArgNames = getArgs({
-    withRequestParams: true,
-    withRequestConfigParam: true,
-    withPayload: true,
-  }).map(({ name }) => name);
+  const requestInfoFnArgNames = allArgs.map(({ name }) => name);
 
   const pathParamsToInline = path.split('/').slice(1) as string[];
 
   let lastDynamicStructPos = 0;
-
-  const pathParamsStructs = pathParamsToInline.map((param, i) => {
-    if (param.includes('${')) {
-      const paramName = param.replace('${', '').replace('}', '');
-
-      return {
-        type: 'dynamic',
-        key: paramName,
-        i,
-        param: lastDynamicStructPos++,
-      };
-    }
-
-    return {
-      type: 'static',
-      value: param,
-    };
-  });
-
-  const dataParamStruct =
-    payload == null
-      ? null
-      : {
-          type: 'dynamic',
-          key: payload.name,
-          param: lastDynamicStructPos++,
-        };
 
   const queryParamStruct =
     query == null
@@ -154,11 +128,7 @@ export const newRequestInfoTmpl = ({
   }
 
   let requestInputType = `{
-  ${getArgs({
-    withRequestParams: true,
-    withRequestConfigParam: true,
-    withPayload: true,
-  })
+  ${allArgs
     .map(({ name, optional, type, defaultValue }) => {
       const isCombinedType = name.includes('...') || name === 'query';
 
@@ -177,18 +147,6 @@ export const newRequestInfoTmpl = ({
     requestInputType = `${requestInputCombinedType.type} & ${requestInputType}`;
   }
 
-  const requestKeyType = `[
-  ${getArgs({
-    withRequestParams: true,
-    withRequestConfigParam: true,
-    withPayload: true,
-  })
-    .map(({ name, optional, type }) => {
-      return `${name.includes('...') || name === 'query' ? 'params' : name}${optional ? '?' : ''}:${type}`;
-    })
-    .join(', ')}
-]`;
-
   const requestInfoMeta = apiParams.getEndpointMeta?.(route, utils);
   const requestMeta = apiParams.getRequestMeta?.(route, utils);
   const resultPath =
@@ -205,10 +163,11 @@ export const newRequestInfoTmpl = ({
     ...requestOutputDataTypes,
     requestOutputErrorType,
     ...getArgs({
-      withRequestParams: true,
       withPayload: true,
     }).map((it) => it.type),
   ]);
+
+  const pathDeclaration = resultPath.replaceAll('$', '');
 
   return {
     reservedDataContractNames,
@@ -217,11 +176,10 @@ new ${importFileParams.endpoint.exportName}<
   ${requestOutputDataTypes.join('|') || 'any'},
   ${requestOutputErrorType},
   ${requestInputType},
-  ${requestKeyType},
   ${requestInfoMeta?.typeName ?? 'any'}
 >(
     {
-        params: (${requestInfoFnArgNames.join(', ')}) => ({
+        params: ({ ${requestInfoFnArgNames} }) => ({
             path: \`${resultPath}\`,
             method: '${_.upperCase(method)}',
             ${requestMeta?.tmplData ? `meta: ${requestMeta.tmplData},` : ''}
@@ -232,29 +190,11 @@ new ${importFileParams.endpoint.exportName}<
             ${responseFormat ? `format: ${responseFormat},` : ''}
             ...${requestInfoFnArgNames.at(-1)},  
         }),
+        requiredParams: [${requiredArgs.map((it) => `"${it.name}"`)}],
         operationId: "${raw.operationId}",
-        tags: [
-          ${raw.tags?.map((tag: string) => `"${tag}"`).join(',')}
-        ],
+        pathDeclaration: "${pathDeclaration}",
+        tags: [${tags.map((tag: string) => `"${tag}"`)}],
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
-        keys: [
-            ${_.compact([
-              ...pathParamsStructs.map((struct) => {
-                if (struct.type === 'dynamic') {
-                  return `{ name: '${struct.key}', param: ${struct.param} }`;
-                }
-                return `"${struct.value}"`;
-              }),
-              dataParamStruct &&
-                `
-                { name: "${dataParamStruct.key}", param: ${dataParamStruct.param} }
-              `,
-              queryParamStruct &&
-                `{ name: "${queryParamStruct.key}", rest: true }`,
-              requestConfigParam &&
-                `{ name: "${requestConfigParam.name}", param: ${lastDynamicStructPos} }`,
-            ]).join(',')}
-        ],
     },
     ${importFileParams.queryClient.exportName},
     ${importFileParams.httpClient.exportName},

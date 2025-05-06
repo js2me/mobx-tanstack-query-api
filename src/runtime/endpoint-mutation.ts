@@ -54,9 +54,7 @@ export class EndpointMutation<
       ...options,
       queryClient,
       mutationFn: async (input) => {
-        const response = await endpoint.request(
-          ...endpoint.getParamsFromInput(input),
-        );
+        const response = await endpoint.request(input);
         return response as any;
       },
     });

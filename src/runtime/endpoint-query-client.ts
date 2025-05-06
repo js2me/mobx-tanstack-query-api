@@ -28,6 +28,29 @@ export class EndpointQueryClient extends MobxQueryClient {
     );
   }
 
+  invalidateByPath(
+    path: string | RegExp,
+    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
+    options?: InvalidateOptions,
+  ) {
+    return this.invalidateQueries(
+      {
+        ...filters,
+        predicate: (query) => {
+          if (query.meta?.pathDeclaration) {
+            if (typeof path === 'string') {
+              return String(query.meta.pathDeclaration).startsWith(path);
+            }
+            return path.test(String(query.meta.pathDeclaration));
+          }
+
+          return false;
+        },
+      },
+      options,
+    );
+  }
+
   invalidateByTags(
     tags: any[],
     filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
