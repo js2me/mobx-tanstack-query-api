@@ -34,11 +34,13 @@
     "url": "git://github.com/js2me/mobx-tanstack-query-api"
   },
   "peerDependencies": {
-    "@tanstack/query-core": "^5.68.0",
-    "mobx": "^6.13.6",
-    "mobx-tanstack-query": "^4.2.5"
+    "mobx": "^6.13.6"
   },
   "dependencies": {
+    "@tanstack/query-core": "^5.75.0",
+    "@types/lodash": "^4.17.16",
+    "@types/lodash-es": "^4.17.12",
+    "mobx-tanstack-query": "^4.4.4",
     "swagger-typescript-api": "13.1.3",
     "yummies": "^3.0.37"
   },

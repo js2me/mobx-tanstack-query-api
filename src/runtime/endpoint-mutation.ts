@@ -1,4 +1,3 @@
-import { QueryClient } from '@tanstack/query-core';
 import { MobxMutation, MobxMutationConfig } from 'mobx-tanstack-query';
 import {
   AllPropertiesOptional,
@@ -6,6 +5,7 @@ import {
   Unpromise,
 } from 'yummies/utils/types';
 
+import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
   AnyEndpoint,
   InferEndpointError,
@@ -45,16 +45,15 @@ export class EndpointMutation<
 > {
   constructor(
     private endpoint: TEndpoint,
-    queryClient: QueryClient,
+    queryClient: EndpointQueryClient,
     options: EndpointMutationOptions<TEndpoint, TMutationMeta>,
   ) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     super({
       ...options,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       queryClient,
       mutationFn: async (input) => {
-        console.info('ffffffffffffffffffff', input);
         const response = await endpoint.request(
           ...endpoint.getParamsFromInput(input),
         );

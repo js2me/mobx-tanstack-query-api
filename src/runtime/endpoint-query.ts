@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { QueryClient, QueryFunctionContext } from '@tanstack/query-core';
+import { QueryFunctionContext } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction, when } from 'mobx';
 import {
   MobxQuery,
@@ -8,6 +8,7 @@ import {
 } from 'mobx-tanstack-query';
 import { MaybeFalsy, Unpromise } from 'yummies/utils/types';
 
+import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
   AnyEndpoint,
   InferEndpointError,
@@ -15,32 +16,32 @@ import {
   InferEndpointResponse,
 } from './endpoint.types.js';
 
-export interface EndpointQueryOptions<TEndpoint extends AnyEndpoint>
-  extends Omit<
-    MobxQueryConfig<
-      Unpromise<InferEndpointResponse<TEndpoint>>['data'],
-      InferEndpointError<TEndpoint>
-    >,
-    'options' | 'queryFn' | 'queryClient'
-  > {
+export type EndpointQueryOptions<TOutput, TEndpoint extends AnyEndpoint> = {
   input: () => MaybeFalsy<InferEndpointInput<TEndpoint>>;
-}
+  transform?: (
+    response: Unpromise<InferEndpointResponse<TEndpoint>>,
+  ) => TOutput;
+} & Omit<
+  MobxQueryConfig<TOutput, InferEndpointError<TEndpoint>>,
+  'options' | 'queryFn' | 'queryClient'
+>;
 
-export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
-  Unpromise<InferEndpointResponse<TEndpoint>>['data'],
-  InferEndpointError<TEndpoint>
-> {
+export class EndpointQuery<
+  TOutput,
+  TEndpoint extends AnyEndpoint,
+> extends MobxQuery<TOutput, InferEndpointError<TEndpoint>> {
   response: Unpromise<InferEndpointResponse<TEndpoint>> | null = null;
 
   constructor(
     private endpoint: TEndpoint,
-    queryClient: QueryClient,
-    { input: getInput, ...queryOptions }: EndpointQueryOptions<TEndpoint>,
+    queryClient: EndpointQueryClient,
+    {
+      input: getInput,
+      ...queryOptions
+    }: EndpointQueryOptions<TOutput, TEndpoint>,
   ) {
     super({
       ...queryOptions,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
       queryClient,
       meta: {
         tags: endpoint.tags,
@@ -55,7 +56,7 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
           willEnableManually && input,
         );
       },
-      queryFn: async (ctx) => {
+      queryFn: async (ctx): Promise<TOutput> => {
         runInAction(() => {
           this.response = null;
         });
@@ -92,8 +93,10 @@ export class EndpointQuery<TEndpoint extends AnyEndpoint> extends MobxQuery<
   async setInput(
     input: MaybeFalsy<InferEndpointInput<TEndpoint>>,
   ): Promise<Unpromise<InferEndpointResponse<TEndpoint>>> {
+    // @ts-ignore
     this.update(this.buildOptionsFromInput(input));
     await when(() => !this.result.isFetching);
+    // @ts-ignore
     return this.result.data!;
   }
 

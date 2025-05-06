@@ -1,3 +1,4 @@
+import { LoDashStatic } from 'lodash';
 import { generateApi as generateApiFromSwagger } from 'swagger-typescript-api';
 import { AnyObject, KeyOfByValue } from 'yummies/utils/types';
 
@@ -13,7 +14,12 @@ const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(__filename);
 
-export type CodegenDataUtils = AnyObject;
+export type CodegenDataUtils = {
+  _: LoDashStatic;
+  getInlineParseContent: (requestParams: AnyObject) => string;
+  formatModelName: (modelName: string) => string;
+};
+
 export type CodegenProcess = AnyObject;
 
 export interface ImportFileParams {
@@ -29,7 +35,10 @@ export interface GenerateQueryApiParams {
   requestPathSuffix?: string;
   requestInfoPrefix?: string;
 
-  formatExportGroupName?: (groupName: string, utils: AnyObject) => string;
+  formatExportGroupName?: (
+    groupName: string,
+    utils: CodegenDataUtils,
+  ) => string;
 
   /**
    * Group endpoints and collect it into object
@@ -92,6 +101,10 @@ export interface GenerateQueryApiParams {
   requestOptions?: AnyObject;
 
   otherCodegenParams?: AnyObject;
+
+  libImports?: {
+    'mobx-tanstack-query-api'?: string;
+  };
 }
 
 export type AllImportFileParams = Record<
@@ -218,7 +231,8 @@ export const generateApi = async (
               : 0;
 
           const pathSegments = routeInfo.route.split('/').filter(Boolean);
-          const { _ } = codegenProcess.getRenderTemplateData().utils;
+          const { _ } = codegenProcess.getRenderTemplateData()
+            .utils as CodegenDataUtils;
 
           formattedRouteName = _.camelCase(
             `${pathSegments[pathSegmentForSuffix] || ''}_${formattedRouteName}`,
@@ -235,7 +249,8 @@ export const generateApi = async (
     },
   });
 
-  const utils = codegenProcess.getRenderTemplateData().utils;
+  const utils = codegenProcess.getRenderTemplateData()
+    .utils as CodegenDataUtils;
   const { _ } = utils;
 
   const codegenFs = codegenProcess.fileSystem as any;

@@ -60,7 +60,7 @@ export const requestInfoPerFileTmpl = async ({
   return {
     reservedDataContractNames: dataContractNamesInThisFile,
     content: await formatTSContent(`${LINTERS_IGNORE}
-      import { RequestParams } from "mobx-tanstack-query-api";
+      import { RequestParams } from "${apiParams.libImports?.['mobx-tanstack-query-api'] ?? 'mobx-tanstack-query-api'}";
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";

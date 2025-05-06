@@ -1,7 +1,6 @@
 import {
   InvalidateOptions,
   InvalidateQueryFilters,
-  QueryClient,
 } from '@tanstack/query-core';
 import { AnyObject } from 'yummies/utils/types';
 
@@ -9,12 +8,9 @@ import {
   EndpointMutation,
   EndpointMutationOptions,
 } from './endpoint-mutation.js';
+import { EndpointQueryClient } from './endpoint-query-client.js';
 import { EndpointQuery, EndpointQueryOptions } from './endpoint-query.js';
-import type {
-  FullRequestParams,
-  HttpClient,
-  HttpResponse,
-} from './http-client.js';
+import type { FullRequestParams, HttpClient } from './http-client.js';
 
 export interface EndpointConfiguration<
   TParams extends any[] = any[],
@@ -54,7 +50,7 @@ export class Endpoint<
 
   constructor(
     public configuration: EndpointConfiguration<TParams, TMetaData>,
-    protected queryClient: QueryClient,
+    protected queryClient: EndpointQueryClient,
     protected http: HttpClient,
   ) {
     this.meta = configuration.meta ?? ({} as TMetaData);
@@ -168,58 +164,31 @@ export class Endpoint<
   }
 
   invalidateByOperationId(
-    filters?: Omit<
-      InvalidateQueryFilters<HttpResponse<TData, TError>>,
-      'queryKey' | 'predicate'
-    >,
+    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
     options?: InvalidateOptions,
   ) {
-    return this.queryClient.invalidateQueries(
-      {
-        ...filters,
-        predicate: (query) => {
-          if (query.meta?.operationId) {
-            return query.meta?.operationId === this.configuration.operationId;
-          }
-
-          return false;
-        },
-      },
+    return this.queryClient.invalidateByOperationId(
+      this.operationId,
+      filters,
       options,
     );
   }
 
   invalidateByTags(
-    filters?: Omit<
-      InvalidateQueryFilters<HttpResponse<TData, TError>>,
-      'queryKey' | 'predicate'
-    >,
+    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
     options?: InvalidateOptions,
   ) {
-    return this.queryClient.invalidateQueries(
-      {
-        ...filters,
-        predicate: (query) => {
-          if (Array.isArray(query.meta?.tags)) {
-            return query.meta.tags.some((tag) => this.tags.includes(tag));
-          }
-
-          return false;
-        },
-      },
-      options,
-    );
+    return this.queryClient.invalidateByTags(this.tags, filters, options);
   }
 
   invalidate(
     input: TInput,
-    filters?: Omit<
-      InvalidateQueryFilters<HttpResponse<TData, TError>>,
-      'queryKey' | 'predicate'
-    > & { queryKeyIndex?: number },
+    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'> & {
+      queryKeyIndex?: number;
+    },
     options?: InvalidateOptions,
   ) {
-    return this.queryClient.invalidateQueries<HttpResponse<TData, TError>>(
+    return this.queryClient.invalidateQueries<any[]>(
       {
         ...filters,
         queryKey: this.getQueryKey(input).slice(0, filters?.queryKeyIndex),
@@ -235,7 +204,11 @@ export class Endpoint<
     return new EndpointMutation(this, this.queryClient, options);
   }
 
-  toQuery(options: EndpointQueryOptions<typeof this>) {
-    return new EndpointQuery(this, this.queryClient, options);
+  toQuery<TOutput>(options: EndpointQueryOptions<TOutput, typeof this>) {
+    return new EndpointQuery<TOutput, typeof this>(
+      this,
+      this.queryClient,
+      options,
+    );
   }
 }
