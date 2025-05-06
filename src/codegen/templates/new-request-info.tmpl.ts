@@ -59,11 +59,15 @@ export const newRequestInfoTmpl = ({
   };
 
   const requestConfigParam: RequestParam = {
-    name: 'request',
+    name: 'requestParams',
     optional: true,
     type: 'RequestParams',
     defaultValue: '{}',
   };
+
+  const inputParams = [...pathParams, query, requestConfigParam].filter(
+    Boolean,
+  );
 
   const getArgs = ({
     withPayload,
@@ -94,20 +98,10 @@ export const newRequestInfoTmpl = ({
   };
 
   const tags = (raw.tags || []).filter(Boolean);
-  const allArgs = getArgs({
-    withPayload: true,
-    withRequestConfigParam: true,
-  });
-  const requiredArgs = allArgs.filter((it) => !it.optional);
-
   const requestOutputDataTypes = positiveResponseTypes.map(
     (it: AnyObject) => it.type,
   );
   const requestOutputErrorType = routeResponse.errorType;
-
-  let requestInputCombinedType: RequestParam | undefined;
-
-  const requestInfoFnArgNames = allArgs.map(({ name }) => name);
 
   const pathParamsToInline = path.split('/').slice(1) as string[];
 
@@ -125,26 +119,6 @@ export const newRequestInfoTmpl = ({
 
   if (queryParamStruct && !lastDynamicStructPos) {
     lastDynamicStructPos++;
-  }
-
-  let requestInputType = `{
-  ${allArgs
-    .map(({ name, optional, type, defaultValue }) => {
-      const isCombinedType = name.includes('...') || name === 'query';
-
-      if (isCombinedType) {
-        requestInputCombinedType = { name, optional, type, defaultValue };
-        return;
-      }
-
-      return `${name}${optional ? '?' : ''}:${type}`;
-    })
-    .filter(Boolean)
-    .join(', ')}
-}`;
-
-  if (requestInputCombinedType) {
-    requestInputType = `${requestInputCombinedType.type} & ${requestInputType}`;
   }
 
   const requestInfoMeta = apiParams.getEndpointMeta?.(route, utils);
@@ -169,17 +143,33 @@ export const newRequestInfoTmpl = ({
 
   const pathDeclaration = resultPath.replaceAll('$', '');
 
+  const requestInputTypeDc = {
+    typeIdentifier: 'type',
+    name: _.upperFirst(_.camelCase(`${route.routeName.usage}Input`)),
+    content: `{
+    ${inputParams
+      .map(({ name, optional, type }) => {
+        return `${name}${optional ? '?' : ''}:${type}`;
+      })
+      .filter(Boolean)
+      .join(', ')}
+  }`,
+  };
+
   return {
     reservedDataContractNames,
+    localModelTypes: [requestInputTypeDc],
     content: `
 new ${importFileParams.endpoint.exportName}<
   ${requestOutputDataTypes.join('|') || 'any'},
   ${requestOutputErrorType},
-  ${requestInputType},
+  ${requestInputTypeDc.name},
   ${requestInfoMeta?.typeName ?? 'any'}
 >(
     {
-        params: ({ ${requestInfoFnArgNames} }) => ({
+        params: ({
+  ${inputParams.map((it) => it.name)}
+}) => ({
             path: \`${resultPath}\`,
             method: '${_.upperCase(method)}',
             ${requestMeta?.tmplData ? `meta: ${requestMeta.tmplData},` : ''}
@@ -188,9 +178,9 @@ new ${importFileParams.endpoint.exportName}<
             ${security ? 'secure: true,' : ''}
             ${bodyContentType ? `contentType: ${bodyContentType},` : ''}
             ${responseFormat ? `format: ${responseFormat},` : ''}
-            ...${requestInfoFnArgNames.at(-1)},  
+            ...${requestConfigParam.name},
         }),
-        requiredParams: [${requiredArgs.map((it) => `"${it.name}"`)}],
+        requiredParams: [${inputParams.filter((it) => !it.optional).map((it) => `"${it.name}"`)}],
         operationId: "${raw.operationId}",
         pathDeclaration: "${pathDeclaration}",
         tags: [${tags.map((tag: string) => `"${tag}"`)}],

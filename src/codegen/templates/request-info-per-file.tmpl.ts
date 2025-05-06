@@ -34,14 +34,17 @@ export const requestInfoPerFileTmpl = async ({
 }: RequestInfoPerFileTmplParams) => {
   const { _ } = utils;
 
-  const { content: requestInfoInstanceContent, reservedDataContractNames } =
-    newRequestInfoTmpl({
-      route,
-      configuration,
-      apiParams,
-      importFileParams,
-      utils,
-    });
+  const {
+    content: requestInfoInstanceContent,
+    reservedDataContractNames,
+    localModelTypes,
+  } = newRequestInfoTmpl({
+    route,
+    configuration,
+    apiParams,
+    importFileParams,
+    utils,
+  });
 
   const dataContactNames = new Set(
     Object.keys(
@@ -86,6 +89,22 @@ export const requestInfoPerFileTmpl = async ({
               return '';
             }
 
+            const contractType = await dataContractTmpl({
+              configuration,
+              contract: modelType,
+              addExportKeyword: true,
+            });
+
+            return contractType;
+          }),
+        )
+      )
+        .filter(Boolean)
+        .join('\n\n')}
+
+      ${(
+        await Promise.all(
+          localModelTypes.map(async (modelType) => {
             const contractType = await dataContractTmpl({
               configuration,
               contract: modelType,

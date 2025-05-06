@@ -102,6 +102,8 @@ export interface GenerateQueryApiParams {
 
   otherCodegenParams?: AnyObject;
 
+  filterRoutes?: (route: AnyObject) => boolean;
+
   libImports?: {
     'mobx-tanstack-query-api'?: string;
   };
@@ -166,7 +168,7 @@ export const generateApi = async (
     disableStrictSSL: false,
     singleHttpClient: true,
     extractRequestBody: true,
-    extractRequestParams: true,
+    extractRequestParams: false,
     extractResponseBody: true,
     extractResponseError: true,
     generateResponses: true,
@@ -258,11 +260,15 @@ export const generateApi = async (
   codegenFs.cleanDir(params.output);
   codegenFs.createDir(params.output);
 
-  const allRoutes = Object.values(generated.configuration.routes)
+  let allRoutes = Object.values(generated.configuration.routes)
     .flat()
     .flatMap((routeGroup) =>
       'routes' in routeGroup ? routeGroup.routes : routeGroup,
     );
+
+  allRoutes = params.filterRoutes
+    ? allRoutes.filter(params.filterRoutes)
+    : allRoutes;
 
   const reservedDataContractNamesMap = new Map<string, number>();
 
