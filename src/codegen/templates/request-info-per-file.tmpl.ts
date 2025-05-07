@@ -63,7 +63,11 @@ export const requestInfoPerFileTmpl = async ({
   return {
     reservedDataContractNames: dataContractNamesInThisFile,
     content: await formatTSContent(`${LINTERS_IGNORE}
-      import { RequestParams } from "${apiParams.libImports?.['mobx-tanstack-query-api'] ?? 'mobx-tanstack-query-api'}";
+      import {
+        RequestParams,
+        HttpResponse,
+        HttpMultistatusResponse,
+      } from "${apiParams.libImports?.['mobx-tanstack-query-api'] ?? 'mobx-tanstack-query-api'}";
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
@@ -72,8 +76,9 @@ export const requestInfoPerFileTmpl = async ({
           ? `
       import { ${configuration.modelTypes
         .map((it: AnyObject) => it.name)
-        .filter((it: any) => !dataContractNamesInThisFile.includes(it))
-        .join(', ')} } from "${relativePathDataContracts}";
+        .filter(
+          (it: any) => !dataContractNamesInThisFile.includes(it),
+        )} } from "${relativePathDataContracts}";
       `
           : ''
       }

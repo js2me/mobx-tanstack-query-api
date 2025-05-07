@@ -20,7 +20,6 @@ export type EndpointMutationOptions<
   TOutput,
   TInput extends AnyObject,
   TResponse extends AnyHttpResponse,
-  TError,
   TMutationMeta extends AnyObject | void = void,
 > = {
   transform?: (response: TResponse) => TOutput | Promise<TOutput>;
@@ -28,7 +27,7 @@ export type EndpointMutationOptions<
   MobxMutationConfig<
     NoInfer<TOutput>,
     EndpointMutationInput<NoInfer<TInput>, NoInfer<TMutationMeta>>,
-    NoInfer<TError>
+    NoInfer<TResponse>['error']
   >,
   'queryClient' | 'mutationFn'
 >;
@@ -37,25 +36,20 @@ export class EndpointMutation<
   TOutput,
   TInput extends AnyObject,
   TResponse extends AnyHttpResponse,
-  TError,
   TMutationMeta extends AnyObject | void = void,
-> extends MobxMutation<TOutput, EndpointMutationInput<TInput, TMutationMeta>> {
+> extends MobxMutation<
+  TOutput,
+  EndpointMutationInput<TInput, TMutationMeta>,
+  TResponse['error']
+> {
   constructor(
     private endpoint: AnyEndpoint,
     queryClient: EndpointQueryClient,
     {
       transform: transformResponse,
       ...mutationOptions
-    }: EndpointMutationOptions<
-      TOutput,
-      TInput,
-      TResponse,
-      TError,
-      TMutationMeta
-    >,
+    }: EndpointMutationOptions<TOutput, TInput, TResponse, TMutationMeta>,
   ) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     super({
       ...mutationOptions,
       queryClient,

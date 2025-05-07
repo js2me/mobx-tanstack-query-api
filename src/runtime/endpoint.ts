@@ -15,8 +15,7 @@ import { EndpointConfiguration } from './endpoint.types.js';
 import type { HttpClient, HttpResponse } from './http-client.js';
 
 export interface Endpoint<
-  TData,
-  TError,
+  TResponse extends HttpResponse<any, any>,
   TInput extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
 > {
@@ -24,12 +23,11 @@ export interface Endpoint<
     ...args: AllPropertiesOptional<TInput> extends true
       ? [input?: TInput]
       : [input: TInput]
-  ): ReturnType<Endpoint<TData, TError, TInput, TMetaData>['request']>;
+  ): ReturnType<Endpoint<TResponse, TInput, TMetaData>['request']>;
 }
 
 export class Endpoint<
-  TData,
-  TError,
+  TResponse extends HttpResponse<any, any>,
   TInput extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
 > {
@@ -52,7 +50,7 @@ export class Endpoint<
         : [input: TInput]
     ) {
       return instance.request.apply(instance, args);
-    } as unknown as Endpoint<TData, TError, TInput, TMetaData>;
+    } as unknown as Endpoint<TResponse, TInput, TMetaData>;
 
     // Копируем прототип
     Object.setPrototypeOf(callable, new.target.prototype);
@@ -106,7 +104,7 @@ export class Endpoint<
       ? [input?: TInput]
       : [input: TInput]
   ) {
-    return this.http.request<TData, TError>(
+    return this.http.request<TResponse>(
       this.configuration.params(args[0] ?? ({} as TInput)),
     );
   }
@@ -171,31 +169,22 @@ export class Endpoint<
     );
   }
 
-  toMutation<TOutput = TData, TMutationMeta extends AnyObject | void = void>(
-    options: EndpointMutationOptions<
-      TOutput,
-      TInput,
-      HttpResponse<TData, TError>,
-      TError,
-      TMutationMeta
-    >,
+  toMutation<
+    TOutput = TResponse,
+    TMutationMeta extends AnyObject | void = void,
+  >(
+    options: EndpointMutationOptions<TOutput, TInput, TResponse, TMutationMeta>,
   ) {
     return new EndpointMutation(this, this.queryClient, options);
   }
 
-  toQuery<TOutput = TData>(
-    options: EndpointQueryOptions<
-      TOutput,
-      TInput,
-      HttpResponse<TData, TError>,
-      TError
-    >,
+  toQuery<TOutput = TResponse>(
+    options: EndpointQueryOptions<TOutput, TInput, TResponse>,
   ) {
-    return new EndpointQuery<
-      TOutput,
-      TInput,
-      HttpResponse<TData, TError>,
-      TError
-    >(this, this.queryClient, options);
+    return new EndpointQuery<TOutput, TInput, TResponse>(
+      this,
+      this.queryClient,
+      options,
+    );
   }
 }

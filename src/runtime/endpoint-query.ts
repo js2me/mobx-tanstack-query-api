@@ -12,12 +12,11 @@ export type EndpointQueryOptions<
   TOutput,
   TInput extends AnyObject,
   TResponse extends AnyHttpResponse,
-  TError,
 > = {
   input?: () => MaybeFalsy<TInput>;
   transform?: (response: TResponse) => TOutput | Promise<TOutput>;
 } & Omit<
-  MobxQueryConfig<NoInfer<TOutput>, NoInfer<TError>>,
+  MobxQueryConfig<NoInfer<TOutput>, NoInfer<TResponse>['error']>,
   'options' | 'queryFn' | 'queryClient'
 >;
 
@@ -45,8 +44,7 @@ export class EndpointQuery<
   TOutput,
   TInput extends AnyObject,
   TResponse extends AnyHttpResponse,
-  TError,
-> extends MobxQuery<NoInfer<TOutput>, NoInfer<TError>> {
+> extends MobxQuery<NoInfer<TOutput>, NoInfer<TResponse>['error']> {
   response: TResponse | null = null;
 
   constructor(
@@ -56,7 +54,7 @@ export class EndpointQuery<
       input: getInput,
       transform: transformResponse,
       ...queryOptions
-    }: EndpointQueryOptions<TOutput, TInput, TResponse, TError>,
+    }: EndpointQueryOptions<TOutput, TInput, TResponse>,
   ) {
     super({
       ...queryOptions,

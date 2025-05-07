@@ -1,4 +1,6 @@
+import { HttpStatusCode, HttpSuccessStatusCode } from 'http-status-code-types';
 import { action, makeObservable, observable } from 'mobx';
+import { ValueOf } from 'yummies/utils/types';
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>;
@@ -44,10 +46,46 @@ export interface HttpClientConfig<TMeta = unknown> {
   fetch?: typeof fetch;
 }
 
-export interface HttpResponse<D, E = unknown> extends Response {
-  data: D;
-  error: E;
+export interface HttpResponse<TData, TError = null, TStatus = number>
+  extends Omit<Response, 'status'> {
+  data: TData;
+  error: TError;
+  status: TStatus;
 }
+
+export type HttpMultistatusResponse<
+  TResponsesByStatusMap extends Partial<Record<HttpStatusCode, any>>,
+  TDefaultOkResponse,
+  TDefaultBadResponse = unknown,
+> = Omit<Response, 'status'> &
+  (
+    | ValueOf<{
+        [K in keyof TResponsesByStatusMap]: {
+          status: K;
+          data: K extends HttpSuccessStatusCode
+            ? TResponsesByStatusMap[K]
+            : ValueOf<TResponsesByStatusMap>;
+          error: K extends HttpSuccessStatusCode
+            ? null
+            : TResponsesByStatusMap[K];
+        };
+      }>
+    | {
+        status: Exclude<HttpStatusCode, keyof TResponsesByStatusMap>;
+        data: TDefaultOkResponse;
+        error: TDefaultBadResponse;
+      }
+  );
+
+export type GetHttpResponse<T> = T extends (...args: any[]) => infer R
+  ? R extends Promise<HttpResponse<any, any>>
+    ? Awaited<R>
+    : R extends Promise<HttpMultistatusResponse<any, any, any>>
+      ? Awaited<R>
+      : HttpResponse<any, any>
+  : HttpResponse<any, any>;
+
+export type HttpBadResponse<T = any> = HttpResponse<null, T>;
 
 export type AnyHttpResponse = HttpResponse<any, any>;
 
@@ -242,9 +280,14 @@ export class HttpClient<TMeta = unknown> {
     return url;
   };
 
-  public request = async <T = any, E = any>(
+  public request<T, E>(
     fullParams: FullRequestParams,
-  ): Promise<HttpResponse<T, E>> => {
+  ): Promise<HttpResponse<T, E>>;
+  public request<THttpResponse extends HttpResponse<any, any>>(
+    fullParams: FullRequestParams,
+  ): Promise<THttpResponse>;
+
+  public async request(fullParams: FullRequestParams): Promise<any> {
     this.setBadResponse(null);
 
     const {
@@ -289,5 +332,5 @@ export class HttpClient<TMeta = unknown> {
     })
       .then(responseFormatter)
       .catch(responseFormatter);
-  };
+  }
 }

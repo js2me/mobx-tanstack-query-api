@@ -146,6 +146,38 @@ export const newRequestInfoTmpl = ({
 
   const pathDeclaration = resultPath.replaceAll('$', '');
 
+  const getHttpRequestGenerics = () => {
+    const defaultOkResponse = positiveResponseTypes?.[0]?.type || 'unknown';
+    const defaultBadResponse = routeResponse.errorType;
+    const responses =
+      raw.responsesTypes?.filter((it: AnyObject) => it.status !== 'default') ||
+      [];
+
+    if (!responses?.length) {
+      return `HttpResponse<unknown, ${routeResponse.errorType}>`;
+    }
+
+    if (responses.length === 1 && responses[0].isSuccess) {
+      return `HttpResponse<${responses[0].type}, ${routeResponse.errorType}>`;
+    }
+
+    return `HttpMultistatusResponse<{
+  ${responses
+    .map((it: AnyObject) => {
+      return [
+        it.description && `/** ${it.description} */`,
+        `${it.status}: ${it.type};`,
+      ]
+        .filter(Boolean)
+        .join('\n');
+    })
+    .join('\n')}
+  },
+  ${defaultOkResponse},
+  ${defaultBadResponse}
+  >`;
+  };
+
   const requestInputTypeDc = {
     typeIdentifier: 'type',
     name: _.upperFirst(_.camelCase(`${route.routeName.usage}Input`)),
@@ -164,8 +196,7 @@ export const newRequestInfoTmpl = ({
     localModelTypes: [requestInputTypeDc],
     content: `
 new ${importFileParams.endpoint.exportName}<
-  ${requestOutputDataTypes.join('|') || 'any'},
-  ${requestOutputErrorType},
+  ${getHttpRequestGenerics()},
   ${requestInputTypeDc.name},
   ${requestInfoMeta?.typeName ?? 'any'}
 >(
