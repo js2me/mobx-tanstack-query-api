@@ -64,9 +64,9 @@ export type HttpMultistatusResponse<
           status: K;
           data: K extends HttpSuccessStatusCode
             ? TResponsesByStatusMap[K]
-            : ValueOf<TResponsesByStatusMap>;
+            : TDefaultOkResponse;
           error: K extends HttpSuccessStatusCode
-            ? null
+            ? TDefaultBadResponse
             : TResponsesByStatusMap[K];
         };
       }>
