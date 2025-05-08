@@ -1,24 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { QueryFunctionContext } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction, when } from 'mobx';
-import { MobxQuery, MobxQueryConfig } from 'mobx-tanstack-query';
+import { MobxQuery } from 'mobx-tanstack-query';
 import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
+import {
+  EndpointQueryMeta,
+  EndpointQueryOptions,
+} from './endpoint-query.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
 import { AnyHttpResponse, RequestParams } from './http-client.js';
-
-export type EndpointQueryOptions<
-  TOutput,
-  TInput extends AnyObject,
-  TResponse extends AnyHttpResponse,
-> = {
-  input?: () => MaybeFalsy<TInput>;
-  transform?: (response: TResponse) => TOutput | Promise<TOutput>;
-} & Omit<
-  MobxQueryConfig<NoInfer<TOutput>, NoInfer<TResponse>['error']>,
-  'options' | 'queryFn' | 'queryClient'
->;
 
 const buildOptionsFromInput = (
   endpoint: AnyEndpoint,
@@ -60,10 +52,13 @@ export class EndpointQuery<
       ...queryOptions,
       queryClient,
       meta: {
+        ...queryOptions.meta,
         tags: endpoint.tags,
         operationId: endpoint.operationId,
-        ...queryOptions.meta,
-      },
+        path: endpoint.path,
+        pathDeclaration: endpoint.path.join('/'),
+        endpointQuery: true,
+      } satisfies EndpointQueryMeta,
       options: ({ options }) => {
         const willEnableManually = options?.enabled === false;
         const input = (getInput?.() || {}) as Partial<TInput>;
@@ -125,6 +120,6 @@ export class EndpointQuery<
   }
 
   protected getInputFromContext(ctx: QueryFunctionContext<any, any>) {
-    return (ctx.queryKey[2] || {}) as TInput;
+    return (ctx.queryKey.at(-1) || {}) as TInput;
   }
 }

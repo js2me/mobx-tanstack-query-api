@@ -8,7 +8,7 @@ export interface EndpointConfiguration<
   TMetaData extends AnyObject = AnyObject,
 > {
   operationId: string;
-  pathDeclaration: string;
+  path: string[];
   meta?: TMetaData;
   requiredParams: string[];
   params: (input: Partial<TInput>) => FullRequestParams;

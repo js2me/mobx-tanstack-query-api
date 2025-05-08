@@ -4,6 +4,8 @@ import {
 } from '@tanstack/query-core';
 import { MobxQueryClient } from 'mobx-tanstack-query';
 
+import { getEndpointQueryMeta } from './lib/get-endpoint-query-meta.js';
+
 export class EndpointQueryClient extends MobxQueryClient {
   invalidateByOperationId(
     operationId: string | RegExp,
@@ -29,22 +31,38 @@ export class EndpointQueryClient extends MobxQueryClient {
   }
 
   invalidateByPath(
-    path: string | RegExp,
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
+    path: string[] | string | RegExp,
+    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'> & {
+      segment?: number;
+    },
     options?: InvalidateOptions,
   ) {
+    const { segment, ...queryFilters } = filters ?? {};
+
+    let pathDeclarationOrRegExp: RegExp | string;
+
+    if (Array.isArray(path)) {
+      if (segment === undefined) {
+        pathDeclarationOrRegExp = path.slice(0, segment).join('/');
+      } else {
+        pathDeclarationOrRegExp = path.join('/');
+      }
+    } else {
+      pathDeclarationOrRegExp = path;
+    }
+
     return this.invalidateQueries(
       {
-        ...filters,
+        ...queryFilters,
         predicate: (query) => {
-          if (query.meta?.pathDeclaration) {
-            if (typeof path === 'string') {
-              return String(query.meta.pathDeclaration).startsWith(path);
-            }
-            return path.test(String(query.meta.pathDeclaration));
-          }
+          const meta = getEndpointQueryMeta(query);
 
-          return false;
+          if (!meta) return false;
+
+          if (typeof pathDeclarationOrRegExp === 'string') {
+            return meta.pathDeclaration.startsWith(pathDeclarationOrRegExp);
+          }
+          return pathDeclarationOrRegExp.test(meta.pathDeclaration);
         },
       },
       options,

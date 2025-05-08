@@ -216,7 +216,10 @@ new ${importFileParams.endpoint.exportName}<
         }),
         requiredParams: [${inputParams.filter((it) => !it.optional).map((it) => `"${it.name}"`)}],
         operationId: "${raw.operationId}",
-        pathDeclaration: "${pathDeclaration}",
+        path: [${pathDeclaration
+          .split('/')
+          .filter(Boolean)
+          .map((it) => `"${it}"`)}],
         tags: [${tags.map((tag: string) => `"${tag}"`)}],
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
     },

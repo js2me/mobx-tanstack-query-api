@@ -10,7 +10,8 @@ import {
   EndpointMutationOptions,
 } from './endpoint-mutation.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
-import { EndpointQuery, EndpointQueryOptions } from './endpoint-query.js';
+import { EndpointQuery } from './endpoint-query.js';
+import { EndpointQueryOptions } from './endpoint-query.types.js';
 import { EndpointConfiguration } from './endpoint.types.js';
 import type { HttpClient, HttpResponse } from './http-client.js';
 
@@ -91,8 +92,8 @@ export class Endpoint<
     return this.configuration.tags;
   }
 
-  get pathDeclaration() {
-    return this.configuration.pathDeclaration;
+  get path() {
+    return this.configuration.path;
   }
 
   get operationId() {
@@ -116,19 +117,23 @@ export class Endpoint<
   ): any[] {
     const input = args[0] ?? ({} as TInput);
 
-    return [
-      this.configuration.operationId,
-      this.configuration.pathDeclaration,
-      input,
-    ];
+    return [...this.configuration.path, this.configuration.operationId, input];
   }
 
+  /**
+   * segment - segment number in path
+   * @example
+   * // endpoint path ["v1", "api", "kek"]
+   * endpoint.invalidateByPath({ segment: 1 }) // "v1/api*"
+   */
   invalidateByPath(
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
+    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'> & {
+      segment?: number;
+    },
     options?: InvalidateOptions,
   ) {
     return this.queryClient.invalidateByPath(
-      this.configuration.pathDeclaration,
+      this.configuration.path,
       filters,
       options,
     );
