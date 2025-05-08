@@ -121,7 +121,7 @@ export class Endpoint<
   }
 
   /**
-   * segment - segment number in path
+   * segment - last segment number in path which need to crop for invalidate
    * @example
    * // endpoint path ["v1", "api", "kek"]
    * endpoint.invalidateByPath({ segment: 1 }) // "v1/api*"
