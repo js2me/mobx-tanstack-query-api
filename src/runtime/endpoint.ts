@@ -3,6 +3,7 @@ import {
   InvalidateOptions,
   InvalidateQueryFilters,
 } from '@tanstack/query-core';
+import { resolveFnValue } from 'yummies/common';
 import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
 
 import {
@@ -11,7 +12,10 @@ import {
 } from './endpoint-mutation.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import { EndpointQuery } from './endpoint-query.js';
-import { EndpointQueryOptions } from './endpoint-query.types.js';
+import {
+  EndpointQueryOptions,
+  EndpointQueryUnitKey,
+} from './endpoint-query.types.js';
 import { EndpointConfiguration } from './endpoint.types.js';
 import type { HttpClient, HttpResponse } from './http-client.js';
 
@@ -112,12 +116,17 @@ export class Endpoint<
 
   getQueryKey(
     ...args: AllPropertiesOptional<TInput> extends true
-      ? [input?: TInput]
-      : [input: TInput]
+      ? [input?: TInput, uniqKey?: EndpointQueryUnitKey]
+      : [input: TInput, uniqKey?: EndpointQueryUnitKey]
   ): any[] {
     const input = args[0] ?? ({} as TInput);
 
-    return [...this.configuration.path, this.configuration.operationId, input];
+    return [
+      ...this.configuration.path,
+      this.configuration.operationId,
+      input,
+      resolveFnValue(args[1]),
+    ];
   }
 
   /**
@@ -183,10 +192,10 @@ export class Endpoint<
     return new EndpointMutation(this, this.queryClient, options);
   }
 
-  toQuery<TOutput = TResponse>(
-    options: EndpointQueryOptions<TOutput, TInput, TResponse>,
+  toQuery<TOutput = TResponse['data']>(
+    options: EndpointQueryOptions<TResponse, TInput, TOutput>,
   ) {
-    return new EndpointQuery<TOutput, TInput, TResponse>(
+    return new EndpointQuery<TResponse, TInput, TOutput>(
       this,
       this.queryClient,
       options,

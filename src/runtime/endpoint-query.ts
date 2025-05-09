@@ -8,6 +8,7 @@ import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
   EndpointQueryMeta,
   EndpointQueryOptions,
+  EndpointQueryUnitKey,
 } from './endpoint-query.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
 import { AnyHttpResponse, RequestParams } from './http-client.js';
@@ -15,6 +16,7 @@ import { AnyHttpResponse, RequestParams } from './http-client.js';
 const buildOptionsFromInput = (
   endpoint: AnyEndpoint,
   input: MaybeFalsy<AnyObject>,
+  uniqKey?: EndpointQueryUnitKey,
 ) => {
   const { requiredParams } = endpoint.configuration;
   let hasRequiredParams = false;
@@ -28,15 +30,15 @@ const buildOptionsFromInput = (
 
   return {
     enabled: hasRequiredParams,
-    queryKey: endpoint.getQueryKey(input || {}),
+    queryKey: endpoint.getQueryKey(input || {}, uniqKey),
   };
 };
 
 export class EndpointQuery<
-  TOutput,
-  TInput extends AnyObject,
   TResponse extends AnyHttpResponse,
-> extends MobxQuery<NoInfer<TOutput>, NoInfer<TResponse>['error']> {
+  TInput extends AnyObject,
+  TOutput = TResponse,
+> extends MobxQuery<TResponse, TResponse['error'], TOutput, TResponse, any[]> {
   response: TResponse | null = null;
 
   constructor(
@@ -44,9 +46,10 @@ export class EndpointQuery<
     queryClient: EndpointQueryClient,
     {
       input: getInput,
-      transform: transformResponse,
+      options: getDynamicOptions,
+      uniqKey,
       ...queryOptions
-    }: EndpointQueryOptions<TOutput, TInput, TResponse>,
+    }: EndpointQueryOptions<TResponse, TInput, TOutput>,
   ) {
     super({
       ...queryOptions,
@@ -59,18 +62,34 @@ export class EndpointQuery<
         pathDeclaration: endpoint.path.join('/'),
         endpointQuery: true,
       } satisfies EndpointQueryMeta,
-      options: ({ options }) => {
-        const willEnableManually = options?.enabled === false;
+      options: (query): any => {
+        const willEnableManually = query.options?.enabled === false;
         const input = (getInput?.() || {}) as Partial<TInput>;
-        const builtOptions = buildOptionsFromInput(endpoint, input);
+        const builtOptions = buildOptionsFromInput(endpoint, input, uniqKey);
+        const dynamicOuterOptions = getDynamicOptions?.(query);
+
+        let isEnabled = false;
+
+        if (willEnableManually) {
+          if (dynamicOuterOptions?.enabled != null) {
+            isEnabled = dynamicOuterOptions.enabled;
+          }
+        } else {
+          const outerDynamicEnabled =
+            dynamicOuterOptions?.enabled != null &&
+            !!dynamicOuterOptions.enabled;
+
+          isEnabled = builtOptions.enabled && outerDynamicEnabled;
+        }
 
         return {
-          ...options,
+          ...query.options,
           ...builtOptions,
-          enabled: willEnableManually ? false : builtOptions.enabled,
+          ...dynamicOuterOptions,
+          enabled: isEnabled,
         } as any;
       },
-      queryFn: async (ctx): Promise<TOutput> => {
+      queryFn: async (ctx): Promise<any> => {
         runInAction(() => {
           this.response = null;
         });
@@ -98,11 +117,7 @@ export class EndpointQuery<
           this.response = response as TResponse;
         });
 
-        let output = response.data as TOutput;
-
-        if (transformResponse) {
-          output = await transformResponse(response as TResponse);
-        }
+        const output = response.data as TOutput;
 
         return output;
       },
