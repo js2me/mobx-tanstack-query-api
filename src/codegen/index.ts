@@ -104,6 +104,8 @@ export interface GenerateQueryApiParams {
 
   filterRoutes?: (route: AnyObject) => boolean;
 
+  filterGroups?: (groupName: string) => boolean;
+
   libImports?: {
     'mobx-tanstack-query-api'?: string;
   };
@@ -362,6 +364,10 @@ export const generateApi = async (
     // #endregion
 
     for await (const [groupName, routes] of groupsMap) {
+      if (params.filterGroups && !params.filterGroups(groupName)) {
+        continue;
+      }
+
       const fileNamesWithRequestInfo: string[] = [];
 
       codegenFs.createDir(path.resolve(params.output, _.kebabCase(groupName)));
