@@ -76,7 +76,7 @@ export class EndpointQuery<
           }
         } else {
           const outerDynamicEnabled =
-            dynamicOuterOptions?.enabled != null &&
+            dynamicOuterOptions?.enabled == null ||
             !!dynamicOuterOptions.enabled;
 
           isEnabled = builtOptions.enabled && outerDynamicEnabled;
