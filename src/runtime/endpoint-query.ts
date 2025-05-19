@@ -63,7 +63,7 @@ export class EndpointQuery<
         endpointQuery: true,
       } satisfies EndpointQueryMeta,
       options: (query): any => {
-        const willEnableManually = query.options?.enabled === false;
+        const willEnableManually = queryOptions.enabled === false;
         const input = (getInput?.() || {}) as Partial<TInput>;
         const builtOptions = buildOptionsFromInput(endpoint, input, uniqKey);
         const dynamicOuterOptions = getDynamicOptions?.(query);
