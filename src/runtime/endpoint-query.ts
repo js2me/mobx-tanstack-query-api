@@ -135,6 +135,6 @@ export class EndpointQuery<
   }
 
   protected getInputFromContext(ctx: QueryFunctionContext<any, any>) {
-    return (ctx.queryKey.at(-1) || {}) as TInput;
+    return (ctx.queryKey.at(-2) || {}) as TInput;
   }
 }

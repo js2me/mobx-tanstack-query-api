@@ -43,7 +43,7 @@
     "http-status-code-types": "^0.0.2",
     "mobx-tanstack-query": "^5.0.0",
     "swagger-typescript-api": "13.1.3",
-    "yummies": "^3.0.37"
+    "yummies": "^3.2.3"
   },
   "devDependencies": {
     "@types/node": "^20.17.11",
