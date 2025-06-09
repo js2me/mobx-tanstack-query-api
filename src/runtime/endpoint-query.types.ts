@@ -1,8 +1,4 @@
-import {
-  MobxQuery,
-  MobxQueryConfig,
-  MobxQueryDynamicOptions,
-} from 'mobx-tanstack-query';
+import { Query, QueryConfig, QueryDynamicOptions } from 'mobx-tanstack-query';
 import { FnValue } from 'yummies/common';
 import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
@@ -27,13 +23,13 @@ export type EndpointQueryOptions<
 > = {
   input?: () => MaybeFalsy<TInput>;
 } & Omit<
-  MobxQueryConfig<TResponse, TResponse['error'], TOutput, TResponse, any[]>,
+  QueryConfig<TResponse, TResponse['error'], TOutput, TResponse, any[]>,
   'options' | 'queryFn' | 'queryClient' | 'queryKey'
 > & {
     uniqKey?: EndpointQueryUnitKey;
     options?: (
       query: NoInfer<
-        MobxQuery<
+        Query<
           NoInfer<TResponse>,
           NoInfer<TResponse['error']>,
           NoInfer<TOutput>,
@@ -42,7 +38,7 @@ export type EndpointQueryOptions<
         >
       >,
     ) => Omit<
-      MobxQueryDynamicOptions<
+      QueryDynamicOptions<
         TResponse,
         TResponse['error'],
         TOutput,
