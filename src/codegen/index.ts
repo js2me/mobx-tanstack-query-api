@@ -475,7 +475,7 @@ export * as ${exportGroupName} from './endpoints';
     const namespace =
       typeof params.namespace === 'function'
         ? params.namespace(utils)
-        : params.namespace;
+        : utils._.camelCase(params.namespace);
 
     codegenFs.createFile({
       path: paths.outputDir,
