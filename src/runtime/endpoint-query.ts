@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { QueryFunctionContext } from '@tanstack/query-core';
+import { QueryFunctionContext, skipToken } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction, when } from 'mobx';
 import { MobxQuery } from 'mobx-tanstack-query';
 import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
@@ -30,7 +30,9 @@ const buildOptionsFromInput = (
 
   return {
     enabled: hasRequiredParams,
-    queryKey: endpoint.getQueryKey(input || {}, uniqKey),
+    queryKey: hasRequiredParams
+      ? endpoint.getQueryKey(input || {}, uniqKey)
+      : (skipToken as unknown as any[]),
   };
 };
 
