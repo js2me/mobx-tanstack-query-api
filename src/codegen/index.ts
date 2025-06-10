@@ -195,6 +195,15 @@ export const generateApi = async (
 
   const inputData: AnyObject = {};
 
+  if (!params.input) {
+    console.warn(
+      '[mobx-tanstack-query-api/codegen]',
+      'input is not specified',
+      '\nprocess will be skipped',
+    );
+    return;
+  }
+
   if (typeof params.input === 'string') {
     inputData.input = params.input;
     inputData.url = params.input;
