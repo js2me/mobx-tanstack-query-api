@@ -1,9 +1,18 @@
-import { MobxMutation, MobxMutationConfig } from 'mobx-tanstack-query';
-import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
+import {
+  Mutation,
+  MutationConfig,
+  MutationInvalidateQueriesOptions,
+} from 'mobx-tanstack-query';
+import { AllPropertiesOptional, AnyObject, Maybe } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import { AnyEndpoint } from './endpoint.types.js';
 import { AnyHttpResponse } from './http-client.js';
+
+export interface EndpointMutationInvalidateQueriesOptions
+  extends MutationInvalidateQueriesOptions {
+  invalidateTags?: string[];
+}
 
 export type EndpointMutationInput<
   TBaseInput extends AnyObject,
@@ -23,13 +32,19 @@ export type EndpointMutationOptions<
   TMutationMeta extends AnyObject | void = void,
 > = {
   transform?: (response: TResponse) => TOutput | Promise<TOutput>;
+  invalidateQueries?:
+    | EndpointMutationInvalidateQueriesOptions
+    | ((
+        data: NoInfer<TOutput>,
+        payload: EndpointMutationInput<NoInfer<TInput>, NoInfer<TMutationMeta>>,
+      ) => EndpointMutationInvalidateQueriesOptions | null | undefined);
 } & Omit<
-  MobxMutationConfig<
+  MutationConfig<
     NoInfer<TOutput>,
     EndpointMutationInput<NoInfer<TInput>, NoInfer<TMutationMeta>>,
     NoInfer<TResponse>['error']
   >,
-  'queryClient' | 'mutationFn'
+  'queryClient' | 'mutationFn' | 'invalidateQueries'
 >;
 
 export class EndpointMutation<
@@ -37,7 +52,7 @@ export class EndpointMutation<
   TInput extends AnyObject,
   TResponse extends AnyHttpResponse,
   TMutationMeta extends AnyObject | void = void,
-> extends MobxMutation<
+> extends Mutation<
   TOutput,
   EndpointMutationInput<TInput, TMutationMeta>,
   TResponse['error']
@@ -47,12 +62,43 @@ export class EndpointMutation<
     queryClient: EndpointQueryClient,
     {
       transform: transformResponse,
+      invalidateQueries,
       ...mutationOptions
     }: EndpointMutationOptions<TOutput, TInput, TResponse, TMutationMeta>,
   ) {
     super({
       ...mutationOptions,
       queryClient,
+      invalidateQueries: (data, payload) => {
+        if (!invalidateQueries) {
+          return null;
+        }
+
+        let options: Maybe<EndpointMutationInvalidateQueriesOptions>;
+
+        if (typeof invalidateQueries === 'function') {
+          options = invalidateQueries(data, payload);
+        } else {
+          options = invalidateQueries;
+        }
+
+        if (!options) {
+          return null;
+        }
+
+        let skipInvalidate = false;
+
+        if (options.invalidateTags?.length) {
+          queryClient.invalidateByTags(options.invalidateTags, options);
+          skipInvalidate = true;
+        }
+
+        if (skipInvalidate) {
+          return null;
+        }
+
+        return options;
+      },
       mutationFn: async (input) => {
         const response = await endpoint.request(input);
 

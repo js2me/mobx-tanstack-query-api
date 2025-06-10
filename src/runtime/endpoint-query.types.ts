@@ -5,6 +5,7 @@ import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 import { AnyHttpResponse } from './http-client.js';
 
 export interface EndpointQueryMeta {
+  endpointId: string;
   endpointQuery: true;
   tags: string[];
   operationId: string;

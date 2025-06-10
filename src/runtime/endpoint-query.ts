@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { QueryFunctionContext, skipToken } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction, when } from 'mobx';
-import { MobxQuery } from 'mobx-tanstack-query';
+import { Query } from 'mobx-tanstack-query';
 import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
@@ -40,7 +40,7 @@ export class EndpointQuery<
   TResponse extends AnyHttpResponse,
   TInput extends AnyObject,
   TOutput = TResponse,
-> extends MobxQuery<TResponse, TResponse['error'], TOutput, TResponse, any[]> {
+> extends Query<TResponse, TResponse['error'], TOutput, TResponse, any[]> {
   response: TResponse | null = null;
 
   constructor(
@@ -62,6 +62,7 @@ export class EndpointQuery<
         operationId: endpoint.operationId,
         path: endpoint.path,
         pathDeclaration: endpoint.path.join('/'),
+        endpointId: endpoint.endpointId,
         endpointQuery: true,
       } satisfies EndpointQueryMeta,
       options: (query): any => {

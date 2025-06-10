@@ -36,6 +36,8 @@ export class Endpoint<
   TInput extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
 > {
+  endpointId: string;
+
   meta!: TMetaData;
 
   constructor(
@@ -43,6 +45,7 @@ export class Endpoint<
     protected queryClient: EndpointQueryClient,
     protected http: HttpClient,
   ) {
+    this.endpointId = globalThis.crypto.randomUUID();
     this.meta = configuration.meta ?? ({} as TMetaData);
     // Сохраняем оригинальный инстанс
     const instance = this;

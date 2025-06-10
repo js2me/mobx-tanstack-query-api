@@ -2,13 +2,14 @@ import {
   InvalidateOptions,
   InvalidateQueryFilters,
 } from '@tanstack/query-core';
-import { MobxQueryClient } from 'mobx-tanstack-query';
+import { QueryClient } from 'mobx-tanstack-query';
 
-import { getEndpointQueryMeta } from './lib/get-endpoint-query-meta.js';
+import { EndpointQueryMeta } from './endpoint-query.types.js';
+import { AnyEndpoint } from './endpoint.types.js';
 
-export class EndpointQueryClient extends MobxQueryClient {
-  invalidateByOperationId(
-    operationId: string | RegExp,
+export class EndpointQueryClient extends QueryClient {
+  private invalidateByEndpointMeta(
+    fn: (meta: EndpointQueryMeta) => boolean,
     filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
     options?: InvalidateOptions,
   ) {
@@ -16,16 +17,46 @@ export class EndpointQueryClient extends MobxQueryClient {
       {
         ...filters,
         predicate: (query) => {
-          if (query.meta?.operationId) {
-            if (typeof operationId === 'string') {
-              return query.meta?.operationId === operationId;
-            }
-            return operationId.test(String(query.meta.operationId));
+          if (query.meta && query.meta.endpointQuery === true) {
+            return fn(query.meta as any);
           }
-
           return false;
         },
       },
+      options,
+    );
+  }
+
+  invalidateByEndpoint(
+    endpoint: AnyEndpoint | AnyEndpoint[],
+    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
+    options?: InvalidateOptions,
+  ) {
+    const endpoints = Array.isArray(endpoint) ? endpoint : [endpoint];
+    return this.invalidateByEndpointMeta(
+      (meta) => {
+        return endpoints.some(
+          (endpoint) => endpoint.endpointId === meta.endpointId,
+        );
+      },
+      filters,
+      options,
+    );
+  }
+
+  invalidateByOperationId(
+    operationId: string | RegExp,
+    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
+    options?: InvalidateOptions,
+  ) {
+    return this.invalidateByEndpointMeta(
+      (meta) => {
+        if (typeof operationId === 'string') {
+          return meta.operationId === operationId;
+        }
+        return operationId.test(meta.operationId);
+      },
+      filters,
       options,
     );
   }
@@ -37,13 +68,11 @@ export class EndpointQueryClient extends MobxQueryClient {
     },
     options?: InvalidateOptions,
   ) {
-    const { segment, ...queryFilters } = filters ?? {};
-
     let pathDeclarationOrRegExp: RegExp | string;
 
     if (Array.isArray(path)) {
-      if (segment === undefined) {
-        pathDeclarationOrRegExp = path.slice(0, segment).join('/');
+      if (filters?.segment === undefined) {
+        pathDeclarationOrRegExp = path.slice(0, filters?.segment).join('/');
       } else {
         pathDeclarationOrRegExp = path.join('/');
       }
@@ -51,20 +80,14 @@ export class EndpointQueryClient extends MobxQueryClient {
       pathDeclarationOrRegExp = path;
     }
 
-    return this.invalidateQueries(
-      {
-        ...queryFilters,
-        predicate: (query) => {
-          const meta = getEndpointQueryMeta(query);
-
-          if (!meta) return false;
-
-          if (typeof pathDeclarationOrRegExp === 'string') {
-            return meta.pathDeclaration.startsWith(pathDeclarationOrRegExp);
-          }
-          return pathDeclarationOrRegExp.test(meta.pathDeclaration);
-        },
+    return this.invalidateByEndpointMeta(
+      (meta) => {
+        if (typeof pathDeclarationOrRegExp === 'string') {
+          return meta.pathDeclaration.startsWith(pathDeclarationOrRegExp);
+        }
+        return pathDeclarationOrRegExp.test(meta.pathDeclaration);
       },
+      filters,
       options,
     );
   }
