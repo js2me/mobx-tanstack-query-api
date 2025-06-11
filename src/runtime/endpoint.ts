@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
+  DefaultError,
   InvalidateOptions,
   InvalidateQueryFilters,
 } from '@tanstack/query-core';
@@ -37,6 +38,9 @@ export class Endpoint<
   TMetaData extends AnyObject = AnyObject,
 > {
   endpointId: string;
+
+  __input_type!: TInput;
+  __response_type!: TResponse;
 
   meta!: TMetaData;
 
@@ -195,10 +199,21 @@ export class Endpoint<
     return new EndpointMutation(this, this.queryClient, options);
   }
 
-  toQuery<TOutput = TResponse['data']>(
-    options: EndpointQueryOptions<TResponse, TInput, TOutput>,
+  toQuery<
+    TQueryFnData = TResponse,
+    TError = DefaultError,
+    TData = TResponse['data'],
+    TQueryData = TResponse['data'],
+  >(
+    options: EndpointQueryOptions<
+      this,
+      TQueryFnData,
+      TError,
+      TData,
+      TQueryData
+    >,
   ) {
-    return new EndpointQuery<TResponse, TInput, TOutput>(
+    return new EndpointQuery<this, TQueryFnData, TError, TData, TQueryData>(
       this,
       this.queryClient,
       options,

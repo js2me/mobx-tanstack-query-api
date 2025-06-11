@@ -1,8 +1,9 @@
-import { Query, QueryConfig, QueryDynamicOptions } from 'mobx-tanstack-query';
+import { DefaultError } from '@tanstack/query-core';
+import { QueryConfig } from 'mobx-tanstack-query';
 import { FnValue } from 'yummies/common';
 import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
-import { AnyHttpResponse } from './http-client.js';
+import { AnyEndpoint } from './endpoint.types.js';
 
 export interface EndpointQueryMeta {
   endpointId: string;
@@ -18,33 +19,16 @@ export type EndpointQueryUnitKey = Maybe<
 >;
 
 export type EndpointQueryOptions<
-  TResponse extends AnyHttpResponse,
-  TInput extends AnyObject,
-  TOutput = TResponse,
+  TEndpoint extends AnyEndpoint,
+  TQueryFnData = unknown,
+  TError = DefaultError,
+  TData = TQueryFnData,
+  TQueryData = TQueryFnData,
 > = {
-  input?: () => MaybeFalsy<TInput>;
+  input?: () => MaybeFalsy<TEndpoint['__input_type']>;
 } & Omit<
-  QueryConfig<TOutput, TResponse['error'], TOutput, TOutput, any[]>,
+  QueryConfig<TQueryFnData, TError, TData, TQueryData>,
   'options' | 'queryFn' | 'queryClient' | 'queryKey'
 > & {
     uniqKey?: EndpointQueryUnitKey;
-    options?: (
-      query: NoInfer<
-        Query<
-          NoInfer<TOutput>,
-          NoInfer<TResponse['error']>,
-          NoInfer<TOutput>,
-          NoInfer<TOutput>,
-          NoInfer<any[]>
-        >
-      >,
-    ) => Omit<
-      QueryDynamicOptions<TOutput, TResponse['error'], TOutput, TOutput, any[]>,
-      | 'queryKey'
-      | 'queryFn'
-      | 'queryHash'
-      | '_defaulted'
-      | 'experimental_prefetchInRender'
-      | '_optimisticResults'
-    >;
   };

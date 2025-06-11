@@ -1,6 +1,12 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { QueryFunctionContext, skipToken } from '@tanstack/query-core';
-import { makeObservable, observable, runInAction, when } from 'mobx';
+import {
+  DefaultError,
+  QueryFunctionContext,
+  QueryObserverResult,
+  skipToken,
+} from '@tanstack/query-core';
+import { makeObservable, observable, runInAction } from 'mobx';
 import { Query } from 'mobx-tanstack-query';
 import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
@@ -11,47 +17,25 @@ import {
   EndpointQueryUnitKey,
 } from './endpoint-query.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
-import { AnyHttpResponse, RequestParams } from './http-client.js';
-
-const buildOptionsFromInput = (
-  endpoint: AnyEndpoint,
-  input: MaybeFalsy<AnyObject>,
-  uniqKey?: EndpointQueryUnitKey,
-) => {
-  const { requiredParams } = endpoint.configuration;
-  let hasRequiredParams = false;
-
-  if (requiredParams.length > 0) {
-    hasRequiredParams =
-      !!input && requiredParams.every((param) => param in input);
-  } else {
-    hasRequiredParams = true;
-  }
-
-  return {
-    enabled: hasRequiredParams,
-    queryKey: hasRequiredParams
-      ? endpoint.getQueryKey(input || {}, uniqKey)
-      : (skipToken as unknown as any[]),
-  };
-};
+import { RequestParams } from './http-client.js';
 
 export class EndpointQuery<
-  TResponse extends AnyHttpResponse,
-  TInput extends AnyObject,
-  TOutput = TResponse,
-> extends Query<TOutput, TResponse['error'], TOutput, TOutput, any[]> {
-  response: TResponse | null = null;
+  TEndpoint extends AnyEndpoint,
+  TQueryFnData = unknown,
+  TError = DefaultError,
+  TData = TQueryFnData,
+  TQueryData = TQueryFnData,
+> extends Query<TQueryFnData, TError, TData, TQueryData> {
+  response: TEndpoint['__response_type'] | null = null;
 
   constructor(
     private endpoint: AnyEndpoint,
     queryClient: EndpointQueryClient,
     {
       input: getInput,
-      options: getDynamicOptions,
       uniqKey,
       ...queryOptions
-    }: EndpointQueryOptions<TResponse, TInput, TOutput>,
+    }: EndpointQueryOptions<TEndpoint, TQueryFnData, TError, TData, TQueryData>,
   ) {
     super({
       ...queryOptions,
@@ -67,28 +51,29 @@ export class EndpointQuery<
       } satisfies EndpointQueryMeta,
       options: (query): any => {
         const willEnableManually = queryOptions.enabled === false;
-        const input = (getInput?.() || {}) as Partial<TInput>;
+        const input = (getInput?.() || {}) as any;
         const builtOptions = buildOptionsFromInput(endpoint, input, uniqKey);
-        const dynamicOuterOptions = getDynamicOptions?.(query);
+        // const dynamicOuterOptions = getDynamicOptions?.(query);
 
         let isEnabled = false;
 
         if (willEnableManually) {
-          if (dynamicOuterOptions?.enabled != null) {
-            isEnabled = dynamicOuterOptions.enabled;
-          }
+          // if (dynamicOuterOptions?.enabled != null) {
+          //   isEnabled = dynamicOuterOptions.enabled;
+          // }
         } else {
-          const outerDynamicEnabled =
-            dynamicOuterOptions?.enabled == null ||
-            !!dynamicOuterOptions.enabled;
+          // const outerDynamicEnabled =
+          //   dynamicOuterOptions?.enabled == null ||
+          //   !!dynamicOuterOptions.enabled;
 
-          isEnabled = builtOptions.enabled && outerDynamicEnabled;
+          // isEnabled = builtOptions.enabled && outerDynamicEnabled;
+          isEnabled = builtOptions.enabled;
         }
 
         return {
           ...query.options,
           ...builtOptions,
-          ...dynamicOuterOptions,
+          // ...dynamicOuterOptions,
           enabled: isEnabled,
         } as any;
       },
@@ -117,27 +102,49 @@ export class EndpointQuery<
         const response = await endpoint.request(fixedInput);
 
         runInAction(() => {
-          this.response = response as TResponse;
+          this.response = response as TEndpoint['__response_type'];
         });
 
-        const output = response.data as TOutput;
+        const output = response.data as any;
 
         return output;
       },
     });
 
-    observable.ref(this, 'lastResponse');
+    observable.ref(this, 'response');
     makeObservable(this);
   }
 
-  async setInput(input: MaybeFalsy<TInput>): Promise<TResponse> {
-    this.update(buildOptionsFromInput(this.endpoint, input));
-    await when(() => !this.result.isFetching);
-    // @ts-ignore
-    return this.result.data!;
+  async start(
+    input: MaybeFalsy<TEndpoint['__input_type']>,
+  ): Promise<QueryObserverResult<TData, TError>> {
+    return await super.start(buildOptionsFromInput(this.endpoint, input));
   }
 
   protected getInputFromContext(ctx: QueryFunctionContext<any, any>) {
-    return (ctx.queryKey.at(-2) || {}) as TInput;
+    return (ctx.queryKey.at(-2) || {}) as TEndpoint['__input_type'];
   }
 }
+
+const buildOptionsFromInput = (
+  endpoint: AnyEndpoint,
+  input: MaybeFalsy<AnyObject>,
+  uniqKey?: EndpointQueryUnitKey,
+) => {
+  const { requiredParams } = endpoint.configuration;
+  let hasRequiredParams = false;
+
+  if (requiredParams.length > 0) {
+    hasRequiredParams =
+      !!input && requiredParams.every((param) => param in input);
+  } else {
+    hasRequiredParams = true;
+  }
+
+  return {
+    enabled: hasRequiredParams,
+    queryKey: hasRequiredParams
+      ? endpoint.getQueryKey(input || {}, uniqKey)
+      : (skipToken as unknown as any[]),
+  };
+};
