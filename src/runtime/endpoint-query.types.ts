@@ -24,28 +24,22 @@ export type EndpointQueryOptions<
 > = {
   input?: () => MaybeFalsy<TInput>;
 } & Omit<
-  QueryConfig<TResponse, TResponse['error'], TOutput, TResponse, any[]>,
+  QueryConfig<TOutput, TResponse['error'], TOutput, TOutput, any[]>,
   'options' | 'queryFn' | 'queryClient' | 'queryKey'
 > & {
     uniqKey?: EndpointQueryUnitKey;
     options?: (
       query: NoInfer<
         Query<
-          NoInfer<TResponse>,
+          NoInfer<TOutput>,
           NoInfer<TResponse['error']>,
           NoInfer<TOutput>,
-          NoInfer<TResponse>,
+          NoInfer<TOutput>,
           NoInfer<any[]>
         >
       >,
     ) => Omit<
-      QueryDynamicOptions<
-        TResponse,
-        TResponse['error'],
-        TOutput,
-        TResponse,
-        any[]
-      >,
+      QueryDynamicOptions<TOutput, TResponse['error'], TOutput, TOutput, any[]>,
       | 'queryKey'
       | 'queryFn'
       | 'queryHash'

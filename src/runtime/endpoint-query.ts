@@ -40,7 +40,7 @@ export class EndpointQuery<
   TResponse extends AnyHttpResponse,
   TInput extends AnyObject,
   TOutput = TResponse,
-> extends Query<TResponse, TResponse['error'], TOutput, TResponse, any[]> {
+> extends Query<TOutput, TResponse['error'], TOutput, TOutput, any[]> {
   response: TResponse | null = null;
 
   constructor(
