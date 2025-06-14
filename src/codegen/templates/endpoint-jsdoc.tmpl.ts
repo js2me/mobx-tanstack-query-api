@@ -2,18 +2,18 @@ import { AnyObject } from 'yummies/utils/types';
 
 import { GenerateQueryApiParams } from '../index.js';
 
-export interface RequestInfoJSDocTmplParams {
+export interface EndpointJSDocTmplParams {
   route: AnyObject;
   configuration: AnyObject;
   apiParams: GenerateQueryApiParams;
   offset?: number;
 }
 
-export const requestInfoJSDocTmpl = ({
+export const endpointJSDocTmpl = ({
   route,
   configuration,
   offset = 0,
-}: RequestInfoJSDocTmplParams) => {
+}: EndpointJSDocTmplParams) => {
   const { routeName } = route;
   const rawRoute = route.raw as AnyObject;
   const routeRequest = route.request as AnyObject;

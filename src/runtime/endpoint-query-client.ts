@@ -1,108 +1,65 @@
-import {
-  InvalidateOptions,
-  InvalidateQueryFilters,
-} from '@tanstack/query-core';
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import { InvalidateOptions } from '@tanstack/query-core';
 import { QueryClient } from 'mobx-tanstack-query';
 
+import {
+  EndpointStringFilter,
+  InvalidateEndpointsFilters,
+} from './endpoint-query-client.types.js';
 import { EndpointQueryMeta } from './endpoint-query.types.js';
-import { AnyEndpoint } from './endpoint.types.js';
 
 export class EndpointQueryClient extends QueryClient {
-  private invalidateByEndpointMeta(
-    fn: (meta: EndpointQueryMeta) => boolean,
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
+  invalidateEndpoints(
+    {
+      group,
+      namespace,
+      operationId,
+      tag,
+      predicate,
+      ...queryFilters
+    }: InvalidateEndpointsFilters,
     options?: InvalidateOptions,
   ) {
     return this.invalidateQueries(
       {
-        ...filters,
+        ...queryFilters,
+        // eslint-disable-next-line sonarjs/no-invariant-returns
         predicate: (query) => {
-          if (query.meta && query.meta.endpointQuery === true) {
-            return fn(query.meta as any);
+          if (!query.meta?.endpointQuery) {
+            return false;
           }
-          return false;
-        },
-      },
-      options,
-    );
-  }
 
-  invalidateByEndpoint(
-    endpoint: AnyEndpoint | AnyEndpoint[],
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
-    options?: InvalidateOptions,
-  ) {
-    const endpoints = Array.isArray(endpoint) ? endpoint : [endpoint];
-    return this.invalidateByEndpointMeta(
-      (meta) => {
-        return endpoints.some(
-          (endpoint) => endpoint.endpointId === meta.endpointId,
-        );
-      },
-      filters,
-      options,
-    );
-  }
+          const meta = query.meta as unknown as EndpointQueryMeta;
 
-  invalidateByOperationId(
-    operationId: string | RegExp,
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
-    options?: InvalidateOptions,
-  ) {
-    return this.invalidateByEndpointMeta(
-      (meta) => {
-        if (typeof operationId === 'string') {
-          return meta.operationId === operationId;
-        }
-        return operationId.test(meta.operationId);
-      },
-      filters,
-      options,
-    );
-  }
+          if (
+            namespace &&
+            meta.namespace &&
+            !applyStringFilter(namespace, meta.namespace)
+          ) {
+            return false;
+          }
 
-  invalidateByPath(
-    path: string[] | string | RegExp,
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'> & {
-      segment?: number;
-    },
-    options?: InvalidateOptions,
-  ) {
-    let pathDeclarationOrRegExp: RegExp | string;
+          if (group && meta.group && !applyStringFilter(group, meta.group)) {
+            return false;
+          }
 
-    if (Array.isArray(path)) {
-      if (filters?.segment === undefined) {
-        pathDeclarationOrRegExp = path.slice(0, filters?.segment).join('/');
-      } else {
-        pathDeclarationOrRegExp = path.join('/');
-      }
-    } else {
-      pathDeclarationOrRegExp = path;
-    }
+          if (tag && meta.tags && !applyStringFilter(tag, meta.tags)) {
+            return false;
+          }
 
-    return this.invalidateByEndpointMeta(
-      (meta) => {
-        if (typeof pathDeclarationOrRegExp === 'string') {
-          return meta.pathDeclaration.startsWith(pathDeclarationOrRegExp);
-        }
-        return pathDeclarationOrRegExp.test(meta.pathDeclaration);
-      },
-      filters,
-      options,
-    );
-  }
+          if (tag && meta.tags && !applyStringFilter(tag, meta.tags)) {
+            return false;
+          }
 
-  invalidateByTags(
-    tags: any[],
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
-    options?: InvalidateOptions,
-  ) {
-    return this.invalidateQueries(
-      {
-        ...filters,
-        predicate: (query) => {
-          if (Array.isArray(query.meta?.tags)) {
-            return query.meta.tags.some((tag) => tags.includes(tag));
+          if (
+            operationId &&
+            !applyStringFilter(operationId, meta.operationId)
+          ) {
+            return false;
+          }
+
+          if (predicate && !predicate(meta, query as any)) {
+            return false;
           }
 
           return false;
@@ -112,3 +69,20 @@ export class EndpointQueryClient extends QueryClient {
     );
   }
 }
+
+const applyStringFilter = (
+  filter: EndpointStringFilter,
+  value: string | string[],
+): boolean => {
+  const values = Array.isArray(value) ? value : [value];
+
+  if (filter instanceof RegExp) {
+    return values.some((value) => filter.test(value));
+  }
+
+  if (Array.isArray(filter)) {
+    return filter.some((filter) => values.includes(filter));
+  }
+
+  return values.includes(filter);
+};

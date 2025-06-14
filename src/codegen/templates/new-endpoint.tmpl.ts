@@ -1,4 +1,4 @@
-import { AnyObject } from 'yummies/utils/types';
+import { AnyObject, Maybe } from 'yummies/utils/types';
 
 import type {
   AllImportFileParams,
@@ -6,12 +6,14 @@ import type {
   GenerateQueryApiParams,
 } from '../index.js';
 
-export interface NewRequestInfoTmplParams {
+export interface NewEndpointTmplParams {
   route: AnyObject;
   configuration: AnyObject;
   apiParams: GenerateQueryApiParams;
   importFileParams: AllImportFileParams;
   utils: CodegenDataUtils;
+  groupName: Maybe<string>;
+  namespace?: Maybe<string>;
 }
 
 // RequestParams["type"]
@@ -29,12 +31,14 @@ const responseContentKind: AnyObject = {
   BYTES: '"bytes"',
 };
 
-export const newRequestInfoTmpl = ({
+export const newEndpointTmpl = ({
   route,
   apiParams,
   importFileParams,
   utils,
-}: NewRequestInfoTmplParams) => {
+  groupName,
+  namespace,
+}: NewEndpointTmplParams) => {
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
     (it: AnyObject) => +it.status >= 200 && +it.status < 300,
@@ -221,6 +225,8 @@ new ${importFileParams.endpoint.exportName}<
           .filter(Boolean)
           .map((it) => `"${it}"`)}],
         tags: [${tags.map((tag: string) => `"${tag}"`)}],
+        ${groupName ? `group: "${groupName}",` : ''}
+        ${namespace ? `namespace: "${namespace}",` : ''}
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
     },
     ${importFileParams.queryClient.exportName},

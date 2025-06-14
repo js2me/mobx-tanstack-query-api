@@ -4,12 +4,11 @@ import {
 } from 'mobx-tanstack-query';
 import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
 
+import { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
 
 export interface EndpointMutationInvalidateQueriesOptions
-  extends MutationInvalidateQueriesOptions {
-  invalidateTags?: string[];
-}
+  extends MutationInvalidateQueriesOptions {}
 
 export type EndpointMutationParams<
   TParams extends AnyObject,
@@ -29,6 +28,7 @@ export type EndpointMutationOptions<
   TMutationMeta extends AnyObject | void = void,
   TContext = unknown,
 > = {
+  invalidateEndpoints?: InvalidateEndpointsFilters;
   /**
    * Transform response to TData
    */

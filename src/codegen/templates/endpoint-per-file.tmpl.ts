@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/no-await-expression-member */
-import { AnyObject } from 'yummies/utils/types';
+import { AnyObject, Maybe } from 'yummies/utils/types';
 
 import type {
   AllImportFileParams,
@@ -10,10 +10,10 @@ import type {
 
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
-import { newRequestInfoTmpl } from './new-request-info.tmpl.js';
-import { requestInfoJSDocTmpl } from './request-info-jsdoc.tmpl.js';
+import { endpointJSDocTmpl } from './endpoint-jsdoc.tmpl.js';
+import { newEndpointTmpl } from './new-endpoint.tmpl.js';
 
-export interface RequestInfoPerFileTmplParams extends AnyObject {
+export interface EndpointPerFileTmplParams extends AnyObject {
   route: AnyObject;
   configuration: AnyObject;
   apiParams: GenerateQueryApiParams;
@@ -21,9 +21,11 @@ export interface RequestInfoPerFileTmplParams extends AnyObject {
   importFileParams: AllImportFileParams;
   utils: CodegenDataUtils;
   relativePathDataContracts: string;
+  groupName: Maybe<string>;
+  namespace: Maybe<string>;
 }
 
-export const requestInfoPerFileTmpl = async ({
+export const endpointPerFileTmpl = async ({
   route,
   configuration,
   apiParams,
@@ -31,19 +33,23 @@ export const requestInfoPerFileTmpl = async ({
   importFileParams,
   utils,
   relativePathDataContracts,
-}: RequestInfoPerFileTmplParams) => {
+  groupName,
+  namespace,
+}: EndpointPerFileTmplParams) => {
   const { _ } = utils;
 
   const {
     content: requestInfoInstanceContent,
     reservedDataContractNames,
     localModelTypes,
-  } = newRequestInfoTmpl({
+  } = newEndpointTmpl({
     route,
     configuration,
     apiParams,
     importFileParams,
     utils,
+    groupName,
+    namespace,
   });
 
   const dataContactNames = new Set(
@@ -123,7 +129,7 @@ export const requestInfoPerFileTmpl = async ({
         .filter(Boolean)
         .join('\n\n')}
       
-      ${requestInfoJSDocTmpl({
+      ${endpointJSDocTmpl({
         route,
         configuration,
         apiParams,

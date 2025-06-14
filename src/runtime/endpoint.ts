@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import {
-  DefaultError,
-  InvalidateOptions,
-  InvalidateQueryFilters,
-} from '@tanstack/query-core';
+import { DefaultError } from '@tanstack/query-core';
 import { resolveFnValue } from 'yummies/common';
 import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
 
@@ -15,7 +11,10 @@ import {
   EndpointQueryOptions,
   EndpointQueryUnitKey,
 } from './endpoint-query.types.js';
-import { EndpointConfiguration } from './endpoint.types.js';
+import {
+  EndpointConfiguration,
+  EndpointMutationPresets,
+} from './endpoint.types.js';
 import type { HttpClient, HttpResponse } from './http-client.js';
 
 export interface Endpoint<
@@ -36,6 +35,12 @@ export class Endpoint<
   TMetaData extends AnyObject = AnyObject,
 > {
   endpointId: string;
+
+  presets: {
+    mutations: EndpointMutationPresets;
+  } = {
+    mutations: {},
+  };
 
   __params!: TParams;
   __response!: TResponse;
@@ -109,6 +114,14 @@ export class Endpoint<
     return this.configuration.operationId;
   }
 
+  get group() {
+    return this.configuration.group;
+  }
+
+  get namespace() {
+    return this.configuration.namespace;
+  }
+
   request(
     ...args: AllPropertiesOptional<TParams> extends true
       ? [input?: TParams]
@@ -116,60 +129,6 @@ export class Endpoint<
   ) {
     return this.http.request<TResponse>(
       this.configuration.params(args[0] ?? ({} as TParams)),
-    );
-  }
-
-  /**
-   * segment - last segment number in path which need to crop for invalidate
-   * @example
-   * // endpoint path ["v1", "api", "kek"]
-   * endpoint.invalidateByPath({ segment: 1 }) // "v1/api*"
-   */
-  invalidateByPath(
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'> & {
-      segment?: number;
-    },
-    options?: InvalidateOptions,
-  ) {
-    return this.queryClient.invalidateByPath(
-      this.configuration.path,
-      filters,
-      options,
-    );
-  }
-
-  invalidateByOperationId(
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
-    options?: InvalidateOptions,
-  ) {
-    return this.queryClient.invalidateByOperationId(
-      this.operationId,
-      filters,
-      options,
-    );
-  }
-
-  invalidateByTags(
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'>,
-    options?: InvalidateOptions,
-  ) {
-    return this.queryClient.invalidateByTags(this.tags, filters, options);
-  }
-
-  invalidate(
-    input: TParams,
-    filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'> & {
-      queryKeyIndex?: number;
-    },
-    options?: InvalidateOptions,
-  ) {
-    return this.queryClient.invalidateQueries<any[]>(
-      {
-        ...filters,
-        queryKey: this.getQueryKey(input).slice(0, filters?.queryKeyIndex),
-        exact: filters?.exact ?? false,
-      },
-      options,
     );
   }
 
@@ -204,7 +163,12 @@ export class Endpoint<
     return new EndpointMutation<this, TData, TParams, TMutationMeta, TContext>(
       this,
       this.queryClient,
-      options,
+      {
+        ...options,
+        invalidateEndpoints:
+          options.invalidateEndpoints ??
+          this.presets.mutations?.invalidateQueries,
+      },
     );
   }
 

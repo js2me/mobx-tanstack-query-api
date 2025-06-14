@@ -12,6 +12,8 @@ export interface EndpointQueryMeta {
   operationId: string;
   path: string[];
   pathDeclaration: string;
+  group?: string;
+  namespace?: string;
 }
 
 export type EndpointQueryUnitKey = Maybe<

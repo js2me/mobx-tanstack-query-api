@@ -1,5 +1,6 @@
 import { AnyObject } from 'yummies/utils/types';
 
+import { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 import type { Endpoint } from './endpoint.js';
 import { FullRequestParams } from './http-client.js';
 
@@ -7,6 +8,8 @@ export interface EndpointConfiguration<
   TInput extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
 > {
+  group?: string;
+  namespace?: string;
   operationId: string;
   path: string[];
   meta?: TMetaData;
@@ -28,3 +31,7 @@ export type InferEndpointInput<TEndpoint extends AnyEndpoint> =
 
 export type InferEndpointMetaData<TEndpoint extends AnyEndpoint> =
   TEndpoint extends Endpoint<any, any, infer T> ? T : never;
+
+export interface EndpointMutationPresets {
+  invalidateQueries?: InvalidateEndpointsFilters;
+}

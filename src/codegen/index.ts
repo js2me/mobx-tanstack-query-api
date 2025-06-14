@@ -1,14 +1,15 @@
 import { LoDashStatic } from 'lodash';
 import { generateApi as generateApiFromSwagger } from 'swagger-typescript-api';
-import { AnyObject, KeyOfByValue } from 'yummies/utils/types';
+import { AnyObject, KeyOfByValue, Maybe } from 'yummies/utils/types';
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { allExportsTmpl } from './templates/all-exports.tmpl.js';
 import { LINTERS_IGNORE } from './templates/constants.js';
 import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
+import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
 import { indexTsForRequestPerFileTmpl } from './templates/index-ts-for-request-per-file.tmpl.js';
-import { requestInfoPerFileTmpl } from './templates/request-info-per-file.tmpl.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -160,7 +161,7 @@ export const generateApi = async (
     ),
     outputDir: path.resolve(process.cwd(), params.output),
   };
-
+  //#region swagger-typescript-api
   const codegenParams: Partial<AnyObject> = {
     httpClientType: 'fetch',
     cleanOutput: true,
@@ -261,10 +262,21 @@ export const generateApi = async (
       },
     },
   });
+  //#endregion
 
   const utils = codegenProcess.getRenderTemplateData()
     .utils as CodegenDataUtils;
   const { _ } = utils;
+
+  let namespace: Maybe<string> = null;
+
+  if (params.namespace) {
+    if (typeof params.namespace === 'function') {
+      namespace = params.namespace(utils);
+    } else {
+      namespace = utils._.camelCase(params.namespace);
+    }
+  }
 
   const codegenFs = codegenProcess.fileSystem as any;
 
@@ -285,6 +297,8 @@ export const generateApi = async (
 
   const collectedExportFiles: string[] = [];
 
+  const groupsMap = new Map<string, AnyObject[]>();
+
   if (params.groupBy == null) {
     collectedExportFiles.push('endpoints');
     // #region кодогенерация 1 эндпоинт - 1 файл без группировки
@@ -294,7 +308,7 @@ export const generateApi = async (
 
     for await (const route of allRoutes) {
       const { content: requestInfoPerFileContent, reservedDataContractNames } =
-        await requestInfoPerFileTmpl({
+        await endpointPerFileTmpl({
           ...generated,
           route,
           apiParams: params,
@@ -302,6 +316,8 @@ export const generateApi = async (
           importFileParams,
           utils,
           relativePathDataContracts: '../data-contracts',
+          namespace,
+          groupName: null,
         });
 
       reservedDataContractNames.forEach((name) => {
@@ -339,7 +355,6 @@ export const generateApi = async (
     // #region кодогенерация с группировкой
 
     // #region разбиение роутов по группам
-    const groupsMap = new Map<string, AnyObject[]>();
 
     allRoutes.forEach((route) => {
       let group: string | undefined;
@@ -388,7 +403,7 @@ export const generateApi = async (
         const {
           content: requestInfoPerFileContent,
           reservedDataContractNames,
-        } = await requestInfoPerFileTmpl({
+        } = await endpointPerFileTmpl({
           ...generated,
           route,
           apiParams: params,
@@ -396,6 +411,8 @@ export const generateApi = async (
           importFileParams,
           utils,
           relativePathDataContracts: '../../data-contracts',
+          namespace,
+          groupName,
         });
 
         reservedDataContractNames.forEach((name) => {
@@ -471,20 +488,18 @@ export * as ${exportGroupName} from './endpoints';
     content: dataContractsContent,
   });
 
-  if (params.namespace) {
-    const namespace =
-      typeof params.namespace === 'function'
-        ? params.namespace(utils)
-        : utils._.camelCase(params.namespace);
-
+  if (namespace) {
     codegenFs.createFile({
       path: paths.outputDir,
       fileName: '__exports.ts',
       withPrefix: false,
-      content: `${LINTERS_IGNORE}
-export * from './data-contracts';
-${collectedExportFiles.map((fileName) => `export * from './${fileName}';`).join('\n')}
-  `,
+      content: await allExportsTmpl({
+        ...generated,
+        collectedExportFiles,
+        namespace,
+        groupNames: [...groupsMap.keys()],
+        utils,
+      }),
     });
     codegenFs.createFile({
       path: paths.outputDir,
@@ -499,10 +514,13 @@ export * as ${namespace} from './__exports';
       path: paths.outputDir,
       fileName: 'index.ts',
       withPrefix: false,
-      content: `${LINTERS_IGNORE}
-export * from './data-contracts';
-${collectedExportFiles.map((fileName) => `export * from './${fileName}';`).join('\n')}
-`,
+      content: await allExportsTmpl({
+        ...generated,
+        collectedExportFiles,
+        namespace,
+        groupNames: [...groupsMap.keys()],
+        utils,
+      }),
     });
   }
 };
