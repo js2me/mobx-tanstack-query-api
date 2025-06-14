@@ -4,7 +4,6 @@ import {
   DefaultError,
   QueryFunctionContext,
   QueryObserverResult,
-  skipToken,
 } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction } from 'mobx';
 import { Query } from 'mobx-tanstack-query';
@@ -148,8 +147,6 @@ const buildOptionsFromParams = (
 
   return {
     enabled: hasRequiredParams,
-    queryKey: hasRequiredParams
-      ? endpoint.getQueryKey(params || {}, uniqKey)
-      : (skipToken as unknown as any[]),
+    queryKey: endpoint.getQueryKey(params || {}, uniqKey),
   };
 };
