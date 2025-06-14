@@ -9,7 +9,7 @@ import { allExportsTmpl } from './templates/all-exports.tmpl.js';
 import { LINTERS_IGNORE } from './templates/constants.js';
 import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
 import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
-import { indexTsForRequestPerFileTmpl } from './templates/index-ts-for-request-per-file.tmpl.js';
+import { indexTsForEndpointPerFileTmpl } from './templates/index-ts-for-endpoint-per-file.tmpl.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -343,7 +343,7 @@ export const generateApi = async (
       path: path.resolve(params.output, 'endpoints'),
       fileName: 'index.ts',
       withPrefix: false,
-      content: await indexTsForRequestPerFileTmpl({
+      content: await indexTsForEndpointPerFileTmpl({
         ...generated,
         apiParams: params,
         codegenProcess,
@@ -455,7 +455,7 @@ export * as ${exportGroupName} from './endpoints';
         path: path.resolve(params.output, _.kebabCase(groupName), 'endpoints'),
         fileName: 'index.ts',
         withPrefix: false,
-        content: await indexTsForRequestPerFileTmpl({
+        content: await indexTsForEndpointPerFileTmpl({
           ...generated,
           apiParams: params,
           codegenProcess,

@@ -12,11 +12,16 @@ export interface AllExportsTmplParams {
   utils: CodegenDataUtils;
 }
 
+export const formatGroupNameEnumKey = (
+  groupName: string,
+  { _ }: CodegenDataUtils,
+) => _.upperFirst(_.camelCase(groupName));
+
 export const allExportsTmpl = async ({
   collectedExportFiles,
   groupNames,
   namespace,
-  utils: { _ },
+  utils,
   formatTSContent,
 }: AllExportsTmplParams) => {
   return await formatTSContent(`${LINTERS_IGNORE}
@@ -28,7 +33,7 @@ export const allExportsTmpl = async ({
     groupNames?.length
       ? `
 export const enum Group {
-  ${groupNames.map((groupName) => `${_.upperFirst(_.camelCase(groupName))} = "${groupName}"`).join(',\n')}
+  ${groupNames.map((groupName) => `${formatGroupNameEnumKey(groupName, utils)} = "${groupName}"`).join(',\n')}
 }
     `
       : ''

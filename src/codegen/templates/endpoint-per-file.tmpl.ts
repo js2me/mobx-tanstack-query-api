@@ -77,6 +77,8 @@ export const endpointPerFileTmpl = async ({
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
+      import { ${[groupName && 'Group', namespace && 'namespace'].filter(Boolean).join(',')} } from "../../__exports";
+
       ${
         configuration.modelTypes.length > 0
           ? `

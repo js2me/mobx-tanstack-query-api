@@ -4,16 +4,16 @@ import { CodegenProcess, GenerateQueryApiParams } from '../index.js';
 
 import { LINTERS_IGNORE } from './constants.js';
 
-export interface IndexTsForRequestPerFileTmplParams extends AnyObject {
+export interface IndexTsForEndpointPerFileTmplParams extends AnyObject {
   configuration: AnyObject;
   apiParams: GenerateQueryApiParams;
   codegenProcess: CodegenProcess;
   generatedRequestFileNames: string[];
 }
 
-export const indexTsForRequestPerFileTmpl = async ({
+export const indexTsForEndpointPerFileTmpl = async ({
   generatedRequestFileNames,
-}: IndexTsForRequestPerFileTmplParams) => {
+}: IndexTsForEndpointPerFileTmplParams) => {
   return `${LINTERS_IGNORE}
 ${generatedRequestFileNames.map((fileName) => `export * from './${fileName.replace('.ts', '')}';`).join('\n')}
 `;

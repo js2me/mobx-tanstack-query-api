@@ -6,6 +6,8 @@ import type {
   GenerateQueryApiParams,
 } from '../index.js';
 
+import { formatGroupNameEnumKey } from './all-exports.tmpl.js';
+
 export interface NewEndpointTmplParams {
   route: AnyObject;
   configuration: AnyObject;
@@ -225,8 +227,8 @@ new ${importFileParams.endpoint.exportName}<
           .filter(Boolean)
           .map((it) => `"${it}"`)}],
         tags: [${tags.map((tag: string) => `"${tag}"`)}],
-        ${groupName ? `group: "${groupName}",` : ''}
-        ${namespace ? `namespace: "${namespace}",` : ''}
+        ${groupName ? `group: Group.${formatGroupNameEnumKey(groupName, utils)},` : ''}
+        ${namespace ? `namespace,` : ''}
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
     },
     ${importFileParams.queryClient.exportName},
