@@ -28,7 +28,7 @@ export type EndpointMutationOptions<
   TMutationMeta extends AnyObject | void = void,
   TContext = unknown,
 > = {
-  invalidateEndpoints?: InvalidateEndpointsFilters;
+  invalidateEndpoints?: 'namespace-and-group' | InvalidateEndpointsFilters;
   /**
    * Transform response to TData
    */

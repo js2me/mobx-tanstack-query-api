@@ -41,7 +41,14 @@ export class EndpointMutation<
       onSuccess: (data, variables, context) => {
         mutationOptions.onSuccess?.(data, variables, context);
         if (invalidateEndpoints) {
-          queryClient.invalidateEndpoints(invalidateEndpoints);
+          if (invalidateEndpoints === 'namespace-and-group') {
+            queryClient.invalidateEndpoints({
+              namespace: endpoint.namespace,
+              group: endpoint.group,
+            });
+          } else {
+            queryClient.invalidateEndpoints(invalidateEndpoints);
+          }
         }
       },
       mutationFn: async (input) => {
