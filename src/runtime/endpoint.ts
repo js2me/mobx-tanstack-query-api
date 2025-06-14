@@ -7,10 +7,8 @@ import {
 import { resolveFnValue } from 'yummies/common';
 import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
 
-import {
-  EndpointMutation,
-  EndpointMutationOptions,
-} from './endpoint-mutation.js';
+import { EndpointMutation } from './endpoint-mutation.js';
+import { EndpointMutationOptions } from './endpoint-mutation.types.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import { EndpointQuery } from './endpoint-query.js';
 import {
@@ -22,30 +20,30 @@ import type { HttpClient, HttpResponse } from './http-client.js';
 
 export interface Endpoint<
   TResponse extends HttpResponse<any, any>,
-  TInput extends AnyObject,
+  TParams extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
 > {
   (
-    ...args: AllPropertiesOptional<TInput> extends true
-      ? [input?: TInput]
-      : [input: TInput]
-  ): ReturnType<Endpoint<TResponse, TInput, TMetaData>['request']>;
+    ...args: AllPropertiesOptional<TParams> extends true
+      ? [params?: TParams]
+      : [params: TParams]
+  ): ReturnType<Endpoint<TResponse, TParams, TMetaData>['request']>;
 }
 
 export class Endpoint<
   TResponse extends HttpResponse<any, any>,
-  TInput extends AnyObject,
+  TParams extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
 > {
   endpointId: string;
 
-  __input_type!: TInput;
-  __response_type!: TResponse;
+  __params!: TParams;
+  __response!: TResponse;
 
   meta!: TMetaData;
 
   constructor(
-    public configuration: EndpointConfiguration<NoInfer<TInput>, TMetaData>,
+    public configuration: EndpointConfiguration<NoInfer<TParams>, TMetaData>,
     protected queryClient: EndpointQueryClient,
     protected http: HttpClient,
   ) {
@@ -57,12 +55,12 @@ export class Endpoint<
     // Создаем функцию-обертку
     const callable = function (
       this: any,
-      ...args: AllPropertiesOptional<TInput> extends true
-        ? [input?: TInput]
-        : [input: TInput]
+      ...args: AllPropertiesOptional<TParams> extends true
+        ? [input?: TParams]
+        : [input: TParams]
     ) {
       return instance.request.apply(instance, args);
-    } as unknown as Endpoint<TResponse, TInput, TMetaData>;
+    } as unknown as Endpoint<TResponse, TParams, TMetaData>;
 
     // Копируем прототип
     Object.setPrototypeOf(callable, new.target.prototype);
@@ -82,20 +80,20 @@ export class Endpoint<
   }
 
   getFullUrl(
-    ...args: AllPropertiesOptional<TInput> extends true
-      ? [input?: TInput]
-      : [input: TInput]
+    ...args: AllPropertiesOptional<TParams> extends true
+      ? [input?: TParams]
+      : [input: TParams]
   ): string {
-    const params = this.configuration.params(args[0] ?? ({} as TInput));
+    const params = this.configuration.params(args[0] ?? ({} as TParams));
     return this.http.buildUrl(params);
   }
 
   getPath(
-    ...args: AllPropertiesOptional<TInput> extends true
-      ? [input?: TInput]
-      : [input: TInput]
+    ...args: AllPropertiesOptional<TParams> extends true
+      ? [input?: TParams]
+      : [input: TParams]
   ): string {
-    const params = this.configuration.params(args[0] ?? ({} as TInput));
+    const params = this.configuration.params(args[0] ?? ({} as TParams));
     return params.path;
   }
 
@@ -112,28 +110,13 @@ export class Endpoint<
   }
 
   request(
-    ...args: AllPropertiesOptional<TInput> extends true
-      ? [input?: TInput]
-      : [input: TInput]
+    ...args: AllPropertiesOptional<TParams> extends true
+      ? [input?: TParams]
+      : [input: TParams]
   ) {
     return this.http.request<TResponse>(
-      this.configuration.params(args[0] ?? ({} as TInput)),
+      this.configuration.params(args[0] ?? ({} as TParams)),
     );
-  }
-
-  getQueryKey(
-    ...args: AllPropertiesOptional<TInput> extends true
-      ? [input?: TInput, uniqKey?: EndpointQueryUnitKey]
-      : [input: TInput, uniqKey?: EndpointQueryUnitKey]
-  ): any[] {
-    const input = args[0] ?? ({} as TInput);
-
-    return [
-      ...this.configuration.path,
-      this.configuration.operationId,
-      input,
-      resolveFnValue(args[1]),
-    ];
   }
 
   /**
@@ -174,7 +157,7 @@ export class Endpoint<
   }
 
   invalidate(
-    input: TInput,
+    input: TParams,
     filters?: Omit<InvalidateQueryFilters<any[]>, 'queryKey' | 'predicate'> & {
       queryKeyIndex?: number;
     },
@@ -190,20 +173,46 @@ export class Endpoint<
     );
   }
 
+  getQueryKey(
+    ...args: AllPropertiesOptional<TParams> extends true
+      ? [input?: TParams, uniqKey?: EndpointQueryUnitKey]
+      : [input: TParams, uniqKey?: EndpointQueryUnitKey]
+  ): any[] {
+    const params = args[0] ?? ({} as TParams);
+
+    return [
+      ...this.configuration.path,
+      this.configuration.operationId,
+      params,
+      resolveFnValue(args[1]),
+    ];
+  }
+
   toMutation<
-    TOutput = TResponse,
+    TData = TResponse['data'],
     TMutationMeta extends AnyObject | void = void,
+    TContext = unknown,
   >(
-    options: EndpointMutationOptions<TOutput, TInput, TResponse, TMutationMeta>,
+    options: EndpointMutationOptions<
+      this,
+      TData,
+      TParams,
+      TMutationMeta,
+      TContext
+    >,
   ) {
-    return new EndpointMutation(this, this.queryClient, options);
+    return new EndpointMutation<this, TData, TParams, TMutationMeta, TContext>(
+      this,
+      this.queryClient,
+      options,
+    );
   }
 
   toQuery<
-    TQueryFnData = TResponse,
+    TQueryFnData = TResponse['data'],
     TError = DefaultError,
-    TData = TResponse['data'],
-    TQueryData = TResponse['data'],
+    TData = TQueryFnData,
+    TQueryData = TQueryFnData,
   >(
     options: EndpointQueryOptions<
       this,

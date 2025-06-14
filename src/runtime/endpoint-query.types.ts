@@ -20,15 +20,31 @@ export type EndpointQueryUnitKey = Maybe<
 
 export type EndpointQueryOptions<
   TEndpoint extends AnyEndpoint,
-  TQueryFnData = unknown,
+  TQueryFnData = TEndpoint['__response']['data'],
   TError = DefaultError,
   TData = TQueryFnData,
   TQueryData = TQueryFnData,
 > = {
-  input?: () => MaybeFalsy<TEndpoint['__input_type']>;
+  params?: () => MaybeFalsy<TEndpoint['__params']>;
+  /**
+   * Transform response to QueryFnData
+   */
+  transform?: (
+    response: TEndpoint['__response'],
+  ) => TQueryFnData | Promise<TQueryFnData>;
 } & Omit<
-  QueryConfig<TQueryFnData, TError, TData, TQueryData>,
-  'options' | 'queryFn' | 'queryClient' | 'queryKey'
+  QueryConfig<NoInfer<TQueryFnData>, TError, TData, TQueryData>,
+  | 'options'
+  | 'queryFn'
+  | 'queryClient'
+  | 'queryKey'
+  | '_defaulted'
+  | '_optimisticResults'
+  | 'experimental_prefetchInRender'
+  | 'enabled'
+  | 'queryHash'
+  | 'queryKeyHashFn'
 > & {
     uniqKey?: EndpointQueryUnitKey;
+    enabled?: boolean;
   };

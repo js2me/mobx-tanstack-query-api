@@ -1,61 +1,25 @@
-import {
-  Mutation,
-  MutationConfig,
-  MutationInvalidateQueriesOptions,
-} from 'mobx-tanstack-query';
-import { AllPropertiesOptional, AnyObject, Maybe } from 'yummies/utils/types';
+import { Mutation } from 'mobx-tanstack-query';
+import { AnyObject, Maybe } from 'yummies/utils/types';
 
+import {
+  EndpointMutationParams,
+  EndpointMutationInvalidateQueriesOptions,
+  EndpointMutationOptions,
+} from './endpoint-mutation.types.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import { AnyEndpoint } from './endpoint.types.js';
-import { AnyHttpResponse } from './http-client.js';
-
-export interface EndpointMutationInvalidateQueriesOptions
-  extends MutationInvalidateQueriesOptions {
-  invalidateTags?: string[];
-}
-
-export type EndpointMutationInput<
-  TBaseInput extends AnyObject,
-  TMutationMeta extends AnyObject | void = void,
-> = TBaseInput &
-  (TMutationMeta extends void
-    ? // eslint-disable-next-line @typescript-eslint/ban-types
-      {}
-    : AllPropertiesOptional<TMutationMeta> extends true
-      ? { meta?: TMutationMeta }
-      : { meta: TMutationMeta });
-
-export type EndpointMutationOptions<
-  TOutput,
-  TInput extends AnyObject,
-  TResponse extends AnyHttpResponse,
-  TMutationMeta extends AnyObject | void = void,
-> = {
-  transform?: (response: TResponse) => TOutput | Promise<TOutput>;
-  invalidateQueries?:
-    | EndpointMutationInvalidateQueriesOptions
-    | ((
-        data: NoInfer<TOutput>,
-        payload: EndpointMutationInput<NoInfer<TInput>, NoInfer<TMutationMeta>>,
-      ) => EndpointMutationInvalidateQueriesOptions | null | undefined);
-} & Omit<
-  MutationConfig<
-    NoInfer<TOutput>,
-    EndpointMutationInput<NoInfer<TInput>, NoInfer<TMutationMeta>>,
-    NoInfer<TResponse>['error']
-  >,
-  'queryClient' | 'mutationFn' | 'invalidateQueries'
->;
 
 export class EndpointMutation<
-  TOutput,
-  TInput extends AnyObject,
-  TResponse extends AnyHttpResponse,
+  TEndpoint extends AnyEndpoint,
+  TData = unknown,
+  TParams extends AnyObject = AnyObject,
   TMutationMeta extends AnyObject | void = void,
+  TContext = unknown,
 > extends Mutation<
-  TOutput,
-  EndpointMutationInput<TInput, TMutationMeta>,
-  TResponse['error']
+  TData,
+  EndpointMutationParams<TParams, TMutationMeta>,
+  TEndpoint['__response']['error'],
+  TContext
 > {
   constructor(
     private endpoint: AnyEndpoint,
@@ -64,7 +28,13 @@ export class EndpointMutation<
       transform: transformResponse,
       invalidateQueries,
       ...mutationOptions
-    }: EndpointMutationOptions<TOutput, TInput, TResponse, TMutationMeta>,
+    }: EndpointMutationOptions<
+      TEndpoint,
+      TData,
+      TParams,
+      TMutationMeta,
+      TContext
+    >,
   ) {
     super({
       ...mutationOptions,
@@ -101,14 +71,7 @@ export class EndpointMutation<
       },
       mutationFn: async (input) => {
         const response = await endpoint.request(input);
-
-        let output = response.data as TOutput;
-
-        if (transformResponse) {
-          output = await transformResponse(response as TResponse);
-        }
-
-        return output;
+        return (await transformResponse?.(response)) ?? response.data;
       },
     });
   }

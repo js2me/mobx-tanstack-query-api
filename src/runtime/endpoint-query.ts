@@ -21,18 +21,21 @@ import { RequestParams } from './http-client.js';
 
 export class EndpointQuery<
   TEndpoint extends AnyEndpoint,
-  TQueryFnData = unknown,
+  TQueryFnData = TEndpoint['__response']['data'],
   TError = DefaultError,
   TData = TQueryFnData,
   TQueryData = TQueryFnData,
 > extends Query<TQueryFnData, TError, TData, TQueryData> {
-  response: TEndpoint['__response_type'] | null = null;
+  response: TEndpoint['__response'] | null = null;
+
+  private uniqKey?: EndpointQueryUnitKey;
 
   constructor(
     private endpoint: AnyEndpoint,
     queryClient: EndpointQueryClient,
     {
-      input: getInput,
+      transform: transformResponse,
+      params: getParams,
       uniqKey,
       ...queryOptions
     }: EndpointQueryOptions<TEndpoint, TQueryFnData, TError, TData, TQueryData>,
@@ -51,8 +54,8 @@ export class EndpointQuery<
       } satisfies EndpointQueryMeta,
       options: (query): any => {
         const willEnableManually = queryOptions.enabled === false;
-        const input = (getInput?.() || {}) as any;
-        const builtOptions = buildOptionsFromInput(endpoint, input, uniqKey);
+        const params = (getParams?.() || {}) as any;
+        const builtOptions = buildOptionsFromParams(endpoint, params, uniqKey);
         // const dynamicOuterOptions = getDynamicOptions?.(query);
 
         let isEnabled = false;
@@ -82,7 +85,7 @@ export class EndpointQuery<
           this.response = null;
         });
 
-        const input = this.getInputFromContext(ctx as any);
+        const input = getInputFromContext(ctx as any);
 
         let requestParams = input.request as Maybe<RequestParams>;
 
@@ -102,41 +105,43 @@ export class EndpointQuery<
         const response = await endpoint.request(fixedInput);
 
         runInAction(() => {
-          this.response = response as TEndpoint['__response_type'];
+          this.response = response as TEndpoint['__response'];
         });
 
-        const output = response.data as any;
-
-        return output;
+        return (await transformResponse?.(response)) ?? response.data;
       },
     });
+
+    this.uniqKey = uniqKey;
 
     observable.ref(this, 'response');
     makeObservable(this);
   }
 
   async start(
-    input: MaybeFalsy<TEndpoint['__input_type']>,
+    input: MaybeFalsy<TEndpoint['__params']>,
   ): Promise<QueryObserverResult<TData, TError>> {
-    return await super.start(buildOptionsFromInput(this.endpoint, input));
-  }
-
-  protected getInputFromContext(ctx: QueryFunctionContext<any, any>) {
-    return (ctx.queryKey.at(-2) || {}) as TEndpoint['__input_type'];
+    return await super.start(
+      buildOptionsFromParams(this.endpoint, input, this.uniqKey),
+    );
   }
 }
 
-const buildOptionsFromInput = (
+const getInputFromContext = (ctx: QueryFunctionContext<any, any>) => {
+  return (ctx.queryKey.at(-2) || {}) as AnyEndpoint['__params'];
+};
+
+const buildOptionsFromParams = (
   endpoint: AnyEndpoint,
-  input: MaybeFalsy<AnyObject>,
-  uniqKey?: EndpointQueryUnitKey,
+  params: MaybeFalsy<AnyObject>,
+  uniqKey: Maybe<EndpointQueryUnitKey>,
 ) => {
   const { requiredParams } = endpoint.configuration;
   let hasRequiredParams = false;
 
   if (requiredParams.length > 0) {
     hasRequiredParams =
-      !!input && requiredParams.every((param) => param in input);
+      !!params && requiredParams.every((param) => param in params);
   } else {
     hasRequiredParams = true;
   }
@@ -144,7 +149,7 @@ const buildOptionsFromInput = (
   return {
     enabled: hasRequiredParams,
     queryKey: hasRequiredParams
-      ? endpoint.getQueryKey(input || {}, uniqKey)
+      ? endpoint.getQueryKey(params || {}, uniqKey)
       : (skipToken as unknown as any[]),
   };
 };
