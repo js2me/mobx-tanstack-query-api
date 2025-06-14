@@ -16,6 +16,7 @@ export class EndpointQueryClient extends QueryClient {
       operationId,
       tag,
       predicate,
+      endpoint,
       ...queryFilters
     }: InvalidateEndpointsFilters,
     options?: InvalidateOptions,
@@ -30,6 +31,20 @@ export class EndpointQueryClient extends QueryClient {
           }
 
           const meta = query.meta as unknown as EndpointQueryMeta;
+
+          if (endpoint) {
+            const endpointsToFilter = Array.isArray(endpoint)
+              ? endpoint
+              : [endpoint];
+
+            if (
+              endpointsToFilter.every(
+                (endpoint) => meta.endpointId !== endpoint.endpointId,
+              )
+            ) {
+              return false;
+            }
+          }
 
           if (
             namespace &&
