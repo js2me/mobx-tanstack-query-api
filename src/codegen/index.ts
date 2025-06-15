@@ -10,6 +10,7 @@ import { LINTERS_IGNORE } from './templates/constants.js';
 import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
 import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
 import { indexTsForEndpointPerFileTmpl } from './templates/index-ts-for-endpoint-per-file.tmpl.js';
+import { metaInfoTmpl } from './templates/meta-info.tmpl.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -26,6 +27,12 @@ export type CodegenProcess = AnyObject;
 export interface ImportFileParams {
   path: string;
   exportName: string;
+}
+
+export interface MetaInfo {
+  namespace: string | null;
+  groupNames: string[];
+  tags?: string[];
 }
 
 export interface GenerateQueryApiParams {
@@ -298,6 +305,7 @@ export const generateApi = async (
   const collectedExportFiles: string[] = [];
 
   const groupsMap = new Map<string, AnyObject[]>();
+  const tagsSet = new Set<string>();
 
   if (params.groupBy == null) {
     collectedExportFiles.push('endpoints');
@@ -316,9 +324,16 @@ export const generateApi = async (
           importFileParams,
           utils,
           relativePathDataContracts: '../data-contracts',
-          namespace,
           groupName: null,
+          metaInfo: {
+            groupNames: [],
+            namespace,
+          },
         });
+
+      if (Array.isArray(route.raw.tags)) {
+        route.raw.tags.forEach((tag) => tagsSet.add(tag));
+      }
 
       reservedDataContractNames.forEach((name) => {
         reservedDataContractNamesMap.set(
@@ -411,9 +426,16 @@ export const generateApi = async (
           importFileParams,
           utils,
           relativePathDataContracts: '../../data-contracts',
-          namespace,
           groupName,
+          metaInfo: {
+            namespace,
+            groupNames: [],
+          },
         });
+
+        if (Array.isArray(route.raw.tags)) {
+          route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
+        }
 
         reservedDataContractNames.forEach((name) => {
           reservedDataContractNamesMap.set(
@@ -468,6 +490,15 @@ export * as ${exportGroupName} from './endpoints';
     // #endregion
   }
 
+  const metaInfo: Maybe<MetaInfo> =
+    (namespace ?? groupsMap.size > 0)
+      ? {
+          namespace,
+          groupNames: [...groupsMap.keys()],
+          tags: [...tagsSet.values()],
+        }
+      : null;
+
   const excludedDataContractNames = Array.from(
     reservedDataContractNamesMap.entries(),
   )
@@ -488,6 +519,17 @@ export * as ${exportGroupName} from './endpoints';
     content: dataContractsContent,
   });
 
+  codegenFs.createFile({
+    path: paths.outputDir,
+    fileName: 'meta-info.ts',
+    withPrefix: false,
+    content: await metaInfoTmpl({
+      ...generated,
+      metaInfo,
+      utils,
+    }),
+  });
+
   if (namespace) {
     codegenFs.createFile({
       path: paths.outputDir,
@@ -496,8 +538,7 @@ export * as ${exportGroupName} from './endpoints';
       content: await allExportsTmpl({
         ...generated,
         collectedExportFiles,
-        namespace,
-        groupNames: [...groupsMap.keys()],
+        metaInfo,
         utils,
       }),
     });
@@ -517,8 +558,7 @@ export * as ${namespace} from './__exports';
       content: await allExportsTmpl({
         ...generated,
         collectedExportFiles,
-        namespace,
-        groupNames: [...groupsMap.keys()],
+        metaInfo,
         utils,
       }),
     });

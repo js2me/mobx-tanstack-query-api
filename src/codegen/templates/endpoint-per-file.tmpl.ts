@@ -6,6 +6,7 @@ import type {
   CodegenDataUtils,
   CodegenProcess,
   GenerateQueryApiParams,
+  MetaInfo,
 } from '../index.js';
 
 import { LINTERS_IGNORE } from './constants.js';
@@ -22,7 +23,7 @@ export interface EndpointPerFileTmplParams extends AnyObject {
   utils: CodegenDataUtils;
   relativePathDataContracts: string;
   groupName: Maybe<string>;
-  namespace: Maybe<string>;
+  metaInfo: Maybe<MetaInfo>;
 }
 
 export const endpointPerFileTmpl = async ({
@@ -34,7 +35,7 @@ export const endpointPerFileTmpl = async ({
   utils,
   relativePathDataContracts,
   groupName,
-  namespace,
+  metaInfo,
 }: EndpointPerFileTmplParams) => {
   const { _ } = utils;
 
@@ -49,7 +50,7 @@ export const endpointPerFileTmpl = async ({
     importFileParams,
     utils,
     groupName,
-    namespace,
+    metaInfo,
   });
 
   const dataContactNames = new Set(
@@ -66,6 +67,12 @@ export const endpointPerFileTmpl = async ({
     }
   });
 
+  let metaInfoImport: string = '';
+
+  if (metaInfo) {
+    metaInfoImport = `import { ${[groupName && 'Group', metaInfo?.namespace && 'namespace', 'Tag'].filter(Boolean).join(',')} } from "../${groupName ? '../' : ''}meta-info";`;
+  }
+
   return {
     reservedDataContractNames: dataContractNamesInThisFile,
     content: await formatTSContent(`${LINTERS_IGNORE}
@@ -77,7 +84,7 @@ export const endpointPerFileTmpl = async ({
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
-      import { ${[groupName && 'Group', namespace && 'namespace'].filter(Boolean).join(',')} } from "../${groupName ? '../' : ''}__exports";
+      ${metaInfoImport}
 
       ${
         configuration.modelTypes.length > 0

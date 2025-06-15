@@ -1,12 +1,17 @@
+/* eslint-disable sonarjs/no-nested-conditional */
 import { AnyObject, Maybe } from 'yummies/utils/types';
 
 import type {
   AllImportFileParams,
   CodegenDataUtils,
   GenerateQueryApiParams,
+  MetaInfo,
 } from '../index.js';
 
-import { formatGroupNameEnumKey } from './all-exports.tmpl.js';
+import {
+  formatGroupNameEnumKey,
+  formatTagNameEnumKey,
+} from './meta-info.tmpl.js';
 
 export interface NewEndpointTmplParams {
   route: AnyObject;
@@ -15,7 +20,7 @@ export interface NewEndpointTmplParams {
   importFileParams: AllImportFileParams;
   utils: CodegenDataUtils;
   groupName: Maybe<string>;
-  namespace?: Maybe<string>;
+  metaInfo: Maybe<MetaInfo>;
 }
 
 // RequestParams["type"]
@@ -39,7 +44,7 @@ export const newEndpointTmpl = ({
   importFileParams,
   utils,
   groupName,
-  namespace,
+  metaInfo,
 }: NewEndpointTmplParams) => {
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
@@ -226,9 +231,14 @@ new ${importFileParams.endpoint.exportName}<
           .split('/')
           .filter(Boolean)
           .map((it) => `"${it}"`)}],
-        tags: [${tags.map((tag: string) => `"${tag}"`)}],
-        ${groupName ? `group: Group.${formatGroupNameEnumKey(groupName, utils)},` : ''}
-        ${namespace ? `namespace,` : ''}
+        tags: [${tags.map((tag: string) => {
+          if (metaInfo) {
+            return `Tag.${formatTagNameEnumKey(tag, utils)}`;
+          }
+          return `"${tag}"`;
+        })}],
+        ${groupName ? `group: ${metaInfo ? `Group.${formatGroupNameEnumKey(groupName, utils)}` : `"${groupName}"`},` : ''}
+        ${metaInfo?.namespace ? `namespace,` : ''}
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
     },
     ${importFileParams.queryClient.exportName},
