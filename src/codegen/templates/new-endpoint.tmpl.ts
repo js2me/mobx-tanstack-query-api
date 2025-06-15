@@ -191,7 +191,7 @@ export const newEndpointTmpl = ({
 
   const requestInputTypeDc = {
     typeIdentifier: 'type',
-    name: _.upperFirst(_.camelCase(`${route.routeName.usage}Input`)),
+    name: _.upperFirst(_.camelCase(`${route.routeName.usage}Params`)),
     content: `{
     ${inputParams
       .map(({ name, optional, type }) => {
