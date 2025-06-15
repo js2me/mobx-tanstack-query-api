@@ -13,7 +13,7 @@ import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
   EndpointQueryMeta,
   EndpointQueryOptions,
-  EndpointQueryUnitKey,
+  EndpointQueryUniqKey,
 } from './endpoint-query.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
 import { RequestParams } from './http-client.js';
@@ -27,7 +27,7 @@ export class EndpointQuery<
 > extends Query<TQueryFnData, TError, TData, TQueryData> {
   response: TEndpoint['__response'] | null = null;
 
-  private uniqKey?: EndpointQueryUnitKey;
+  private uniqKey?: EndpointQueryUniqKey;
 
   constructor(
     private endpoint: AnyEndpoint,
@@ -133,7 +133,7 @@ const getInputFromContext = (ctx: QueryFunctionContext<any, any>) => {
 const buildOptionsFromParams = (
   endpoint: AnyEndpoint,
   params: MaybeFalsy<AnyObject>,
-  uniqKey: Maybe<EndpointQueryUnitKey>,
+  uniqKey: Maybe<EndpointQueryUniqKey>,
 ) => {
   const { requiredParams } = endpoint.configuration;
   let hasRequiredParams = false;

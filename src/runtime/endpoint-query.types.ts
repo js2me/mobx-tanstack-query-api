@@ -16,7 +16,7 @@ export interface EndpointQueryMeta {
   namespace?: string;
 }
 
-export type EndpointQueryUnitKey = Maybe<
+export type EndpointQueryUniqKey = Maybe<
   FnValue<string | number | AnyObject | boolean>
 >;
 
@@ -47,6 +47,6 @@ export type EndpointQueryOptions<
   | 'queryHash'
   | 'queryKeyHashFn'
 > & {
-    uniqKey?: EndpointQueryUnitKey;
+    uniqKey?: EndpointQueryUniqKey;
     enabled?: boolean;
   };

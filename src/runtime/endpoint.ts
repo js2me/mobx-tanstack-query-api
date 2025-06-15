@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { DefaultError } from '@tanstack/query-core';
+import {
+  DefaultError,
+  InvalidateOptions,
+  InvalidateQueryFilters,
+} from '@tanstack/query-core';
 import { resolveFnValue } from 'yummies/common';
 import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
 
@@ -9,7 +13,7 @@ import { EndpointQueryClient } from './endpoint-query-client.js';
 import { EndpointQuery } from './endpoint-query.js';
 import {
   EndpointQueryOptions,
-  EndpointQueryUnitKey,
+  EndpointQueryUniqKey,
 } from './endpoint-query.types.js';
 import {
   EndpointConfiguration,
@@ -134,8 +138,8 @@ export class Endpoint<
 
   getQueryKey(
     ...args: AllPropertiesOptional<TParams> extends true
-      ? [input?: TParams, uniqKey?: EndpointQueryUnitKey]
-      : [input: TParams, uniqKey?: EndpointQueryUnitKey]
+      ? [input?: TParams, uniqKey?: EndpointQueryUniqKey]
+      : [input: TParams, uniqKey?: EndpointQueryUniqKey]
   ): any[] {
     const params = args[0] ?? ({} as TParams);
 
@@ -145,6 +149,30 @@ export class Endpoint<
       params,
       resolveFnValue(args[1]),
     ];
+  }
+
+  invalidateQuery(
+    ...args: AllPropertiesOptional<TParams> extends true
+      ? [
+          input?: TParams,
+          filters?: InvalidateQueryFilters & { uniqKey?: EndpointQueryUniqKey },
+          options?: InvalidateOptions,
+        ]
+      : [
+          input: TParams,
+          filters?: InvalidateQueryFilters & { uniqKey?: EndpointQueryUniqKey },
+          options?: InvalidateOptions,
+        ]
+  ) {
+    this.queryClient.invalidateQueries(
+      {
+        // @ts-ignore
+        queryKey: this.getQueryKey(args[0], args[1]?.uniqKey),
+        exact: true,
+        ...(args[1] as any),
+      },
+      args[2],
+    );
   }
 
   toMutation<
