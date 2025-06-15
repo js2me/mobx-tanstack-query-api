@@ -26,6 +26,7 @@ export class EndpointQuery<
   TQueryData = TQueryFnData,
 > extends Query<TQueryFnData, TError, TData, TQueryData> {
   response: TEndpoint['__response'] | null = null;
+  params: TEndpoint['__params'] | null = null;
 
   private uniqKey?: EndpointQueryUniqKey;
 
@@ -80,13 +81,14 @@ export class EndpointQuery<
         } as any;
       },
       queryFn: async (ctx): Promise<any> => {
+        const params = getParamsFromContext(ctx as any);
+
         runInAction(() => {
           this.response = null;
+          this.params = params;
         });
 
-        const input = getInputFromContext(ctx as any);
-
-        let requestParams = input.request as Maybe<RequestParams>;
+        let requestParams = params.request as Maybe<RequestParams>;
 
         if (requestParams) {
           if (!requestParams.signal) {
@@ -97,7 +99,7 @@ export class EndpointQuery<
         }
 
         const fixedInput = {
-          ...input,
+          ...params,
           request: requestParams,
         };
 
@@ -114,6 +116,7 @@ export class EndpointQuery<
     this.uniqKey = uniqKey;
 
     observable.ref(this, 'response');
+    observable.ref(this, 'params');
     makeObservable(this);
   }
 
@@ -126,7 +129,7 @@ export class EndpointQuery<
   }
 }
 
-const getInputFromContext = (ctx: QueryFunctionContext<any, any>) => {
+const getParamsFromContext = (ctx: QueryFunctionContext<any, any>) => {
   return (ctx.queryKey.at(-2) || {}) as AnyEndpoint['__params'];
 };
 
