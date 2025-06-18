@@ -117,6 +117,11 @@ export interface GenerateQueryApiParams {
   libImports?: {
     'mobx-tanstack-query-api'?: string;
   };
+
+  transforms?: {
+    groupEnumValue?: (group: string, namespace?: Maybe<string>) => string;
+    tagEnumValue?: (tag: string, namespace?: Maybe<string>) => string;
+  };
 }
 
 export type AllImportFileParams = Record<
@@ -527,6 +532,7 @@ export * as ${exportGroupName} from './endpoints';
       ...generated,
       metaInfo,
       utils,
+      codegenParams: params,
     }),
   });
 

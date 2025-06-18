@@ -1,11 +1,16 @@
 import { Maybe } from 'yummies';
 
-import { CodegenDataUtils, MetaInfo } from '../index.js';
+import {
+  CodegenDataUtils,
+  GenerateQueryApiParams,
+  MetaInfo,
+} from '../index.js';
 
 import { LINTERS_IGNORE } from './constants.js';
 
 export interface MetaInfoTmplParams {
   formatTSContent: (...args: any[]) => Promise<string>;
+  codegenParams: GenerateQueryApiParams;
   metaInfo: Maybe<MetaInfo>;
   utils: CodegenDataUtils;
 }
@@ -24,6 +29,7 @@ export const metaInfoTmpl = async ({
   metaInfo,
   utils,
   formatTSContent,
+  codegenParams,
 }: MetaInfoTmplParams) => {
   return await formatTSContent(`${LINTERS_IGNORE}
   ${[
@@ -31,13 +37,13 @@ export const metaInfoTmpl = async ({
     metaInfo?.groupNames?.length &&
       `
 export const enum Group {
-  ${metaInfo?.groupNames.map((groupName) => `${formatGroupNameEnumKey(groupName, utils)} = "${groupName}"`).join(',\n')}
+  ${metaInfo?.groupNames.map((groupName) => `${formatGroupNameEnumKey(groupName, utils)} = "${codegenParams.transforms?.groupEnumValue?.(groupName) ?? groupName}"`).join(',\n')}
 }
 `,
     metaInfo?.tags?.length &&
       `
 export const enum Tag {
-  ${metaInfo?.tags.map((tagName) => `${formatTagNameEnumKey(tagName, utils)} = "${tagName}"`).join(',\n')}
+  ${metaInfo?.tags.map((tagName) => `${formatTagNameEnumKey(tagName, utils)} = "${codegenParams.transforms?.tagEnumValue?.(tagName) ?? tagName}"`).join(',\n')}
 }
 `,
   ]
