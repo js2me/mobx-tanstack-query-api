@@ -32,18 +32,19 @@ export type RequestParams = Omit<
 export interface HttpClientConfig<TMeta = unknown> {
   baseUrl?: string;
   meta?: TMeta;
+  fetch?: typeof globalThis.fetch;
   baseApiParams?: Omit<RequestParams, 'baseUrl' | 'cancelToken' | 'signal'>;
   contentFormatters?: Record<string, (input: any) => any>;
   toQueryString?: (query?: QueryParamsType) => string;
   buildUrl?: (
     fullParams: FullRequestParams,
     formattedParts: { baseUrl: string; path: string; query: string },
+    metadata: TMeta | null,
   ) => string;
   interceptor?: (
     requestParams: RequestParams,
     metadata: TMeta | null,
   ) => Promise<RequestParams | void> | RequestParams | void;
-  fetch?: typeof fetch;
 }
 
 export interface HttpResponse<TData, TError = null, TStatus = number>
@@ -106,41 +107,55 @@ export const isHttpBadResponse = (
 };
 
 export class HttpClient<TMeta = unknown> {
-  public baseUrl: string = '';
-  public meta: TMeta | null = null;
-  public baseApiParams: RequestParams = {
-    credentials: 'same-origin',
-    headers: {},
-    redirect: 'follow',
-    referrerPolicy: 'no-referrer',
-  };
+  private config: HttpClientConfig<TMeta>;
+  private fetch: Required<HttpClientConfig<TMeta>>['fetch'];
 
-  private interceptor?: HttpClientConfig<TMeta>['interceptor'];
-  private fetch: typeof fetch;
-  private customBuildUrl: HttpClientConfig<TMeta>['buildUrl'];
-  private customToQueryString: HttpClientConfig<TMeta>['toQueryString'];
+  public meta: TMeta | null;
+  public baseApiParams: RequestParams;
 
-  badResponse: unknown = null;
+  badResponse: unknown;
 
   constructor(config?: HttpClientConfig<TMeta>) {
-    this.baseUrl = config?.baseUrl ?? '';
+    this.config = config ?? {};
+    this.badResponse = null;
     this.meta = config?.meta ?? null;
-    this.interceptor = config?.interceptor;
-    this.fetch = config?.fetch ?? fetch.bind(globalThis);
-    this.customBuildUrl = config?.buildUrl;
-    this.customToQueryString = config?.toQueryString;
+    this.fetch = config?.fetch ?? globalThis.fetch;
     this.baseApiParams = {
-      ...this.baseApiParams,
-      ...config?.baseApiParams,
+      credentials: 'same-origin',
+      headers: {},
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
     };
 
-    Object.assign(this.contentFormatters, config?.contentFormatters ?? {});
+    this.updateConfig(this.config);
 
     observable.ref(this, 'badResponse');
     observable.ref(this, 'meta');
+
     action(this, 'setMeta');
     action(this, 'setBadResponse');
+
     makeObservable(this);
+  }
+
+  get baseUrl() {
+    return this.config.baseUrl ?? '';
+  }
+
+  public updateConfig(update: Partial<HttpClientConfig<TMeta>>) {
+    Object.assign(this.config, update);
+
+    if (update.baseApiParams) {
+      Object.assign(this.baseApiParams, update.baseApiParams);
+    }
+
+    if (update.contentFormatters) {
+      Object.assign(this.contentFormatters, update.contentFormatters);
+    }
+
+    if (update.fetch) {
+      this.fetch = update.fetch;
+    }
   }
 
   public setMeta = (data: TMeta | null) => {
@@ -168,8 +183,8 @@ export class HttpClient<TMeta = unknown> {
   }
 
   protected toQueryString(rawQuery?: QueryParamsType): string {
-    if (this.customToQueryString) {
-      return this.customToQueryString(rawQuery);
+    if (this.config.toQueryString) {
+      return this.config.toQueryString(rawQuery);
     }
 
     const query = rawQuery || {};
@@ -271,8 +286,8 @@ export class HttpClient<TMeta = unknown> {
 
     const query = queryString ? `?${queryString}` : '';
 
-    if (this.customBuildUrl) {
-      return this.customBuildUrl(params, { baseUrl, path, query });
+    if (this.config.buildUrl) {
+      return this.config.buildUrl(params, { baseUrl, path, query }, this.meta);
     }
 
     const url = baseUrl + path + query;
@@ -299,9 +314,10 @@ export class HttpClient<TMeta = unknown> {
 
     let requestParams = this.mergeRequestParams(params);
 
-    if (this.interceptor) {
+    if (this.config.interceptor) {
       requestParams =
-        (await this.interceptor(requestParams, this.meta)) ?? requestParams;
+        (await this.config.interceptor(requestParams, this.meta)) ??
+        requestParams;
     }
 
     const payloadFormatter = this.contentFormatters[contentType];
