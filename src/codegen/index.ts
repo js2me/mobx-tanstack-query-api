@@ -22,6 +22,8 @@ export type CodegenDataUtils = {
   formatModelName: (modelName: string) => string;
 };
 
+type FilterEndpointsFn = (endpoint: AnyObject) => boolean;
+
 export type CodegenProcess = AnyObject;
 
 export interface ImportFileParams {
@@ -52,7 +54,7 @@ export interface GenerateQueryApiParams {
    * Group endpoints and collect it into object
    */
   groupBy?:
-    | ((route: AnyObject) => string)
+    | ((endpoint: AnyObject) => string)
     | `path-segment`
     | `path-segment-${number}`
     | `tag`
@@ -110,7 +112,7 @@ export interface GenerateQueryApiParams {
 
   otherCodegenParams?: AnyObject;
 
-  filterRoutes?: (route: AnyObject) => boolean;
+  filterEndpoints?: FilterEndpointsFn | RegExp | RegExp[];
 
   filterGroups?: (groupName: string) => boolean;
 
@@ -295,21 +297,41 @@ export const generateApi = async (
   codegenFs.cleanDir(params.output);
   codegenFs.createDir(params.output);
 
-  let allRoutes = Object.values(generated.configuration.routes)
+  const allRoutes = Object.values(generated.configuration.routes)
     .flat()
     .flatMap((routeGroup) =>
       'routes' in routeGroup ? routeGroup.routes : routeGroup,
     );
 
-  allRoutes = params.filterRoutes
-    ? allRoutes.filter(params.filterRoutes)
-    : allRoutes;
+  let filterEndpoints: FilterEndpointsFn;
+
+  if (params.filterEndpoints) {
+    if (typeof params.filterEndpoints === 'function') {
+      filterEndpoints = params.filterEndpoints;
+    } else {
+      const regexps = Array.isArray(params.filterEndpoints)
+        ? params.filterEndpoints
+        : [params.filterEndpoints];
+
+      filterEndpoints = (route) =>
+        regexps.some((regexp) => {
+          if (!route.raw) {
+            return false;
+          }
+
+          return regexp.test(route.raw.operationId);
+        });
+    }
+  } else {
+    filterEndpoints = () => true;
+  }
 
   const reservedDataContractNamesMap = new Map<string, number>();
 
   const collectedExportFiles: string[] = [];
 
   const groupsMap = new Map<string, AnyObject[]>();
+  const nonEmptyGroups = new Set<string>();
   const tagsSet = new Set<string>();
 
   if (params.groupBy == null) {
@@ -346,6 +368,10 @@ export const generateApi = async (
           (reservedDataContractNamesMap.get(name) ?? 0) + 1,
         );
       });
+
+      if (!filterEndpoints(route)) {
+        continue;
+      }
 
       const fileName = `${_.kebabCase(route.routeName.usage)}.ts`;
 
@@ -419,6 +445,8 @@ export const generateApi = async (
         path.resolve(params.output, _.kebabCase(groupName), 'endpoints'),
       );
 
+      let hasFilteredRoutes = false;
+
       for await (const route of routes) {
         const {
           content: requestInfoPerFileContent,
@@ -438,16 +466,22 @@ export const generateApi = async (
           },
         });
 
-        if (Array.isArray(route.raw.tags)) {
-          route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
-        }
-
         reservedDataContractNames.forEach((name) => {
           reservedDataContractNamesMap.set(
             name,
             (reservedDataContractNamesMap.get(name) ?? 0) + 1,
           );
         });
+
+        if (!filterEndpoints(route)) {
+          continue;
+        }
+
+        hasFilteredRoutes = true;
+
+        if (Array.isArray(route.raw.tags)) {
+          route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
+        }
 
         const fileName = `${_.kebabCase(route.routeName.usage)}.ts`;
 
@@ -465,41 +499,52 @@ export const generateApi = async (
         });
       }
 
-      const exportGroupName = params.formatExportGroupName
-        ? params.formatExportGroupName(_.camelCase(groupName), utils)
-        : _.camelCase(groupName);
+      if (hasFilteredRoutes) {
+        nonEmptyGroups.add(groupName);
+        const exportGroupName = params.formatExportGroupName
+          ? params.formatExportGroupName(_.camelCase(groupName), utils)
+          : _.camelCase(groupName);
 
-      codegenFs.createFile({
-        path: path.resolve(params.output, _.kebabCase(groupName)),
-        fileName: 'index.ts',
-        withPrefix: false,
-        content: `${LINTERS_IGNORE}
+        codegenFs.createFile({
+          path: path.resolve(params.output, _.kebabCase(groupName)),
+          fileName: 'index.ts',
+          withPrefix: false,
+          content: `${LINTERS_IGNORE}
 export * as ${exportGroupName} from './endpoints';
 `,
-      });
+        });
 
-      codegenFs.createFile({
-        path: path.resolve(params.output, _.kebabCase(groupName), 'endpoints'),
-        fileName: 'index.ts',
-        withPrefix: false,
-        content: await indexTsForEndpointPerFileTmpl({
-          ...generated,
-          apiParams: params,
-          codegenProcess,
-          generatedRequestFileNames: fileNamesWithRequestInfo,
-        }),
-      });
+        codegenFs.createFile({
+          path: path.resolve(
+            params.output,
+            _.kebabCase(groupName),
+            'endpoints',
+          ),
+          fileName: 'index.ts',
+          withPrefix: false,
+          content: await indexTsForEndpointPerFileTmpl({
+            ...generated,
+            apiParams: params,
+            codegenProcess,
+            generatedRequestFileNames: fileNamesWithRequestInfo,
+          }),
+        });
 
-      collectedExportFiles.push(_.kebabCase(groupName));
+        collectedExportFiles.push(_.kebabCase(groupName));
+      } else {
+        codegenFs.removeDir(
+          path.resolve(params.output, _.kebabCase(groupName)),
+        );
+      }
     }
     // #endregion
   }
 
   const metaInfo: Maybe<MetaInfo> =
-    (namespace ?? groupsMap.size > 0)
+    (namespace ?? nonEmptyGroups.size > 0)
       ? {
           namespace,
-          groupNames: [...groupsMap.keys()],
+          groupNames: [...nonEmptyGroups.values()],
           tags: [...tagsSet.values()],
         }
       : null;
