@@ -541,7 +541,7 @@ export * as ${exportGroupName} from './endpoints';
   }
 
   const metaInfo: Maybe<MetaInfo> =
-    (namespace ?? nonEmptyGroups.size > 0)
+    (namespace ?? (nonEmptyGroups.size > 0 || tagsSet.size > 0))
       ? {
           namespace,
           groupNames: [...nonEmptyGroups.values()],

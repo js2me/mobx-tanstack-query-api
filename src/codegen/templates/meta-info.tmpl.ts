@@ -1,4 +1,4 @@
-import { Maybe } from 'yummies';
+import { AnyObject, Maybe } from 'yummies';
 
 import {
   CodegenDataUtils,
@@ -30,7 +30,15 @@ export const metaInfoTmpl = async ({
   utils,
   formatTSContent,
   codegenParams,
+  ...other
 }: MetaInfoTmplParams) => {
+  const tagsMap = new Map<string, AnyObject>(
+    (other as any).configuration?.apiConfig?.tags?.map((it: AnyObject) => [
+      it.name,
+      it,
+    ]),
+  );
+
   return await formatTSContent(`${LINTERS_IGNORE}
   ${[
     metaInfo?.namespace && `export const namespace = "${metaInfo?.namespace}";`,
@@ -43,7 +51,18 @@ export const enum Group {
     metaInfo?.tags?.length &&
       `
 export const enum Tag {
-  ${metaInfo?.tags.map((tagName) => `${formatTagNameEnumKey(tagName, utils)} = "${codegenParams.transforms?.tagEnumValue?.(tagName) ?? tagName}"`).join(',\n')}
+  ${metaInfo?.tags
+    .map((tagName) => {
+      const tagData = tagsMap.get(tagName);
+
+      return [
+        tagData?.description && `/** ${tagData.description} */`,
+        `${formatTagNameEnumKey(tagName, utils)} = "${codegenParams.transforms?.tagEnumValue?.(tagName) ?? tagName}"`,
+      ]
+        .filter(Boolean)
+        .join('\n');
+    })
+    .join(',\n')}
 }
 `,
   ]
