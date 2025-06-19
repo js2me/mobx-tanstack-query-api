@@ -3,16 +3,43 @@ import { ExportedDeclarations, Project, SyntaxKind, Node } from 'ts-morph';
 
 import path from 'node:path';
 
-const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
+export interface RemoveUnusedTypesParams {
+  directory: string;
+  keepTypes?: RegExp | (RegExp | string)[];
+}
+
+const checkAbleToRemoveType = (
+  typeName: string,
+  keepTypes?: RemoveUnusedTypesParams['keepTypes'],
+) => {
+  if (!keepTypes) {
+    return true;
+  }
+
+  const keepTypesArr = Array.isArray(keepTypes) ? keepTypes : [keepTypes];
+
+  return keepTypesArr.every((keepTypeCheck) => {
+    if (typeof keepTypeCheck === 'string') {
+      return typeName !== keepTypeCheck;
+    } else {
+      return !keepTypeCheck.test(typeName);
+    }
+  });
+};
+
+const removeUnusedTypesItteration = async ({
+  directory,
+  keepTypes,
+}: RemoveUnusedTypesParams) => {
   const project = new Project();
 
   project.addSourceFilesAtPaths([
-    path.join(dir, '**/*.ts'),
-    path.join(dir, '**/*.tsx'),
+    path.join(directory, '**/*.ts'),
+    path.join(directory, '**/*.tsx'),
   ]);
 
   const dataContractsSourceFile = project.getSourceFile((sourceFile) =>
-    sourceFile.getFilePath().includes(`${dir}/data-contracts.ts`),
+    sourceFile.getFilePath().includes(`${directory}/data-contracts.ts`),
   );
 
   if (!dataContractsSourceFile) return;
@@ -117,7 +144,7 @@ const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
     if (usedTypes.has(name)) continue;
 
     for (const decl of declarations) {
-      if ('remove' in decl) {
+      if ('remove' in decl && checkAbleToRemoveType(name, keepTypes)) {
         decl.remove();
         removedCount++;
       }
@@ -131,9 +158,9 @@ const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
   return removedCount;
 };
 
-export const removeUnusedTypes = async ({ dir }: { dir: string }) => {
+export const removeUnusedTypes = async (params: RemoveUnusedTypesParams) => {
   while (true) {
-    const removedCount = (await removeUnusedTypesItteration({ dir })) ?? 0;
+    const removedCount = (await removeUnusedTypesItteration(params)) ?? 0;
     if (removedCount === 0) break;
   }
 };

@@ -12,7 +12,10 @@ import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
 import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
 import { indexTsForEndpointPerFileTmpl } from './templates/index-ts-for-endpoint-per-file.tmpl.js';
 import { metaInfoTmpl } from './templates/meta-info.tmpl.js';
-import { removeUnusedTypes } from './utils/remove-unused-types.js';
+import {
+  removeUnusedTypes,
+  RemoveUnusedTypesParams,
+} from './utils/remove-unused-types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -48,7 +51,11 @@ export interface GenerateQueryApiParams {
   requestPathSuffix?: string;
   requestInfoPrefix?: string;
 
-  removeUnusedTypes?: boolean;
+  removeUnusedTypes?:
+    | true
+    | {
+        keepTypes?: RemoveUnusedTypesParams['keepTypes'];
+      };
 
   formatExportGroupName?: (
     groupName: string,
@@ -630,7 +637,11 @@ export * as ${namespace} from './__exports';
 
   if (params.removeUnusedTypes) {
     removeUnusedTypes({
-      dir: params.output,
+      directory: params.output,
+      keepTypes:
+        params.removeUnusedTypes === true
+          ? undefined
+          : params.removeUnusedTypes.keepTypes,
     });
   }
 };
