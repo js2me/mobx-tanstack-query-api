@@ -1,3 +1,4 @@
+import { splitTextByLines } from 'yummies/text';
 import { AnyObject } from 'yummies/utils/types';
 
 import { GenerateQueryApiParams } from '../index.js';
@@ -25,10 +26,19 @@ export const endpointJSDocTmpl = ({
   const jsDocLines: { name?: string; content?: string }[] = [];
 
   if (rawRoute.description) {
-    jsDocLines.push({
-      name: 'description',
-      content: formatDescription(rawRoute.description, true),
-    });
+    const descriptionLines = splitTextByLines(rawRoute.description, 60)
+      .filter(Boolean)
+      .map((line) => ({
+        content: formatDescription(line, true),
+      }));
+
+    if (descriptionLines.length > 0) {
+      jsDocLines.push(...descriptionLines, { content: '' });
+    } else {
+      jsDocLines.push({
+        content: 'No description',
+      });
+    }
   } else {
     jsDocLines.push({
       content: 'No description',
