@@ -1,5 +1,5 @@
 /* eslint-disable no-constant-condition */
-import { ExportedDeclarations, Project, SyntaxKind } from 'ts-morph';
+import { ExportedDeclarations, Project, SyntaxKind, Node } from 'ts-morph';
 
 import path from 'node:path';
 
@@ -25,7 +25,8 @@ const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
     const validDeclarations = declarations.filter(
       (decl) =>
         decl.getKind() === SyntaxKind.InterfaceDeclaration ||
-        decl.getKind() === SyntaxKind.TypeAliasDeclaration,
+        decl.getKind() === SyntaxKind.TypeAliasDeclaration ||
+        decl.getKind() === SyntaxKind.EnumDeclaration,
     );
 
     if (validDeclarations.length > 0) {
@@ -42,11 +43,23 @@ const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
 
   for (const file of externalFiles) {
     const identifiers = file.getDescendantsOfKind(SyntaxKind.Identifier);
-
     for (const identifier of identifiers) {
       const name = identifier.getText();
       if (candidateTypes.has(name)) {
         usedTypes.add(name);
+      }
+    }
+
+    const memberAccessExpressions = file.getDescendantsOfKind(
+      SyntaxKind.PropertyAccessExpression,
+    );
+    for (const expr of memberAccessExpressions) {
+      const expression = expr.getExpression();
+      if (Node.isIdentifier(expression)) {
+        const name = expression.getText();
+        if (candidateTypes.has(name)) {
+          usedTypes.add(name);
+        }
       }
     }
   }
@@ -57,12 +70,23 @@ const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
     const dependencies = new Set<string>();
 
     for (const decl of declarations) {
-      const identifiers = decl.getDescendantsOfKind(SyntaxKind.Identifier);
+      const typeReferences = decl.getDescendantsOfKind(
+        SyntaxKind.TypeReference,
+      );
+      for (const ref of typeReferences) {
+        const typeName = ref.getTypeName().getText();
+        if (candidateTypes.has(typeName)) {
+          dependencies.add(typeName);
+        }
+      }
 
-      for (const ident of identifiers) {
-        const refName = ident.getText();
-        if (candidateTypes.has(refName)) {
-          dependencies.add(refName);
+      if (decl.getKind() === SyntaxKind.EnumDeclaration) {
+        const initializers = decl.getDescendantsOfKind(SyntaxKind.Identifier);
+        for (const init of initializers) {
+          const text = init.getText();
+          if (candidateTypes.has(text)) {
+            dependencies.add(text);
+          }
         }
       }
     }
