@@ -99,17 +99,17 @@ const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
   }
 
   if (removedCount > 0) {
-    dataContractsSourceFile.saveSync();
+    await dataContractsSourceFile.save();
   }
+
+  return removedCount;
 };
 
 export const removeUnusedTypes = async ({ dir }: { dir: string }) => {
-  const itterations = Array.from({ length: 3 })
-    .fill(null)
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    .map(() => () => removeUnusedTypesItteration({ dir }));
+  let lastRemovedCount: null | number = null;
 
-  for await (const itteration of itterations) {
-    itteration();
+  while (lastRemovedCount === null || lastRemovedCount > 0) {
+    const removedCount = await removeUnusedTypesItteration({ dir });
+    lastRemovedCount = removedCount ?? 0;
   }
 };
