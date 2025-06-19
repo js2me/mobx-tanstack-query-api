@@ -46,7 +46,7 @@
     "mobx-tanstack-query": "^5.3.1",
     "swagger-typescript-api": "13.2.1",
     "ts-morph": "^26.0.0",
-    "yummies": "^3.3.0"
+    "yummies": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.17.11",

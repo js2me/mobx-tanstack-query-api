@@ -1,4 +1,4 @@
-import { AnyObject, Maybe } from 'yummies';
+import { AnyObject, Maybe } from 'yummies/utils/types';
 
 import {
   CodegenDataUtils,

@@ -1,4 +1,4 @@
-import { Maybe } from 'yummies';
+import { Maybe } from 'yummies/utils/types';
 
 import { CodegenDataUtils, MetaInfo } from '../index.js';
 
