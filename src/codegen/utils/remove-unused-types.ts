@@ -1,100 +1,76 @@
-import {
-  ExportedDeclarations,
-  Project,
-  SourceFile,
-  SyntaxKind,
-} from 'ts-morph';
-import { Maybe } from 'yummies';
+import { ExportedDeclarations, Project, SyntaxKind } from 'ts-morph';
 
 import path from 'node:path';
 
 const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
-  // Создаем проект в памяти
   const project = new Project();
 
-  // Добавляем все TS/TSX файлы из указанной директории
   project.addSourceFilesAtPaths([
     path.join(dir, '**/*.ts'),
     path.join(dir, '**/*.tsx'),
   ]);
 
-  const sourceFiles = project.getSourceFiles();
-  const typeDeclarations = new Map();
-  const usedTypes = new Set<string>();
-  let dataContractsSourceFile: Maybe<SourceFile>;
+  const dataContractsSourceFile = project.getSourceFile((sourceFile) =>
+    sourceFile.getFilePath().includes(`${dir}/data-contracts.ts`),
+  );
 
-  // Шаг 1: Собираем все объявления типов
-  for (const file of sourceFiles) {
-    if (file.getFilePath().includes(`${dir}/data-contracts.ts`)) {
-      dataContractsSourceFile = file;
-    }
+  if (!dataContractsSourceFile) return;
 
-    // Интерфейсы
-    for (const intf of file.getInterfaces()) {
-      const name = intf.getName();
-      typeDeclarations.set(name, {
-        node: intf,
-        file: file.getFilePath(),
-        line: intf.getStartLineNumber(),
-      });
-    }
+  const exportedDeclarations =
+    dataContractsSourceFile.getExportedDeclarations();
+  const candidateTypes = new Map<string, ExportedDeclarations[]>();
 
-    // Type-алиасы
-    for (const typeAlias of file.getTypeAliases()) {
-      const name = typeAlias.getName();
-      typeDeclarations.set(name, {
-        node: typeAlias,
-        file: file.getFilePath(),
-        line: typeAlias.getStartLineNumber(),
-      });
+  for (const [name, declarations] of exportedDeclarations) {
+    const validDeclarations = declarations.filter(
+      (decl) =>
+        decl.getKind() === SyntaxKind.InterfaceDeclaration ||
+        decl.getKind() === SyntaxKind.TypeAliasDeclaration,
+    );
+
+    if (validDeclarations.length > 0) {
+      candidateTypes.set(name, validDeclarations);
     }
   }
 
-  // Шаг 2: Ищем использования типов
+  if (candidateTypes.size === 0) return;
+
+  const usedTypes = new Set<string>();
+  const sourceFiles = project.getSourceFiles();
+
   for (const file of sourceFiles) {
-    // Проверяем все идентификаторы в файле
     const identifiers = file.getDescendantsOfKind(SyntaxKind.Identifier);
 
     for (const identifier of identifiers) {
       const name = identifier.getText();
 
-      if (typeDeclarations.has(name)) {
+      if (!candidateTypes.has(name)) continue;
+
+      if (file === dataContractsSourceFile) {
         const parent = identifier.getParent();
-        const declaration = typeDeclarations.get(name).node;
 
-        // Игнорируем само объявление типа
-        const isDeclaration = parent === declaration;
+        const isDeclaration =
+          parent?.getKind() === SyntaxKind.InterfaceDeclaration ||
+          parent?.getKind() === SyntaxKind.TypeAliasDeclaration;
 
-        // Игнорируем экспорт типа
         const isExport = parent?.getKind() === SyntaxKind.ExportSpecifier;
 
-        if (!isDeclaration && !isExport) {
-          usedTypes.add(name);
-        }
+        if (isDeclaration || isExport) continue;
       }
-    }
-  }
 
-  if (!dataContractsSourceFile) {
-    return;
+      usedTypes.add(name);
+    }
   }
 
   let removedCount = 0;
 
-  const exportedDeclarations =
-    dataContractsSourceFile.getExportedDeclarations();
+  for (const [name, declarations] of candidateTypes) {
+    if (usedTypes.has(name)) continue;
 
-  // Шаг 3: Фильтруем неиспользуемые типы
-  for (const [name] of typeDeclarations) {
-    if (!usedTypes.has(name) && exportedDeclarations.has(name)) {
-      const declarations = exportedDeclarations.get(name);
-
-      declarations?.forEach((declaration: ExportedDeclarations) => {
-        if ('remove' in declaration) {
-          declaration.remove();
-          removedCount++;
-        }
-      });
+    for (const decl of declarations) {
+      if ('remove' in decl) {
+        decl.remove();
+        removedCount++;
+      }
     }
   }
 
@@ -106,10 +82,9 @@ const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
 };
 
 export const removeUnusedTypes = async ({ dir }: { dir: string }) => {
-  let lastRemovedCount: null | number = null;
-
-  while (lastRemovedCount === null || lastRemovedCount > 0) {
-    const removedCount = await removeUnusedTypesItteration({ dir });
-    lastRemovedCount = removedCount ?? 0;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const removedCount = (await removeUnusedTypesItteration({ dir })) ?? 0;
+    if (removedCount === 0) break;
   }
 };
