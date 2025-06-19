@@ -29,7 +29,7 @@ export const endpointJSDocTmpl = ({
     const summaryLines = splitTextByLines(rawRoute.summary, 60)
       .filter(Boolean)
       .map((line) => ({
-        content: formatDescription(line, true),
+        content: `**${formatDescription(line, true)}**`,
       }));
 
     if (summaryLines.length > 0) {
@@ -73,7 +73,7 @@ export const endpointJSDocTmpl = ({
 
   jsDocLines.push({
     name: 'request',
-    content: `${_.upperCase(routeRequest.method)}:${rawRoute.route}`,
+    content: `**${_.upperCase(routeRequest.method)}:${rawRoute.route}**`,
   });
 
   if (rawRoute.deprecated) {
