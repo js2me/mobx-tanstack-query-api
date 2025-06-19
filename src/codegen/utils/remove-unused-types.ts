@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 import { ExportedDeclarations, Project, SyntaxKind } from 'ts-morph';
 
 import path from 'node:path';
@@ -35,29 +36,54 @@ const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
   if (candidateTypes.size === 0) return;
 
   const usedTypes = new Set<string>();
-  const sourceFiles = project.getSourceFiles();
+  const externalFiles = project
+    .getSourceFiles()
+    .filter((sf) => sf !== dataContractsSourceFile);
 
-  for (const file of sourceFiles) {
+  for (const file of externalFiles) {
     const identifiers = file.getDescendantsOfKind(SyntaxKind.Identifier);
 
     for (const identifier of identifiers) {
       const name = identifier.getText();
-
-      if (!candidateTypes.has(name)) continue;
-
-      if (file === dataContractsSourceFile) {
-        const parent = identifier.getParent();
-
-        const isDeclaration =
-          parent?.getKind() === SyntaxKind.InterfaceDeclaration ||
-          parent?.getKind() === SyntaxKind.TypeAliasDeclaration;
-
-        const isExport = parent?.getKind() === SyntaxKind.ExportSpecifier;
-
-        if (isDeclaration || isExport) continue;
+      if (candidateTypes.has(name)) {
+        usedTypes.add(name);
       }
+    }
+  }
 
-      usedTypes.add(name);
+  const dependencyGraph = new Map<string, Set<string>>();
+
+  for (const [name, declarations] of candidateTypes) {
+    const dependencies = new Set<string>();
+
+    for (const decl of declarations) {
+      const identifiers = decl.getDescendantsOfKind(SyntaxKind.Identifier);
+
+      for (const ident of identifiers) {
+        const refName = ident.getText();
+        if (candidateTypes.has(refName)) {
+          dependencies.add(refName);
+        }
+      }
+    }
+
+    dependencyGraph.set(name, dependencies);
+  }
+
+  const queue = Array.from(usedTypes);
+  const visited = new Set(usedTypes);
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+
+    if (dependencyGraph.has(current)) {
+      for (const dep of dependencyGraph.get(current)!) {
+        if (!visited.has(dep)) {
+          visited.add(dep);
+          usedTypes.add(dep);
+          queue.push(dep);
+        }
+      }
     }
   }
 
@@ -82,7 +108,6 @@ const removeUnusedTypesItteration = async ({ dir }: { dir: string }) => {
 };
 
 export const removeUnusedTypes = async ({ dir }: { dir: string }) => {
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const removedCount = (await removeUnusedTypesItteration({ dir })) ?? 0;
     if (removedCount === 0) break;
