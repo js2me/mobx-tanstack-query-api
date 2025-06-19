@@ -55,8 +55,14 @@ export const enum Tag {
     .map((tagName) => {
       const tagData = tagsMap.get(tagName);
 
+      let description = tagData?.description;
+
+      if (!description) {
+        description = utils._.words(tagName).join(' ');
+      }
+
       return [
-        tagData?.description && `/** ${tagData.description} */`,
+        description && `/** ${description} */`,
         `${formatTagNameEnumKey(tagName, utils)} = "${codegenParams.transforms?.tagEnumValue?.(tagName) ?? tagName}"`,
       ]
         .filter(Boolean)

@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-process-exit */
 import { LoDashStatic } from 'lodash';
 import { generateApi as generateApiFromSwagger } from 'swagger-typescript-api';
 import { AnyObject, KeyOfByValue, Maybe } from 'yummies/utils/types';
@@ -11,10 +12,12 @@ import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
 import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
 import { indexTsForEndpointPerFileTmpl } from './templates/index-ts-for-endpoint-per-file.tmpl.js';
 import { metaInfoTmpl } from './templates/meta-info.tmpl.js';
+import { removeUnusedTypes } from './utils/remove-unused-types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(__filename);
+const __execdirname = process.cwd();
 
 export type CodegenDataUtils = {
   _: LoDashStatic;
@@ -44,6 +47,8 @@ export interface GenerateQueryApiParams {
   requestPathPrefix?: string;
   requestPathSuffix?: string;
   requestInfoPrefix?: string;
+
+  removeUnusedTypes?: boolean;
 
   formatExportGroupName?: (
     groupName: string,
@@ -120,6 +125,8 @@ export interface GenerateQueryApiParams {
     'mobx-tanstack-query-api'?: string;
   };
 
+  tsconfigPath?: string;
+
   transforms?: {
     groupEnumValue?: (group: string, namespace?: Maybe<string>) => string;
     tagEnumValue?: (tag: string, namespace?: Maybe<string>) => string;
@@ -138,6 +145,12 @@ export const generateApi = async (
     await Promise.all(params.map((param) => generateApi(param)));
     return;
   }
+
+  const tsconfigPath = params.tsconfigPath
+    ? path.resolve(__execdirname, params.tsconfigPath)
+    : path.resolve(__execdirname, './tsconfig.json');
+
+  console.info('using tsconfig', tsconfigPath);
 
   const importFileParams: AllImportFileParams = {
     queryClient:
@@ -612,6 +625,12 @@ export * as ${namespace} from './__exports';
         metaInfo,
         utils,
       }),
+    });
+  }
+
+  if (params.removeUnusedTypes) {
+    removeUnusedTypes({
+      dir: params.output,
     });
   }
 };

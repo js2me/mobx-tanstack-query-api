@@ -45,6 +45,7 @@
     "http-status-code-types": "^0.0.2",
     "mobx-tanstack-query": "^5.3.1",
     "swagger-typescript-api": "13.2.1",
+    "ts-morph": "^26.0.0",
     "yummies": "^3.2.9"
   },
   "devDependencies": {
