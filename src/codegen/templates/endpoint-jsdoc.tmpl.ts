@@ -25,6 +25,18 @@ export const endpointJSDocTmpl = ({
 
   const jsDocLines: { name?: string; content?: string }[] = [];
 
+  if (rawRoute.summary) {
+    const summaryLines = splitTextByLines(rawRoute.summary, 60)
+      .filter(Boolean)
+      .map((line) => ({
+        content: formatDescription(line, true),
+      }));
+
+    if (summaryLines.length > 0) {
+      jsDocLines.push(...summaryLines, { content: '' });
+    }
+  }
+
   if (rawRoute.description) {
     const descriptionLines = splitTextByLines(rawRoute.description, 60)
       .filter(Boolean)
@@ -56,13 +68,6 @@ export const endpointJSDocTmpl = ({
     jsDocLines.push({
       name: 'tags',
       content: rawRoute.tags.join(', '),
-    });
-  }
-
-  if (rawRoute.summary) {
-    jsDocLines.push({
-      name: 'summary',
-      content: rawRoute.summary,
     });
   }
 
