@@ -43,6 +43,6 @@ export const dataContractsFileTmpl = async ({
 
   return await formatTSContent(`${LINTERS_IGNORE}
 
-${contractDefinitions.join('\n\n')}
+${contractDefinitions.length > 0 ? contractDefinitions.join('\n\n') : `export {}`}
   `);
 };
