@@ -226,7 +226,7 @@ new ${importFileParams.endpoint.exportName}<
             ...${requestConfigParam.name},
         }),
         requiredParams: [${inputParams.filter((it) => !it.optional).map((it) => `"${it.name}"`)}],
-        operationId: "${raw.operationId}",
+        operationId: "${raw.operationId || importFileParams.endpoint.exportName}",
         path: [${pathDeclaration
           .split('/')
           .filter(Boolean)
