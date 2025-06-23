@@ -52,11 +52,11 @@ export const dataContractTmpl = async ({
   let jsdoc = '';
 
   if (contract.description) {
-    jsdoc = `/**\n * ${formatDescription(contract.description, true)}\n */`;
+    jsdoc = `/**\n * ${formatDescription(contract.description, true)}\n */\n`;
   }
 
   if (jsdoc) {
-    result += jsdoc + '\n\n';
+    result += jsdoc;
   }
 
   const templateFn =
