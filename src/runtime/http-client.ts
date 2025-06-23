@@ -119,7 +119,10 @@ export class HttpClient<TMeta = unknown> {
     this.config = config ?? {};
     this.badResponse = null;
     this.meta = config?.meta ?? null;
-    this.fetch = config?.fetch ?? globalThis.fetch;
+    this.fetch =
+      config?.fetch ??
+      ((...fetchParams: Parameters<typeof globalThis.fetch>) =>
+        globalThis.fetch(...fetchParams));
     this.baseApiParams = {
       credentials: 'same-origin',
       headers: {},
