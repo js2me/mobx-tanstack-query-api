@@ -43,7 +43,7 @@ export const dataContractTmpl = async ({
       return `interface ${contract.name}${buildGenerics(contract)} {\r\n${contract.content}}`;
     },
     type: (contract: any) => {
-      return `type ${contract.name}${buildGenerics(contract)} = ${contract.content}`;
+      return `type ${contract.name}${buildGenerics(contract)} = ${contract.content === contract.name ? 'any' : contract.content}`;
     },
   };
 
