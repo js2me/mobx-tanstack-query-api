@@ -27,8 +27,8 @@ importers:
         specifier: ^5.3.1
         version: 5.3.1(@tanstack/query-core@5.80.6)(mobx@6.13.7)
       swagger-typescript-api:
-        specifier: 13.2.1
-        version: 13.2.1
+        specifier: 13.2.3
+        version: 13.2.3
       ts-morph:
         specifier: ^26.0.0
         version: 26.0.0
@@ -708,12 +708,12 @@ packages:
     resolution: {integrity: sha512-+EzkxvLNfiUeKMgy/3luqfsCWFRXLb7U6wNQTk60tovuckwB15B191tJWvpp4HjiQWdJkCxO3Wbvc6jlk3Xb2Q==}
     engines: {node: '>=6.9.0'}
 
-  '@biomejs/js-api@0.8.0-beta.3':
-    resolution: {integrity: sha512-Rlljal9Wwdt2OgOnTUdlvzUEVKNzTCeEPekXTjQT6uwZE21akpviljo5u3HNPkW55Sh8zqHDZ/3d9gI4yoEv2A==}
+  '@biomejs/js-api@1.0.0':
+    resolution: {integrity: sha512-69OfQ7+09AtiCIg+k+aU3rEsGit5o/SJWCS3BeBH/2nJYdJGi0cIx+ybka8i1EK69aNcZxYO1y1iAAEmYMq1HA==}
     peerDependencies:
-      '@biomejs/wasm-bundler': ^1.9.4
-      '@biomejs/wasm-nodejs': ^1.9.4
-      '@biomejs/wasm-web': ^1.9.4
+      '@biomejs/wasm-bundler': ^2.0.0
+      '@biomejs/wasm-nodejs': ^2.0.0
+      '@biomejs/wasm-web': ^2.0.0
     peerDependenciesMeta:
       '@biomejs/wasm-bundler':
         optional: true
@@ -722,8 +722,8 @@ packages:
       '@biomejs/wasm-web':
         optional: true
 
-  '@biomejs/wasm-nodejs@2.0.0-beta.6':
-    resolution: {integrity: sha512-UI8uhz8YUjROBqr8OX3M8aK5Dw+MQfpE3D8sODCoE1CHH/4lvYdYksO/hU6qUe7qOYTI/Dyf2/DOQA5XRvRtAg==}
+  '@biomejs/wasm-nodejs@2.0.0':
+    resolution: {integrity: sha512-jcMpFDXura5J9MfL2DB8Qw5Cyg5zJXkzI8Ro/VYEC3R4oPnrqEvnPj5hEu70IVtlUPj1DZjrMRi+o2vqZurXEQ==}
 
   '@csstools/color-helpers@5.0.2':
     resolution: {integrity: sha512-JqWH1vsgdGcw2RR6VliXXdA0/59LttzlU8UlRT/iUUsEeWfYq8I+K0yhihEUTTHLRm1EXvpsCx3083EU15ecsA==}
@@ -3239,8 +3239,8 @@ packages:
   swagger-schema-official@2.0.0-bab6bed:
     resolution: {integrity: sha512-rCC0NWGKr/IJhtRuPq/t37qvZHI/mH4I4sxflVM+qgVe5Z2uOCivzWaVbuioJaB61kvm5UvB7b49E+oBY0M8jA==}
 
-  swagger-typescript-api@13.2.1:
-    resolution: {integrity: sha512-2mf2rM0JGnNFFeJ3GUVg63H3iG/1XKlYEI1EM/BODz6ts0Vyx2quZtUKE3VCeZNSGklbPFbiMW4ORl/qpLXEhQ==}
+  swagger-typescript-api@13.2.3:
+    resolution: {integrity: sha512-OnENkEVq6XpOPmr+rVcXp6WLHRm/OWmtql7UFpbtFpKeymgWpi/Cgi15LSLrVC1F6VCWYA64Gn7TZRZpchoy0Q==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -4423,11 +4423,11 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
-  '@biomejs/js-api@0.8.0-beta.3(@biomejs/wasm-nodejs@2.0.0-beta.6)':
+  '@biomejs/js-api@1.0.0(@biomejs/wasm-nodejs@2.0.0)':
     optionalDependencies:
-      '@biomejs/wasm-nodejs': 2.0.0-beta.6
+      '@biomejs/wasm-nodejs': 2.0.0
 
-  '@biomejs/wasm-nodejs@2.0.0-beta.6': {}
+  '@biomejs/wasm-nodejs@2.0.0': {}
 
   '@csstools/color-helpers@5.0.2': {}
 
@@ -7130,10 +7130,10 @@ snapshots:
 
   swagger-schema-official@2.0.0-bab6bed: {}
 
-  swagger-typescript-api@13.2.1:
+  swagger-typescript-api@13.2.3:
     dependencies:
-      '@biomejs/js-api': 0.8.0-beta.3(@biomejs/wasm-nodejs@2.0.0-beta.6)
-      '@biomejs/wasm-nodejs': 2.0.0-beta.6
+      '@biomejs/js-api': 1.0.0(@biomejs/wasm-nodejs@2.0.0)
+      '@biomejs/wasm-nodejs': 2.0.0
       '@types/swagger-schema-official': 2.0.25
       c12: 3.0.4
       citty: 0.1.6

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable unicorn/no-process-exit */
 import { LoDashStatic } from 'lodash';
 import { generateApi as generateApiFromSwagger } from 'swagger-typescript-api';
@@ -252,6 +253,15 @@ export const generateApi = async (
     hooks: {
       onInit: (configuration, codeGenProcessFromInit) => {
         codegenProcess = codeGenProcessFromInit;
+
+        // @ts-ignore
+        configuration.swaggerSchema.components =
+          // @ts-ignore
+          configuration.swaggerSchema.components || {};
+        // @ts-ignore
+        configuration.swaggerSchema.components.schemas =
+          // @ts-ignore
+          configuration.swaggerSchema.components.schemas || {};
 
         return codegenParams?.hooks?.onInit?.(
           configuration,
