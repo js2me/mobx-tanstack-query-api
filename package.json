@@ -44,7 +44,7 @@
     "@types/lodash-es": "^4.17.12",
     "http-status-code-types": "^0.0.2",
     "mobx-tanstack-query": "^5.3.1",
-    "swagger-typescript-api": "13.2.3",
+    "swagger-typescript-api": "13.2.4",
     "ts-morph": "^26.0.0",
     "yummies": "^4.0.0"
   },

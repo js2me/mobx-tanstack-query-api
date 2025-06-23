@@ -27,8 +27,8 @@ importers:
         specifier: ^5.3.1
         version: 5.3.1(@tanstack/query-core@5.80.6)(mobx@6.13.7)
       swagger-typescript-api:
-        specifier: 13.2.3
-        version: 13.2.3
+        specifier: 13.2.4
+        version: 13.2.4
       ts-morph:
         specifier: ^26.0.0
         version: 26.0.0
@@ -722,8 +722,8 @@ packages:
       '@biomejs/wasm-web':
         optional: true
 
-  '@biomejs/wasm-nodejs@2.0.0':
-    resolution: {integrity: sha512-jcMpFDXura5J9MfL2DB8Qw5Cyg5zJXkzI8Ro/VYEC3R4oPnrqEvnPj5hEu70IVtlUPj1DZjrMRi+o2vqZurXEQ==}
+  '@biomejs/wasm-nodejs@2.0.4':
+    resolution: {integrity: sha512-RkVreqfka0Q96xI0btZxBy5/xVFib7Z9zX5uxZRblZli+M7snH+/BgRXUxA+JkO6o3rIXeSfo88JRIbM19oJuA==}
 
   '@csstools/color-helpers@5.0.2':
     resolution: {integrity: sha512-JqWH1vsgdGcw2RR6VliXXdA0/59LttzlU8UlRT/iUUsEeWfYq8I+K0yhihEUTTHLRm1EXvpsCx3083EU15ecsA==}
@@ -3239,8 +3239,8 @@ packages:
   swagger-schema-official@2.0.0-bab6bed:
     resolution: {integrity: sha512-rCC0NWGKr/IJhtRuPq/t37qvZHI/mH4I4sxflVM+qgVe5Z2uOCivzWaVbuioJaB61kvm5UvB7b49E+oBY0M8jA==}
 
-  swagger-typescript-api@13.2.3:
-    resolution: {integrity: sha512-OnENkEVq6XpOPmr+rVcXp6WLHRm/OWmtql7UFpbtFpKeymgWpi/Cgi15LSLrVC1F6VCWYA64Gn7TZRZpchoy0Q==}
+  swagger-typescript-api@13.2.4:
+    resolution: {integrity: sha512-m9OFX5kgkInOtnR882juEyOfFojazqIr1g5KFC3xK/BZOwZzYW3ikZdsiMet+qsOr6Ppimdap3xCXXdYrCKHTw==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -4423,11 +4423,11 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
-  '@biomejs/js-api@1.0.0(@biomejs/wasm-nodejs@2.0.0)':
+  '@biomejs/js-api@1.0.0(@biomejs/wasm-nodejs@2.0.4)':
     optionalDependencies:
-      '@biomejs/wasm-nodejs': 2.0.0
+      '@biomejs/wasm-nodejs': 2.0.4
 
-  '@biomejs/wasm-nodejs@2.0.0': {}
+  '@biomejs/wasm-nodejs@2.0.4': {}
 
   '@csstools/color-helpers@5.0.2': {}
 
@@ -7130,10 +7130,10 @@ snapshots:
 
   swagger-schema-official@2.0.0-bab6bed: {}
 
-  swagger-typescript-api@13.2.3:
+  swagger-typescript-api@13.2.4:
     dependencies:
-      '@biomejs/js-api': 1.0.0(@biomejs/wasm-nodejs@2.0.0)
-      '@biomejs/wasm-nodejs': 2.0.0
+      '@biomejs/js-api': 1.0.0(@biomejs/wasm-nodejs@2.0.4)
+      '@biomejs/wasm-nodejs': 2.0.4
       '@types/swagger-schema-official': 2.0.25
       c12: 3.0.4
       citty: 0.1.6
