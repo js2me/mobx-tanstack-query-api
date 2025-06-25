@@ -6,7 +6,7 @@ import {
   QueryObserverResult,
 } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction } from 'mobx';
-import { Query } from 'mobx-tanstack-query';
+import { Query, QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
 import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
@@ -15,6 +15,7 @@ import {
   EndpointQueryMeta,
   EndpointQueryOptions,
   EndpointQueryUniqKey,
+  ExcludedQueryKeys,
 } from './endpoint-query.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
 import { RequestParams } from './http-client.js';
@@ -138,11 +139,26 @@ export class EndpointQuery<
     makeObservable(this);
   }
 
+  update({
+    params,
+    ...options
+  }: Omit<
+    QueryUpdateOptionsAllVariants<TQueryFnData, TError, TData, TQueryData>,
+    ExcludedQueryKeys
+  > & {
+    params?: MaybeFalsy<TEndpoint['__params']>;
+  }) {
+    return super.update({
+      ...buildOptionsFromParams(this.endpoint, params, this.uniqKey),
+      ...options,
+    });
+  }
+
   async start(
-    input: MaybeFalsy<TEndpoint['__params']>,
+    params: MaybeFalsy<TEndpoint['__params']>,
   ): Promise<QueryObserverResult<TData, TError>> {
     return await super.start(
-      buildOptionsFromParams(this.endpoint, input, this.uniqKey),
+      buildOptionsFromParams(this.endpoint, params, this.uniqKey),
     );
   }
 }

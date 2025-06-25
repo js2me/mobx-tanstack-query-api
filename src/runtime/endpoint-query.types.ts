@@ -19,13 +19,7 @@ export type EndpointQueryUniqKey = Maybe<
   MaybeFn<string | number | AnyObject | boolean>
 >;
 
-type ShortQueryConfig<
-  TQueryFnData = unknown,
-  TError = DefaultError,
-  TData = TQueryFnData,
-  TQueryData = TQueryFnData,
-> = Omit<
-  QueryConfig<TQueryFnData, TError, TData, TQueryData>,
+export type ExcludedQueryKeys =
   | 'options'
   | 'queryFn'
   | 'queryClient'
@@ -35,7 +29,16 @@ type ShortQueryConfig<
   | 'experimental_prefetchInRender'
   | 'enabled'
   | 'queryHash'
-  | 'queryKeyHashFn'
+  | 'queryKeyHashFn';
+
+type ShortQueryConfig<
+  TQueryFnData = unknown,
+  TError = DefaultError,
+  TData = TQueryFnData,
+  TQueryData = TQueryFnData,
+> = Omit<
+  QueryConfig<TQueryFnData, TError, TData, TQueryData>,
+  ExcludedQueryKeys
 > & {
   enabled?: boolean;
 };
