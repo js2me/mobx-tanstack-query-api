@@ -28,7 +28,21 @@ export type EndpointMutationOptions<
   TMutationMeta extends AnyObject | void = void,
   TContext = unknown,
 > = {
-  invalidateEndpoints?: true | InvalidateEndpointsFilters;
+  /**
+   * Invalidates query endpoints using various filters based on data from the OpenAPI schema
+   *
+   * The value `by-group` will invalidate query endpoints that belong to the exact same group as the mutation
+   *
+   * The value `by-tag` will invalidate query endpoints that contain at least one tag described in the endpoint with the mutation
+   *
+   * The value `true` will use dynamic definition of `by-group` | `by-tag` values.
+   * If there is a group, it will use `by-group` invalidation, if there is a tag then `by-tag`
+   */
+  invalidateEndpoints?:
+    | true
+    | 'by-group'
+    | 'by-tag'
+    | InvalidateEndpointsFilters;
   /**
    * Transform response to TData
    */

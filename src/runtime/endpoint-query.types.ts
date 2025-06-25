@@ -1,7 +1,6 @@
 import { DefaultError } from '@tanstack/query-core';
 import { QueryConfig } from 'mobx-tanstack-query';
-import { FnValue } from 'yummies/common';
-import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
+import { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/utils/types';
 
 import { AnyEndpoint } from './endpoint.types.js';
 
@@ -17,25 +16,16 @@ export interface EndpointQueryMeta {
 }
 
 export type EndpointQueryUniqKey = Maybe<
-  FnValue<string | number | AnyObject | boolean>
+  MaybeFn<string | number | AnyObject | boolean>
 >;
 
-export type EndpointQueryOptions<
-  TEndpoint extends AnyEndpoint,
-  TQueryFnData = TEndpoint['__response']['data'],
+type ShortQueryConfig<
+  TQueryFnData = unknown,
   TError = DefaultError,
   TData = TQueryFnData,
   TQueryData = TQueryFnData,
-> = {
-  params?: () => MaybeFalsy<TEndpoint['__params']>;
-  /**
-   * Transform response to QueryFnData
-   */
-  transform?: (
-    response: TEndpoint['__response'],
-  ) => TQueryFnData | Promise<TQueryFnData>;
-} & Omit<
-  QueryConfig<NoInfer<TQueryFnData>, TError, TData, TQueryData>,
+> = Omit<
+  QueryConfig<TQueryFnData, TError, TData, TQueryData>,
   | 'options'
   | 'queryFn'
   | 'queryClient'
@@ -47,6 +37,41 @@ export type EndpointQueryOptions<
   | 'queryHash'
   | 'queryKeyHashFn'
 > & {
-    uniqKey?: EndpointQueryUniqKey;
-    enabled?: boolean;
-  };
+  enabled?: boolean;
+};
+
+export type EndpointQueryFlattenOptions<
+  TEndpoint extends AnyEndpoint,
+  TQueryFnData = TEndpoint['__response']['data'],
+  TError = DefaultError,
+  TData = TQueryFnData,
+  TQueryData = TQueryFnData,
+> = ShortQueryConfig<NoInfer<TQueryFnData>, TError, TData, TQueryData> & {
+  uniqKey?: EndpointQueryUniqKey;
+
+  params?: MaybeFalsy<TEndpoint['__params']>;
+  /**
+   * Transform response to QueryFnData
+   */
+  transform?: (
+    response: TEndpoint['__response'],
+  ) => TQueryFnData | Promise<TQueryFnData>;
+};
+
+export type EndpointQueryOptions<
+  TEndpoint extends AnyEndpoint,
+  TQueryFnData = TEndpoint['__response']['data'],
+  TError = DefaultError,
+  TData = TQueryFnData,
+  TQueryData = TQueryFnData,
+> = ShortQueryConfig<NoInfer<TQueryFnData>, TError, TData, TQueryData> & {
+  uniqKey?: EndpointQueryUniqKey;
+
+  params?: () => MaybeFalsy<TEndpoint['__params']>;
+  /**
+   * Transform response to QueryFnData
+   */
+  transform?: (
+    response: TEndpoint['__response'],
+  ) => TQueryFnData | Promise<TQueryFnData>;
+};

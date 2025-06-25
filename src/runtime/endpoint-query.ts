@@ -11,6 +11,7 @@ import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
+  EndpointQueryFlattenOptions,
   EndpointQueryMeta,
   EndpointQueryOptions,
   EndpointQueryUniqKey,
@@ -33,28 +34,44 @@ export class EndpointQuery<
   constructor(
     private endpoint: AnyEndpoint,
     queryClient: EndpointQueryClient,
-    {
-      transform: transformResponse,
-      params: getParams,
-      uniqKey,
-      ...queryOptions
-    }: EndpointQueryOptions<TEndpoint, TQueryFnData, TError, TData, TQueryData>,
+    queryOptionsInput:
+      | EndpointQueryOptions<TEndpoint, TQueryFnData, TError, TData, TQueryData>
+      | (() => EndpointQueryFlattenOptions<
+          TEndpoint,
+          TQueryFnData,
+          TError,
+          TData,
+          TQueryData
+        >),
   ) {
+    const {
+      uniqKey,
+      transform: transformResponse,
+      ...queryOptions
+    } = typeof queryOptionsInput === 'function'
+      ? queryOptionsInput()
+      : queryOptionsInput;
+
     super({
       ...queryOptions,
       queryClient,
-      meta: {
-        ...queryOptions.meta,
-        tags: endpoint.tags,
-        operationId: endpoint.operationId,
-        path: endpoint.path,
-        pathDeclaration: endpoint.path.join('/'),
-        endpointId: endpoint.endpointId,
-        endpointQuery: true,
-      } satisfies EndpointQueryMeta,
+      meta: createEndpointQueryMeta(endpoint, queryOptions.meta),
       options: (query): any => {
-        const willEnableManually = queryOptions.enabled === false;
-        const params = (getParams?.() || {}) as any;
+        const extraOptions: any = {};
+        let willEnableManually: boolean;
+        let params: any;
+
+        if (typeof queryOptionsInput === 'function') {
+          const { params: dynamicParams, ...dynamicOptions } =
+            queryOptionsInput();
+          Object.assign(extraOptions, dynamicOptions);
+          params = dynamicParams;
+          willEnableManually = false;
+        } else {
+          willEnableManually = queryOptions.enabled === false;
+          params = (queryOptionsInput.params?.() || {}) as any;
+        }
+
         const builtOptions = buildOptionsFromParams(endpoint, params, uniqKey);
         // const dynamicOuterOptions = getDynamicOptions?.(query);
 
@@ -78,6 +95,7 @@ export class EndpointQuery<
           ...builtOptions,
           // ...dynamicOuterOptions,
           enabled: isEnabled,
+          ...extraOptions,
         } as any;
       },
       queryFn: async (ctx): Promise<any> => {
@@ -128,6 +146,17 @@ export class EndpointQuery<
     );
   }
 }
+
+const createEndpointQueryMeta = (endpoint: AnyEndpoint, meta?: AnyObject) =>
+  ({
+    ...meta,
+    tags: endpoint.tags,
+    operationId: endpoint.operationId,
+    path: endpoint.path,
+    pathDeclaration: endpoint.path.join('/'),
+    endpointId: endpoint.endpointId,
+    endpointQuery: true,
+  }) satisfies EndpointQueryMeta;
 
 const getParamsFromContext = (ctx: QueryFunctionContext<any, any>) => {
   return (ctx.queryKey.at(-2) || {}) as AnyEndpoint['__params'];

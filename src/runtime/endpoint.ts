@@ -4,7 +4,7 @@ import {
   InvalidateOptions,
   InvalidateQueryFilters,
 } from '@tanstack/query-core';
-import { resolveFnValue } from 'yummies/common';
+import { callFunction } from 'yummies/common';
 import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
 
 import { EndpointMutation } from './endpoint-mutation.js';
@@ -12,6 +12,7 @@ import { EndpointMutationOptions } from './endpoint-mutation.types.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import { EndpointQuery } from './endpoint-query.js';
 import {
+  EndpointQueryFlattenOptions,
   EndpointQueryOptions,
   EndpointQueryUniqKey,
 } from './endpoint-query.types.js';
@@ -147,7 +148,7 @@ export class Endpoint<
       ...this.configuration.path,
       this.configuration.operationId,
       params,
-      resolveFnValue(args[1]),
+      callFunction(args[1]),
     ];
   }
 
@@ -206,13 +207,15 @@ export class Endpoint<
     TData = TQueryFnData,
     TQueryData = TQueryFnData,
   >(
-    options: EndpointQueryOptions<
-      this,
-      TQueryFnData,
-      TError,
-      TData,
-      TQueryData
-    >,
+    options:
+      | EndpointQueryOptions<this, TQueryFnData, TError, TData, TQueryData>
+      | (() => EndpointQueryFlattenOptions<
+          this,
+          TQueryFnData,
+          TError,
+          TData,
+          TQueryData
+        >),
   ) {
     return new EndpointQuery<this, TQueryFnData, TError, TData, TQueryData>(
       this,

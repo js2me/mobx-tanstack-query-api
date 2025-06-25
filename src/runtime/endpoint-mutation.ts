@@ -1,11 +1,12 @@
 import { Mutation } from 'mobx-tanstack-query';
-import { AnyObject } from 'yummies/utils/types';
+import { AnyObject, Maybe } from 'yummies/utils/types';
 
 import {
   EndpointMutationParams,
   EndpointMutationOptions,
 } from './endpoint-mutation.types.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
+import { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
 
 export class EndpointMutation<
@@ -41,13 +42,41 @@ export class EndpointMutation<
       onSuccess: (data, variables, context) => {
         mutationOptions.onSuccess?.(data, variables, context);
         if (invalidateEndpoints) {
-          if (invalidateEndpoints === true) {
-            queryClient.invalidateEndpoints({
-              namespace: endpoint.namespace,
-              group: endpoint.group,
-            });
-          } else {
+          if (typeof invalidateEndpoints === 'object') {
             queryClient.invalidateEndpoints(invalidateEndpoints);
+          } else {
+            let filters: Maybe<InvalidateEndpointsFilters>;
+            switch (`${invalidateEndpoints}`) {
+              case 'true': {
+                filters = endpoint.group
+                  ? {
+                      group: endpoint.group,
+                    }
+                  : {
+                      tag: endpoint.tags,
+                    };
+
+                break;
+              }
+              case 'by-group': {
+                filters = {
+                  group: endpoint.group,
+                };
+
+                break;
+              }
+              case 'by-tag': {
+                filters = {
+                  tag: endpoint.tags,
+                };
+
+                break;
+              }
+            }
+
+            if (filters) {
+              queryClient.invalidateEndpoints(filters);
+            }
           }
         }
       },
