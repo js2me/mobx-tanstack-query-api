@@ -125,7 +125,7 @@ export interface GenerateQueryApiParams {
 
   otherCodegenParams?: AnyObject;
 
-  filterEndpoints?: FilterEndpointsFn | RegExp | RegExp[];
+  filterEndpoints?: FilterEndpointsFn | string | RegExp | (RegExp | string)[];
 
   filterGroups?: (groupName: string) => boolean;
 
@@ -344,12 +344,16 @@ export const generateApi = async (
         : [params.filterEndpoints];
 
       filterEndpoints = (route) =>
-        regexps.some((regexp) => {
+        regexps.some((regexpOrString) => {
           if (!route.raw) {
             return false;
           }
 
-          return regexp.test(route.raw.operationId);
+          if (typeof regexpOrString === 'string') {
+            return regexpOrString === route.raw.operationId;
+          }
+
+          return regexpOrString.test(route.raw.operationId);
         });
     }
   } else {
