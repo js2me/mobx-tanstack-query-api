@@ -13,6 +13,7 @@ import { EndpointQueryClient } from './endpoint-query-client.js';
 import { EndpointQuery } from './endpoint-query.js';
 import {
   EndpointQueryFlattenOptions,
+  EndpointQueryMeta,
   EndpointQueryOptions,
   EndpointQueryUniqKey,
 } from './endpoint-query.types.js';
@@ -137,7 +138,18 @@ export class Endpoint<
     );
   }
 
-  getQueryKey(
+  toQueryMeta = (meta?: AnyObject) =>
+    ({
+      ...meta,
+      tags: this.tags,
+      operationId: this.operationId,
+      path: this.path,
+      pathDeclaration: this.path.join('/'),
+      endpointId: this.endpointId,
+      endpointQuery: true,
+    }) satisfies EndpointQueryMeta;
+
+  toQueryKey(
     ...args: AllPropertiesOptional<TParams> extends true
       ? [input?: TParams, uniqKey?: EndpointQueryUniqKey]
       : [input: TParams, uniqKey?: EndpointQueryUniqKey]
@@ -168,7 +180,7 @@ export class Endpoint<
     this.queryClient.invalidateQueries(
       {
         // @ts-ignore
-        queryKey: this.getQueryKey(args[0], args[1]?.uniqKey),
+        queryKey: this.toQueryKey(args[0], args[1]?.uniqKey),
         exact: true,
         ...(args[1] as any),
       },

@@ -12,7 +12,6 @@ import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
   EndpointQueryFlattenOptions,
-  EndpointQueryMeta,
   EndpointQueryOptions,
   EndpointQueryUniqKey,
   ExcludedQueryKeys,
@@ -56,7 +55,7 @@ export class EndpointQuery<
     super({
       ...queryOptions,
       queryClient,
-      meta: createEndpointQueryMeta(endpoint, queryOptions.meta),
+      meta: endpoint.toQueryMeta(queryOptions.meta),
       options: (query): any => {
         const extraOptions: any = {};
         let willEnableManually: boolean;
@@ -163,20 +162,6 @@ export class EndpointQuery<
   }
 }
 
-export const createEndpointQueryMeta = (
-  endpoint: AnyEndpoint,
-  meta?: AnyObject,
-) =>
-  ({
-    ...meta,
-    tags: endpoint.tags,
-    operationId: endpoint.operationId,
-    path: endpoint.path,
-    pathDeclaration: endpoint.path.join('/'),
-    endpointId: endpoint.endpointId,
-    endpointQuery: true,
-  }) satisfies EndpointQueryMeta;
-
 export const getParamsFromContext = (ctx: QueryFunctionContext<any, any>) => {
   return (ctx.queryKey.at(-2) || {}) as AnyEndpoint['__params'];
 };
@@ -198,6 +183,6 @@ export const buildOptionsFromParams = (
 
   return {
     enabled: hasRequiredParams,
-    queryKey: endpoint.getQueryKey(params || {}, uniqKey),
+    queryKey: endpoint.toQueryKey(params || {}, uniqKey),
   };
 };

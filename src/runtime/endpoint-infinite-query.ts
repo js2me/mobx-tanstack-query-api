@@ -18,7 +18,6 @@ import {
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
   buildOptionsFromParams,
-  createEndpointQueryMeta,
   getParamsFromContext,
 } from './endpoint-query.js';
 import {
@@ -71,7 +70,7 @@ export class EndpointInfiniteQuery<
     super({
       ...queryOptions,
       queryClient,
-      meta: createEndpointQueryMeta(endpoint, queryOptions.meta),
+      meta: endpoint.toQueryMeta(queryOptions.meta),
       options: (query): any => {
         const extraOptions: any = {};
         let willEnableManually: boolean;
