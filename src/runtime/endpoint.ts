@@ -141,7 +141,7 @@ export class Endpoint<
     ...args: AllPropertiesOptional<TParams> extends true
       ? [input?: TParams, uniqKey?: EndpointQueryUniqKey]
       : [input: TParams, uniqKey?: EndpointQueryUniqKey]
-  ): any[] {
+  ): any {
     const params = args[0] ?? ({} as TParams);
 
     return [

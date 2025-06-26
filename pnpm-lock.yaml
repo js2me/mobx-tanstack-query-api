@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@tanstack/query-core':
-        specifier: ^5.80.6
-        version: 5.80.6
+        specifier: ^5.80.7
+        version: 5.81.2
       '@types/lodash':
         specifier: ^4.17.16
         version: 4.17.16
@@ -24,11 +24,11 @@ importers:
         specifier: ^6.13.6
         version: 6.13.7
       mobx-tanstack-query:
-        specifier: ^5.3.2
-        version: 5.3.2(@tanstack/query-core@5.80.6)(mobx@6.13.7)
+        specifier: ^5.3.5
+        version: 5.3.5(@tanstack/query-core@5.81.2)(mobx@6.13.7)
       swagger-typescript-api:
-        specifier: 13.2.6
-        version: 13.2.6
+        specifier: 13.2.7
+        version: 13.2.7
       ts-morph:
         specifier: ^26.0.0
         version: 26.0.0
@@ -1191,8 +1191,8 @@ packages:
   '@swc/types@0.1.21':
     resolution: {integrity: sha512-2YEtj5HJVbKivud9N4bpPBAyZhj4S2Ipe5LkUG94alTpr7in/GU/EARgPAd3BwU+YOmFVJC2+kjqhGRi3r0ZpQ==}
 
-  '@tanstack/query-core@5.80.6':
-    resolution: {integrity: sha512-nl7YxT/TAU+VTf+e2zTkObGTyY8YZBMnbgeA1ee66lIVqzKlYursAII6z5t0e6rXgwUMJSV4dshBTNacNpZHbQ==}
+  '@tanstack/query-core@5.81.2':
+    resolution: {integrity: sha512-QLYkPdrudoMATDFa3MiLEwRhNnAlzHWDf0LKaXUqJd0/+QxN8uTPi7bahRlxoAyH0UbLMBdeDbYzWALj7THOtw==}
 
   '@ts-morph/common@0.27.0':
     resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
@@ -2667,8 +2667,8 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mobx-tanstack-query@5.3.2:
-    resolution: {integrity: sha512-Z2A6kgE3IBLgDrcv4ootco4Hywfib1oOphTL1Y+uLBB9zezv0FOCs9VnaMLk0TiUOFJ/UJ5m4xhpY+VwC6gUaw==}
+  mobx-tanstack-query@5.3.5:
+    resolution: {integrity: sha512-rc32Q8DxXUP92RVx0BrmvLJuZxVe7lrHwF0+JWCV84Ct1BCOFqNSssnrHjsNxGd81+6CIsw7XPHv9UapgD8DDw==}
     peerDependencies:
       '@tanstack/query-core': ^5.80.7
       mobx: ^6.12.4
@@ -3239,8 +3239,8 @@ packages:
   swagger-schema-official@2.0.0-bab6bed:
     resolution: {integrity: sha512-rCC0NWGKr/IJhtRuPq/t37qvZHI/mH4I4sxflVM+qgVe5Z2uOCivzWaVbuioJaB61kvm5UvB7b49E+oBY0M8jA==}
 
-  swagger-typescript-api@13.2.6:
-    resolution: {integrity: sha512-4H2BGo6fvpsAHLiugq50H5bdS5gkYpI8mIKgALn8+h13YPJGs1W6bgvFJSrmwgrzUBnMblsMD01k3B+v0wZwOw==}
+  swagger-typescript-api@13.2.7:
+    resolution: {integrity: sha512-rfqqoRFpZJPl477M/snMJPM90EvI8WqhuUHSF5ecC2r/w376T29+QXNJFVPsJmbFu5rBc/8m3vhArtMctjONdw==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -4762,7 +4762,7 @@ snapshots:
     dependencies:
       '@swc/counter': 0.1.3
 
-  '@tanstack/query-core@5.80.6': {}
+  '@tanstack/query-core@5.81.2': {}
 
   '@ts-morph/common@0.27.0':
     dependencies:
@@ -6474,9 +6474,9 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  mobx-tanstack-query@5.3.2(@tanstack/query-core@5.80.6)(mobx@6.13.7):
+  mobx-tanstack-query@5.3.5(@tanstack/query-core@5.81.2)(mobx@6.13.7):
     dependencies:
-      '@tanstack/query-core': 5.80.6
+      '@tanstack/query-core': 5.81.2
       linked-abort-controller: 1.1.0
       mobx: 6.13.7
 
@@ -7130,7 +7130,7 @@ snapshots:
 
   swagger-schema-official@2.0.0-bab6bed: {}
 
-  swagger-typescript-api@13.2.6:
+  swagger-typescript-api@13.2.7:
     dependencies:
       '@biomejs/js-api': 1.0.0(@biomejs/wasm-nodejs@2.0.5)
       '@biomejs/wasm-nodejs': 2.0.5

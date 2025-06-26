@@ -1,32 +1,40 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   DefaultError,
-  QueryFunctionContext,
+  InfiniteData,
+  QueryKey,
   QueryObserverResult,
 } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction } from 'mobx';
-import { Query, QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
-import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
+import {
+  InfiniteQuery,
+  InfiniteQueryUpdateOptionsAllVariants,
+} from 'mobx-tanstack-query';
+import { Maybe, MaybeFalsy } from 'yummies/utils/types';
 
+import {
+  EndpointInfiniteQueryFlattenOptions,
+  EndpointInfiniteQueryOptions,
+} from './endpoint-infinite-query.types.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
-  EndpointQueryFlattenOptions,
-  EndpointQueryMeta,
-  EndpointQueryOptions,
+  buildOptionsFromParams,
+  createEndpointQueryMeta,
+  getParamsFromContext,
+} from './endpoint-query.js';
+import {
   EndpointQueryUniqKey,
   ExcludedQueryKeys,
 } from './endpoint-query.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
 import { RequestParams } from './http-client.js';
 
-export class EndpointQuery<
+export class EndpointInfiniteQuery<
   TEndpoint extends AnyEndpoint,
-  TQueryFnData = TEndpoint['__response']['data'],
+  TData,
   TError = DefaultError,
-  TData = TQueryFnData,
-  TQueryData = TQueryFnData,
-> extends Query<TQueryFnData, TError, TData, TQueryData> {
+  TQueryKey extends QueryKey = any,
+  TPageParam = unknown,
+> extends InfiniteQuery<TData, TError, TQueryKey, TPageParam> {
   response: TEndpoint['__response'] | null = null;
   params: TEndpoint['__params'] | null = null;
 
@@ -35,14 +43,21 @@ export class EndpointQuery<
   constructor(
     private endpoint: AnyEndpoint,
     queryClient: EndpointQueryClient,
+
     queryOptionsInput:
-      | EndpointQueryOptions<TEndpoint, TQueryFnData, TError, TData, TQueryData>
-      | (() => EndpointQueryFlattenOptions<
+      | EndpointInfiniteQueryOptions<
           TEndpoint,
-          TQueryFnData,
-          TError,
           TData,
-          TQueryData
+          TError,
+          TQueryKey,
+          TPageParam
+        >
+      | (() => EndpointInfiniteQueryFlattenOptions<
+          TEndpoint,
+          TData,
+          TError,
+          TQueryKey,
+          TPageParam
         >),
   ) {
     const {
@@ -143,7 +158,7 @@ export class EndpointQuery<
     params,
     ...options
   }: Omit<
-    QueryUpdateOptionsAllVariants<TQueryFnData, TError, TData, TQueryData>,
+    InfiniteQueryUpdateOptionsAllVariants<TData, TError, TQueryKey, TPageParam>,
     ExcludedQueryKeys
   > & {
     params?: MaybeFalsy<TEndpoint['__params']>;
@@ -156,48 +171,9 @@ export class EndpointQuery<
 
   async start(
     params: MaybeFalsy<TEndpoint['__params']>,
-  ): Promise<QueryObserverResult<TData, TError>> {
+  ): Promise<QueryObserverResult<InfiniteData<TData, TPageParam>, TError>> {
     return await super.start(
       buildOptionsFromParams(this.endpoint, params, this.uniqKey),
     );
   }
 }
-
-export const createEndpointQueryMeta = (
-  endpoint: AnyEndpoint,
-  meta?: AnyObject,
-) =>
-  ({
-    ...meta,
-    tags: endpoint.tags,
-    operationId: endpoint.operationId,
-    path: endpoint.path,
-    pathDeclaration: endpoint.path.join('/'),
-    endpointId: endpoint.endpointId,
-    endpointQuery: true,
-  }) satisfies EndpointQueryMeta;
-
-export const getParamsFromContext = (ctx: QueryFunctionContext<any, any>) => {
-  return (ctx.queryKey.at(-2) || {}) as AnyEndpoint['__params'];
-};
-
-export const buildOptionsFromParams = (
-  endpoint: AnyEndpoint,
-  params: MaybeFalsy<AnyObject>,
-  uniqKey: Maybe<EndpointQueryUniqKey>,
-) => {
-  const { requiredParams } = endpoint.configuration;
-  let hasRequiredParams = false;
-
-  if (requiredParams.length > 0) {
-    hasRequiredParams =
-      !!params && requiredParams.every((param) => param in params);
-  } else {
-    hasRequiredParams = true;
-  }
-
-  return {
-    enabled: hasRequiredParams,
-    queryKey: endpoint.getQueryKey(params || {}, uniqKey),
-  };
-};
