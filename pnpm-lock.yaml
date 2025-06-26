@@ -24,8 +24,8 @@ importers:
         specifier: ^6.13.6
         version: 6.13.7
       mobx-tanstack-query:
-        specifier: ^5.3.5
-        version: 5.3.5(@tanstack/query-core@5.81.2)(mobx@6.13.7)
+        specifier: ^5.3.6
+        version: 5.3.6(@tanstack/query-core@5.81.2)(mobx@6.13.7)
       swagger-typescript-api:
         specifier: 13.2.7
         version: 13.2.7
@@ -2667,8 +2667,8 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mobx-tanstack-query@5.3.5:
-    resolution: {integrity: sha512-rc32Q8DxXUP92RVx0BrmvLJuZxVe7lrHwF0+JWCV84Ct1BCOFqNSssnrHjsNxGd81+6CIsw7XPHv9UapgD8DDw==}
+  mobx-tanstack-query@5.3.6:
+    resolution: {integrity: sha512-M+EmwZ2eQRI0v7Up22QQdzOKGQd0t/WlQimrf0wLkJ3mXcN8Zk6gvuNG16e2TrLRhBcckLzx9SlIgU1y2E0F+g==}
     peerDependencies:
       '@tanstack/query-core': ^5.80.7
       mobx: ^6.12.4
@@ -6474,7 +6474,7 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  mobx-tanstack-query@5.3.5(@tanstack/query-core@5.81.2)(mobx@6.13.7):
+  mobx-tanstack-query@5.3.6(@tanstack/query-core@5.81.2)(mobx@6.13.7):
     dependencies:
       '@tanstack/query-core': 5.81.2
       linked-abort-controller: 1.1.0

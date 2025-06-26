@@ -7,6 +7,11 @@ import {
 import { callFunction } from 'yummies/common';
 import { AllPropertiesOptional, AnyObject, Maybe } from 'yummies/utils/types';
 
+import { EndpointInfiniteQuery } from './endpoint-infinite-query.js';
+import {
+  EndpointInfiniteQueryFlattenOptions,
+  EndpointInfiniteQueryOptions,
+} from './endpoint-infinite-query.types.js';
 import { EndpointMutation } from './endpoint-mutation.js';
 import { EndpointMutationOptions } from './endpoint-mutation.types.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
@@ -116,6 +121,10 @@ export class Endpoint<
     return this.configuration.path;
   }
 
+  get pathDeclaration() {
+    return this.path.join('/');
+  }
+
   get operationId() {
     return this.configuration.operationId;
   }
@@ -144,23 +153,17 @@ export class Endpoint<
       tags: this.tags,
       operationId: this.operationId,
       path: this.path,
-      pathDeclaration: this.path.join('/'),
+      pathDeclaration: this.pathDeclaration,
       endpointId: this.endpointId,
       endpointQuery: true,
     }) satisfies EndpointQueryMeta;
 
-  toQueryKey(
-    ...args: AllPropertiesOptional<TParams> extends true
-      ? [params?: Maybe<TParams>, uniqKey?: EndpointQueryUniqKey]
-      : [params: TParams, uniqKey?: EndpointQueryUniqKey]
-  ): any {
-    const params = args[0] ?? ({} as TParams);
-
+  toQueryKey(params?: Maybe<TParams>, uniqKey?: EndpointQueryUniqKey): any {
     return [
       ...this.configuration.path,
       this.configuration.operationId,
-      params,
-      callFunction(args[1]),
+      params ?? {},
+      callFunction(uniqKey),
     ];
   }
 
@@ -230,6 +233,27 @@ export class Endpoint<
         >),
   ) {
     return new EndpointQuery<this, TQueryFnData, TError, TData, TQueryData>(
+      this,
+      this.queryClient,
+      options,
+    );
+  }
+
+  toInfiniteQuery<
+    TData = TResponse['data'],
+    TError = DefaultError,
+    TPageParam = unknown,
+  >(
+    options:
+      | EndpointInfiniteQueryOptions<this, TData, TError, TPageParam>
+      | (() => EndpointInfiniteQueryFlattenOptions<
+          this,
+          TData,
+          TError,
+          TPageParam
+        >),
+  ) {
+    return new EndpointInfiniteQuery<this, TData, TError, TPageParam>(
       this,
       this.queryClient,
       options,

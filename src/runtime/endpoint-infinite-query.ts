@@ -1,7 +1,6 @@
 import {
   DefaultError,
   InfiniteData,
-  QueryKey,
   QueryObserverResult,
 } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction } from 'mobx';
@@ -29,11 +28,10 @@ import { RequestParams } from './http-client.js';
 
 export class EndpointInfiniteQuery<
   TEndpoint extends AnyEndpoint,
-  TData,
+  TData = TEndpoint['__response']['data'],
   TError = DefaultError,
-  TQueryKey extends QueryKey = any,
   TPageParam = unknown,
-> extends InfiniteQuery<TData, TError, TQueryKey, TPageParam> {
+> extends InfiniteQuery<TData, TError, any[], TPageParam> {
   response: TEndpoint['__response'] | null = null;
   params: TEndpoint['__params'] | null = null;
 
@@ -44,18 +42,11 @@ export class EndpointInfiniteQuery<
     queryClient: EndpointQueryClient,
 
     queryOptionsInput:
-      | EndpointInfiniteQueryOptions<
-          TEndpoint,
-          TData,
-          TError,
-          TQueryKey,
-          TPageParam
-        >
+      | EndpointInfiniteQueryOptions<TEndpoint, TData, TError, TPageParam>
       | (() => EndpointInfiniteQueryFlattenOptions<
           TEndpoint,
           TData,
           TError,
-          TQueryKey,
           TPageParam
         >),
   ) {
@@ -157,7 +148,7 @@ export class EndpointInfiniteQuery<
     params,
     ...options
   }: Omit<
-    InfiniteQueryUpdateOptionsAllVariants<TData, TError, TQueryKey, TPageParam>,
+    InfiniteQueryUpdateOptionsAllVariants<TData, TError, any[], TPageParam>,
     ExcludedQueryKeys
   > & {
     params?: MaybeFalsy<TEndpoint['__params']>;

@@ -25,46 +25,30 @@ type ShortInfiniteQueryConfig<
 
 export type EndpointInfiniteQueryFlattenOptions<
   TEndpoint extends AnyEndpoint,
-  TQueryFnData = TEndpoint['__response']['data'],
+  TData = TEndpoint['__response']['data'],
   TError = DefaultError,
-  TQueryKey extends QueryKey = any,
   TPageParam = unknown,
-> = ShortInfiniteQueryConfig<
-  NoInfer<TQueryFnData>,
-  TError,
-  TQueryKey,
-  TPageParam
-> & {
+> = ShortInfiniteQueryConfig<NoInfer<TData>, TError, any[], TPageParam> & {
   uniqKey?: EndpointQueryUniqKey;
 
   params?: MaybeFalsy<TEndpoint['__params']>;
   /**
    * Transform response to QueryFnData
    */
-  transform?: (
-    response: TEndpoint['__response'],
-  ) => TQueryFnData | Promise<TQueryFnData>;
+  transform?: (response: TEndpoint['__response']) => TData | Promise<TData>;
 };
 
 export type EndpointInfiniteQueryOptions<
   TEndpoint extends AnyEndpoint,
-  TQueryFnData = TEndpoint['__response']['data'],
+  TData = TEndpoint['__response']['data'],
   TError = DefaultError,
-  TQueryKey extends QueryKey = any,
   TPageParam = unknown,
-> = ShortInfiniteQueryConfig<
-  NoInfer<TQueryFnData>,
-  TError,
-  TQueryKey,
-  TPageParam
-> & {
+> = ShortInfiniteQueryConfig<NoInfer<TData>, TError, any[], TPageParam> & {
   uniqKey?: EndpointQueryUniqKey;
 
   params?: () => MaybeFalsy<TEndpoint['__params']>;
   /**
    * Transform response to QueryFnData
    */
-  transform?: (
-    response: TEndpoint['__response'],
-  ) => TQueryFnData | Promise<TQueryFnData>;
+  transform?: (response: TEndpoint['__response']) => TData | Promise<TData>;
 };
