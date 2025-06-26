@@ -2,7 +2,7 @@ import {
   MutationConfig,
   MutationInvalidateQueriesOptions,
 } from 'mobx-tanstack-query';
-import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
+import { AllPropertiesOptional, AnyObject, Maybe } from 'yummies/utils/types';
 
 import { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
@@ -18,7 +18,7 @@ export type EndpointMutationParams<
     ? // eslint-disable-next-line @typescript-eslint/ban-types
       {}
     : AllPropertiesOptional<TMutationMeta> extends true
-      ? { meta?: TMutationMeta }
+      ? { meta?: Maybe<TMutationMeta> }
       : { meta: TMutationMeta });
 
 export type EndpointMutationOptions<

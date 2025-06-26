@@ -5,7 +5,7 @@ import {
   InvalidateQueryFilters,
 } from '@tanstack/query-core';
 import { callFunction } from 'yummies/common';
-import { AllPropertiesOptional, AnyObject } from 'yummies/utils/types';
+import { AllPropertiesOptional, AnyObject, Maybe } from 'yummies/utils/types';
 
 import { EndpointMutation } from './endpoint-mutation.js';
 import { EndpointMutationOptions } from './endpoint-mutation.types.js';
@@ -30,7 +30,7 @@ export interface Endpoint<
 > {
   (
     ...args: AllPropertiesOptional<TParams> extends true
-      ? [params?: TParams]
+      ? [params?: Maybe<TParams>]
       : [params: TParams]
   ): ReturnType<Endpoint<TResponse, TParams, TMetaData>['request']>;
 }
@@ -67,8 +67,8 @@ export class Endpoint<
     const callable = function (
       this: any,
       ...args: AllPropertiesOptional<TParams> extends true
-        ? [input?: TParams]
-        : [input: TParams]
+        ? [params?: Maybe<TParams>]
+        : [params: TParams]
     ) {
       return instance.request.apply(instance, args);
     } as unknown as Endpoint<TResponse, TParams, TMetaData>;
@@ -92,8 +92,8 @@ export class Endpoint<
 
   getFullUrl(
     ...args: AllPropertiesOptional<TParams> extends true
-      ? [input?: TParams]
-      : [input: TParams]
+      ? [params?: Maybe<TParams>]
+      : [params: TParams]
   ): string {
     const params = this.configuration.params(args[0] ?? ({} as TParams));
     return this.http.buildUrl(params);
@@ -101,8 +101,8 @@ export class Endpoint<
 
   getPath(
     ...args: AllPropertiesOptional<TParams> extends true
-      ? [input?: TParams]
-      : [input: TParams]
+      ? [params?: Maybe<TParams>]
+      : [params: TParams]
   ): string {
     const params = this.configuration.params(args[0] ?? ({} as TParams));
     return params.path;
@@ -130,8 +130,8 @@ export class Endpoint<
 
   request(
     ...args: AllPropertiesOptional<TParams> extends true
-      ? [input?: TParams]
-      : [input: TParams]
+      ? [params?: Maybe<TParams>]
+      : [params: TParams]
   ) {
     return this.http.request<TResponse>(
       this.configuration.params(args[0] ?? ({} as TParams)),
@@ -151,8 +151,8 @@ export class Endpoint<
 
   toQueryKey(
     ...args: AllPropertiesOptional<TParams> extends true
-      ? [input?: TParams, uniqKey?: EndpointQueryUniqKey]
-      : [input: TParams, uniqKey?: EndpointQueryUniqKey]
+      ? [params?: Maybe<TParams>, uniqKey?: EndpointQueryUniqKey]
+      : [params: TParams, uniqKey?: EndpointQueryUniqKey]
   ): any {
     const params = args[0] ?? ({} as TParams);
 
@@ -167,12 +167,12 @@ export class Endpoint<
   invalidateQuery(
     ...args: AllPropertiesOptional<TParams> extends true
       ? [
-          input?: TParams,
+          params?: Maybe<TParams>,
           filters?: InvalidateQueryFilters & { uniqKey?: EndpointQueryUniqKey },
           options?: InvalidateOptions,
         ]
       : [
-          input: TParams,
+          params: TParams,
           filters?: InvalidateQueryFilters & { uniqKey?: EndpointQueryUniqKey },
           options?: InvalidateOptions,
         ]
