@@ -58,6 +58,14 @@ export interface GenerateQueryApiParams {
         keepTypes?: RemoveUnusedTypesParams['keepTypes'];
       };
 
+  /**
+   * getFruits -> getFruitsEndpoint
+   */
+  formatEndpointName?: (
+    endpointName: string,
+    endpointData: AnyObject,
+  ) => Maybe<string>;
+
   formatExportGroupName?: (
     groupName: string,
     utils: CodegenDataUtils,
@@ -297,11 +305,12 @@ export const generateApi = async (
           );
         }
 
+        const endpointName = formattedRouteName;
+
         return (
-          codegenParams?.hooks?.onFormatRouteName?.(
-            routeInfo,
-            formattedRouteName,
-          ) ?? formattedRouteName
+          params?.formatEndpointName?.(endpointName, routeInfo) ??
+          codegenParams?.hooks?.onFormatRouteName?.(routeInfo, endpointName) ??
+          endpointName
         );
       },
     },
