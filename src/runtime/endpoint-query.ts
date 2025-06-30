@@ -170,7 +170,7 @@ export const buildOptionsFromParams = (
   endpoint: AnyEndpoint,
   params: MaybeFalsy<AnyObject>,
   uniqKey: Maybe<EndpointQueryUniqKey>,
-) => {
+): { enabled: boolean; queryKey: any[] } => {
   const { requiredParams } = endpoint.configuration;
   let hasRequiredParams = false;
 

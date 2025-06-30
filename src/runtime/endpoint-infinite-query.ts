@@ -4,34 +4,30 @@ import {
   QueryObserverResult,
 } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction } from 'mobx';
-import {
-  InfiniteQuery,
-  InfiniteQueryUpdateOptionsAllVariants,
-} from 'mobx-tanstack-query';
+import { InfiniteQuery } from 'mobx-tanstack-query';
 import { Maybe, MaybeFalsy } from 'yummies/utils/types';
 
 import {
   EndpointInfiniteQueryFlattenOptions,
   EndpointInfiniteQueryOptions,
+  EndpointInfiniteQueryUpdateOptionsAllVariants,
 } from './endpoint-infinite-query.types.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
   buildOptionsFromParams,
   getParamsFromContext,
 } from './endpoint-query.js';
-import {
-  EndpointQueryUniqKey,
-  ExcludedQueryKeys,
-} from './endpoint-query.types.js';
+import { EndpointQueryUniqKey } from './endpoint-query.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
 import { RequestParams } from './http-client.js';
 
 export class EndpointInfiniteQuery<
   TEndpoint extends AnyEndpoint,
-  TData = TEndpoint['__response']['data'],
+  TQueryFnData = TEndpoint['__response']['data'],
   TError = DefaultError,
   TPageParam = unknown,
-> extends InfiniteQuery<TData, TError, any[], TPageParam> {
+  TData = InfiniteData<TQueryFnData, TPageParam>,
+> extends InfiniteQuery<TQueryFnData, TError, TPageParam, TData, any[]> {
   response: TEndpoint['__response'] | null = null;
   params: TEndpoint['__params'] | null = null;
 
@@ -42,12 +38,19 @@ export class EndpointInfiniteQuery<
     queryClient: EndpointQueryClient,
 
     queryOptionsInput:
-      | EndpointInfiniteQueryOptions<TEndpoint, TData, TError, TPageParam>
+      | EndpointInfiniteQueryOptions<
+          TEndpoint,
+          TQueryFnData,
+          TError,
+          TPageParam,
+          TData
+        >
       | (() => EndpointInfiniteQueryFlattenOptions<
           TEndpoint,
-          TData,
+          TQueryFnData,
           TError,
-          TPageParam
+          TPageParam,
+          TData
         >),
   ) {
     const {
@@ -147,12 +150,13 @@ export class EndpointInfiniteQuery<
   update({
     params,
     ...options
-  }: Omit<
-    InfiniteQueryUpdateOptionsAllVariants<TData, TError, any[], TPageParam>,
-    ExcludedQueryKeys
-  > & {
-    params?: MaybeFalsy<TEndpoint['__params']>;
-  }) {
+  }: EndpointInfiniteQueryUpdateOptionsAllVariants<
+    TEndpoint,
+    TQueryFnData,
+    TError,
+    TPageParam,
+    TData
+  >) {
     return super.update({
       ...buildOptionsFromParams(this.endpoint, params, this.uniqKey),
       ...options,
@@ -161,7 +165,7 @@ export class EndpointInfiniteQuery<
 
   async start(
     params: MaybeFalsy<TEndpoint['__params']>,
-  ): Promise<QueryObserverResult<InfiniteData<TData, TPageParam>, TError>> {
+  ): Promise<QueryObserverResult<TData, TError>> {
     return await super.start(
       buildOptionsFromParams(this.endpoint, params, this.uniqKey),
     );

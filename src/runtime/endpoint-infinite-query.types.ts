@@ -1,6 +1,11 @@
-import { DefaultError, QueryKey } from '@tanstack/query-core';
-import { InfiniteQueryConfig } from 'mobx-tanstack-query';
-import { MaybeFalsy, RequiredKeys } from 'yummies/utils/types';
+import { DefaultError, InfiniteData } from '@tanstack/query-core';
+import {
+  InfiniteQueryConfig,
+  InfiniteQueryDynamicOptions,
+  InfiniteQueryOptions,
+  InfiniteQueryUpdateOptions,
+} from 'mobx-tanstack-query';
+import { AnyObject, MaybeFalsy } from 'yummies/utils/types';
 
 import {
   EndpointQueryUniqKey,
@@ -11,13 +16,10 @@ import { AnyEndpoint } from './endpoint.types.js';
 type ShortInfiniteQueryConfig<
   TQueryFnData,
   TError = DefaultError,
-  TQueryKey extends QueryKey = any,
   TPageParam = unknown,
+  TData = InfiniteData<TQueryFnData, TPageParam>,
 > = Omit<
-  RequiredKeys<
-    InfiniteQueryConfig<TQueryFnData, TError, TQueryKey, TPageParam>,
-    'getNextPageParam'
-  >,
+  InfiniteQueryConfig<TQueryFnData, TError, TPageParam, TData, any[]>,
   ExcludedQueryKeys
 > & {
   enabled?: boolean;
@@ -25,30 +27,81 @@ type ShortInfiniteQueryConfig<
 
 export type EndpointInfiniteQueryFlattenOptions<
   TEndpoint extends AnyEndpoint,
-  TData = TEndpoint['__response']['data'],
+  TQueryFnData = TEndpoint['__response']['data'],
   TError = DefaultError,
   TPageParam = unknown,
-> = ShortInfiniteQueryConfig<NoInfer<TData>, TError, any[], TPageParam> & {
+  TData = InfiniteData<TQueryFnData, TPageParam>,
+> = ShortInfiniteQueryConfig<
+  NoInfer<TQueryFnData>,
+  TError,
+  TPageParam,
+  TData
+> & {
   uniqKey?: EndpointQueryUniqKey;
 
   params?: MaybeFalsy<TEndpoint['__params']>;
   /**
    * Transform response to QueryFnData
    */
-  transform?: (response: TEndpoint['__response']) => TData | Promise<TData>;
+  transform?: (
+    response: TEndpoint['__response'],
+  ) => TQueryFnData | Promise<TQueryFnData>;
 };
 
 export type EndpointInfiniteQueryOptions<
   TEndpoint extends AnyEndpoint,
-  TData = TEndpoint['__response']['data'],
+  TQueryFnData = TEndpoint['__response']['data'],
   TError = DefaultError,
   TPageParam = unknown,
-> = ShortInfiniteQueryConfig<NoInfer<TData>, TError, any[], TPageParam> & {
+  TData = InfiniteData<TQueryFnData, TPageParam>,
+> = ShortInfiniteQueryConfig<
+  NoInfer<TQueryFnData>,
+  TError,
+  TPageParam,
+  TData
+> & {
   uniqKey?: EndpointQueryUniqKey;
 
   params?: () => MaybeFalsy<TEndpoint['__params']>;
   /**
    * Transform response to QueryFnData
    */
-  transform?: (response: TEndpoint['__response']) => TData | Promise<TData>;
+  transform?: (
+    response: TEndpoint['__response'],
+  ) => TQueryFnData | Promise<TQueryFnData>;
 };
+
+type EnhanceUpdatOptionVariant<
+  TEndpoint extends AnyEndpoint,
+  TVariant extends AnyObject,
+> = Omit<TVariant, ExcludedQueryKeys> & {
+  params?: MaybeFalsy<TEndpoint['__params']>;
+};
+
+export type EndpointInfiniteQueryUpdateOptionsAllVariants<
+  TEndpoint extends AnyEndpoint,
+  TQueryFnData = TEndpoint['__response']['data'],
+  TError = DefaultError,
+  TPageParam = unknown,
+  TData = InfiniteData<TQueryFnData, TPageParam>,
+> =
+  | EnhanceUpdatOptionVariant<
+      TEndpoint,
+      Partial<
+        InfiniteQueryOptions<TQueryFnData, TError, TPageParam, TData, any[]>
+      >
+    >
+  | EnhanceUpdatOptionVariant<
+      TEndpoint,
+      InfiniteQueryUpdateOptions<TQueryFnData, TError, TPageParam, TData, any[]>
+    >
+  | EnhanceUpdatOptionVariant<
+      TEndpoint,
+      InfiniteQueryDynamicOptions<
+        TQueryFnData,
+        TError,
+        TPageParam,
+        TData,
+        any[]
+      >
+    >;
