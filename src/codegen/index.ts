@@ -7,6 +7,7 @@ import { AnyObject, KeyOfByValue, Maybe } from 'yummies/utils/types';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { allEndpointPerFileTmpl } from './templates/all-endpoints-per-file.tmpl.js';
 import { allExportsTmpl } from './templates/all-exports.tmpl.js';
 import { LINTERS_IGNORE } from './templates/constants.js';
 import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
@@ -70,6 +71,47 @@ export interface GenerateQueryApiParams {
     groupName: string,
     utils: CodegenDataUtils,
   ) => string;
+
+  /**
+   * Various generation output types
+   *
+   * `one-endpoint-per-file`
+   * @example
+   * ```
+   * outputdir
+   *  groupname
+   *    index.ts
+   *    endpoints
+   *      index.ts
+   *      get-endpoint-1.ts
+   *      get-endpoint-n.ts
+   * ```
+   * @example
+   * ```
+   * outputdir
+   *  index.ts
+   *  endpoints
+   *    index.ts
+   *    get-endpoint-1.ts
+   *    get-endpoint-n.ts
+   * ```
+   *
+   * `endpoints-per-file`
+   * @example
+   * ```
+   * outputdir
+   *  groupname
+   *    index.ts
+   *    endpoints.ts
+   * ```
+   * @example
+   * ```
+   * outputdir
+   *  index.ts
+   *  endpoints.ts
+   * ```
+   */
+  outputType?: 'one-endpoint-per-file' | 'endpoints-per-file';
 
   /**
    * Group endpoints and collect it into object
@@ -342,17 +384,17 @@ export const generateApi = async (
       'routes' in routeGroup ? routeGroup.routes : routeGroup,
     );
 
-  let filterEndpoints: FilterEndpointsFn;
+  let filterEndpoint: FilterEndpointsFn;
 
   if (params.filterEndpoints) {
     if (typeof params.filterEndpoints === 'function') {
-      filterEndpoints = params.filterEndpoints;
+      filterEndpoint = params.filterEndpoints;
     } else {
       const regexps = Array.isArray(params.filterEndpoints)
         ? params.filterEndpoints
         : [params.filterEndpoints];
 
-      filterEndpoints = (route) =>
+      filterEndpoint = (route) =>
         regexps.some((regexpOrString) => {
           if (!route.raw) {
             return false;
@@ -366,27 +408,31 @@ export const generateApi = async (
         });
     }
   } else {
-    filterEndpoints = () => true;
+    filterEndpoint = () => true;
   }
 
   const reservedDataContractNamesMap = new Map<string, number>();
 
-  const collectedExportFiles: string[] = [];
+  const collectedExportFilesFromIndexFile: string[] = [];
 
   const groupsMap = new Map<string, AnyObject[]>();
   const nonEmptyGroups = new Set<string>();
   const tagsSet = new Set<string>();
 
   if (params.groupBy == null) {
-    collectedExportFiles.push('endpoints');
-    // #region кодогенерация 1 эндпоинт - 1 файл без группировки
-    codegenFs.createDir(path.resolve(params.output, 'endpoints'));
+    collectedExportFilesFromIndexFile.push('endpoints');
 
-    const fileNamesWithRequestInfo: string[] = [];
+    if (params.outputType === 'one-endpoint-per-file') {
+      // #region кодогенерация 1 эндпоинт - 1 файл без группировки
+      codegenFs.createDir(path.resolve(params.output, 'endpoints'));
 
-    for await (const route of allRoutes) {
-      const { content: requestInfoPerFileContent, reservedDataContractNames } =
-        await endpointPerFileTmpl({
+      const fileNamesWithRequestInfo: string[] = [];
+
+      for await (const route of allRoutes) {
+        const {
+          content: requestInfoPerFileContent,
+          reservedDataContractNames,
+        } = await endpointPerFileTmpl({
           ...generated,
           route,
           apiParams: params,
@@ -401,9 +447,62 @@ export const generateApi = async (
           },
         });
 
-      if (Array.isArray(route.raw.tags)) {
-        route.raw.tags.forEach((tag) => tagsSet.add(tag));
+        if (Array.isArray(route.raw.tags)) {
+          route.raw.tags.forEach((tag) => tagsSet.add(tag));
+        }
+
+        reservedDataContractNames.forEach((name) => {
+          reservedDataContractNamesMap.set(
+            name,
+            (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+          );
+        });
+
+        if (!filterEndpoint(route)) {
+          continue;
+        }
+
+        const fileName = `${_.kebabCase(route.routeName.usage)}.ts`;
+
+        fileNamesWithRequestInfo.push(fileName);
+
+        codegenFs.createFile({
+          path: path.resolve(params.output, 'endpoints'),
+          fileName,
+          withPrefix: false,
+          content: requestInfoPerFileContent,
+        });
       }
+
+      codegenFs.createFile({
+        path: path.resolve(params.output, 'endpoints'),
+        fileName: 'index.ts',
+        withPrefix: false,
+        content: await indexTsForEndpointPerFileTmpl({
+          ...generated,
+          apiParams: params,
+          codegenProcess,
+          generatedRequestFileNames: fileNamesWithRequestInfo,
+        }),
+      });
+      // #endregion
+    } else {
+      // #region кодогенерация несколько эндпоинтов в 1 файле без группировки
+      const { content: requestInfoPerFileContent, reservedDataContractNames } =
+        await allEndpointPerFileTmpl({
+          ...generated,
+          routes: allRoutes,
+          apiParams: params,
+          codegenProcess,
+          importFileParams,
+          utils,
+          relativePathDataContracts: './data-contracts',
+          groupName: null,
+          metaInfo: {
+            namespace,
+            groupNames: [],
+          },
+        });
 
       reservedDataContractNames.forEach((name) => {
         reservedDataContractNamesMap.set(
@@ -412,34 +511,31 @@ export const generateApi = async (
         );
       });
 
-      if (!filterEndpoints(route)) {
-        continue;
+      const filteredRoutes = allRoutes.filter(filterEndpoint);
+
+      const hasFilteredRoutes = filteredRoutes.length > 0;
+
+      if (hasFilteredRoutes) {
+        filteredRoutes.forEach((route) => {
+          if (Array.isArray(route.raw.tags)) {
+            route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
+          }
+        });
+
+        const fileName = 'endpoints.ts';
+
+        collectedExportFilesFromIndexFile.push('endpoints');
+
+        codegenFs.createFile({
+          path: params.output,
+          fileName,
+          withPrefix: false,
+          content: requestInfoPerFileContent,
+        });
       }
 
-      const fileName = `${_.kebabCase(route.routeName.usage)}.ts`;
-
-      fileNamesWithRequestInfo.push(fileName);
-
-      codegenFs.createFile({
-        path: path.resolve(params.output, 'endpoints'),
-        fileName,
-        withPrefix: false,
-        content: requestInfoPerFileContent,
-      });
+      // #endregion
     }
-
-    codegenFs.createFile({
-      path: path.resolve(params.output, 'endpoints'),
-      fileName: 'index.ts',
-      withPrefix: false,
-      content: await indexTsForEndpointPerFileTmpl({
-        ...generated,
-        apiParams: params,
-        codegenProcess,
-        generatedRequestFileNames: fileNamesWithRequestInfo,
-      }),
-    });
-    // #endregion
   } else {
     // #region кодогенерация с группировкой
 
@@ -483,25 +579,84 @@ export const generateApi = async (
 
       const fileNamesWithRequestInfo: string[] = [];
 
-      codegenFs.createDir(path.resolve(params.output, _.kebabCase(groupName)));
-      codegenFs.createDir(
-        path.resolve(params.output, _.kebabCase(groupName), 'endpoints'),
+      const groupDirectory = path.resolve(
+        params.output,
+        _.kebabCase(groupName),
       );
+
+      codegenFs.createDir(groupDirectory);
 
       let hasFilteredRoutes = false;
 
-      for await (const route of routes) {
+      if (params.outputType === 'one-endpoint-per-file') {
+        // #region Генерация одного эндпоинта на 1 файл
+        codegenFs.createDir(path.resolve(groupDirectory, 'endpoints'));
+
+        for await (const route of routes) {
+          const {
+            content: requestInfoPerFileContent,
+            reservedDataContractNames,
+          } = await endpointPerFileTmpl({
+            ...generated,
+            route,
+            apiParams: params,
+            codegenProcess,
+            importFileParams,
+            utils,
+            relativePathDataContracts: '../../data-contracts',
+            groupName,
+            metaInfo: {
+              namespace,
+              groupNames: [],
+            },
+          });
+
+          reservedDataContractNames.forEach((name) => {
+            reservedDataContractNamesMap.set(
+              name,
+              (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+            );
+          });
+
+          if (!filterEndpoint(route)) {
+            continue;
+          }
+
+          hasFilteredRoutes = true;
+
+          if (Array.isArray(route.raw.tags)) {
+            route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
+          }
+
+          const fileName = `${_.kebabCase(route.routeName.usage)}.ts`;
+
+          fileNamesWithRequestInfo.push(fileName);
+
+          codegenFs.createFile({
+            path: path.resolve(
+              params.output,
+              _.kebabCase(groupName),
+              'endpoints',
+            ),
+            fileName,
+            withPrefix: false,
+            content: requestInfoPerFileContent,
+          });
+        }
+        // #endregion
+      } else {
+        // #region Генерация нескольких эндпоинтов на 1 файл
         const {
           content: requestInfoPerFileContent,
           reservedDataContractNames,
-        } = await endpointPerFileTmpl({
+        } = await allEndpointPerFileTmpl({
           ...generated,
-          route,
+          routes,
           apiParams: params,
           codegenProcess,
           importFileParams,
           utils,
-          relativePathDataContracts: '../../data-contracts',
+          relativePathDataContracts: '../data-contracts',
           groupName,
           metaInfo: {
             namespace,
@@ -516,30 +671,30 @@ export const generateApi = async (
           );
         });
 
-        if (!filterEndpoints(route)) {
-          continue;
+        const filteredRoutes = routes.filter(filterEndpoint);
+
+        hasFilteredRoutes = filteredRoutes.length > 0;
+
+        if (hasFilteredRoutes) {
+          filteredRoutes.forEach((route) => {
+            if (Array.isArray(route.raw.tags)) {
+              route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
+            }
+          });
+
+          const fileName = 'endpoints.ts';
+
+          fileNamesWithRequestInfo.push(fileName);
+
+          codegenFs.createFile({
+            path: groupDirectory,
+            fileName,
+            withPrefix: false,
+            content: requestInfoPerFileContent,
+          });
         }
 
-        hasFilteredRoutes = true;
-
-        if (Array.isArray(route.raw.tags)) {
-          route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
-        }
-
-        const fileName = `${_.kebabCase(route.routeName.usage)}.ts`;
-
-        fileNamesWithRequestInfo.push(fileName);
-
-        codegenFs.createFile({
-          path: path.resolve(
-            params.output,
-            _.kebabCase(groupName),
-            'endpoints',
-          ),
-          fileName,
-          withPrefix: false,
-          content: requestInfoPerFileContent,
-        });
+        // #endregion
       }
 
       if (hasFilteredRoutes) {
@@ -549,7 +704,7 @@ export const generateApi = async (
           : _.camelCase(groupName);
 
         codegenFs.createFile({
-          path: path.resolve(params.output, _.kebabCase(groupName)),
+          path: groupDirectory,
           fileName: 'index.ts',
           withPrefix: false,
           content: `${LINTERS_IGNORE}
@@ -557,23 +712,21 @@ export * as ${exportGroupName} from './endpoints';
 `,
         });
 
-        codegenFs.createFile({
-          path: path.resolve(
-            params.output,
-            _.kebabCase(groupName),
-            'endpoints',
-          ),
-          fileName: 'index.ts',
-          withPrefix: false,
-          content: await indexTsForEndpointPerFileTmpl({
-            ...generated,
-            apiParams: params,
-            codegenProcess,
-            generatedRequestFileNames: fileNamesWithRequestInfo,
-          }),
-        });
+        if (params.outputType === 'one-endpoint-per-file') {
+          codegenFs.createFile({
+            path: path.resolve(groupDirectory, 'endpoints'),
+            fileName: 'index.ts',
+            withPrefix: false,
+            content: await indexTsForEndpointPerFileTmpl({
+              ...generated,
+              apiParams: params,
+              codegenProcess,
+              generatedRequestFileNames: fileNamesWithRequestInfo,
+            }),
+          });
+        }
 
-        collectedExportFiles.push(_.kebabCase(groupName));
+        collectedExportFilesFromIndexFile.push(_.kebabCase(groupName));
       } else {
         codegenFs.removeDir(
           path.resolve(params.output, _.kebabCase(groupName)),
@@ -631,7 +784,7 @@ export * as ${exportGroupName} from './endpoints';
       withPrefix: false,
       content: await allExportsTmpl({
         ...generated,
-        collectedExportFiles,
+        collectedExportFiles: collectedExportFilesFromIndexFile,
         metaInfo,
         utils,
       }),
@@ -651,7 +804,7 @@ export * as ${namespace} from './__exports';
       withPrefix: false,
       content: await allExportsTmpl({
         ...generated,
-        collectedExportFiles,
+        collectedExportFiles: collectedExportFilesFromIndexFile,
         metaInfo,
         utils,
       }),
