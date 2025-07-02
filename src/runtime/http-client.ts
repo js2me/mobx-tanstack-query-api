@@ -272,7 +272,7 @@ export class HttpClient<TMeta = unknown> {
       }
     }
 
-    if (!response.ok) {
+    if (!response.ok || response.error) {
       this.setBadResponse(response);
       throw response;
     }
