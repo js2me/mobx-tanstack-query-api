@@ -247,7 +247,7 @@ export class HttpClient<TMeta = unknown> {
     };
   }
 
-  private async formatResponse(
+  protected async formatResponse(
     responseFormat: FullRequestParams['format'],
     raw: Response,
   ): Promise<AnyHttpResponse> {
@@ -328,8 +328,6 @@ export class HttpClient<TMeta = unknown> {
 
     const url = this.buildUrl(fullParams);
 
-    const responseFormatter = this.formatResponse.bind(this, responseFormat);
-
     let headers: Headers;
 
     if (requestParams.headers instanceof Headers) {
@@ -349,7 +347,7 @@ export class HttpClient<TMeta = unknown> {
       headers,
       body: body == null ? null : payloadFormatter(body),
     })
-      .then(responseFormatter)
-      .catch(responseFormatter);
+      .then((response) => this.formatResponse(responseFormat, response))
+      .catch((error) => this.formatResponse(responseFormat, error));
   }
 }
