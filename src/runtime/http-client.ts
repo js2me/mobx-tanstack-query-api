@@ -103,7 +103,7 @@ export const isHttpResponse = (
 export const isHttpBadResponse = (
   response: unknown,
 ): response is HttpResponse<null, any> => {
-  return isHttpResponse(response) && !response.ok;
+  return isHttpResponse(response) && (!response.ok || !!response.error);
 };
 
 export class HttpClient<TMeta = unknown> {
