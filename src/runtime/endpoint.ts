@@ -167,6 +167,19 @@ export class Endpoint<
     ];
   }
 
+  toInfiniteQueryKey(
+    params?: Maybe<TParams>,
+    uniqKey?: EndpointQueryUniqKey,
+  ): any {
+    return [
+      { infiniteQuery: true },
+      ...this.configuration.path,
+      this.configuration.operationId,
+      params ?? {},
+      callFunction(uniqKey),
+    ];
+  }
+
   invalidateQuery(
     ...args: AllPropertiesOptional<TParams> extends true
       ? [

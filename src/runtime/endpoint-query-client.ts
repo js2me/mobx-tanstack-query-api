@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { InvalidateOptions } from '@tanstack/query-core';
 import { QueryClient } from 'mobx-tanstack-query';
+import { Maybe } from 'yummies/utils/types';
 
 import {
   EndpointStringFilter,
@@ -21,6 +22,14 @@ export class EndpointQueryClient extends QueryClient {
     }: InvalidateEndpointsFilters,
     options?: InvalidateOptions,
   ) {
+    let endpointIdsToFilter: Maybe<Set<string>>;
+
+    if (Array.isArray(endpoint)) {
+      endpointIdsToFilter = new Set(endpoint.map((it) => it.endpointId));
+    } else if (endpoint) {
+      endpointIdsToFilter = new Set([endpoint.endpointId]);
+    }
+
     return this.invalidateQueries(
       {
         ...queryFilters,
@@ -32,18 +41,11 @@ export class EndpointQueryClient extends QueryClient {
 
           const meta = query.meta as unknown as EndpointQueryMeta;
 
-          if (endpoint) {
-            const endpointsToFilter = Array.isArray(endpoint)
-              ? endpoint
-              : [endpoint];
-
-            if (
-              endpointsToFilter.every(
-                (endpoint) => meta.endpointId !== endpoint.endpointId,
-              )
-            ) {
-              return false;
-            }
+          if (
+            endpointIdsToFilter &&
+            !endpointIdsToFilter.has(meta.endpointId)
+          ) {
+            return false;
           }
 
           if (
