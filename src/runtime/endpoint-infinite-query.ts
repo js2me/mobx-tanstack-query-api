@@ -77,8 +77,9 @@ export class EndpointInfiniteQuery<
           params = dynamicParams;
           willEnableManually = false;
         } else {
-          willEnableManually = queryOptions.enabled === false;
-          params = (queryOptionsInput.params?.() || {}) as any;
+          const { params: dynamicParams, ...otherOptions } = queryOptionsInput;
+          willEnableManually = otherOptions.enabled === false;
+          params = dynamicParams == null ? {} : dynamicParams();
         }
 
         const builtOptions = buildOptionsFromParams(endpoint, params, uniqKey);
