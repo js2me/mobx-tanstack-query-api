@@ -179,7 +179,7 @@ export const buildOptionsFromParams = (
     hasRequiredParams =
       !!params && requiredParams.every((param) => param in params);
   } else {
-    hasRequiredParams = true;
+    hasRequiredParams = !!params;
   }
 
   return {
