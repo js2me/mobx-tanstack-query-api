@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { InvalidateOptions } from '@tanstack/query-core';
-import { QueryClient } from 'mobx-tanstack-query';
+import { hashKey, InvalidateOptions } from '@tanstack/query-core';
+import { QueryClient, QueryClientConfig } from 'mobx-tanstack-query';
 import { Maybe } from 'yummies/utils/types';
 
 import {
@@ -10,6 +10,20 @@ import {
 import { EndpointQueryMeta } from './endpoint-query.types.js';
 
 export class EndpointQueryClient extends QueryClient {
+  constructor(config?: QueryClientConfig) {
+    super({
+      ...config,
+      defaultOptions: {
+        ...config?.defaultOptions,
+        queries: {
+          ...config?.defaultOptions?.queries,
+          queryKeyHashFn:
+            config?.defaultOptions?.queries?.queryKeyHashFn ?? hashKey,
+        },
+      },
+    });
+  }
+
   invalidateEndpoints(
     {
       group,
