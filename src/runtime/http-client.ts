@@ -274,7 +274,6 @@ export class HttpClient<TMeta = unknown> {
 
     if (!response.ok || response.error) {
       this.setBadResponse(response);
-      throw response;
     }
 
     return response;
@@ -342,12 +341,18 @@ export class HttpClient<TMeta = unknown> {
       headers.set('Content-Type', contentType);
     }
 
-    return this.fetch(url, {
+    const response = await this.fetch(url, {
       ...requestParams,
       headers,
       body: body == null ? null : payloadFormatter(body),
     })
       .then((response) => this.formatResponse(responseFormat, response))
       .catch((error) => this.formatResponse(responseFormat, error));
+
+    if (!response.ok || response.error) {
+      throw response;
+    }
+
+    return response;
   }
 }
