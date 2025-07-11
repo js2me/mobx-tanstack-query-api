@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@tanstack/query-core':
-        specifier: ^5.80.7
-        version: 5.81.2
+        specifier: ^5.82.0
+        version: 5.82.0
       '@types/lodash':
         specifier: ^4.17.16
         version: 4.17.16
@@ -24,17 +24,20 @@ importers:
         specifier: ^6.13.6
         version: 6.13.7
       mobx-tanstack-query:
-        specifier: ^6.0.0
-        version: 6.0.0(@tanstack/query-core@5.81.2)(mobx@6.13.7)
+        specifier: ^6.0.10
+        version: 6.0.10(@tanstack/query-core@5.82.0)(mobx@6.13.7)
       swagger-typescript-api:
         specifier: 13.2.7
         version: 13.2.7
       ts-morph:
         specifier: ^26.0.0
         version: 26.0.0
+      undici-types:
+        specifier: ^7.11.0
+        version: 7.11.0
       yummies:
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^4.4.0
+        version: 4.4.0
     devDependencies:
       '@types/node':
         specifier: ^20.17.11
@@ -1191,8 +1194,8 @@ packages:
   '@swc/types@0.1.21':
     resolution: {integrity: sha512-2YEtj5HJVbKivud9N4bpPBAyZhj4S2Ipe5LkUG94alTpr7in/GU/EARgPAd3BwU+YOmFVJC2+kjqhGRi3r0ZpQ==}
 
-  '@tanstack/query-core@5.81.2':
-    resolution: {integrity: sha512-QLYkPdrudoMATDFa3MiLEwRhNnAlzHWDf0LKaXUqJd0/+QxN8uTPi7bahRlxoAyH0UbLMBdeDbYzWALj7THOtw==}
+  '@tanstack/query-core@5.82.0':
+    resolution: {integrity: sha512-JrjoVuaajBQtnoWSg8iaPHaT4mW73lK2t+exxHNOSMqy0+13eKLqJgTKXKImLejQIfdAHQ6Un0njEhOvUtOd5w==}
 
   '@ts-morph/common@0.27.0':
     resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
@@ -1662,6 +1665,9 @@ packages:
 
   citty@0.1.6:
     resolution: {integrity: sha512-tskPPKEs8D2KPafUypv2gxwJP8h/OaJmC82QQGGDQcHvXX43xF2VDACcJVmZ0EuSxkpO9Kc4MlrA3q0+FG58AQ==}
+
+  class-variance-authority@0.7.1:
+    resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
 
   clean-regexp@1.0.0:
     resolution: {integrity: sha512-GfisEZEJvzKrmGWkvfhgzcz/BllN1USeqD2V6tg14OAOgaCD2Z/PUEuxnAZ/nPvmaHRG7a8y77p1T/IRQ4D1Hw==}
@@ -2667,8 +2673,8 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mobx-tanstack-query@6.0.0:
-    resolution: {integrity: sha512-llNDU851c+2pwNQXlNG9iOJ6ZDjKDAg+kFahkuXWRAHd7dgMQAHFqDyJ8xEoWXunZChM1/IsvINUwMNfV5jR8w==}
+  mobx-tanstack-query@6.0.10:
+    resolution: {integrity: sha512-1+ccgLcNFj3Hq9xWpMhCBJx5Bm2/Ht2oQnVW+WJOVB5k8eWcRe64yFvQYh/LHFikVtmson9fNgH1rWAjnh0X8w==}
     peerDependencies:
       '@tanstack/query-core': ^5.81.5
       mobx: ^6.12.4
@@ -3371,6 +3377,9 @@ packages:
   undici-types@6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
+  undici-types@7.11.0:
+    resolution: {integrity: sha512-kt1ZriHTi7MU+Z/r9DOdAI3ONdaR3M3csEaRc6ewa4f4dTvX4cQCbJ4NkEn0ohE4hHtq85+PhPSTY+pO/1PwgA==}
+
   unicode-canonical-property-names-ecmascript@2.0.1:
     resolution: {integrity: sha512-dA8WbNeb2a6oQzAQ55YlT5vQAWGV9WXOsi3SskE3bcCdM0P4SDd+24zS/OCacdRq5BkdsRj9q3Pg6YyQoxIGqg==}
     engines: {node: '>=4'}
@@ -3602,8 +3611,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  yummies@4.0.0:
-    resolution: {integrity: sha512-JpjliqOySAE6lanYPzB0bY5CTyCtQjBdIVA/TR21UnYpkfxxr85soB7JRZnwZ8ZH69UqHOtuikdxt/uujoZ3xw==}
+  yummies@4.4.0:
+    resolution: {integrity: sha512-l9nK7j7B3XglLCkzDEj9FJN1Mr3yaEcL+rpKp8kef+Vp85R1/dLHDzxJuKe+JdoiiFO1Z1OZyw0IJQ9E+bFOyA==}
 
 snapshots:
 
@@ -4762,7 +4771,7 @@ snapshots:
     dependencies:
       '@swc/counter': 0.1.3
 
-  '@tanstack/query-core@5.81.2': {}
+  '@tanstack/query-core@5.82.0': {}
 
   '@ts-morph/common@0.27.0':
     dependencies:
@@ -5286,6 +5295,10 @@ snapshots:
   citty@0.1.6:
     dependencies:
       consola: 3.4.2
+
+  class-variance-authority@0.7.1:
+    dependencies:
+      clsx: 2.1.1
 
   clean-regexp@1.0.0:
     dependencies:
@@ -6474,9 +6487,9 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  mobx-tanstack-query@6.0.0(@tanstack/query-core@5.81.2)(mobx@6.13.7):
+  mobx-tanstack-query@6.0.10(@tanstack/query-core@5.82.0)(mobx@6.13.7):
     dependencies:
-      '@tanstack/query-core': 5.81.2
+      '@tanstack/query-core': 5.82.0
       linked-abort-controller: 1.1.0
       mobx: 6.13.7
 
@@ -7289,6 +7302,8 @@ snapshots:
 
   undici-types@6.19.8: {}
 
+  undici-types@7.11.0: {}
+
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
   unicode-match-property-ecmascript@2.0.0:
@@ -7556,9 +7571,10 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  yummies@4.0.0:
+  yummies@4.4.0:
     dependencies:
       '@types/insane': 1.0.0
+      class-variance-authority: 0.7.1
       clsx: 2.1.1
       dayjs: 1.11.13
       insane: 2.6.2

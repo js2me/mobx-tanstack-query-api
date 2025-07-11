@@ -2,6 +2,7 @@
 /* eslint-disable unicorn/no-process-exit */
 import { LoDashStatic } from 'lodash';
 import { generateApi as generateApiFromSwagger } from 'swagger-typescript-api';
+import { RequestInit } from 'undici-types';
 import { AnyObject, KeyOfByValue, Maybe } from 'yummies/utils/types';
 
 import path from 'node:path';
@@ -171,7 +172,17 @@ export interface GenerateQueryApiParams {
     tmplData: string;
   };
 
-  requestOptions?: AnyObject;
+  /**
+   * Additional parameters used to fetch your OpenAPI schema
+   *
+   * @example
+   * fetchSchemaRequestOptions: {
+   *    headers: {
+   *      'PRIVATE-TOKEN': '12345'
+   *    }
+   * }
+   */
+  fetchSchemaRequestOptions?: RequestInit;
 
   otherCodegenParams?: AnyObject;
 
@@ -273,7 +284,7 @@ export const generateApi = async (
         ...params.otherCodegenParams?.primitiveTypeConstructs?.(constructs),
       };
     },
-    requestOptions: params.requestOptions,
+    requestOptions: params.fetchSchemaRequestOptions,
     ...params.otherCodegenParams,
   };
 
