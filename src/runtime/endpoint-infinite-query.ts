@@ -13,10 +13,7 @@ import {
   EndpointInfiniteQueryUpdateOptionsAllVariants,
 } from './endpoint-infinite-query.types.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
-import {
-  buildOptionsFromParams,
-  getParamsFromContext,
-} from './endpoint-query.js';
+import { buildOptionsFromParams } from './endpoint-query.js';
 import { EndpointQueryUniqKey } from './endpoint-query.types.js';
 import { AnyEndpoint } from './endpoint.types.js';
 import { RequestParams } from './http-client.js';
@@ -32,6 +29,14 @@ export class EndpointInfiniteQuery<
   params: TEndpoint['__params'] | null = null;
 
   private uniqKey?: EndpointQueryUniqKey;
+
+  private paramsFn: EndpointInfiniteQueryFlattenOptions<
+    TEndpoint,
+    TQueryFnData,
+    TError,
+    TPageParam,
+    TData
+  >['params'];
 
   constructor(
     private endpoint: AnyEndpoint,
@@ -56,6 +61,7 @@ export class EndpointInfiniteQuery<
     const {
       uniqKey,
       transform: transformResponse,
+      params: paramsFn,
       ...queryOptions
     } = typeof queryOptionsInput === 'function'
       ? queryOptionsInput()
@@ -70,16 +76,15 @@ export class EndpointInfiniteQuery<
         let willEnableManually: boolean;
         let params: any;
 
+        const pageParam = query.options.initialPageParam;
+
         if (typeof queryOptionsInput === 'function') {
-          const { params: dynamicParams, ...dynamicOptions } =
-            queryOptionsInput();
-          Object.assign(extraOptions, dynamicOptions);
-          params = dynamicParams;
+          Object.assign(extraOptions, queryOptionsInput());
+          params = paramsFn(pageParam);
           willEnableManually = false;
         } else {
-          const { params: dynamicParams, ...otherOptions } = queryOptionsInput;
-          willEnableManually = otherOptions.enabled === false;
-          params = dynamicParams == null ? {} : dynamicParams();
+          willEnableManually = queryOptionsInput.enabled === false;
+          params = paramsFn(pageParam);
         }
 
         const builtOptions = buildOptionsFromParams(endpoint, params, uniqKey);
@@ -109,7 +114,9 @@ export class EndpointInfiniteQuery<
         } as any;
       },
       queryFn: async (ctx): Promise<any> => {
-        const params = getParamsFromContext(ctx as any);
+        const params = paramsFn(
+          (ctx.pageParam as any) ?? queryOptions.initialPageParam,
+        ) as TEndpoint['__params'];
 
         runInAction(() => {
           this.response = null;
@@ -141,6 +148,7 @@ export class EndpointInfiniteQuery<
       },
     });
 
+    this.paramsFn = paramsFn;
     this.uniqKey = uniqKey;
 
     observable.ref(this, 'response');

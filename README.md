@@ -15,3 +15,5 @@
 # WIP   
 
 API codegen from swagger  
+
+# [Documentation](https://js2me.github.io/mobx-tanstack-query/other/swagger-codegen.html)   

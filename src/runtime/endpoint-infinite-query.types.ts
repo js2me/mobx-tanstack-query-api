@@ -39,7 +39,7 @@ export type EndpointInfiniteQueryFlattenOptions<
 > & {
   uniqKey?: EndpointQueryUniqKey;
 
-  params?: MaybeFalsy<TEndpoint['__params']>;
+  params: (pageParam: NoInfer<TPageParam>) => MaybeFalsy<TEndpoint['__params']>;
   /**
    * Transform response to QueryFnData
    */
@@ -62,7 +62,7 @@ export type EndpointInfiniteQueryOptions<
 > & {
   uniqKey?: EndpointQueryUniqKey;
 
-  params?: () => MaybeFalsy<TEndpoint['__params']>;
+  params: (pageParam: NoInfer<TPageParam>) => MaybeFalsy<TEndpoint['__params']>;
   /**
    * Transform response to QueryFnData
    */
