@@ -62,6 +62,7 @@ export class EndpointQuery<
     const {
       uniqKey,
       transform: transformResponse,
+      params,
       ...queryOptions
     } = typeof queryOptionsInput === 'function'
       ? queryOptionsInput()
@@ -141,7 +142,7 @@ export class EndpointQuery<
           ...builtOptions,
           enabled: isEnabled,
           ..._observableData.dynamicOptions,
-        } as any;
+        };
       },
       queryFn: async (ctx): Promise<any> => {
         const params = getParamsFromContext(ctx as any);
