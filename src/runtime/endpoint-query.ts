@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
@@ -5,8 +6,17 @@ import {
   QueryFunctionContext,
   QueryObserverResult,
 } from '@tanstack/query-core';
-import { makeObservable, observable, runInAction } from 'mobx';
+import {
+  action,
+  comparer,
+  computed,
+  makeObservable,
+  observable,
+  reaction,
+  runInAction,
+} from 'mobx';
 import { Query, QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
+import { callFunction } from 'yummies/common';
 import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
@@ -19,6 +29,11 @@ import {
 import { AnyEndpoint } from './endpoint.types.js';
 import { RequestParams } from './http-client.js';
 
+interface InternalObservableData<TEndpoint extends AnyEndpoint> {
+  params: MaybeFalsy<TEndpoint['__params']>;
+  dynamicOptions?: any;
+}
+
 export class EndpointQuery<
   TEndpoint extends AnyEndpoint,
   TQueryFnData = TEndpoint['__response']['data'],
@@ -27,9 +42,10 @@ export class EndpointQuery<
   TQueryData = TQueryFnData,
 > extends Query<TQueryFnData, TError, TData, TQueryData> {
   response: TEndpoint['__response'] | null = null;
-  params: TEndpoint['__params'] | null = null;
 
   private uniqKey?: EndpointQueryUniqKey;
+
+  private _observableData: InternalObservableData<TEndpoint>;
 
   constructor(
     private endpoint: AnyEndpoint,
@@ -52,51 +68,75 @@ export class EndpointQuery<
       ? queryOptionsInput()
       : queryOptionsInput;
 
+    const _observableData: InternalObservableData<TEndpoint> = {
+      params: null as MaybeFalsy<TEndpoint['__params']>,
+      dynamicOptions: undefined,
+    };
+
+    makeObservable(_observableData, {
+      params: observable.ref,
+      dynamicOptions: observable,
+    });
+
+    const disposeFn = reaction(
+      (): InternalObservableData<TEndpoint> => {
+        if (typeof queryOptionsInput === 'function') {
+          const {
+            params,
+            abortSignal,
+            select,
+            onDone,
+            onError,
+            onInit,
+            enableOnDemand,
+            ...dynamicOptions
+          } = queryOptionsInput();
+          return {
+            params,
+            dynamicOptions:
+              Object.keys(dynamicOptions).length > 0
+                ? dynamicOptions
+                : undefined,
+          };
+        } else {
+          return {
+            params: callFunction(queryOptionsInput.params),
+            dynamicOptions: undefined,
+          };
+        }
+      },
+      action(({ params, dynamicOptions }) => {
+        _observableData.params = params;
+        _observableData.dynamicOptions = dynamicOptions;
+      }),
+      {
+        fireImmediately: true,
+      },
+    );
+
     super({
       ...queryOptions,
       queryClient,
       meta: endpoint.toQueryMeta(queryOptions.meta),
       options: (query): any => {
-        const extraOptions: any = {};
-        let willEnableManually: boolean;
-        let params: any;
-
-        if (typeof queryOptionsInput === 'function') {
-          const { params: dynamicParams, ...dynamicOptions } =
-            queryOptionsInput();
-          Object.assign(extraOptions, dynamicOptions);
-          params = dynamicParams;
-          willEnableManually = false;
-        } else {
-          const { params: dynamicParams, ...otherOptions } = queryOptionsInput;
-          willEnableManually = otherOptions.enabled === false;
-          params = dynamicParams == null ? {} : dynamicParams();
-        }
-
-        const builtOptions = buildOptionsFromParams(endpoint, params, uniqKey);
+        const builtOptions = buildOptionsFromParams(
+          endpoint,
+          _observableData.params,
+          uniqKey,
+        );
         // const dynamicOuterOptions = getDynamicOptions?.(query);
 
-        let isEnabled = false;
-
-        if (willEnableManually) {
-          // if (dynamicOuterOptions?.enabled != null) {
-          //   isEnabled = dynamicOuterOptions.enabled;
-          // }
-        } else {
-          // const outerDynamicEnabled =
-          //   dynamicOuterOptions?.enabled == null ||
-          //   !!dynamicOuterOptions.enabled;
-
-          // isEnabled = builtOptions.enabled && outerDynamicEnabled;
-          isEnabled = builtOptions.enabled;
-        }
+        const isEnabled =
+          typeof queryOptionsInput !== 'function' &&
+          queryOptionsInput.enabled !== false &&
+          builtOptions.enabled;
 
         return {
           ...query.options,
           ...builtOptions,
           // ...dynamicOuterOptions,
           enabled: isEnabled,
-          ...extraOptions,
+          ..._observableData.dynamicOptions,
         } as any;
       },
       queryFn: async (ctx): Promise<any> => {
@@ -104,7 +144,9 @@ export class EndpointQuery<
 
         runInAction(() => {
           this.response = null;
-          this.params = params;
+          if (!comparer.structural(params, _observableData.params)) {
+            _observableData.params = params;
+          }
         });
 
         let requestParams = params.request as Maybe<RequestParams>;
@@ -135,8 +177,16 @@ export class EndpointQuery<
     this.uniqKey = uniqKey;
 
     observable.ref(this, 'response');
-    observable.ref(this, 'params');
+    computed.struct(this, 'params');
     makeObservable(this);
+
+    this._observableData = _observableData;
+
+    this.abortController.signal.addEventListener('abort', disposeFn);
+  }
+
+  get params() {
+    return this._observableData.params;
   }
 
   update({
@@ -148,6 +198,9 @@ export class EndpointQuery<
   > & {
     params?: MaybeFalsy<TEndpoint['__params']>;
   }) {
+    runInAction(() => {
+      this._observableData.params = params;
+    });
     return super.update({
       ...buildOptionsFromParams(this.endpoint, params, this.uniqKey),
       ...options,
@@ -157,9 +210,20 @@ export class EndpointQuery<
   async start(
     params: MaybeFalsy<TEndpoint['__params']>,
   ): Promise<QueryObserverResult<TData, TError>> {
+    runInAction(() => {
+      this._observableData.params = params;
+    });
     return await super.start(
       buildOptionsFromParams(this.endpoint, params, this.uniqKey),
     );
+  }
+
+  destroy(): void {
+    super.destroy();
+    runInAction(() => {
+      this._observableData.params = undefined;
+      this._observableData.dynamicOptions = undefined;
+    });
   }
 }
 
