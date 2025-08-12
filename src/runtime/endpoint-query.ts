@@ -16,7 +16,6 @@ import {
   runInAction,
 } from 'mobx';
 import { Query, QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
-import { callFunction } from 'yummies/common';
 import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
@@ -100,7 +99,10 @@ export class EndpointQuery<
           };
         } else {
           return {
-            params: callFunction(queryOptionsInput.params),
+            params:
+              typeof queryOptionsInput.params === 'function'
+                ? queryOptionsInput.params()
+                : (queryOptionsInput.params ?? {}),
             dynamicOptions: undefined,
           };
         }
@@ -243,7 +245,7 @@ export const buildOptionsFromParams = (
     hasRequiredParams =
       !!params && requiredParams.every((param) => param in params);
   } else {
-    hasRequiredParams = true;
+    hasRequiredParams = !!params;
   }
 
   return {
