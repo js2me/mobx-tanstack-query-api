@@ -193,22 +193,26 @@ export class EndpointQuery<
     return this._observableData.params;
   }
 
-  update({
-    params,
-    ...options
-  }: Omit<
-    QueryUpdateOptionsAllVariants<TQueryFnData, TError, TData, TQueryData>,
-    ExcludedQueryKeys
-  > & {
-    params?: MaybeFalsy<TEndpoint['__params']>;
-  }) {
-    runInAction(() => {
-      this._observableData.params = params;
-    });
-    return super.update({
-      ...buildOptionsFromParams(this.endpoint, params, this.uniqKey),
-      ...options,
-    });
+  update(
+    updateParams: Omit<
+      QueryUpdateOptionsAllVariants<TQueryFnData, TError, TData, TQueryData>,
+      ExcludedQueryKeys
+    > & {
+      params?: MaybeFalsy<TEndpoint['__params']>;
+    },
+  ) {
+    if ('params' in updateParams) {
+      const { params, ...options } = updateParams;
+      runInAction(() => {
+        this._observableData.params = params;
+      });
+      return super.update({
+        ...buildOptionsFromParams(this.endpoint, params, this.uniqKey),
+        ...options,
+      });
+    } else {
+      return super.update(updateParams);
+    }
   }
 
   async start(
