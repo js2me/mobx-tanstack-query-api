@@ -211,7 +211,14 @@ export class EndpointQuery<
         ...options,
       });
     } else {
-      return super.update(updateParams);
+      return super.update({
+        ...buildOptionsFromParams(
+          this.endpoint,
+          this._observableData.params,
+          this.uniqKey,
+        ),
+        ...updateParams,
+      });
     }
   }
 
