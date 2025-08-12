@@ -242,6 +242,8 @@ export const buildOptionsFromParams = (
   if (requiredParams.length > 0) {
     hasRequiredParams =
       !!params && requiredParams.every((param) => param in params);
+  } else {
+    hasRequiredParams = true;
   }
 
   return {
