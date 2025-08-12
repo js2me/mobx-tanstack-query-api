@@ -126,17 +126,19 @@ export class EndpointQuery<
           _observableData.params,
           uniqKey,
         );
-        // const dynamicOuterOptions = getDynamicOptions?.(query);
 
-        const isEnabled =
+        let isEnabled = builtOptions.enabled;
+
+        if (
           typeof queryOptionsInput !== 'function' &&
-          queryOptionsInput.enabled !== false &&
-          builtOptions.enabled;
+          queryOptionsInput.enabled === false
+        ) {
+          isEnabled = false;
+        }
 
         return {
           ...query.options,
           ...builtOptions,
-          // ...dynamicOuterOptions,
           enabled: isEnabled,
           ..._observableData.dynamicOptions,
         } as any;
