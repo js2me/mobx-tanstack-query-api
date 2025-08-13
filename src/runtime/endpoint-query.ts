@@ -30,6 +30,7 @@ import { RequestParams } from './http-client.js';
 
 interface InternalObservableData<TEndpoint extends AnyEndpoint> {
   params: MaybeFalsy<TEndpoint['__params']>;
+  initialized?: boolean;
   dynamicOptions?: any;
 }
 
@@ -59,6 +60,9 @@ export class EndpointQuery<
           TQueryData
         >),
   ) {
+    if (endpoint.pathDeclaration.includes('datasource/products')) {
+      console.log('1');
+    }
     const {
       uniqKey,
       transform: transformResponse,
@@ -69,7 +73,7 @@ export class EndpointQuery<
       : queryOptionsInput;
 
     const _observableData: InternalObservableData<TEndpoint> = {
-      params: null as MaybeFalsy<TEndpoint['__params']>,
+      params: null,
       dynamicOptions: undefined,
     };
 
@@ -77,45 +81,6 @@ export class EndpointQuery<
       params: observable.ref,
       dynamicOptions: observable,
     });
-
-    const disposeFn = reaction(
-      (): InternalObservableData<TEndpoint> => {
-        if (typeof queryOptionsInput === 'function') {
-          const {
-            params,
-            abortSignal,
-            select,
-            onDone,
-            onError,
-            onInit,
-            enableOnDemand,
-            ...dynamicOptions
-          } = queryOptionsInput();
-          return {
-            params,
-            dynamicOptions:
-              Object.keys(dynamicOptions).length > 0
-                ? dynamicOptions
-                : undefined,
-          };
-        } else {
-          return {
-            params:
-              typeof queryOptionsInput.params === 'function'
-                ? queryOptionsInput.params()
-                : (queryOptionsInput.params ?? {}),
-            dynamicOptions: undefined,
-          };
-        }
-      },
-      action(({ params, dynamicOptions }) => {
-        _observableData.params = params;
-        _observableData.dynamicOptions = dynamicOptions;
-      }),
-      {
-        fireImmediately: true,
-      },
-    );
 
     super({
       ...queryOptions,
@@ -128,7 +93,7 @@ export class EndpointQuery<
           uniqKey,
         );
 
-        let isEnabled = builtOptions.enabled;
+        let isEnabled = _observableData.initialized && builtOptions.enabled;
 
         if (
           typeof queryOptionsInput !== 'function' &&
@@ -138,7 +103,6 @@ export class EndpointQuery<
         }
 
         return {
-          ...query.options,
           ...builtOptions,
           enabled: isEnabled,
           ..._observableData.dynamicOptions,
@@ -179,6 +143,46 @@ export class EndpointQuery<
       },
     });
 
+    const disposeFn = reaction(
+      (): InternalObservableData<TEndpoint> => {
+        if (typeof queryOptionsInput === 'function') {
+          const {
+            params,
+            abortSignal,
+            select,
+            onDone,
+            onError,
+            onInit,
+            enableOnDemand,
+            ...dynamicOptions
+          } = queryOptionsInput();
+          return {
+            params,
+            dynamicOptions:
+              Object.keys(dynamicOptions).length > 0
+                ? dynamicOptions
+                : undefined,
+          };
+        } else {
+          return {
+            params:
+              typeof queryOptionsInput.params === 'function'
+                ? queryOptionsInput.params()
+                : (queryOptionsInput.params ?? {}),
+            dynamicOptions: undefined,
+          };
+        }
+      },
+      action(({ params, dynamicOptions }) => {
+        _observableData.initialized = true;
+        _observableData.params = params;
+        _observableData.dynamicOptions = dynamicOptions;
+      }),
+      {
+        fireImmediately: true,
+      },
+    );
+
     this.uniqKey = uniqKey;
 
     observable.ref(this, 'response');
@@ -211,7 +215,7 @@ export class EndpointQuery<
         ...buildOptionsFromParams(this.endpoint, params, this.uniqKey),
         ...options,
       });
-    } else {
+    } else if (this._observableData) {
       return super.update({
         ...buildOptionsFromParams(
           this.endpoint,
@@ -220,6 +224,8 @@ export class EndpointQuery<
         ),
         ...updateParams,
       });
+    } else {
+      return super.update(updateParams);
     }
   }
 
