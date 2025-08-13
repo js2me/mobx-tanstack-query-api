@@ -60,9 +60,6 @@ export class EndpointQuery<
           TQueryData
         >),
   ) {
-    if (endpoint.pathDeclaration.includes('datasource/products')) {
-      console.log('1');
-    }
     const {
       uniqKey,
       transform: transformResponse,
