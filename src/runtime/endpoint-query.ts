@@ -16,7 +16,8 @@ import {
   runInAction,
 } from 'mobx';
 import { Query, QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
-import { AnyObject, Maybe, MaybeFalsy } from 'yummies/utils/types';
+import { callFunction } from 'yummies/common';
+import { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import {
@@ -142,7 +143,11 @@ export class EndpointQuery<
 
     const disposeFn = reaction(
       (): InternalObservableData<TEndpoint> => {
+        let outDynamicOptions: InternalObservableData<TEndpoint>['dynamicOptions'];
+        let outParams: MaybeFn<MaybeFalsy<TEndpoint['__params']>>;
+
         if (typeof queryOptionsInput === 'function') {
+          const result = queryOptionsInput();
           const {
             params,
             abortSignal,
@@ -152,23 +157,26 @@ export class EndpointQuery<
             onInit,
             enableOnDemand,
             ...dynamicOptions
-          } = queryOptionsInput();
-          return {
-            params,
-            dynamicOptions:
-              Object.keys(dynamicOptions).length > 0
-                ? dynamicOptions
-                : undefined,
-          };
+          } = result;
+
+          if ('params' in result) {
+            outParams = result.params;
+          } else {
+            outParams = {};
+          }
+
+          outDynamicOptions =
+            Object.keys(dynamicOptions).length > 0 ? dynamicOptions : undefined;
+        } else if ('params' in queryOptionsInput) {
+          outParams = queryOptionsInput.params;
         } else {
-          return {
-            params:
-              typeof queryOptionsInput.params === 'function'
-                ? queryOptionsInput.params()
-                : (queryOptionsInput.params ?? {}),
-            dynamicOptions: undefined,
-          };
+          outParams = {};
         }
+
+        return {
+          params: callFunction(outParams),
+          dynamicOptions: outDynamicOptions,
+        };
       },
       action(({ params, dynamicOptions }) => {
         _observableData.initialized = true;

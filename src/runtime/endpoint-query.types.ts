@@ -70,7 +70,7 @@ export type EndpointQueryOptions<
 > = ShortQueryConfig<NoInfer<TQueryFnData>, TError, TData, TQueryData> & {
   uniqKey?: EndpointQueryUniqKey;
 
-  params?: () => MaybeFalsy<TEndpoint['__params']>;
+  params?: MaybeFn<MaybeFalsy<TEndpoint['__params']>, []>;
   /**
    * Transform response to QueryFnData
    */
