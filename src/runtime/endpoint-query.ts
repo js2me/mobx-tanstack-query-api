@@ -90,7 +90,7 @@ export class EndpointQuery<
           uniqKey,
         );
 
-        let isEnabled = _observableData.initialized && builtOptions.enabled;
+        let isEnabled = !!_observableData.initialized && builtOptions.enabled;
 
         if (
           typeof queryOptionsInput !== 'function' &&
