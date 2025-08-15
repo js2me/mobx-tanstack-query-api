@@ -7,7 +7,6 @@ import {
   QueryObserverResult,
 } from '@tanstack/query-core';
 import {
-  action,
   comparer,
   computed,
   makeObservable,
@@ -33,6 +32,7 @@ interface InternalObservableData<TEndpoint extends AnyEndpoint> {
   params: MaybeFalsy<TEndpoint['__params']>;
   initialized?: boolean;
   dynamicOptions?: any;
+  response: TEndpoint['__response'] | null;
 }
 
 export class EndpointQuery<
@@ -42,8 +42,6 @@ export class EndpointQuery<
   TData = TQueryFnData,
   TQueryData = TQueryFnData,
 > extends Query<TQueryFnData, TError, TData, TQueryData> {
-  response: TEndpoint['__response'] | null = null;
-
   private uniqKey?: EndpointQueryUniqKey;
 
   private _observableData: InternalObservableData<TEndpoint>;
@@ -61,22 +59,36 @@ export class EndpointQuery<
           TQueryData
         >),
   ) {
+    const isQueryOptionsInputFn = typeof queryOptionsInput === 'function';
+    const unpackedQueryOptionsInput = isQueryOptionsInputFn
+      ? queryOptionsInput()
+      : queryOptionsInput;
+
     const {
       uniqKey,
       transform: transformResponse,
       params,
       ...queryOptions
-    } = typeof queryOptionsInput === 'function'
-      ? queryOptionsInput()
-      : queryOptionsInput;
+    } = unpackedQueryOptionsInput;
 
     const _observableData: InternalObservableData<TEndpoint> = {
       params: null,
       dynamicOptions: undefined,
+      response: null,
     };
+
+    if (!isQueryOptionsInputFn && typeof params !== 'function') {
+      if ('params' in unpackedQueryOptionsInput) {
+        _observableData.params = params;
+      } else {
+        _observableData.params = {};
+      }
+      _observableData.initialized = true;
+    }
 
     makeObservable(_observableData, {
       params: observable.ref,
+      response: observable.ref,
       dynamicOptions: observable,
     });
 
@@ -110,7 +122,7 @@ export class EndpointQuery<
         const params = getParamsFromContext(ctx as any);
 
         runInAction(() => {
-          this.response = null;
+          _observableData.response = null;
           if (!comparer.structural(params, _observableData.params)) {
             _observableData.params = params;
           }
@@ -134,73 +146,83 @@ export class EndpointQuery<
         const response = await endpoint.request(fixedInput);
 
         runInAction(() => {
-          this.response = response as TEndpoint['__response'];
+          _observableData.response = response as TEndpoint['__response'];
         });
 
         return (await transformResponse?.(response)) ?? response.data;
       },
     });
 
-    const disposeFn = reaction(
-      (): InternalObservableData<TEndpoint> => {
-        let outDynamicOptions: InternalObservableData<TEndpoint>['dynamicOptions'];
-        let outParams: MaybeFn<MaybeFalsy<TEndpoint['__params']>>;
+    if (isQueryOptionsInputFn || typeof params === 'function') {
+      const disposeFn = reaction(
+        (): Partial<InternalObservableData<TEndpoint>> => {
+          let outDynamicOptions: InternalObservableData<TEndpoint>['dynamicOptions'];
+          let outParams: MaybeFn<MaybeFalsy<TEndpoint['__params']>>;
 
-        if (typeof queryOptionsInput === 'function') {
-          const result = queryOptionsInput();
-          const {
-            params,
-            abortSignal,
-            select,
-            onDone,
-            onError,
-            onInit,
-            enableOnDemand,
-            ...dynamicOptions
-          } = result;
+          if (isQueryOptionsInputFn) {
+            const result = queryOptionsInput();
+            const {
+              params,
+              abortSignal,
+              select,
+              onDone,
+              onError,
+              onInit,
+              enableOnDemand,
+              ...dynamicOptions
+            } = result;
 
-          if ('params' in result) {
-            outParams = result.params;
+            if ('params' in result) {
+              outParams = result.params;
+            } else {
+              outParams = {};
+            }
+
+            outDynamicOptions =
+              Object.keys(dynamicOptions).length > 0
+                ? dynamicOptions
+                : undefined;
+          } else if ('params' in unpackedQueryOptionsInput) {
+            outParams = unpackedQueryOptionsInput.params;
           } else {
             outParams = {};
           }
 
-          outDynamicOptions =
-            Object.keys(dynamicOptions).length > 0 ? dynamicOptions : undefined;
-        } else if ('params' in queryOptionsInput) {
-          outParams = queryOptionsInput.params;
-        } else {
-          outParams = {};
-        }
+          return {
+            params: callFunction(outParams),
+            dynamicOptions: outDynamicOptions,
+          };
+        },
+        ({ params, dynamicOptions }) => {
+          runInAction(() => {
+            _observableData.initialized = true;
+            _observableData.params = params;
+            _observableData.dynamicOptions = dynamicOptions;
+          });
+        },
+        {
+          fireImmediately: true,
+        },
+      );
 
-        return {
-          params: callFunction(outParams),
-          dynamicOptions: outDynamicOptions,
-        };
-      },
-      action(({ params, dynamicOptions }) => {
-        _observableData.initialized = true;
-        _observableData.params = params;
-        _observableData.dynamicOptions = dynamicOptions;
-      }),
-      {
-        fireImmediately: true,
-      },
-    );
+      this.abortController.signal.addEventListener('abort', disposeFn);
+    }
 
     this.uniqKey = uniqKey;
 
-    observable.ref(this, 'response');
     computed.struct(this, 'params');
+    computed.struct(this, 'response');
     makeObservable(this);
 
     this._observableData = _observableData;
-
-    this.abortController.signal.addEventListener('abort', disposeFn);
   }
 
   get params() {
     return this._observableData.params;
+  }
+
+  get response() {
+    return this._observableData.response;
   }
 
   update(
