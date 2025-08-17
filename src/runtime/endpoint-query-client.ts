@@ -93,7 +93,7 @@ export class EndpointQueryClient extends QueryClient {
             return false;
           }
 
-          return false;
+          return true;
         },
       },
       options,
