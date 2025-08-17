@@ -52,6 +52,8 @@ export interface HttpResponse<TData, TError = null, TStatus = number>
   data: TData;
   error: TError;
   status: TStatus;
+  url: string;
+  params: RequestParams;
 }
 
 export type HttpMultistatusResponse<
@@ -247,11 +249,16 @@ export class HttpClient<TMeta = unknown> {
     };
   }
 
-  protected async formatResponse(
+  protected async createResponse(
     responseFormat: FullRequestParams['format'],
     raw: Response,
+    url: string,
+    params: RequestInit,
   ): Promise<AnyHttpResponse> {
     const response = raw as AnyHttpResponse;
+
+    response.url = url;
+    response.params = params;
     response.data = null;
     response.error = null;
 
@@ -341,18 +348,32 @@ export class HttpClient<TMeta = unknown> {
       headers.set('Content-Type', contentType);
     }
 
-    const response = await this.fetch(url, {
+    const fetchUrl: string = url;
+    const fetchParams: RequestInit = {
       ...requestParams,
       headers,
       body: body == null ? null : payloadFormatter(body),
-    })
-      .then((response) => this.formatResponse(responseFormat, response))
-      .catch((error) => this.formatResponse(responseFormat, error));
+    };
 
-    if (!response.ok || response.error) {
-      throw response;
+    let response: Response | undefined;
+
+    try {
+      response = await this.fetch(fetchUrl, fetchParams);
+    } catch (error) {
+      response = error as Response;
     }
 
-    return response;
+    const httpResponse = await this.createResponse(
+      responseFormat,
+      response,
+      fetchUrl,
+      fetchParams,
+    );
+
+    if (!httpResponse.ok || httpResponse.error) {
+      throw httpResponse;
+    }
+
+    return httpResponse;
   }
 }
