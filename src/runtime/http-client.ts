@@ -52,8 +52,10 @@ export interface HttpResponse<TData, TError = null, TStatus = number>
   data: TData;
   error: TError;
   status: TStatus;
-  url: string;
-  params: RequestParams;
+  request: {
+    url: string;
+    params: globalThis.RequestInit;
+  };
 }
 
 export type HttpMultistatusResponse<
@@ -257,8 +259,10 @@ export class HttpClient<TMeta = unknown> {
   ): Promise<AnyHttpResponse> {
     const response = raw as AnyHttpResponse;
 
-    response.url = url;
-    response.params = params;
+    response.request = {
+      url,
+      params,
+    };
     response.data = null;
     response.error = null;
 
