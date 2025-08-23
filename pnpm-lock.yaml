@@ -24,8 +24,8 @@ importers:
         specifier: ^6.13.6
         version: 6.13.7
       mobx-tanstack-query:
-        specifier: ^6.0.10
-        version: 6.0.10(@tanstack/query-core@5.82.0)(mobx@6.13.7)
+        specifier: ^6.1.1
+        version: 6.1.1(@tanstack/query-core@5.82.0)(mobx@6.13.7)
       swagger-typescript-api:
         specifier: 13.2.7
         version: 13.2.7
@@ -36,8 +36,8 @@ importers:
         specifier: ^7.11.0
         version: 7.11.0
       yummies:
-        specifier: ^4.4.0
-        version: 4.4.0
+        specifier: ^4.11.1
+        version: 4.11.1
     devDependencies:
       '@types/node':
         specifier: ^20.17.11
@@ -2673,8 +2673,8 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mobx-tanstack-query@6.0.10:
-    resolution: {integrity: sha512-1+ccgLcNFj3Hq9xWpMhCBJx5Bm2/Ht2oQnVW+WJOVB5k8eWcRe64yFvQYh/LHFikVtmson9fNgH1rWAjnh0X8w==}
+  mobx-tanstack-query@6.1.1:
+    resolution: {integrity: sha512-9NpHzsfpDmYfBI2pHNniuJ3XilmtahXgvN5PzoGWZHAJe1fdzrBsncMhhpW8526OT1xdyrwyiDfdfVPAJFFEBQ==}
     peerDependencies:
       '@tanstack/query-core': ^5.81.5
       mobx: ^6.12.4
@@ -3261,8 +3261,8 @@ packages:
     resolution: {integrity: sha512-Q/XQKRaJiLiFIBNN+mndW7S/RHxvwzuZS6ZwmRzUBqJBv/5QIKCEwkBC8GBf8EQJKYnaFs0wOZbKTXBPj8L9oQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
 
-  tailwind-merge@2.6.0:
-    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
+  tailwind-merge@3.3.1:
+    resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
 
   text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
@@ -3611,8 +3611,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  yummies@4.4.0:
-    resolution: {integrity: sha512-l9nK7j7B3XglLCkzDEj9FJN1Mr3yaEcL+rpKp8kef+Vp85R1/dLHDzxJuKe+JdoiiFO1Z1OZyw0IJQ9E+bFOyA==}
+  yummies@4.11.1:
+    resolution: {integrity: sha512-gH77BW/nh+2VrXRUnrdWYkmuT6il4kc1HUFQi9bI8AI/nzqC+FTK4AW07/wuLBP1p1gruY5kHmItIY7R57W9QA==}
 
 snapshots:
 
@@ -6487,7 +6487,7 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  mobx-tanstack-query@6.0.10(@tanstack/query-core@5.82.0)(mobx@6.13.7):
+  mobx-tanstack-query@6.1.1(@tanstack/query-core@5.82.0)(mobx@6.13.7):
     dependencies:
       '@tanstack/query-core': 5.82.0
       linked-abort-controller: 1.1.0
@@ -7187,7 +7187,7 @@ snapshots:
       '@pkgr/core': 0.2.4
       tslib: 2.8.1
 
-  tailwind-merge@2.6.0: {}
+  tailwind-merge@3.3.1: {}
 
   text-table@0.2.0: {}
 
@@ -7571,7 +7571,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  yummies@4.4.0:
+  yummies@4.11.1:
     dependencies:
       '@types/insane': 1.0.0
       class-variance-authority: 0.7.1
@@ -7579,4 +7579,4 @@ snapshots:
       dayjs: 1.11.13
       insane: 2.6.2
       nanoid: 5.1.5
-      tailwind-merge: 2.6.0
+      tailwind-merge: 3.3.1

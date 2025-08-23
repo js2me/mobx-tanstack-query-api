@@ -5,7 +5,7 @@ import {
   InvalidateQueryFilters,
 } from '@tanstack/query-core';
 import { callFunction } from 'yummies/common';
-import { AllPropertiesOptional, AnyObject, Maybe } from 'yummies/utils/types';
+import { IsPartial, AnyObject, Maybe } from 'yummies/utils/types';
 
 import { EndpointInfiniteQuery } from './endpoint-infinite-query.js';
 import {
@@ -34,7 +34,7 @@ export interface Endpoint<
   TMetaData extends AnyObject = AnyObject,
 > {
   (
-    ...args: AllPropertiesOptional<TParams> extends true
+    ...args: IsPartial<TParams> extends true
       ? [params?: Maybe<TParams>]
       : [params: TParams]
   ): ReturnType<Endpoint<TResponse, TParams, TMetaData>['request']>;
@@ -71,7 +71,7 @@ export class Endpoint<
     // Создаем функцию-обертку
     const callable = function (
       this: any,
-      ...args: AllPropertiesOptional<TParams> extends true
+      ...args: IsPartial<TParams> extends true
         ? [params?: Maybe<TParams>]
         : [params: TParams]
     ) {
@@ -96,7 +96,7 @@ export class Endpoint<
   }
 
   getFullUrl(
-    ...args: AllPropertiesOptional<TParams> extends true
+    ...args: IsPartial<TParams> extends true
       ? [params?: Maybe<TParams>]
       : [params: TParams]
   ): string {
@@ -105,7 +105,7 @@ export class Endpoint<
   }
 
   getPath(
-    ...args: AllPropertiesOptional<TParams> extends true
+    ...args: IsPartial<TParams> extends true
       ? [params?: Maybe<TParams>]
       : [params: TParams]
   ): string {
@@ -138,7 +138,7 @@ export class Endpoint<
   }
 
   request(
-    ...args: AllPropertiesOptional<TParams> extends true
+    ...args: IsPartial<TParams> extends true
       ? [params?: Maybe<TParams>]
       : [params: TParams]
   ) {
@@ -181,7 +181,7 @@ export class Endpoint<
   }
 
   invalidateQuery(
-    ...args: AllPropertiesOptional<TParams> extends true
+    ...args: IsPartial<TParams> extends true
       ? [
           params?: Maybe<TParams>,
           filters?: InvalidateQueryFilters & { uniqKey?: EndpointQueryUniqKey },

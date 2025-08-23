@@ -11,8 +11,11 @@ import {
   computed,
   makeObservable,
   observable,
+  onBecomeObserved,
+  onBecomeUnobserved,
   reaction,
   runInAction,
+  $mobx,
 } from 'mobx';
 import { Query, QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
@@ -153,66 +156,88 @@ export class EndpointQuery<
       },
     });
 
-    if (isQueryOptionsInputFn || typeof params === 'function') {
-      const disposeFn = reaction(
-        (): Partial<InternalObservableData<TEndpoint>> => {
-          let outDynamicOptions: InternalObservableData<TEndpoint>['dynamicOptions'];
-          let outParams: MaybeFn<MaybeFalsy<TEndpoint['__params']>>;
-
-          if (isQueryOptionsInputFn) {
-            const result = queryOptionsInput();
-            const {
-              params,
-              abortSignal,
-              select,
-              onDone,
-              onError,
-              onInit,
-              enableOnDemand,
-              ...dynamicOptions
-            } = result;
-
-            if ('params' in result) {
-              outParams = result.params;
-            } else {
-              outParams = {};
-            }
-
-            outDynamicOptions =
-              Object.keys(dynamicOptions).length > 0
-                ? dynamicOptions
-                : undefined;
-          } else if ('params' in unpackedQueryOptionsInput) {
-            outParams = unpackedQueryOptionsInput.params;
-          } else {
-            outParams = {};
-          }
-
-          return {
-            params: callFunction(outParams),
-            dynamicOptions: outDynamicOptions,
-          };
-        },
-        ({ params, dynamicOptions }) => {
-          runInAction(() => {
-            _observableData.initialized = true;
-            _observableData.params = params;
-            _observableData.dynamicOptions = dynamicOptions;
-          });
-        },
-        {
-          fireImmediately: true,
-        },
-      );
-
-      this.abortController.signal.addEventListener('abort', disposeFn);
-    }
-
-    this.uniqKey = uniqKey;
+    // @ts-ignore
+    const parentAtom = this[$mobx];
 
     computed.struct(this, 'params');
     computed.struct(this, 'response');
     makeObservable(this);
+
+    if (isQueryOptionsInputFn || typeof params === 'function') {
+      const createParamsReaction = () =>
+        reaction(
+          (): Partial<InternalObservableData<TEndpoint>> => {
+            let outDynamicOptions: InternalObservableData<TEndpoint>['dynamicOptions'];
+            let outParams: MaybeFn<MaybeFalsy<TEndpoint['__params']>>;
+
+            if (isQueryOptionsInputFn) {
+              const result = queryOptionsInput();
+              const {
+                params,
+                abortSignal,
+                select,
+                onDone,
+                onError,
+                onInit,
+                enableOnDemand,
+                ...dynamicOptions
+              } = result;
+
+              if ('params' in result) {
+                outParams = result.params;
+              } else {
+                outParams = {};
+              }
+
+              outDynamicOptions =
+                Object.keys(dynamicOptions).length > 0
+                  ? dynamicOptions
+                  : undefined;
+            } else if ('params' in unpackedQueryOptionsInput) {
+              outParams = unpackedQueryOptionsInput.params;
+            } else {
+              outParams = {};
+            }
+
+            return {
+              params: callFunction(outParams),
+              dynamicOptions: outDynamicOptions,
+            };
+          },
+          ({ params, dynamicOptions }) => {
+            runInAction(() => {
+              _observableData.initialized = true;
+              _observableData.params = params;
+              _observableData.dynamicOptions = dynamicOptions;
+            });
+          },
+          {
+            fireImmediately: true,
+          },
+        );
+
+      if (this.isLazy) {
+        let disposeFn: VoidFunction | undefined;
+        onBecomeObserved(parentAtom.values_.get('_result'), () => {
+          if (!disposeFn) {
+            disposeFn = createParamsReaction();
+          }
+        });
+        onBecomeUnobserved(parentAtom.values_.get('_result'), () => {
+          if (disposeFn) {
+            disposeFn();
+            disposeFn = undefined;
+          }
+        });
+      } else {
+        this.abortController.signal.addEventListener(
+          'abort',
+          createParamsReaction(),
+        );
+      }
+    }
+
+    this.uniqKey = uniqKey;
 
     this._observableData = _observableData;
   }
