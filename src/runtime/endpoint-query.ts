@@ -11,14 +11,12 @@ import {
   computed,
   makeObservable,
   observable,
-  onBecomeObserved,
-  onBecomeUnobserved,
   reaction,
   runInAction,
-  $mobx,
 } from 'mobx';
 import { Query, QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
+import { getMobxAdministration, lazyObserve } from 'yummies/mobx';
 import { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/utils/types';
 
 import { EndpointQueryClient } from './endpoint-query-client.js';
@@ -156,8 +154,7 @@ export class EndpointQuery<
       },
     });
 
-    // @ts-ignore
-    const parentAtom = this[$mobx];
+    const parentAtom = getMobxAdministration(this);
 
     computed.struct(this, 'params');
     computed.struct(this, 'response');
@@ -217,17 +214,10 @@ export class EndpointQuery<
         );
 
       if (this.isLazy) {
-        let disposeFn: VoidFunction | undefined;
-        onBecomeObserved(parentAtom.values_.get('_result'), () => {
-          if (!disposeFn) {
-            disposeFn = createParamsReaction();
-          }
-        });
-        onBecomeUnobserved(parentAtom.values_.get('_result'), () => {
-          if (disposeFn) {
-            disposeFn();
-            disposeFn = undefined;
-          }
+        lazyObserve({
+          property: parentAtom.values_.get('_result'),
+          onStart: createParamsReaction,
+          onEnd: (disposeFn) => disposeFn(),
         });
       } else {
         this.abortController.signal.addEventListener(
