@@ -31,6 +31,7 @@ import { RequestParams } from './http-client.js';
 
 interface InternalObservableData<TEndpoint extends AnyEndpoint> {
   params: MaybeFalsy<TEndpoint['__params']>;
+  uniqKey?: EndpointQueryUniqKey;
   initialized?: boolean;
   dynamicOptions?: any;
   response: TEndpoint['__response'] | null;
@@ -43,8 +44,6 @@ export class EndpointQuery<
   TData = TQueryFnData,
   TQueryData = TQueryFnData,
 > extends Query<TQueryFnData, TError, TData, TQueryData> {
-  private uniqKey?: EndpointQueryUniqKey;
-
   private _observableData: InternalObservableData<TEndpoint>;
 
   constructor(
@@ -76,6 +75,7 @@ export class EndpointQuery<
       params: null,
       dynamicOptions: undefined,
       response: null,
+      uniqKey: unpackedQueryOptionsInput.uniqKey,
     };
 
     if (!isQueryOptionsInputFn && typeof params !== 'function') {
@@ -101,7 +101,7 @@ export class EndpointQuery<
         const builtOptions = buildOptionsFromParams(
           endpoint,
           _observableData.params,
-          uniqKey,
+          _observableData.uniqKey,
         );
 
         let isEnabled = !!_observableData.initialized && builtOptions.enabled;
@@ -166,6 +166,7 @@ export class EndpointQuery<
           (): Partial<InternalObservableData<TEndpoint>> => {
             let outDynamicOptions: InternalObservableData<TEndpoint>['dynamicOptions'];
             let outParams: MaybeFn<MaybeFalsy<TEndpoint['__params']>>;
+            let uniqKey: Maybe<EndpointQueryUniqKey>;
 
             if (isQueryOptionsInputFn) {
               const result = queryOptionsInput();
@@ -177,8 +178,11 @@ export class EndpointQuery<
                 onError,
                 onInit,
                 enableOnDemand,
+                uniqKey: _uniqKey,
                 ...dynamicOptions
               } = result;
+
+              uniqKey = _uniqKey;
 
               if ('params' in result) {
                 outParams = result.params;
@@ -192,20 +196,24 @@ export class EndpointQuery<
                   : undefined;
             } else if ('params' in unpackedQueryOptionsInput) {
               outParams = unpackedQueryOptionsInput.params;
+              uniqKey = unpackedQueryOptionsInput.uniqKey;
             } else {
               outParams = {};
+              uniqKey = unpackedQueryOptionsInput.uniqKey;
             }
 
             return {
               params: callFunction(outParams),
               dynamicOptions: outDynamicOptions,
+              uniqKey,
             };
           },
-          ({ params, dynamicOptions }) => {
+          ({ params, dynamicOptions, uniqKey }) => {
             runInAction(() => {
               _observableData.initialized = true;
               _observableData.params = params;
               _observableData.dynamicOptions = dynamicOptions;
+              _observableData.uniqKey = uniqKey;
             });
           },
           {
@@ -226,8 +234,6 @@ export class EndpointQuery<
         );
       }
     }
-
-    this.uniqKey = uniqKey;
 
     this._observableData = _observableData;
   }
@@ -254,7 +260,11 @@ export class EndpointQuery<
         this._observableData.params = params;
       });
       return super.update({
-        ...buildOptionsFromParams(this.endpoint, params, this.uniqKey),
+        ...buildOptionsFromParams(
+          this.endpoint,
+          params,
+          this._observableData.uniqKey,
+        ),
         ...options,
       });
     } else if (this._observableData) {
@@ -262,7 +272,7 @@ export class EndpointQuery<
         ...buildOptionsFromParams(
           this.endpoint,
           this._observableData.params,
-          this.uniqKey,
+          this._observableData.uniqKey,
         ),
         ...updateParams,
       });
@@ -278,7 +288,11 @@ export class EndpointQuery<
       this._observableData.params = params;
     });
     return await super.start(
-      buildOptionsFromParams(this.endpoint, params, this.uniqKey),
+      buildOptionsFromParams(
+        this.endpoint,
+        params,
+        this._observableData.uniqKey,
+      ),
     );
   }
 
