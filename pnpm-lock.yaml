@@ -24,8 +24,8 @@ importers:
         specifier: ^6.13.6
         version: 6.13.7
       mobx-tanstack-query:
-        specifier: ^6.2.2
-        version: 6.2.2(@tanstack/query-core@5.82.0)(mobx@6.13.7)
+        specifier: ^6.3.1
+        version: 6.3.1(@tanstack/query-core@5.82.0)(mobx@6.13.7)
       swagger-typescript-api:
         specifier: 13.2.7
         version: 13.2.7
@@ -36,8 +36,8 @@ importers:
         specifier: ^7.11.0
         version: 7.11.0
       yummies:
-        specifier: ^4.12.2
-        version: 4.12.2(mobx@6.13.7)
+        specifier: ^4.14.1
+        version: 4.14.1(mobx@6.13.7)
     devDependencies:
       '@types/node':
         specifier: ^20.17.11
@@ -2673,8 +2673,8 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mobx-tanstack-query@6.2.2:
-    resolution: {integrity: sha512-MXc9rEl2s01HWI0RJT/jmYYRwmxgXehvBKaBJr77PWz0EGSUFvIxehosM7X18dRKbzw9V4ijsHwPeZ240JpIvg==}
+  mobx-tanstack-query@6.3.1:
+    resolution: {integrity: sha512-uW7AMUe7PFSz73l5SH0u+f+cqjfAued23CMKReQSJuSYjB7z5FABf4fQbOqFs4vTUFdX2vaDK1Ea9msQCcGMPQ==}
     peerDependencies:
       '@tanstack/query-core': ^5.81.5
       mobx: ^6.12.4
@@ -3611,12 +3611,15 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  yummies@4.12.2:
-    resolution: {integrity: sha512-1nScL9ZAFHh/1UzCgKr3aZsnTxIuieTnbrF9XXzHgMPqQNEs8JY8HvvRXF3XkQht+DFOMtAsLxIR86YzJNd6EA==}
+  yummies@4.14.1:
+    resolution: {integrity: sha512-TgdIiPzvIcQpQK/nMlazM7dOieh2ljZ/CtwT2stO7zPbYQ1TtNOyWlrRPykl2bSI8Fl2OnvHX+Ww23T8Zg01oA==}
     peerDependencies:
       mobx: ^6.12.4
+      react: ^18 || ^19
     peerDependenciesMeta:
       mobx:
+        optional: true
+      react:
         optional: true
 
 snapshots:
@@ -6492,12 +6495,14 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  mobx-tanstack-query@6.2.2(@tanstack/query-core@5.82.0)(mobx@6.13.7):
+  mobx-tanstack-query@6.3.1(@tanstack/query-core@5.82.0)(mobx@6.13.7):
     dependencies:
       '@tanstack/query-core': 5.82.0
       linked-abort-controller: 1.1.0
       mobx: 6.13.7
-      yummies: 4.12.2(mobx@6.13.7)
+      yummies: 4.14.1(mobx@6.13.7)
+    transitivePeerDependencies:
+      - react
 
   mobx@6.13.7: {}
 
@@ -7577,7 +7582,7 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  yummies@4.12.2(mobx@6.13.7):
+  yummies@4.14.1(mobx@6.13.7):
     dependencies:
       '@types/insane': 1.0.0
       class-variance-authority: 0.7.1
