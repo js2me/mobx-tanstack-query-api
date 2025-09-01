@@ -5,6 +5,7 @@ import {
   DefaultError,
   QueryFunctionContext,
   QueryObserverResult,
+  RefetchOptions,
 } from '@tanstack/query-core';
 import {
   comparer,
@@ -279,6 +280,15 @@ export class EndpointQuery<
     } else {
       return super.update(updateParams);
     }
+  }
+
+  refetch(
+    options?: RefetchOptions,
+  ): Promise<QueryObserverResult<TData, TError>> {
+    if (this.params) {
+      return super.refetch(options);
+    }
+    return Promise.resolve(this.queryObserver.getCurrentResult());
   }
 
   async start(
