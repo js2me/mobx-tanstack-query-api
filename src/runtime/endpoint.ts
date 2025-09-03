@@ -60,8 +60,8 @@ export class Endpoint<
 
   constructor(
     public configuration: EndpointConfiguration<NoInfer<TParams>, TMetaData>,
-    protected queryClient: EndpointQueryClient,
-    protected http: HttpClient,
+    public queryClient: EndpointQueryClient,
+    public httpClient: HttpClient,
   ) {
     this.endpointId = globalThis.crypto.randomUUID();
     this.meta = configuration.meta ?? ({} as TMetaData);
@@ -101,7 +101,7 @@ export class Endpoint<
       : [params: TParams]
   ): string {
     const params = this.configuration.params(args[0] ?? ({} as TParams));
-    return this.http.buildUrl(params);
+    return this.httpClient.buildUrl(params);
   }
 
   getPath(
@@ -142,7 +142,7 @@ export class Endpoint<
       ? [params?: Maybe<TParams>]
       : [params: TParams]
   ) {
-    return this.http.request<TResponse>(
+    return this.httpClient.request<TResponse>(
       this.configuration.params(args[0] ?? ({} as TParams)),
     );
   }
