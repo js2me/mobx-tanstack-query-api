@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-import { hashKey, InvalidateOptions } from '@tanstack/query-core';
-import { QueryClient, QueryClientConfig } from 'mobx-tanstack-query';
-import { Maybe } from 'yummies/utils/types';
-
-import {
+import { hashKey, type InvalidateOptions } from '@tanstack/query-core';
+import { QueryClient, type QueryClientConfig } from 'mobx-tanstack-query';
+import type { Maybe } from 'yummies/utils/types';
+import type { EndpointQueryMeta } from './endpoint-query.types.js';
+import type {
   EndpointStringFilter,
   InvalidateEndpointsFilters,
 } from './endpoint-query-client.types.js';
-import { EndpointQueryMeta } from './endpoint-query.types.js';
 
 export class EndpointQueryClient extends QueryClient {
   constructor(config?: QueryClientConfig) {
@@ -47,7 +45,6 @@ export class EndpointQueryClient extends QueryClient {
     return this.invalidateQueries(
       {
         ...queryFilters,
-        // eslint-disable-next-line sonarjs/no-invariant-returns
         predicate: (query) => {
           if (!query.meta?.endpointQuery) {
             return false;

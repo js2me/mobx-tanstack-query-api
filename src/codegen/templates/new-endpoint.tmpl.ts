@@ -1,5 +1,4 @@
-/* eslint-disable sonarjs/no-nested-conditional */
-import { AnyObject, Maybe } from 'yummies/utils/types';
+import type { AnyObject, Maybe } from 'yummies/utils/types';
 
 import type {
   AllImportFileParams,

@@ -1,22 +1,21 @@
-import {
+import type {
   DefaultError,
   InfiniteData,
   QueryObserverResult,
 } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction } from 'mobx';
 import { InfiniteQuery } from 'mobx-tanstack-query';
-import { Maybe, MaybeFalsy } from 'yummies/utils/types';
-
-import {
+import type { Maybe, MaybeFalsy } from 'yummies/utils/types';
+import type { AnyEndpoint } from './endpoint.types.js';
+import type {
   EndpointInfiniteQueryFlattenOptions,
   EndpointInfiniteQueryOptions,
   EndpointInfiniteQueryUpdateOptionsAllVariants,
 } from './endpoint-infinite-query.types.js';
-import { EndpointQueryClient } from './endpoint-query-client.js';
 import { buildOptionsFromParams } from './endpoint-query.js';
-import { EndpointQueryUniqKey } from './endpoint-query.types.js';
-import { AnyEndpoint } from './endpoint.types.js';
-import { RequestParams } from './http-client.js';
+import type { EndpointQueryUniqKey } from './endpoint-query.types.js';
+import type { EndpointQueryClient } from './endpoint-query-client.js';
+import type { RequestParams } from './http-client.js';
 
 export class EndpointInfiniteQuery<
   TEndpoint extends AnyEndpoint,

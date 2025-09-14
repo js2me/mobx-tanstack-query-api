@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable unicorn/no-process-exit */
-import { LoDashStatic } from 'lodash';
-import { generateApi as generateApiFromSwagger } from 'swagger-typescript-api';
-import { RequestInit } from 'undici-types';
-import { AnyObject, KeyOfByValue, Maybe } from 'yummies/utils/types';
-
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { LoDashStatic } from 'lodash';
+import { generateApi as generateApiFromSwagger } from 'swagger-typescript-api';
+import type { RequestInit } from 'undici-types';
+import type { AnyObject, KeyOfByValue, Maybe } from 'yummies/utils/types';
 
 import { allEndpointPerFileTmpl } from './templates/all-endpoints-per-file.tmpl.js';
 import { allExportsTmpl } from './templates/all-exports.tmpl.js';
@@ -16,8 +13,8 @@ import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
 import { indexTsForEndpointPerFileTmpl } from './templates/index-ts-for-endpoint-per-file.tmpl.js';
 import { metaInfoTmpl } from './templates/meta-info.tmpl.js';
 import {
+  type RemoveUnusedTypesParams,
   removeUnusedTypes,
-  RemoveUnusedTypesParams,
 } from './utils/remove-unused-types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -209,6 +206,7 @@ export type AllImportFileParams = Record<
 
 export const generateApi = async (
   params: GenerateQueryApiParams | GenerateQueryApiParams[],
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
 ): Promise<void> => {
   if (Array.isArray(params)) {
     await Promise.all(params.map((param) => generateApi(param)));
@@ -315,13 +313,13 @@ export const generateApi = async (
       onInit: (configuration, codeGenProcessFromInit) => {
         codegenProcess = codeGenProcessFromInit;
 
-        // @ts-ignore
+        // @ts-expect-error
         configuration.swaggerSchema.components =
-          // @ts-ignore
+          // @ts-expect-error
           configuration.swaggerSchema.components || {};
-        // @ts-ignore
+        // @ts-expect-error
         configuration.swaggerSchema.components.schemas =
-          // @ts-ignore
+          // @ts-expect-error
           configuration.swaggerSchema.components.schemas || {};
 
         return codegenParams?.hooks?.onInit?.(
@@ -459,7 +457,9 @@ export const generateApi = async (
         });
 
         if (Array.isArray(route.raw.tags)) {
-          route.raw.tags.forEach((tag) => tagsSet.add(tag));
+          route.raw.tags.forEach((tag) => {
+            tagsSet.add(tag);
+          });
         }
 
         reservedDataContractNames.forEach((name) => {
@@ -529,7 +529,9 @@ export const generateApi = async (
       if (hasFilteredRoutes) {
         filteredRoutes.forEach((route) => {
           if (Array.isArray(route.raw.tags)) {
-            route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
+            route.raw.tags.forEach((tag: string) => {
+              tagsSet.add(tag);
+            });
           }
         });
 
@@ -636,7 +638,9 @@ export const generateApi = async (
           hasFilteredRoutes = true;
 
           if (Array.isArray(route.raw.tags)) {
-            route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
+            route.raw.tags.forEach((tag: string) => {
+              tagsSet.add(tag);
+            });
           }
 
           const fileName = `${_.kebabCase(route.routeName.usage)}.ts`;
@@ -689,7 +693,9 @@ export const generateApi = async (
         if (hasFilteredRoutes) {
           filteredRoutes.forEach((route) => {
             if (Array.isArray(route.raw.tags)) {
-              route.raw.tags.forEach((tag: string) => tagsSet.add(tag));
+              route.raw.tags.forEach((tag: string) => {
+                tagsSet.add(tag);
+              });
             }
           });
 

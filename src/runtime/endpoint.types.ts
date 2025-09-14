@@ -1,8 +1,7 @@
-import { AnyObject } from 'yummies/utils/types';
-
-import { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
+import type { AnyObject } from 'yummies/utils/types';
 import type { Endpoint } from './endpoint.js';
-import { FullRequestParams } from './http-client.js';
+import type { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
+import type { FullRequestParams } from './http-client.js';
 
 export interface EndpointConfiguration<
   TInput extends AnyObject,

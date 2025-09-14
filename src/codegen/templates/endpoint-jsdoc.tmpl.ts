@@ -1,7 +1,7 @@
 import { splitTextByLines } from 'yummies/text';
-import { AnyObject } from 'yummies/utils/types';
+import type { AnyObject } from 'yummies/utils/types';
 
-import { GenerateQueryApiParams } from '../index.js';
+import type { GenerateQueryApiParams } from '../index.js';
 
 export interface EndpointJSDocTmplParams {
   route: AnyObject;

@@ -1,17 +1,16 @@
-import { DefaultError, InfiniteData } from '@tanstack/query-core';
-import {
+import type { DefaultError, InfiniteData } from '@tanstack/query-core';
+import type {
   InfiniteQueryConfig,
   InfiniteQueryDynamicOptions,
   InfiniteQueryOptions,
   InfiniteQueryUpdateOptions,
 } from 'mobx-tanstack-query';
-import { AnyObject, MaybeFalsy } from 'yummies/utils/types';
-
-import {
+import type { AnyObject, MaybeFalsy } from 'yummies/utils/types';
+import type { AnyEndpoint } from './endpoint.types.js';
+import type {
   EndpointQueryUniqKey,
   ExcludedQueryKeys,
 } from './endpoint-query.types.js';
-import { AnyEndpoint } from './endpoint.types.js';
 
 type ShortInfiniteQueryConfig<
   TQueryFnData,

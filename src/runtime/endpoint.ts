@@ -1,31 +1,30 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import {
+/** biome-ignore-all lint/style/useShorthandFunctionType: this is special trick to add typings for callable class instance */
+import type {
   DefaultError,
   InvalidateOptions,
   InvalidateQueryFilters,
 } from '@tanstack/query-core';
 import { callFunction } from 'yummies/common';
-import { IsPartial, AnyObject, Maybe } from 'yummies/utils/types';
-
+import type { AnyObject, IsPartial, Maybe } from 'yummies/utils/types';
+import type {
+  EndpointConfiguration,
+  EndpointMutationPresets,
+} from './endpoint.types.js';
 import { EndpointInfiniteQuery } from './endpoint-infinite-query.js';
-import {
+import type {
   EndpointInfiniteQueryFlattenOptions,
   EndpointInfiniteQueryOptions,
 } from './endpoint-infinite-query.types.js';
 import { EndpointMutation } from './endpoint-mutation.js';
-import { EndpointMutationOptions } from './endpoint-mutation.types.js';
-import { EndpointQueryClient } from './endpoint-query-client.js';
+import type { EndpointMutationOptions } from './endpoint-mutation.types.js';
 import { EndpointQuery } from './endpoint-query.js';
-import {
+import type {
   EndpointQueryFlattenOptions,
   EndpointQueryMeta,
   EndpointQueryOptions,
   EndpointQueryUniqKey,
 } from './endpoint-query.types.js';
-import {
-  EndpointConfiguration,
-  EndpointMutationPresets,
-} from './endpoint.types.js';
+import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { HttpClient, HttpResponse } from './http-client.js';
 
 export interface Endpoint<
@@ -92,6 +91,7 @@ export class Endpoint<
         if (desc) Object.defineProperty(callable, key, desc);
       });
 
+    // biome-ignore lint/correctness/noConstructorReturn: this is special trick to add typings for callable class instance
     return callable;
   }
 
@@ -195,7 +195,6 @@ export class Endpoint<
   ) {
     this.queryClient.invalidateQueries(
       {
-        // @ts-ignore
         queryKey: this.toQueryKey(args[0], args[1]?.uniqKey),
         exact: true,
         ...(args[1] as any),

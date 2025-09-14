@@ -1,13 +1,12 @@
 import { Mutation } from 'mobx-tanstack-query';
-import { AnyObject, Maybe } from 'yummies/utils/types';
-
-import {
-  EndpointMutationParams,
+import type { AnyObject, Maybe } from 'yummies/utils/types';
+import type { AnyEndpoint } from './endpoint.types.js';
+import type {
   EndpointMutationOptions,
+  EndpointMutationParams,
 } from './endpoint-mutation.types.js';
-import { EndpointQueryClient } from './endpoint-query-client.js';
-import { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
-import { AnyEndpoint } from './endpoint.types.js';
+import type { EndpointQueryClient } from './endpoint-query-client.js';
+import type { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 
 export class EndpointMutation<
   TEndpoint extends AnyEndpoint,

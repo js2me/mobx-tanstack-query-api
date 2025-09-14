@@ -1,11 +1,10 @@
-import {
+import type {
   MutationConfig,
   MutationInvalidateQueriesOptions,
 } from 'mobx-tanstack-query';
-import { IsPartial, AnyObject, Maybe } from 'yummies/utils/types';
-
-import { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
-import { AnyEndpoint } from './endpoint.types.js';
+import type { AnyObject, IsPartial, Maybe } from 'yummies/utils/types';
+import type { AnyEndpoint } from './endpoint.types.js';
+import type { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 
 export interface EndpointMutationInvalidateQueriesOptions
   extends MutationInvalidateQueriesOptions {}
@@ -15,8 +14,7 @@ export type EndpointMutationParams<
   TMutationMeta extends AnyObject | void = void,
 > = TParams &
   (TMutationMeta extends void
-    ? // eslint-disable-next-line @typescript-eslint/ban-types
-      {}
+    ? {}
     : IsPartial<TMutationMeta> extends true
       ? { meta?: Maybe<TMutationMeta> }
       : { meta: TMutationMeta });

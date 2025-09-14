@@ -1,4 +1,4 @@
-import { AnyObject } from 'yummies/utils/types';
+import type { AnyObject } from 'yummies/utils/types';
 
 import type { CodegenProcess, GenerateQueryApiParams } from '../index.js';
 

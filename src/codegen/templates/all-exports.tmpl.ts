@@ -1,6 +1,6 @@
-import { Maybe } from 'yummies/utils/types';
+import type { Maybe } from 'yummies/utils/types';
 
-import { CodegenDataUtils, MetaInfo } from '../index.js';
+import type { CodegenDataUtils, MetaInfo } from '../index.js';
 
 import { LINTERS_IGNORE } from './constants.js';
 

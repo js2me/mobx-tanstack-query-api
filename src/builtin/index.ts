@@ -1,5 +1,6 @@
 import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
 import { HttpClient, isHttpBadResponse } from '../runtime/http-client.js';
+
 const MAX_FAILURE_COUNT = 3;
 
 export const queryClient = new EndpointQueryClient({

@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-use-before-define */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import {
+/** biome-ignore-all lint/correctness/noUnusedVariables: <explanation> */
+import type {
   DefaultError,
   QueryFunctionContext,
   QueryObserverResult,
@@ -15,20 +13,24 @@ import {
   reaction,
   runInAction,
 } from 'mobx';
-import { Query, QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
+import { Query, type QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
 import { getMobxAdministration, lazyObserve } from 'yummies/mobx';
-import { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/utils/types';
-
-import { EndpointQueryClient } from './endpoint-query-client.js';
-import {
+import type {
+  AnyObject,
+  Maybe,
+  MaybeFalsy,
+  MaybeFn,
+} from 'yummies/utils/types';
+import type { AnyEndpoint } from './endpoint.types.js';
+import type {
   EndpointQueryFlattenOptions,
   EndpointQueryOptions,
   EndpointQueryUniqKey,
   ExcludedQueryKeys,
 } from './endpoint-query.types.js';
-import { AnyEndpoint } from './endpoint.types.js';
-import { RequestParams } from './http-client.js';
+import type { EndpointQueryClient } from './endpoint-query-client.js';
+import type { RequestParams } from './http-client.js';
 
 interface InternalObservableData<TEndpoint extends AnyEndpoint> {
   params: MaybeFalsy<TEndpoint['__params']>;
@@ -98,7 +100,7 @@ export class EndpointQuery<
       ...queryOptions,
       queryClient,
       meta: endpoint.toQueryMeta(queryOptions.meta),
-      options: (query): any => {
+      options: (): any => {
         const builtOptions = buildOptionsFromParams(
           endpoint,
           _observableData.params,

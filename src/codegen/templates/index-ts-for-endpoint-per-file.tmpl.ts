@@ -1,6 +1,6 @@
-import { AnyObject } from 'yummies/utils/types';
+import type { AnyObject } from 'yummies/utils/types';
 
-import { CodegenProcess, GenerateQueryApiParams } from '../index.js';
+import type { CodegenProcess, GenerateQueryApiParams } from '../index.js';
 
 import { LINTERS_IGNORE } from './constants.js';
 

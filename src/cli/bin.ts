@@ -3,7 +3,7 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-import { generateApi, GenerateQueryApiParams } from '../codegen/index.js';
+import { type GenerateQueryApiParams, generateApi } from '../codegen/index.js';
 
 import { defineConfig } from './define-config.js';
 

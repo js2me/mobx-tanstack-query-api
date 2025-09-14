@@ -4,7 +4,7 @@
   "scripts": {
     "prepare": "pnpm dev:install-hooks",
     "clean": "rimraf dist",
-    "lint:check": "eslint . --fix",
+    "lint:check": "pnpm exec biome check --write --no-errors-on-unmatched --files-ignore-unknown=true",
     "ts:check": "tsc --noEmit",
     "check": "npm run lint:check && npm run ts:check",
     "prebuild": "npm run clean && npm run check",
@@ -14,17 +14,21 @@
     "pub:patch": "PUBLISH=true PUBLISH_VERSION=patch pnpm run build",
     "pub:minor": "PUBLISH=true PUBLISH_VERSION=minor pnpm run build",
     "pub:major": "PUBLISH=true PUBLISH_VERSION=major pnpm run build",
-    "test": "vitest run",
-    "test:watch": "vitest watch",
-    "test:coverage": "vitest run --coverage",
+    "test": "vitest run --config vitest.config.ts",
+    "test:watch": "vitest watch --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
+    "docs": "pnpm build && cd docs && pnpm dev",
+    "docs:install": "cd docs && pnpm i",
+    "docs:build": "cd docs && pnpm build",
+    "docs:serve": "cd docs && pnpm preview",
     "dev": "pnpm build && nodemon --delay 0.5 --watch src --ext ts,tsx --exec \"pnpm build && pnpm playground\"",
     "playground": "node ./playground/index.mjs",
     "dev:install-hooks": "if [ -z \"$CI\" ]; then lefthook install; fi"
   },
-  "keywords": [],
+  "keywords": ["mobx", "react-query", "tanstack-query", "openapi", "swagger", "codegen"],
   "author": "js2me",
   "license": "MIT",
-  "description": "",
+  "description": "OpenAPI/Swagger client codegen + endpoints integration with mobx-tanstack-query",
   "type": "module",
   "bin": "cli/bin.mjs",
   "bugs": {
@@ -47,24 +51,26 @@
     "swagger-typescript-api": "13.2.7",
     "ts-morph": "^26.0.0",
     "undici-types": "^7.11.0",
-    "yummies": "^4.14.1"
+    "yummies": "^5.2.0"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.5",
+    "@biomejs/biome": "^2.2.4",
     "@testing-library/react": "^16.0.1",
     "@types/node": "^20.17.11",
     "commitfmt": "^1.0.0",
-    "eslint": "^8.57.1",
-    "js2me-eslint-config": "^1.0.7",
+    "js2me-biome-config": "^1.0.5",
     "js2me-exports-post-build-script": "^3.0.2",
     "@vitejs/plugin-react-swc": "^3.7.2",
-    "@vitest/coverage-istanbul": "^2.1.6",
+    "@vitest/coverage-istanbul": "^3.2.4",
     "jsdom": "^26.0.0",
     "lefthook": "^1.11.13",
     "nodemon": "^3.1.9",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "unplugin-swc": "^1.5.1",
-    "vitest": "^3.0.5"
+    "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903"
 }

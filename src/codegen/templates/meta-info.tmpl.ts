@@ -1,6 +1,6 @@
-import { AnyObject, Maybe } from 'yummies/utils/types';
+import type { AnyObject, Maybe } from 'yummies/utils/types';
 
-import {
+import type {
   CodegenDataUtils,
   GenerateQueryApiParams,
   MetaInfo,

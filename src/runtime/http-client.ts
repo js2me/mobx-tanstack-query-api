@@ -1,6 +1,9 @@
-import { HttpStatusCode, HttpSuccessStatusCode } from 'http-status-code-types';
+import type {
+  HttpStatusCode,
+  HttpSuccessStatusCode,
+} from 'http-status-code-types';
 import { action, makeObservable, observable } from 'mobx';
-import { ValueOf } from 'yummies/utils/types';
+import type { ValueOf } from 'yummies/utils/types';
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>;

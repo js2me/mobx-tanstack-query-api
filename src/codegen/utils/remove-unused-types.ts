@@ -1,7 +1,5 @@
-/* eslint-disable no-constant-condition */
-import { ExportedDeclarations, Project, SyntaxKind, Node } from 'ts-morph';
-
 import path from 'node:path';
+import { type ExportedDeclarations, Node, Project, SyntaxKind } from 'ts-morph';
 
 export interface RemoveUnusedTypesParams {
   directory: string;
@@ -30,6 +28,7 @@ const checkAbleToRemoveType = (
 const removeUnusedTypesItteration = async ({
   directory,
   keepTypes,
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
 }: RemoveUnusedTypesParams) => {
   const project = new Project();
 
