@@ -60,6 +60,9 @@ importers:
       '@vitest/coverage-istanbul':
         specifier: ^3.2.4
         version: 3.2.4(vitest@3.2.4(@types/node@20.17.32)(jiti@2.4.2)(jsdom@26.1.0))
+      cac:
+        specifier: ^6.7.14
+        version: 6.7.14
       commitfmt:
         specifier: ^1.0.0
         version: 1.0.0

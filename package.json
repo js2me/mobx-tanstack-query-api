@@ -25,7 +25,14 @@
     "playground": "node ./playground/index.mjs",
     "dev:install-hooks": "if [ -z \"$CI\" ]; then lefthook install; fi"
   },
-  "keywords": ["mobx", "react-query", "tanstack-query", "openapi", "swagger", "codegen"],
+  "keywords": [
+    "mobx",
+    "react-query",
+    "tanstack-query",
+    "openapi",
+    "swagger",
+    "codegen"
+  ],
   "author": "js2me",
   "license": "MIT",
   "description": "OpenAPI/Swagger client codegen + endpoints integration with mobx-tanstack-query",
@@ -54,16 +61,17 @@
     "yummies": "^5.2.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.4",
     "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.29.5",
-    "@biomejs/biome": "^2.2.4",
     "@testing-library/react": "^16.0.1",
     "@types/node": "^20.17.11",
+    "@vitejs/plugin-react-swc": "^3.7.2",
+    "@vitest/coverage-istanbul": "^3.2.4",
+    "cac": "^6.7.14",
     "commitfmt": "^1.0.0",
     "js2me-biome-config": "^1.0.5",
     "js2me-exports-post-build-script": "^5.0.1",
-    "@vitejs/plugin-react-swc": "^3.7.2",
-    "@vitest/coverage-istanbul": "^3.2.4",
     "jsdom": "^26.0.0",
     "lefthook": "^1.11.13",
     "nodemon": "^3.1.9",

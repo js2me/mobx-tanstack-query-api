@@ -168,3 +168,5 @@ const fruits = new FruitsModel();
 
 console.log(fruits.data); // enable query
 ```
+
+You can read about all details in further sections.   

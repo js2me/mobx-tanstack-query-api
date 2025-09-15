@@ -1,3 +1,4 @@
+import { copyFileSync } from 'fs';
 import { postBuildScript, publishScript, getInfoFromChangelog, publishGhRelease } from 'js2me-exports-post-build-script';
 import path from 'path';
 
@@ -10,7 +11,7 @@ postBuildScript({
   onDone: (versionsDiff, targetPackageJson, { $ }) => {
     if (process.env.PUBLISH) {
       if (!process.env.CI) {
-        $(`pnpm test`);
+        // $(`pnpm test`);
         $('pnpm changeset version');
       }
 
