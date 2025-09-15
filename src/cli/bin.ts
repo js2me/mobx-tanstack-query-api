@@ -1,34 +1,23 @@
-#!/usr/bin/env node
+import { cac } from 'cac';
+import { generateApi } from '../codegen/index.js';
+import { defineConfig } from './utils/define-config.js';
+import { execConfigPath } from './utils/exec-config-path.js';
+import { resolveConfigPath } from './utils/resolve-config-path.js';
 
-import { existsSync } from 'node:fs';
-import path from 'node:path';
+let cli = cac('mobx-tanstack-query-api');
 
-import { type GenerateQueryApiParams, generateApi } from '../codegen/index.js';
+cli = cli.option('-c, --config <file>', `[string] use specified config file`);
 
-import { defineConfig } from './define-config.js';
+cli.help();
 
-const projectDir = process.cwd();
+const parsed = cli.parse();
 
-let generateApiParams: GenerateQueryApiParams[];
-
-let module: any;
-
-if (existsSync(path.resolve(projectDir, 'api-codegen.config.js'))) {
-  module = await import(path.resolve(projectDir, 'api-codegen.config.js'));
-} else if (existsSync(path.resolve(projectDir, 'api-codegen.config.mjs'))) {
-  module = await import(path.resolve(projectDir, 'api-codegen.config.mjs'));
-} else if (existsSync(path.resolve(projectDir, 'api-codegen.config.json'))) {
-  module = await import(path.resolve(projectDir, 'api-codegen.config.json'));
-} else {
-  throw new Error('api-codegen.config.(js|mjs|json) not found');
-}
-
-if (module.default) {
-  generateApiParams = module.default;
-} else {
-  throw new Error(
-    'api-codegen.config.(js|mjs|json) is not valid, This file should return object - result of the defineConfig function',
+if (!parsed.options.help) {
+  const configPath = resolveConfigPath(
+    typeof parsed.options.config === 'string' ? parsed.options.config : null,
   );
-}
 
-defineConfig(generateApiParams).forEach(generateApi);
+  execConfigPath(configPath).then((generateApiParams) => {
+    defineConfig(generateApiParams as any).forEach(generateApi);
+  });
+}

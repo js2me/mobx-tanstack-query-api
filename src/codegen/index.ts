@@ -1,7 +1,10 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { LoDashStatic } from 'lodash';
-import { generateApi as generateApiFromSwagger } from 'swagger-typescript-api';
+import {
+  generateApi as generateApiFromSwagger,
+  type ParsedRoute,
+} from 'swagger-typescript-api';
 import type { RequestInit } from 'undici-types';
 import type { AnyObject, KeyOfByValue, Maybe } from 'yummies/utils/types';
 
@@ -28,7 +31,9 @@ export type CodegenDataUtils = {
   formatModelName: (modelName: string) => string;
 };
 
-type FilterEndpointsFn = (endpoint: AnyObject) => boolean;
+export type EndpointData = ParsedRoute;
+
+type FilterEndpointsFn = (endpoint: EndpointData) => boolean;
 
 export type CodegenProcess = AnyObject;
 
@@ -115,7 +120,7 @@ export interface GenerateQueryApiParams {
    * Group endpoints and collect it into object
    */
   groupBy?:
-    | ((endpoint: AnyObject) => string)
+    | ((endpoint: EndpointData) => string)
     | `path-segment`
     | `path-segment-${number}`
     | `tag`
@@ -424,7 +429,7 @@ export const generateApi = async (
 
   const collectedExportFilesFromIndexFile: string[] = [];
 
-  const groupsMap = new Map<string, AnyObject[]>();
+  const groupsMap = new Map<string, ParsedRoute[]>();
   const nonEmptyGroups = new Set<string>();
   const tagsSet = new Set<string>();
 

@@ -1,6 +1,6 @@
 # Overview  
 
-**mobx-tanstack-query-api** is a library for building endpoint request functions, `mobx-tanstack-query` queries and mutations from OpenAPI/Swagger definitions.  
+**mobx-tanstack-query-api** is a library for building endpoint request functions, [`mobx-tanstack-query`](https://js2me.github.io/mobx-tanstack-query/) queries and mutations from OpenAPI/Swagger definitions.  
 It provides a simple and easy way to generate queries and mutations from your OpenAPI/Swagger definitions.   
 
 ## Features   

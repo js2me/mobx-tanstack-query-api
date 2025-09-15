@@ -1,6 +1,6 @@
 import { copyFileSync } from 'fs';
 import { postBuildScript, publishScript, getInfoFromChangelog, publishGhRelease } from 'js2me-exports-post-build-script';
-import path from 'path';
+import path, { resolve } from 'path';
 
 postBuildScript({
   buildDir: 'dist',
@@ -9,18 +9,21 @@ postBuildScript({
   filesToCopy: ['LICENSE', 'README.md', 'assets'],
   updateVersion: process.env.PUBLISH_VERSION,
   onDone: (versionsDiff, targetPackageJson, { $ }) => {
-    if (process.env.PUBLISH) {
+    // Копируем bin.ts в bin.mjs в папку dist
+    copyFileSync(
+      resolve('dist/cli', 'bin.js'),
+      resolve('dist/cli', 'bin.mjs')
+    );
+
+    if (!process.env.PUBLISH) {
+      return;
+    }
+
+
       if (!process.env.CI) {
         // $(`pnpm test`);
         $('pnpm changeset version');
       }
-
-      // Копируем bin.ts в bin.mjs в папку dist
-      copyFileSync(
-        resolve('dist/cli', 'bin.js'),
-        resolve('dist/cli', 'bin.mjs')
-      );
-
 
       // remove all test compiled files. TODO: find a better to ignore test files
       $('rm dist/**/*.test.*');
@@ -64,8 +67,7 @@ postBuildScript({
               process.exit(1);
             })
         }
-      }
-    }
+      } 
   }
 });
 

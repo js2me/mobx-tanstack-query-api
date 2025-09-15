@@ -12,7 +12,7 @@ const { version, name: packageName, author, license } = JSON.parse(
 
 export default defineConfig({
   title: packageName.replace(/-/g, ' '),
-  appearance: 'force-dark',
+  appearance: 'dark',
   description: `${packageName.replace(/-/g, ' ')} documentation`,
   transformHead: ({ pageData, head }) => {
     head.push(['meta', { property: 'og:site_name', content: packageName }]);
@@ -61,6 +61,10 @@ export default defineConfig({
           { text: 'Getting started', link: '/introduction/getting-started' },
         ],
       },
+      {
+        text: 'Config ⚙️',
+        link: '/config/index.html',
+      }
     ],
 
     footer: {

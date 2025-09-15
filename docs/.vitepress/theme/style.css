@@ -44,10 +44,10 @@
  * -------------------------------------------------------------------------- */
 
  :root {
-  --vp-c-indigo-1: #77a0ff;
-  --vp-c-indigo-2: #4f76ff;
-  --vp-c-indigo-3: #346aea;
-  --vp-c-indigo-soft: #2023ff69;
+    --vp-c-indigo-1: #6d99ff;
+    --vp-c-indigo-2: #4871ff;
+    --vp-c-indigo-3: #2964ee;
+    --vp-c-indigo-soft: #191cef91;
 }
 
  html.dark {
