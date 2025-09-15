@@ -61,7 +61,7 @@
     "@types/node": "^20.17.11",
     "commitfmt": "^1.0.0",
     "js2me-biome-config": "^1.0.5",
-    "js2me-exports-post-build-script": "^3.0.2",
+    "js2me-exports-post-build-script": "^5.0.1",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "@vitest/coverage-istanbul": "^3.2.4",
     "jsdom": "^26.0.0",

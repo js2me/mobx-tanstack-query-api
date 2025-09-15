@@ -1,31 +1,69 @@
-import { postBuildScript, publishScript } from 'js2me-exports-post-build-script';
-import { copyFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { postBuildScript, publishScript, getInfoFromChangelog, publishGhRelease } from 'js2me-exports-post-build-script';
+import path from 'path';
 
 postBuildScript({
   buildDir: 'dist',
   rootDir: '.',
   srcDirName: 'src',
-  filesToCopy: ['LICENSE', 'README.md'],
+  filesToCopy: ['LICENSE', 'README.md', 'assets'],
   updateVersion: process.env.PUBLISH_VERSION,
-  onDone: (versionsDiff, _, packageJson, { targetPackageJson }) => {
-    // Копируем bin.ts в bin.mjs в папку dist
-    copyFileSync(
-      resolve('dist/cli', 'bin.js'),
-      resolve('dist/cli', 'bin.mjs')
-    );
-
+  onDone: (versionsDiff, targetPackageJson, { $ }) => {
     if (process.env.PUBLISH) {
-      publishScript({
-        nextVersion: versionsDiff?.next ?? packageJson.version,
-        currVersion: versionsDiff?.current,
+      if (!process.env.CI) {
+        $(`pnpm test`);
+        $('pnpm changeset version');
+      }
+
+      // Копируем bin.ts в bin.mjs в папку dist
+      copyFileSync(
+        resolve('dist/cli', 'bin.js'),
+        resolve('dist/cli', 'bin.mjs')
+      );
+
+
+      // remove all test compiled files. TODO: find a better to ignore test files
+      $('rm dist/**/*.test.*');
+
+      const nextVersion = versionsDiff?.next ?? targetPackageJson.data.version;
+
+      const publishOutput = publishScript({
+        gitTagFormat: '<tag>',
+        nextVersion: nextVersion,
         packageManager: 'pnpm',
         commitAllCurrentChanges: true,
         createTag: true,
-        githubRepoLink: 'https://github.com/js2me/mobx-tanstack-query-api',
-        cleanupCommand: 'pnpm clean', 
+        safe: true,
+        onAlreadyPublishedThisVersion: () => {
+          console.warn(`${nextVersion} already published`);
+        },
+        cleanupCommand: 'pnpm clean',
         targetPackageJson
-      })
+      });
+
+      if (process.env.CI) {
+        if (publishOutput?.publishedGitTag) {
+          const { whatChangesText } = getInfoFromChangelog(
+            nextVersion,
+            path.resolve(targetPackageJson.locationDir, '../CHANGELOG.md'),
+            targetPackageJson.repositoryUrl
+          );
+
+          publishGhRelease({
+            authToken: process.env.GITHUB_TOKEN,
+            body: whatChangesText,
+            owner: targetPackageJson.ghRepoData.user,
+            repo: targetPackageJson.ghRepoData.packageName,
+            version: nextVersion,
+          })
+            .then((r) =>{
+              console.info('published new gh release',r)
+            })
+            .catch((err) =>{
+              console.error('failed to publish new gh release', err);
+              process.exit(1);
+            })
+        }
+      }
     }
   }
 });
