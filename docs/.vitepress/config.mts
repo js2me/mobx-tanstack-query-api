@@ -62,8 +62,32 @@ export default defineConfig({
         ],
       },
       {
-        text: 'Config ⚙️',
+        text: 'Codegen ⚙️',
         link: '/config/index.html',
+        items: [
+          {
+            text: 'Configuration',
+            link: '/config/index.html',
+          },
+        ]
+      },
+      {
+        text: 'API ❤️‍🔥',
+        link: '/endpoints/index.html',
+        items: [
+          {
+            text: 'Endpoints',
+            link: '/endpoints/index.html',
+          },
+          {
+            text: 'EndpointQueryClient',
+            link: '/endpoint-query-client/index.html',
+          },
+          {
+            text: 'HttpClient',
+            link: '/http-client/index.html',
+          }
+        ]
       }
     ],
 
