@@ -12,8 +12,6 @@
 [bundlephobia-url]: https://bundlephobia.com/result?p=mobx-tanstack-query-api
 [bundlephobia-image]: https://badgen.net/bundlephobia/minzip/mobx-tanstack-query-api
 
-# WIP   
+API codegen from swagger for `mobx-tanstack-query`    
 
-API codegen from swagger  
-
-# [Documentation](https://js2me.github.io/mobx-tanstack-query/other/swagger-codegen.html)   
+# [Documentation](https://js2me.github.io/mobx-tanstack-query-api/)   
