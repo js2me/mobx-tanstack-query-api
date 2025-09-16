@@ -67,10 +67,55 @@ export const allEndpointPerFileTmpl = async ({
     return { ...newEndpointTemplateData, route };
   });
 
-  let metaInfoImport: string = '';
+  const extraImportLines: string[] = [];
+
+  const endpointTemplates = await Promise.all(
+    newEndpointTemplates.map(
+      async ({
+        content: requestInfoInstanceContent,
+        localModelTypes,
+        route,
+      }) => {
+        const requestInfoMeta = apiParams.getEndpointMeta?.(route, utils);
+
+        if (requestInfoMeta?.typeNameImportPath && requestInfoMeta.typeName) {
+          extraImportLines.push(
+            `import { ${requestInfoMeta.typeName} } from "${requestInfoMeta.typeNameImportPath}";`,
+          );
+        }
+
+        return `
+      ${(
+        await Promise.all(
+          localModelTypes.map(async (modelType) => {
+            const contractType = await dataContractTmpl({
+              configuration,
+              contract: modelType,
+              addExportKeyword: true,
+            });
+
+            return contractType;
+          }),
+        )
+      )
+        .filter(Boolean)
+        .join('\n\n')}
+      
+      ${endpointJSDocTmpl({
+        route,
+        configuration,
+        apiParams,
+      })}
+      export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}               
+`;
+      },
+    ),
+  );
 
   if (metaInfo) {
-    metaInfoImport = `import { ${[groupName && 'Group', metaInfo?.namespace && 'namespace', 'Tag'].filter(Boolean).join(',')} } from "${groupName ? '../' : './'}meta-info";`;
+    extraImportLines.push(
+      `import { ${[groupName && 'Group', metaInfo?.namespace && 'namespace', 'Tag'].filter(Boolean).join(',')} } from "${groupName ? '../' : './'}meta-info";`,
+    );
   }
 
   return {
@@ -84,7 +129,7 @@ export const allEndpointPerFileTmpl = async ({
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
-      ${metaInfoImport}
+      ${extraImportLines.join('\n')}
 
       ${
         configuration.modelTypes.length > 0
@@ -122,44 +167,7 @@ export const allEndpointPerFileTmpl = async ({
         .filter(Boolean)
         .join('\n\n')}
 
-      ${(
-        await Promise.all(
-          newEndpointTemplates.map(
-            async ({
-              content: requestInfoInstanceContent,
-              localModelTypes,
-              route,
-            }) => {
-              return `
-      ${(
-        await Promise.all(
-          localModelTypes.map(async (modelType) => {
-            const contractType = await dataContractTmpl({
-              configuration,
-              contract: modelType,
-              addExportKeyword: true,
-            });
-
-            return contractType;
-          }),
-        )
-      )
-        .filter(Boolean)
-        .join('\n\n')}
-      
-      ${endpointJSDocTmpl({
-        route,
-        configuration,
-        apiParams,
-      })}
-      export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}               
-`;
-            },
-          ),
-        )
-      )
-        .filter(Boolean)
-        .join('\n\n')}
+      ${endpointTemplates.filter(Boolean).join('\n\n')}
       `),
   };
 };

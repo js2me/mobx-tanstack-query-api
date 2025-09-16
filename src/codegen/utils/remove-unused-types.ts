@@ -1,29 +1,12 @@
 import path from 'node:path';
 import { type ExportedDeclarations, Node, Project, SyntaxKind } from 'ts-morph';
+import type { FilterOption } from '../index.js';
+import { unpackFilterOption } from './unpack-filter-option.js';
 
 export interface RemoveUnusedTypesParams {
   directory: string;
-  keepTypes?: RegExp | (RegExp | string)[];
+  keepTypes?: FilterOption<(typeName: string) => boolean>;
 }
-
-const checkAbleToRemoveType = (
-  typeName: string,
-  keepTypes?: RemoveUnusedTypesParams['keepTypes'],
-) => {
-  if (!keepTypes) {
-    return true;
-  }
-
-  const keepTypesArr = Array.isArray(keepTypes) ? keepTypes : [keepTypes];
-
-  return keepTypesArr.every((keepTypeCheck) => {
-    if (typeof keepTypeCheck === 'string') {
-      return typeName !== keepTypeCheck;
-    } else {
-      return !keepTypeCheck.test(typeName);
-    }
-  });
-};
 
 const removeUnusedTypesItteration = async ({
   directory,
@@ -139,11 +122,17 @@ const removeUnusedTypesItteration = async ({
 
   let removedCount = 0;
 
+  const isNeedToRemoveType = unpackFilterOption(
+    keepTypes,
+    (name) => name,
+    false,
+  );
+
   for (const [name, declarations] of candidateTypes) {
     if (usedTypes.has(name)) continue;
 
     for (const decl of declarations) {
-      if ('remove' in decl && checkAbleToRemoveType(name, keepTypes)) {
+      if ('remove' in decl && isNeedToRemoveType(name)) {
         decl.remove();
         removedCount++;
       }

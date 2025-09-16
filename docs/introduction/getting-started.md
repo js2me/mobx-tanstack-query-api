@@ -32,7 +32,7 @@ Follow the steps:
 
 #### Create configuration file   
 
-Create a codegen configuration file with file name `api-codegen.config.(js|mjs)` at root of your project.  
+Create a codegen configuration file with file name `api-codegen.config.{ts|js|mjs|json}` at root of your project.  
 Add configuration using `defineConfig`  
 
 

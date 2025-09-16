@@ -66,10 +66,20 @@ export const endpointPerFileTmpl = async ({
     }
   });
 
-  let metaInfoImport: string = '';
+  const extraImportLines: string[] = [];
 
   if (metaInfo) {
-    metaInfoImport = `import { ${[groupName && 'Group', metaInfo?.namespace && 'namespace', 'Tag'].filter(Boolean).join(',')} } from "../${groupName ? '../' : ''}meta-info";`;
+    extraImportLines.push(
+      `import { ${[groupName && 'Group', metaInfo?.namespace && 'namespace', 'Tag'].filter(Boolean).join(',')} } from "../${groupName ? '../' : ''}meta-info";`,
+    );
+  }
+
+  const requestInfoMeta = apiParams.getEndpointMeta?.(route, utils);
+
+  if (requestInfoMeta?.typeNameImportPath && requestInfoMeta.typeName) {
+    extraImportLines.push(
+      `import { ${requestInfoMeta.typeName} } from "${requestInfoMeta.typeNameImportPath}";`,
+    );
   }
 
   return {
@@ -83,7 +93,7 @@ export const endpointPerFileTmpl = async ({
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
-      ${metaInfoImport}
+      ${extraImportLines.join('\n')}
 
       ${
         configuration.modelTypes.length > 0

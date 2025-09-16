@@ -4,6 +4,7 @@ import type { LoDashStatic } from 'lodash';
 import {
   generateApi as generateApiFromSwagger,
   type ParsedRoute,
+  type RawRouteInfo,
 } from 'swagger-typescript-api';
 import type { RequestInit } from 'undici-types';
 import type { AnyObject, KeyOfByValue, Maybe } from 'yummies/utils/types';
@@ -19,6 +20,7 @@ import {
   type RemoveUnusedTypesParams,
   removeUnusedTypes,
 } from './utils/remove-unused-types.js';
+import { unpackFilterOption } from './utils/unpack-filter-option.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -33,7 +35,15 @@ export type CodegenDataUtils = {
 
 export type EndpointData = ParsedRoute;
 
-type FilterEndpointsFn = (endpoint: EndpointData) => boolean;
+export type FilterOption<T extends (...args: any[]) => boolean> =
+  | T
+  | string
+  | RegExp
+  | (RegExp | string)[];
+
+type FilterEndpointsOption = FilterOption<(endpoint: EndpointData) => boolean>;
+
+type FilterGroupsOption = FilterOption<(groupName: string) => boolean>;
 
 export type CodegenProcess = AnyObject;
 
@@ -49,13 +59,27 @@ export interface MetaInfo {
 }
 
 export interface GenerateQueryApiParams {
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#output)
+   */
   output: string;
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#input)
+   */
   input: string | AnyObject;
 
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#requestpathprefix)
+   */
   requestPathPrefix?: string;
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#requestpathsuffix)
+   */
   requestPathSuffix?: string;
-  requestInfoPrefix?: string;
 
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#removeunusedtypes)
+   */
   removeUnusedTypes?:
     | true
     | {
@@ -63,13 +87,16 @@ export interface GenerateQueryApiParams {
       };
 
   /**
-   * getFruits -> getFruitsEndpoint
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#formatendpointname)
    */
   formatEndpointName?: (
     endpointName: string,
-    endpointData: AnyObject,
+    endpointData: RawRouteInfo,
   ) => Maybe<string>;
 
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#formatexportgroupname)
+   */
   formatExportGroupName?: (
     groupName: string,
     utils: CodegenDataUtils,
@@ -77,6 +104,8 @@ export interface GenerateQueryApiParams {
 
   /**
    * Various generation output types
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#outputtype)
    *
    * `one-endpoint-per-file`
    * @example
@@ -118,6 +147,8 @@ export interface GenerateQueryApiParams {
 
   /**
    * Group endpoints and collect it into object
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#groupby)
    */
   groupBy?:
     | ((endpoint: EndpointData) => string)
@@ -129,44 +160,43 @@ export interface GenerateQueryApiParams {
   /**
    * Collect all exports into single namespace
    *
-   * Example:
-   * without namespace:
-   *
-   * export * from "./endpoints";
-   * export * from "./data-contracts";
-   *
-   * with namespace:
-   *
-   * export * as namespaceName from "./__exports"; // exports like above
-   *
-   *
-   * namespaceName.login.toMutation()
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#namespace)
    */
   namespace?: string | ((utils: AnyObject) => string);
 
   /**
-   * Example:
-   * operationId: 'getById'
-   * /api/v1/users/{userId} => /api/v1/users/1
-   *
-   * addPathSegmentToRouteName: 2 (users), 0 - api
-   *
-   * output endpoint instance name: `usersGetById` (pathSegments[2] + operationId)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#addpathsegmenttoroutename)
    */
   addPathSegmentToRouteName?: boolean | number;
 
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#queryclient)
+   */
   queryClient?: 'builtin' | ImportFileParams;
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#endpoint)
+   */
   endpoint?: 'builtin' | ImportFileParams;
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#httpclient)
+   */
   httpClient?: 'builtin' | ImportFileParams;
 
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#getendpointmeta)
+   */
   getEndpointMeta?: (
     route: AnyObject,
     utils: AnyObject,
   ) => {
-    typeName: string;
-    importTypePath: string;
+    typeName?: string;
+    typeNameImportPath?: string;
     tmplData: string;
   };
+
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#getrequestmeta)
+   */
   getRequestMeta?: (
     route: AnyObject,
     utils: AnyObject,
@@ -177,20 +207,21 @@ export interface GenerateQueryApiParams {
   /**
    * Additional parameters used to fetch your OpenAPI schema
    *
-   * @example
-   * fetchSchemaRequestOptions: {
-   *    headers: {
-   *      'PRIVATE-TOKEN': '12345'
-   *    }
-   * }
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#fetchschemarequestoptions)
    */
   fetchSchemaRequestOptions?: RequestInit;
 
   otherCodegenParams?: AnyObject;
 
-  filterEndpoints?: FilterEndpointsFn | string | RegExp | (RegExp | string)[];
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#filterendpoints)
+   */
+  filterEndpoints?: FilterEndpointsOption;
 
-  filterGroups?: (groupName: string) => boolean;
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/config/#filtergroups)
+   */
+  filterGroups?: FilterGroupsOption;
 
   libImports?: {
     'mobx-tanstack-query-api'?: string;
@@ -398,32 +429,10 @@ export const generateApi = async (
       'routes' in routeGroup ? routeGroup.routes : routeGroup,
     );
 
-  let filterEndpoint: FilterEndpointsFn;
-
-  if (params.filterEndpoints) {
-    if (typeof params.filterEndpoints === 'function') {
-      filterEndpoint = params.filterEndpoints;
-    } else {
-      const regexps = Array.isArray(params.filterEndpoints)
-        ? params.filterEndpoints
-        : [params.filterEndpoints];
-
-      filterEndpoint = (route) =>
-        regexps.some((regexpOrString) => {
-          if (!route.raw) {
-            return false;
-          }
-
-          if (typeof regexpOrString === 'string') {
-            return regexpOrString === route.raw.operationId;
-          }
-
-          return regexpOrString.test(route.raw.operationId);
-        });
-    }
-  } else {
-    filterEndpoint = () => true;
-  }
+  const filterEndpoint = unpackFilterOption(
+    params.filterEndpoints,
+    (route) => route.raw?.operationId || '',
+  );
 
   const reservedDataContractNamesMap = new Map<string, number>();
 
@@ -590,8 +599,12 @@ export const generateApi = async (
     });
     // #endregion
 
+    const filterGroups = unpackFilterOption(
+      params.filterGroups,
+      (groupName) => groupName,
+    );
     for await (const [groupName, routes] of groupsMap) {
-      if (params.filterGroups && !params.filterGroups(groupName)) {
+      if (!filterGroups(groupName)) {
         continue;
       }
 
