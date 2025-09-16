@@ -63,11 +63,15 @@ export default defineConfig({
       },
       {
         text: 'Codegen ⚙️',
-        link: '/config/index.html',
+        link: '/codegen/config.html',
         items: [
           {
             text: 'Configuration',
-            link: '/config/index.html',
+            link: '/codegen/config.html',
+          },
+          {
+            text: 'CLI',
+            link: '/codegen/cli.html',
           },
         ]
       },
