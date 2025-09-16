@@ -20,6 +20,33 @@ export default defineConfig({
 })
 ```
 
+## Multiple configs   
+
+You can pass multiple configs to `defineConfig` function   
+
+```ts
+import { defineConfig } from "mobx-tanstack-query-api/cli";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default defineConfig([
+  {
+    input: 'path-or-url-to-openapi.{yaml|json}' | object,
+    output: 'path-to-output-directory',
+  },
+  {
+    input: 'path-or-url-to-openapi.{yaml|json}' | object,
+    output: 'path-to-output-directory',
+  },
+  {
+    input: 'path-or-url-to-openapi.{yaml|json}' | object,
+    output: 'path-to-output-directory',
+  }
+])
+```
+
 
 ## Options   
 
