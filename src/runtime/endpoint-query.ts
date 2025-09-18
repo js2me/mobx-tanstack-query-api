@@ -40,6 +40,9 @@ interface InternalObservableData<TEndpoint extends AnyEndpoint> {
   response: TEndpoint['__response'] | null;
 }
 
+/**
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/)
+ */
 export class EndpointQuery<
   TEndpoint extends AnyEndpoint,
   TQueryFnData = TEndpoint['__response']['data'],

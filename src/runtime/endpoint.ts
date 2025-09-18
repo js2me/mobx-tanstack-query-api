@@ -39,6 +39,11 @@ export interface Endpoint<
   ): ReturnType<Endpoint<TResponse, TParams, TMetaData>['request']>;
 }
 
+/**
+ * This class is a wrapper for your http request.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/)
+ */
 export class Endpoint<
   TResponse extends HttpResponse<any, any>,
   TParams extends AnyObject,

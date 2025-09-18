@@ -16,6 +16,8 @@ getShotguns().then(console.log);
 ## Transformation to query    
 You can transform endpoint to query using `.toQuery()` method.   
 
+About endpoint queries you can [read here](/endpoint-queries/)  
+
 Example:  
 ```ts
 const getShotgunsQuery = getShotguns.toQuery({
@@ -27,6 +29,8 @@ getShotgunsQuery.start({});
 
 ## Transformation to mutation    
 You can transform endpoint to mutation using `.toMutation()` method.   
+
+About endpoint mutations you can [read here](/endpoint-mutations/)  
 
 Example:  
 ```ts

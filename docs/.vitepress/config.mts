@@ -84,6 +84,14 @@ export default defineConfig({
             link: '/endpoints/index.html',
           },
           {
+            text: 'Endpoint queries',
+            link: '/endpoint-queries/index.html',
+          },
+          {
+            text: 'Endpoint mutations',
+            link: '/endpoint-mutations/index.html',
+          },
+          {
             text: 'EndpointQueryClient',
             link: '/endpoint-query-client/index.html',
           },

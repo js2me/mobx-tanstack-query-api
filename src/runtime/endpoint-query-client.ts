@@ -7,6 +7,11 @@ import type {
   InvalidateEndpointsFilters,
 } from './endpoint-query-client.types.js';
 
+/**
+ * Class that extends `QueryClient` and gives a bit more control over endpoint queries and mutations.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-query-client/)
+ */
 export class EndpointQueryClient extends QueryClient {
   constructor(config?: QueryClientConfig) {
     super({

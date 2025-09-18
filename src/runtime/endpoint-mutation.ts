@@ -8,6 +8,9 @@ import type {
 import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 
+/**
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-mutations/)
+ */
 export class EndpointMutation<
   TEndpoint extends AnyEndpoint,
   TData = unknown,
