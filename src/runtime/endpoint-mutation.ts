@@ -7,6 +7,7 @@ import type {
 } from './endpoint-mutation.types.js';
 import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
+import type { RequestParams } from './http-client.js';
 
 /**
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-mutations/)
@@ -83,7 +84,22 @@ export class EndpointMutation<
         }
       },
       mutationFn: async (input) => {
-        const response = await endpoint.request(input);
+        let requestParams = input?.requestParams as Maybe<RequestParams>;
+
+        if (requestParams) {
+          if (!requestParams.signal) {
+            requestParams.signal = this.abortController.signal;
+          }
+        } else {
+          requestParams = { signal: this.abortController.signal };
+        }
+
+        const fixedInput = {
+          ...input,
+          requestParams,
+        };
+
+        const response = await endpoint.request(fixedInput);
         return (await transformResponse?.(response)) ?? response.data;
       },
     });
