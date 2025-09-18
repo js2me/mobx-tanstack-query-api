@@ -135,7 +135,7 @@ export class EndpointQuery<
           }
         });
 
-        let requestParams = params.request as Maybe<RequestParams>;
+        let requestParams = params.requestParams as Maybe<RequestParams>;
 
         if (requestParams) {
           if (!requestParams.signal) {
@@ -147,7 +147,7 @@ export class EndpointQuery<
 
         const fixedInput = {
           ...params,
-          request: requestParams,
+          requestParams,
         };
 
         const response = await endpoint.request(fixedInput);
