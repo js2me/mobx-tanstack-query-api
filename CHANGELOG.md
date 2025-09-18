@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.14.0
+
+### Minor Changes
+
+- [`c101099`](https://github.com/js2me/mobx-tanstack-query-api/commit/c101099a4ed9f33e504e1a9beccf2627c84f3d06) Thanks [@js2me](https://github.com/js2me)! - update `mobx-tanstack-query` to latest (`remove()` methods and `removeOnDestroy` option)
+
 ## 0.13.3
 
 ### Patch Changes
