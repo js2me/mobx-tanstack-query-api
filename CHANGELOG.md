@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.13.3
+
+### Patch Changes
+
+- [`880f119`](https://github.com/js2me/mobx-tanstack-query-api/commit/880f1198079f965f9d252fb128f8861639853a05) Thanks [@js2me](https://github.com/js2me)! - fixed missing passing requestParams for endpoint queries/mutations
+
 ## 0.13.2
 
 ### Patch Changes
