@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.15.0
+
+### Minor Changes
+
+- [`55b0086`](https://github.com/js2me/mobx-tanstack-query-api/commit/55b0086b144b44cab2c1eeaa87da87f666e37c0d) Thanks [@js2me](https://github.com/js2me)! - cumulativeQueryHash for queries
+
 ## 0.14.0
 
 ### Minor Changes
