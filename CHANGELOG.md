@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.17.1
+
+### Patch Changes
+
+- [`b4d8c66`](https://github.com/js2me/mobx-tanstack-query-api/commit/b4d8c6643555ed77c68435ea6443685dfbf15d10) Thanks [@js2me](https://github.com/js2me)! - fix zshy build
+
 ## 0.17.0
 
 ### Minor Changes
