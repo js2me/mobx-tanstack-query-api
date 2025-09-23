@@ -126,7 +126,7 @@ export class EndpointQuery<
         };
       },
       queryFn: async (ctx): Promise<any> => {
-        const params = getParamsFromContext(ctx as any);
+        const params = endpoint.getParamsFromContext(ctx);
 
         runInAction(() => {
           _observableData.response = null;

@@ -3,7 +3,10 @@ import type {
   DefaultError,
   InvalidateOptions,
   InvalidateQueryFilters,
+  QueryFunctionContext,
+  QueryKey,
 } from '@tanstack/query-core';
+import type { IQueryClientCore } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
 import type { AnyObject, IsPartial, Maybe } from 'yummies/utils/types';
 import type {
@@ -116,6 +119,17 @@ export class Endpoint<
   ): string {
     const params = this.configuration.params(args[0] ?? ({} as TParams));
     return params.path;
+  }
+
+  getParamsFromContext<
+    TQueryKey extends QueryKey = QueryKey,
+    TPageParam = never,
+  >(
+    ctx: Omit<QueryFunctionContext<TQueryKey, TPageParam>, 'client'> & {
+      client: IQueryClientCore;
+    },
+  ): TParams {
+    return (ctx.queryKey.at(-2) || {}) as TParams;
   }
 
   get tags() {
