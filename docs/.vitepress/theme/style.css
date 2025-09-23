@@ -208,3 +208,30 @@ p:has(>em:first-child:last-child) + div[class*=language-] {
 html .VPFooter {
     border-top: 0 !important;
 }
+
+html:has(.VPFeatures.VPHomeFeatures .items > .item) .VPHero.has-image .container {
+  margin-bottom: 0;
+  margin-top: auto;
+}
+html:has(.VPFeatures.VPHomeFeatures .items > .item) .VPHero.has-image.VPHomeHero {
+  flex: 1;
+}
+html:has(.VPFeatures.VPHomeFeatures .items > .item) .VPFeatures.VPHomeFeatures {
+  margin-bottom: auto;
+  flex: 1;
+}
+
+html.gh-preview .main > .heading > .name {
+  line-height: 72px;
+  font-size: 68px;
+}
+html.gh-preview .main > .heading > .text {
+  font-size: 43px;
+  line-height: 48px;
+}
+html.gh-preview .main > .actions {
+  opacity: 0;
+}
+html.gh-preview .VPFeatures.VPHomeFeatures {
+  opacity: 0;
+}
