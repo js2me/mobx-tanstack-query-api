@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.17.3
+
+### Patch Changes
+
+- [`697939c`](https://github.com/js2me/mobx-tanstack-query-api/commit/697939c1b2d5dcf74d81d369de55ecf8692f24f1) Thanks [@js2me](https://github.com/js2me)! - fixed bin (type module)
+
 ## 0.17.2
 
 ### Patch Changes
