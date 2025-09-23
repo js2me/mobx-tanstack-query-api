@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.17.2
+
+### Patch Changes
+
+- [`5d10f8f`](https://github.com/js2me/mobx-tanstack-query-api/commit/5d10f8ff58ba2cb162a7619290aecd8f2b6d2a36) Thanks [@js2me](https://github.com/js2me)! - added getParamsFromContext for Endpoint class
+
 ## 0.17.1
 
 ### Patch Changes
