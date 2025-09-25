@@ -16,4 +16,4 @@
 
 API codegen from swagger for `mobx-tanstack-query`    
 
-# [Documentation](https://js2me.github.io/mobx-tanstack-query-api/)   
+### [Read the docs →](https://js2me.github.io/mobx-tanstack-query-api/)  
