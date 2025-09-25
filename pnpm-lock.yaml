@@ -30,8 +30,8 @@ importers:
         specifier: ^6.13.6
         version: 6.13.7
       mobx-tanstack-query:
-        specifier: ^6.6.1
-        version: 6.6.1(@tanstack/query-core@5.85.7)(mobx@6.13.7)(react@19.1.1)
+        specifier: ^6.7.0
+        version: 6.7.0(@tanstack/query-core@5.85.7)(mobx@6.13.7)(react@19.1.1)
       swagger-typescript-api:
         specifier: 13.2.10
         version: 13.2.10(magicast@0.3.5)
@@ -844,9 +844,6 @@ packages:
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
 
-  '@types/insane@1.0.0':
-    resolution: {integrity: sha512-9FNbmwdaQezEszc5B/w4kRSpMJMOVj+gX7CKSbBCFO4WPiUqKO3HJlUNXzjtus0w5tF2BOJoKTbyps/Envlg/Q==}
-
   '@types/keyv@3.1.4':
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
 
@@ -990,9 +987,6 @@ packages:
   assertion-error@2.0.1:
     resolution: {integrity: sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==}
     engines: {node: '>=12'}
-
-  assignment@2.0.0:
-    resolution: {integrity: sha512-naMULXjtgCs9SVUEtyvJNt68aF18em7/W+dhbR59kbz9cXWPEvUkCun2tqlgqRPSqZaKPpqLc5ZnwL8jVmJRvw==}
 
   astral-regex@2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
@@ -1585,10 +1579,6 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  he@0.5.0:
-    resolution: {integrity: sha512-DoufbNNOFzwRPy8uecq+j+VCPQ+JyDelHTmSgygrA5TsR8Cbw4Qcir5sGtWiusB4BdT89nmlaVDhSJOqC/33vw==}
-    hasBin: true
-
   html-encoding-sniffer@4.0.0:
     resolution: {integrity: sha512-Y22oTqIU4uuPgEemfz7NDJz6OeKf12Lsu+QC+s3BVpda64lTiMYCyGwg5ki4vFxkMwQdeZDl2adZoqUgdFuTgQ==}
     engines: {node: '>=18'}
@@ -1660,9 +1650,6 @@ packages:
   inquirer@8.2.7:
     resolution: {integrity: sha512-UjOaSel/iddGZJ5xP/Eixh6dY1XghiBw4XK13rCCIJcJfyhhoul/7KhLLUGtebEj6GDYM6Vnx/mVsjx2L/mFIA==}
     engines: {node: '>=12.0.0'}
-
-  insane@2.6.2:
-    resolution: {integrity: sha512-BqEL1CJsjJi+/C/zKZxv31zs3r6zkLH5Nz1WMFb7UBX2KHY2yXDpbFTSEmNHzomBbGDysIfkTX55A0mQZ2CQiw==}
 
   interpret@1.4.0:
     resolution: {integrity: sha512-agE4QfB2Lkp9uICn7BAqoscw4SZP9kTE2hxiFI3jBPmXJfdqiahTbUuKGsMoN2GtqL9AxhYioAcVvgsb1HvRbA==}
@@ -2020,8 +2007,8 @@ packages:
     resolution: {integrity: sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
-  mobx-tanstack-query@6.6.1:
-    resolution: {integrity: sha512-Yy3BHvKTMqNYIM4OEpYzYSQuk0oYBROoPZMYiunKK2cCuTQQnRiQC7/aacQxMQCdOZ1A4aflurTWcauaUcCYdQ==}
+  mobx-tanstack-query@6.7.0:
+    resolution: {integrity: sha512-Zdh9nuAyWk8bOfsrxmmeYkVTIqvEtWj6FYegcqAvBH9h2TbZH2X2Weo+nEjxjnhW77HsZXetIlI3Vh5vZ/y2+w==}
     peerDependencies:
       '@tanstack/query-core': ^5.81.5
       mobx: ^6.12.4
@@ -2929,17 +2916,6 @@ packages:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
 
-  yummies@4.14.1:
-    resolution: {integrity: sha512-TgdIiPzvIcQpQK/nMlazM7dOieh2ljZ/CtwT2stO7zPbYQ1TtNOyWlrRPykl2bSI8Fl2OnvHX+Ww23T8Zg01oA==}
-    peerDependencies:
-      mobx: ^6.12.4
-      react: ^18 || ^19
-    peerDependenciesMeta:
-      mobx:
-        optional: true
-      react:
-        optional: true
-
   yummies@5.4.8:
     resolution: {integrity: sha512-3rpVP1ECoB+vFJ5erXBBQV5Qy350/JC35HwywImxIv8gTwqz5/PfOc0r2Q5JlNlFXDfAso4eaugjUx1qJsPg4g==}
     peerDependencies:
@@ -3690,8 +3666,6 @@ snapshots:
 
   '@types/estree@1.0.7': {}
 
-  '@types/insane@1.0.0': {}
-
   '@types/keyv@3.1.4':
     dependencies:
       '@types/node': 20.17.32
@@ -3850,8 +3824,6 @@ snapshots:
   array-union@2.1.0: {}
 
   assertion-error@2.0.1: {}
-
-  assignment@2.0.0: {}
 
   astral-regex@2.0.0: {}
 
@@ -4484,8 +4456,6 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  he@0.5.0: {}
-
   html-encoding-sniffer@4.0.0:
     dependencies:
       whatwg-encoding: 3.1.1
@@ -4563,11 +4533,6 @@ snapshots:
       wrap-ansi: 6.2.0
     transitivePeerDependencies:
       - '@types/node'
-
-  insane@2.6.2:
-    dependencies:
-      assignment: 2.0.0
-      he: 0.5.0
 
   interpret@1.4.0: {}
 
@@ -4883,12 +4848,12 @@ snapshots:
 
   minipass@7.1.2: {}
 
-  mobx-tanstack-query@6.6.1(@tanstack/query-core@5.85.7)(mobx@6.13.7)(react@19.1.1):
+  mobx-tanstack-query@6.7.0(@tanstack/query-core@5.85.7)(mobx@6.13.7)(react@19.1.1):
     dependencies:
       '@tanstack/query-core': 5.85.7
       linked-abort-controller: 1.1.0
       mobx: 6.13.7
-      yummies: 4.14.1(mobx@6.13.7)(react@19.1.1)
+      yummies: 5.4.8(mobx@6.13.7)(react@19.1.1)
     transitivePeerDependencies:
       - react
 
@@ -5828,19 +5793,6 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
-
-  yummies@4.14.1(mobx@6.13.7)(react@19.1.1):
-    dependencies:
-      '@types/insane': 1.0.0
-      class-variance-authority: 0.7.1
-      clsx: 2.1.1
-      dayjs: 1.11.13
-      insane: 2.6.2
-      nanoid: 5.1.5
-      tailwind-merge: 3.3.1
-    optionalDependencies:
-      mobx: 6.13.7
-      react: 19.1.1
 
   yummies@5.4.8(mobx@6.13.7)(react@19.1.1):
     dependencies:

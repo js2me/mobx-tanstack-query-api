@@ -227,7 +227,7 @@ export class EndpointQuery<
           },
         );
 
-      if (this.isLazy) {
+      if (this.features.lazy) {
         lazyObserve({
           property: parentAtom.values_.get('_result'),
           onStart: createParamsReaction,
@@ -311,8 +311,8 @@ export class EndpointQuery<
     );
   }
 
-  destroy(): void {
-    super.destroy();
+  protected handleDestroy(): void {
+    super.handleDestroy();
     runInAction(() => {
       this._observableData.params = undefined;
       this._observableData.dynamicOptions = undefined;
