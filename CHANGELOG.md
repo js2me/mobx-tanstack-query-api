@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.18.0
+
+### Minor Changes
+
+- [`a17a540`](https://github.com/js2me/mobx-tanstack-query-api/commit/a17a54079daeb84b0ca322a0c57df8a7c8733d03) Thanks [@js2me](https://github.com/js2me)! - support new `mobx-tanstack-query` version (6.7.0)
+
+- [`a52efbe`](https://github.com/js2me/mobx-tanstack-query-api/commit/a52efbe00d88bfdf8f1841fadf04af12be8a2027) Thanks [@js2me](https://github.com/js2me)! - support newest version of `@tanstack/query-core` (5.90.2)
+
+- [`a52efbe`](https://github.com/js2me/mobx-tanstack-query-api/commit/a52efbe00d88bfdf8f1841fadf04af12be8a2027) Thanks [@js2me](https://github.com/js2me)! - support newest version of `mobx-tanstack-query` (6.8.2)
+
 ## 0.17.3
 
 ### Patch Changes
