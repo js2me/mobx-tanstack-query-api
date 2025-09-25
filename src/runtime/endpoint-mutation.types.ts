@@ -24,7 +24,7 @@ export type EndpointMutationOptions<
   TData = unknown,
   TParams extends AnyObject = AnyObject,
   TMutationMeta extends AnyObject | void = void,
-  TContext = unknown,
+  TOnMutateResult = unknown,
 > = {
   /**
    * Invalidates query endpoints using various filters based on data from the OpenAPI schema
@@ -59,7 +59,7 @@ export type EndpointMutationOptions<
     NoInfer<TData>,
     EndpointMutationParams<NoInfer<TParams>, NoInfer<TMutationMeta>>,
     TEndpoint['__response']['error'],
-    TContext
+    TOnMutateResult
   >,
   'queryClient' | 'mutationFn' | 'invalidateQueries'
 >;

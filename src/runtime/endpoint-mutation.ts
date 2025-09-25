@@ -17,12 +17,12 @@ export class EndpointMutation<
   TData = unknown,
   TParams extends AnyObject = AnyObject,
   TMutationMeta extends AnyObject | void = void,
-  TContext = unknown,
+  TOnMutateResult = unknown,
 > extends Mutation<
   TData,
   EndpointMutationParams<TParams, TMutationMeta>,
   TEndpoint['__response']['error'],
-  TContext
+  TOnMutateResult
 > {
   constructor(
     private endpoint: AnyEndpoint,
@@ -36,14 +36,14 @@ export class EndpointMutation<
       TData,
       TParams,
       TMutationMeta,
-      TContext
+      TOnMutateResult
     >,
   ) {
     super({
       ...mutationOptions,
       queryClient,
-      onSuccess: (data, variables, context) => {
-        mutationOptions.onSuccess?.(data, variables, context);
+      onSuccess: (data, variables, onMutateResult, context) => {
+        mutationOptions.onSuccess?.(data, variables, onMutateResult, context);
         if (invalidateEndpoints) {
           if (typeof invalidateEndpoints === 'object') {
             queryClient.invalidateEndpoints(invalidateEndpoints);
@@ -83,15 +83,15 @@ export class EndpointMutation<
           }
         }
       },
-      mutationFn: async (input) => {
+      mutationFn: async (input, context) => {
         let requestParams = input?.requestParams as Maybe<RequestParams>;
 
         if (requestParams) {
           if (!requestParams.signal) {
-            requestParams.signal = this.abortController.signal;
+            requestParams.signal = context.signal;
           }
         } else {
-          requestParams = { signal: this.abortController.signal };
+          requestParams = { signal: context.signal };
         }
 
         const fixedInput = {
