@@ -3,7 +3,8 @@ import type {
   HttpSuccessStatusCode,
 } from 'http-status-code-types';
 import { action, makeObservable, observable } from 'mobx';
-import type { ValueOf } from 'yummies/utils/types';
+import type { Maybe, ValueOf } from 'yummies/utils/types';
+import type { AnyEndpoint } from './endpoint.types.js';
 
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>;
@@ -47,6 +48,7 @@ export interface HttpClientConfig<TMeta = unknown> {
   interceptor?: (
     requestParams: RequestParams,
     metadata: TMeta | null,
+    endpoint?: Maybe<AnyEndpoint>,
   ) => Promise<RequestParams | void> | RequestParams | void;
 }
 
@@ -313,12 +315,17 @@ export class HttpClient<TMeta = unknown> {
 
   public request<T, E>(
     fullParams: FullRequestParams,
+    endpoint?: Maybe<AnyEndpoint>,
   ): Promise<HttpResponse<T, E>>;
   public request<THttpResponse extends HttpResponse<any, any>>(
     fullParams: FullRequestParams,
+    endpoint?: Maybe<AnyEndpoint>,
   ): Promise<THttpResponse>;
 
-  public async request(fullParams: FullRequestParams): Promise<any> {
+  public async request(
+    fullParams: FullRequestParams,
+    endpoint?: Maybe<AnyEndpoint>,
+  ): Promise<any> {
     this.setBadResponse(null);
 
     const {
@@ -332,7 +339,7 @@ export class HttpClient<TMeta = unknown> {
 
     if (this.config.interceptor) {
       requestParams =
-        (await this.config.interceptor(requestParams, this.meta)) ??
+        (await this.config.interceptor(requestParams, this.meta, endpoint)) ??
         requestParams;
     }
 

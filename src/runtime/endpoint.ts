@@ -163,6 +163,7 @@ export class Endpoint<
   ) {
     return this.httpClient.request<TResponse>(
       this.configuration.params(args[0] ?? ({} as TParams)),
+      this,
     );
   }
 
