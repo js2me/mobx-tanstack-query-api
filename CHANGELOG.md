@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.19.0
+
+### Minor Changes
+
+- [`b9d4f71`](https://github.com/js2me/mobx-tanstack-query-api/commit/b9d4f71adc151e679cad45942cf2330760c66350) Thanks [@js2me](https://github.com/js2me)! - pass endpoint to request mehtod in `HttpClient` from `Endpoint`
+
 ## 0.18.1
 
 ### Patch Changes
