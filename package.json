@@ -1,6 +1,7 @@
 {
-  "name": "mobx-tanstack-query-api",
   "version": "0.19.0",
+  "name": "mobx-tanstack-query-api",
+  "description": "OpenAPI/Swagger client codegen + endpoints integration with mobx-tanstack-query",
   "scripts": {
     "prepare": "pnpm dev:install-hooks",
     "clean": "rimraf dist",
@@ -35,7 +36,6 @@
   ],
   "author": "js2me",
   "license": "MIT",
-  "description": "OpenAPI/Swagger client codegen + endpoints integration with mobx-tanstack-query",
   "type": "module",
   "zshy": {
     "bin": "src/cli/bin.ts",

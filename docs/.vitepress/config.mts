@@ -3,7 +3,10 @@ import { defineConfig } from 'vitepress';
 import path from 'path';
 import fs from 'fs';
 
-const { version, name: packageName, author, license } = JSON.parse(
+import jsdom from "jsdom";
+import { minify } from 'htmlfy';
+
+const pckgJson = JSON.parse(
   fs.readFileSync(
     path.resolve(__dirname, '../../package.json'),
     { encoding: 'utf-8' },
@@ -11,23 +14,58 @@ const { version, name: packageName, author, license } = JSON.parse(
 );
 
 export default defineConfig({
-  title: packageName.replace(/-/g, ' '),
+  title: pckgJson.name.replace(/-/g, ' '),
   appearance: 'dark',
-  description: `${packageName.replace(/-/g, ' ')} documentation`,
-  transformHead: ({ pageData, head }) => {
-    head.push(['meta', { property: 'og:site_name', content: packageName }]);
-    head.push(['meta', { property: 'og:title', content: pageData.title }]);
-    if (pageData.description) {
-      head.push(['meta', { property: 'og:description', content: pageData.description }]);   
-    }
-    head.push(['meta', { property: 'og:image', content: `https://${author}.github.io/${packageName}/logo.png` }]);
+  transformHtml(code, id, ctx) {
+    const dom = new jsdom.JSDOM(code);
+    const htmlDoc = dom.window.document.documentElement;
+    const head = dom.window.document.head;
 
-    return head
+    const descriptionEl = head.querySelector('meta[name="description"]')!;
+
+
+    const siteUrl = `https://${pckgJson.author}.github.io/${pckgJson.name}/`;
+    const siteTitle = `${pckgJson.name}`;
+    const siteBannerUrl = `https://${pckgJson.author}.github.io/${pckgJson.name}/banner.png`;
+    const siteDescription = pckgJson.description || `${pckgJson.name} documentation website`;
+
+    descriptionEl.setAttribute('content', siteDescription);
+    descriptionEl.setAttribute('property', 'og:description');
+    descriptionEl.setAttribute('data-pagefind-index-attrs', 'content');
+
+    type CustomHeadTag = { name: string, attrs?: Record<string, any> }
+
+    const customHeadTags: CustomHeadTag[] = [
+      { name: 'link', attrs: { rel: 'canonical', href: siteUrl  } },
+      { name: 'meta', attrs: { property: 'og:title', content: siteTitle } },
+      { name: 'meta', attrs: { property: 'og:type', content: 'article' } },
+      { name: 'meta', attrs: { property: 'og:url', content: siteUrl } },
+      { name: 'meta', attrs: { property: 'og:locale', content: 'en' } },
+      { name: 'meta', attrs: { property: 'og:image', content: siteBannerUrl } },
+      { name: 'meta', attrs: { property: 'og:image:alt', content: `${pckgJson.name} logo` } },
+      { name: 'meta', attrs: { property: 'og:site_name', content: `${pckgJson.name}` } },
+      // Twitter tags
+      { name: 'meta', attrs: { name: 'twitter:card', content: 'summary_large_image' } },
+      { name: 'meta', attrs: { name: 'twitter:site', content: `${pckgJson.name}` } },
+      { name: 'meta', attrs: { name: 'twitter:title', content: siteTitle } },
+      { name: 'meta', attrs: { name: 'twitter:description', content: siteDescription } },
+      { name: 'meta', attrs: { name: 'twitter:image', content: siteBannerUrl } },
+      { name: 'meta', attrs: { name: 'twitter:image:alt', content: `${pckgJson.name} logo` } },
+    ]
+
+    head.innerHTML =
+`${head.innerHTML}${
+  customHeadTags.map(tag => {
+    return `<${tag.name} ${Object.entries(tag.attrs || {}).map(([attr, value]) => `${attr}="${value}"`).join(' ')}${(tag.name === 'meta' || tag.name === 'link') ? ' >' : ` ></${tag.name}>`}`;
+  }).join("\n")
+}`;
+
+    return minify(htmlDoc.outerHTML);
   },
-  base: `/${packageName}/`,
+  base: `/${pckgJson.name}/`,
   lastUpdated: true,
   head: [
-    ['link', { rel: 'icon', href: `/${packageName}/logo.png` }],
+    ['link', { rel: 'icon', href: `/${pckgJson.name}/logo.png` }],
   ],
   themeConfig: {
     logo: '/logo.png',
@@ -37,15 +75,15 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Introduction', link: '/introduction/overview' },
-      { text: 'Changelog', link: `https://github.com/${author}/${packageName}/releases` },
+      { text: 'Changelog', link: `https://github.com/${pckgJson.author}/${pckgJson.name}/releases` },
       {
-        text: `${version}`,
+        text: `${pckgJson.version}`,
         items: [
           {
             items: [
               {
-                text: `${version}`,
-                link: `https://github.com/${author}/${packageName}/releases/tag/${version}`,
+                text: `${pckgJson.version}`,
+                link: `https://github.com/${pckgJson.author}/${pckgJson.name}/releases/tag/${pckgJson.version}`,
               },
             ],
           },
@@ -104,12 +142,12 @@ export default defineConfig({
     ],
 
     footer: {
-      message: `Released under the ${license} License.`,
-      copyright: `Copyright © 2025-PRESENT ${author}`,
+      message: `Released under the ${pckgJson.version} License.`,
+      copyright: `Copyright © 2025-PRESENT ${pckgJson.author}`,
     },
 
     socialLinks: [
-      { icon: 'github', link: `https://github.com/${author}/${packageName}` },
+      { icon: 'github', link: `https://github.com/${pckgJson.author}/${pckgJson.name}` },
     ],
   },
 });
