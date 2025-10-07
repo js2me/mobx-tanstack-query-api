@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.22.1
+
+### Patch Changes
+
+- [`4312da3`](https://github.com/js2me/mobx-tanstack-query-api/commit/4312da38fc9bcb8c168c9c115e8e3c62ab42f6c0) Thanks [@js2me](https://github.com/js2me)! - fix `mixinInput`
+
 ## 0.22.0
 
 ### Minor Changes
