@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.21.0
+
+### Minor Changes
+
+- [`22401be`](https://github.com/js2me/mobx-tanstack-query-api/commit/22401be492286a19d6787459939234be4e254477) Thanks [@js2me](https://github.com/js2me)! - add ability to stay output dir (`cleanOutput: false` option)
+
 ## 0.20.0
 
 ### Minor Changes
