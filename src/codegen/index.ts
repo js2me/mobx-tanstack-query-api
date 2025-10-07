@@ -288,15 +288,15 @@ export const generateApi = async (
 
   if (generatedExtra) {
     const allExtraOperationIdsSet = new Set([
-      ...(generated.configuration.routes.outOfModule?.map(
+      ...(generatedExtra.configuration.routes.outOfModule?.map(
         (r) => r.raw.operationId,
       ) ?? []),
-      ...(generated.configuration.routes.combined?.flatMap((r) =>
+      ...(generatedExtra.configuration.routes.combined?.flatMap((r) =>
         r.routes.map((r) => r.raw.operationId),
       ) ?? []),
     ]);
     const allExtraModelTypesSet = new Set([
-      ...generated.configuration.modelTypes.map((m) => m.name),
+      ...generatedExtra.configuration.modelTypes.map((m) => m.name),
     ]);
 
     generated.configuration.routes.outOfModule =
