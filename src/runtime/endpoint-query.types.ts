@@ -6,8 +6,9 @@ import type {
   MaybeFalsy,
   MaybeFn,
 } from 'yummies/utils/types';
-
-import type { AnyEndpoint } from './endpoint.types.js';
+import type { Endpoint } from './endpoint.js';
+import type { AnyEndpoint, ToEndpoint } from './endpoint.types.js';
+import type { EndpointQuery } from './endpoint-query.js';
 
 export interface EndpointQueryMeta {
   endpointId: string;
@@ -83,3 +84,11 @@ export type EndpointQueryOptions<
     response: TEndpoint['__response'],
   ) => TQueryFnData | Promise<TQueryFnData>;
 };
+
+export type ToEndpointQuery<
+  T extends AnyEndpoint,
+  TData = ToEndpoint<T>['__response']['data'],
+  TQueryData = ToEndpoint<T>['__response']['data'],
+> = T extends Endpoint<infer TResponse, any, any>
+  ? EndpointQuery<T, TResponse['data'], TResponse['error'], TData, TQueryData>
+  : ToEndpointQuery<AnyEndpoint>;

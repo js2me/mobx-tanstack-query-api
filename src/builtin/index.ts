@@ -1,5 +1,8 @@
-import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
-import { HttpClient, isHttpBadResponse } from '../runtime/http-client.js';
+import {
+  EndpointQueryClient,
+  HttpClient,
+  isHttpBadResponse,
+} from '../runtime/index.js';
 
 const MAX_FAILURE_COUNT = 3;
 

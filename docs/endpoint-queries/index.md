@@ -103,3 +103,19 @@ query.update({ params: {} });
 ```
 
 
+
+
+## Extras  
+
+#### `ToEndpointQuery` type  
+
+This type allows you to convert `Endpoint` to `EndpointQuery` type.   
+It might be helpful if you are using some factory method to create endpoint queries.  
+
+Example:  
+```ts
+import { ToEndpointQuery } from 'mobx-tanstack-query-api';
+import { getFruits } from "@/shared/api/__generated__";
+
+type GetFruitsQueryType = ToEndpointQuery<typeof getFruits>;
+```

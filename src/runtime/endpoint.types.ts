@@ -34,3 +34,5 @@ export type InferEndpointMetaData<TEndpoint extends AnyEndpoint> =
 export interface EndpointMutationPresets {
   invalidateQueries?: InvalidateEndpointsFilters;
 }
+
+export type ToEndpoint<T> = T extends AnyEndpoint ? T : AnyEndpoint;
