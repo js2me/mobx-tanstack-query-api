@@ -1,23 +1,15 @@
-import type { AnyObject } from 'yummies/utils/types';
-
-import type { CodegenProcess, GenerateQueryApiParams } from '../index.js';
-
+import type { BaseTmplParams } from '../types/index.js';
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 
-export interface DataContractsTmplParams extends AnyObject {
-  configuration: AnyObject;
-  apiParams: GenerateQueryApiParams;
-  codegenProcess: CodegenProcess;
+export interface DataContractsTmplParams extends BaseTmplParams {
   excludedDataContractNames?: string[];
 }
 
-export const dataContractsFileTmpl = async ({
-  configuration,
-  formatTSContent,
-  excludedDataContractNames,
-}: DataContractsTmplParams) => {
-  const { config, modelTypes } = configuration;
+export const dataContractsFileTmpl = async (
+  params: DataContractsTmplParams,
+) => {
+  const { config, modelTypes } = params.configuration;
 
   const contractDefinitions: string[] = [];
 
@@ -28,20 +20,20 @@ export const dataContractsFileTmpl = async ({
   }
 
   for await (const contract of modelTypes) {
-    if (excludedDataContractNames?.includes(contract.name)) {
+    if (params.excludedDataContractNames?.includes(contract.name)) {
       continue;
     }
 
     contractDefinitions.push(
       await dataContractTmpl({
-        configuration,
+        ...params,
         contract,
         addExportKeyword: true,
       }),
     );
   }
 
-  return await formatTSContent(`${LINTERS_IGNORE}
+  return await params.formatTSContent(`${LINTERS_IGNORE}
 
 ${contractDefinitions.length > 0 ? contractDefinitions.join('\n\n') : `export {}`}
   `);

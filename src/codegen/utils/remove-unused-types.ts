@@ -1,7 +1,9 @@
 import path from 'node:path';
 import { type ExportedDeclarations, Node, Project, SyntaxKind } from 'ts-morph';
-import type { FilterOption } from '../index.js';
-import { unpackFilterOption } from './unpack-filter-option.js';
+import {
+  type FilterOption,
+  unpackFilterOption,
+} from './unpack-filter-option.js';
 
 export interface RemoveUnusedTypesParams {
   directory: string;

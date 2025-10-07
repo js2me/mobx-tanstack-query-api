@@ -1,13 +1,10 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { LoDashStatic } from 'lodash';
 import {
   generateApi as generateApiFromSwagger,
   type ParsedRoute,
-  type RawRouteInfo,
 } from 'swagger-typescript-api';
-import type { RequestInit } from 'undici-types';
-import type { AnyObject, KeyOfByValue, Maybe } from 'yummies/utils/types';
+import type { AnyObject, Maybe } from 'yummies/utils/types';
 
 import { allEndpointPerFileTmpl } from './templates/all-endpoints-per-file.tmpl.js';
 import { allExportsTmpl } from './templates/all-exports.tmpl.js';
@@ -16,10 +13,14 @@ import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
 import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
 import { indexTsForEndpointPerFileTmpl } from './templates/index-ts-for-endpoint-per-file.tmpl.js';
 import { metaInfoTmpl } from './templates/meta-info.tmpl.js';
-import {
-  type RemoveUnusedTypesParams,
-  removeUnusedTypes,
-} from './utils/remove-unused-types.js';
+import type {
+  AllImportFileParams,
+  BaseTmplParams,
+  CodegenDataUtils,
+  GenerateQueryApiParams,
+  MetaInfo,
+} from './types/index.js';
+import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,225 +28,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const __execdirname = process.cwd();
 
-export type CodegenDataUtils = {
-  _: LoDashStatic;
-  getInlineParseContent: (requestParams: AnyObject) => string;
-  formatModelName: (modelName: string) => string;
-};
-
-export type EndpointData = ParsedRoute;
-
-export type FilterOption<T extends (...args: any[]) => boolean> =
-  | T
-  | string
-  | RegExp
-  | (RegExp | string)[];
-
-type FilterEndpointsOption = FilterOption<(endpoint: EndpointData) => boolean>;
-
-type FilterGroupsOption = FilterOption<(groupName: string) => boolean>;
-
-export type CodegenProcess = AnyObject;
-
-export interface ImportFileParams {
-  path: string;
-  exportName: string;
-}
-
-export interface MetaInfo {
-  namespace: string | null;
-  groupNames: string[];
-  tags?: string[];
-}
-
-export interface GenerateQueryApiParams {
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#output)
-   */
-  output: string;
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#input)
-   */
-  input: string | AnyObject;
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#requestpathprefix)
-   */
-  requestPathPrefix?: string;
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#requestpathsuffix)
-   */
-  requestPathSuffix?: string;
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#removeunusedtypes)
-   */
-  removeUnusedTypes?:
-    | true
-    | {
-        keepTypes?: RemoveUnusedTypesParams['keepTypes'];
-      };
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#formatendpointname)
-   */
-  formatEndpointName?: (
-    endpointName: string,
-    endpointData: RawRouteInfo,
-  ) => Maybe<string>;
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#formatexportgroupname)
-   */
-  formatExportGroupName?: (
-    groupName: string,
-    utils: CodegenDataUtils,
-  ) => string;
-
-  /**
-   * Various generation output types
-   *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#outputtype)
-   *
-   * `one-endpoint-per-file`
-   * @example
-   * ```
-   * outputdir
-   *  groupname
-   *    index.ts
-   *    endpoints
-   *      index.ts
-   *      get-endpoint-1.ts
-   *      get-endpoint-n.ts
-   * ```
-   * @example
-   * ```
-   * outputdir
-   *  index.ts
-   *  endpoints
-   *    index.ts
-   *    get-endpoint-1.ts
-   *    get-endpoint-n.ts
-   * ```
-   *
-   * `endpoints-per-file`
-   * @example
-   * ```
-   * outputdir
-   *  groupname
-   *    index.ts
-   *    endpoints.ts
-   * ```
-   * @example
-   * ```
-   * outputdir
-   *  index.ts
-   *  endpoints.ts
-   * ```
-   */
-  outputType?: 'one-endpoint-per-file' | 'endpoints-per-file';
-
-  /**
-   * Group endpoints and collect it into object
-   *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#groupby)
-   */
-  groupBy?:
-    | ((endpoint: EndpointData) => string)
-    | `path-segment`
-    | `path-segment-${number}`
-    | `tag`
-    | `tag-${number}`;
-
-  /**
-   * Collect all exports into single namespace
-   *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#namespace)
-   */
-  namespace?: string | ((utils: AnyObject) => string);
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#addpathsegmenttoroutename)
-   */
-  addPathSegmentToRouteName?: boolean | number;
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#queryclient)
-   */
-  queryClient?: 'builtin' | ImportFileParams;
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#endpoint)
-   */
-  endpoint?: 'builtin' | ImportFileParams;
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#httpclient)
-   */
-  httpClient?: 'builtin' | ImportFileParams;
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#getendpointmeta)
-   */
-  getEndpointMeta?: (
-    route: AnyObject,
-    utils: AnyObject,
-  ) => {
-    typeName?: string;
-    typeNameImportPath?: string;
-    tmplData: string;
-  };
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#getrequestmeta)
-   */
-  getRequestMeta?: (
-    route: AnyObject,
-    utils: AnyObject,
-  ) => {
-    tmplData: string;
-  };
-
-  /**
-   * Additional parameters used to fetch your OpenAPI schema
-   *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#fetchschemarequestoptions)
-   */
-  fetchSchemaRequestOptions?: RequestInit;
-
-  otherCodegenParams?: AnyObject;
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#filterendpoints)
-   */
-  filterEndpoints?: FilterEndpointsOption;
-
-  /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#filtergroups)
-   */
-  filterGroups?: FilterGroupsOption;
-
-  libImports?: {
-    'mobx-tanstack-query-api'?: string;
-  };
-
-  tsconfigPath?: string;
-
-  transforms?: {
-    groupEnumValue?: (group: string, namespace?: Maybe<string>) => string;
-    tagEnumValue?: (tag: string, namespace?: Maybe<string>) => string;
-  };
-}
-
-export type AllImportFileParams = Record<
-  KeyOfByValue<Required<GenerateQueryApiParams>, 'builtin' | ImportFileParams>,
-  ImportFileParams
->;
-
 export const generateApi = async (
   params: GenerateQueryApiParams | GenerateQueryApiParams[],
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
 ): Promise<void> => {
   if (Array.isArray(params)) {
-    await Promise.all(params.map((param) => generateApi(param)));
+    for await (const param of params) {
+      await generateApi(param);
+    }
     return;
   }
 
@@ -278,6 +68,7 @@ export const generateApi = async (
           }
         : params.httpClient,
   };
+
   const paths = {
     templates: path.resolve(__dirname, 'templates'),
     requestInfoClass: path.resolve(
@@ -291,10 +82,11 @@ export const generateApi = async (
     ),
     outputDir: path.resolve(process.cwd(), params.output),
   };
+
   //#region swagger-typescript-api
-  const codegenParams: Partial<AnyObject> = {
+  const swaggerTypescriptApiCodegenBaseParams: Partial<AnyObject> = {
     httpClientType: 'fetch',
-    cleanOutput: true,
+    cleanOutput: params.cleanOutput ?? true,
     modular: true,
     patch: true,
     typeSuffix: 'DC',
@@ -343,7 +135,7 @@ export const generateApi = async (
   }
 
   const generated = await generateApiFromSwagger({
-    ...(codegenParams as any),
+    ...(swaggerTypescriptApiCodegenBaseParams as any),
     ...inputData,
     hooks: {
       onInit: (configuration, codeGenProcessFromInit) => {
@@ -358,7 +150,7 @@ export const generateApi = async (
           // @ts-expect-error
           configuration.swaggerSchema.components.schemas || {};
 
-        return codegenParams?.hooks?.onInit?.(
+        return swaggerTypescriptApiCodegenBaseParams?.hooks?.onInit?.(
           configuration,
           codeGenProcessFromInit,
         );
@@ -369,7 +161,9 @@ export const generateApi = async (
             routeA.routeName.usage.localeCompare(routeB.routeName.usage),
           );
         });
-        return codegenParams?.hooks?.onPrepareConfig?.(config);
+        return swaggerTypescriptApiCodegenBaseParams?.hooks?.onPrepareConfig?.(
+          config,
+        );
       },
       onFormatRouteName: (routeInfo, usageRouteName) => {
         let formattedRouteName = usageRouteName;
@@ -396,7 +190,10 @@ export const generateApi = async (
 
         return (
           params?.formatEndpointName?.(endpointName, routeInfo) ??
-          codegenParams?.hooks?.onFormatRouteName?.(routeInfo, endpointName) ??
+          swaggerTypescriptApiCodegenBaseParams?.hooks?.onFormatRouteName?.(
+            routeInfo,
+            endpointName,
+          ) ??
           endpointName
         );
       },
@@ -406,6 +203,17 @@ export const generateApi = async (
 
   const utils = codegenProcess.getRenderTemplateData()
     .utils as CodegenDataUtils;
+
+  const baseTmplParams: BaseTmplParams = {
+    ...generated,
+    codegenParams: params,
+    configuration: generated.configuration,
+    formatTSContent: generated.formatTSContent,
+    codegenProcess,
+    importFileParams,
+    utils,
+  };
+
   const { _ } = utils;
 
   let namespace: Maybe<string> = null;
@@ -456,12 +264,8 @@ export const generateApi = async (
           content: requestInfoPerFileContent,
           reservedDataContractNames,
         } = await endpointPerFileTmpl({
-          ...generated,
+          ...baseTmplParams,
           route,
-          apiParams: params,
-          codegenProcess,
-          importFileParams,
-          utils,
           relativePathDataContracts: '../data-contracts',
           groupName: null,
           metaInfo: {
@@ -504,9 +308,7 @@ export const generateApi = async (
         fileName: 'index.ts',
         withPrefix: false,
         content: await indexTsForEndpointPerFileTmpl({
-          ...generated,
-          apiParams: params,
-          codegenProcess,
+          ...baseTmplParams,
           generatedRequestFileNames: fileNamesWithRequestInfo,
         }),
       });
@@ -515,12 +317,8 @@ export const generateApi = async (
       // #region кодогенерация несколько эндпоинтов в 1 файле без группировки
       const { content: requestInfoPerFileContent, reservedDataContractNames } =
         await allEndpointPerFileTmpl({
-          ...generated,
+          ...baseTmplParams,
           routes: allRoutes,
-          apiParams: params,
-          codegenProcess,
-          importFileParams,
-          utils,
           relativePathDataContracts: './data-contracts',
           groupName: null,
           metaInfo: {
@@ -628,12 +426,8 @@ export const generateApi = async (
             content: requestInfoPerFileContent,
             reservedDataContractNames,
           } = await endpointPerFileTmpl({
-            ...generated,
+            ...baseTmplParams,
             route,
-            apiParams: params,
-            codegenProcess,
-            importFileParams,
-            utils,
             relativePathDataContracts: '../../data-contracts',
             groupName,
             metaInfo: {
@@ -683,12 +477,8 @@ export const generateApi = async (
           content: requestInfoPerFileContent,
           reservedDataContractNames,
         } = await allEndpointPerFileTmpl({
-          ...generated,
+          ...baseTmplParams,
           routes,
-          apiParams: params,
-          codegenProcess,
-          importFileParams,
-          utils,
           relativePathDataContracts: '../data-contracts',
           groupName,
           metaInfo: {
@@ -753,9 +543,7 @@ export * as ${exportGroupName} from './endpoints';
             fileName: 'index.ts',
             withPrefix: false,
             content: await indexTsForEndpointPerFileTmpl({
-              ...generated,
-              apiParams: params,
-              codegenProcess,
+              ...baseTmplParams,
               generatedRequestFileNames: fileNamesWithRequestInfo,
             }),
           });
@@ -787,9 +575,7 @@ export * as ${exportGroupName} from './endpoints';
     .map(([name]) => name);
 
   const dataContractsContent = await dataContractsFileTmpl({
-    ...generated,
-    apiParams: params,
-    codegenProcess,
+    ...baseTmplParams,
     excludedDataContractNames,
   });
 
@@ -805,10 +591,8 @@ export * as ${exportGroupName} from './endpoints';
     fileName: 'meta-info.ts',
     withPrefix: false,
     content: await metaInfoTmpl({
-      ...generated,
+      ...baseTmplParams,
       metaInfo,
-      utils,
-      codegenParams: params,
     }),
   });
 
@@ -818,10 +602,9 @@ export * as ${exportGroupName} from './endpoints';
       fileName: '__exports.ts',
       withPrefix: false,
       content: await allExportsTmpl({
-        ...generated,
+        ...baseTmplParams,
         collectedExportFiles: collectedExportFilesFromIndexFile,
         metaInfo,
-        utils,
       }),
     });
     codegenFs.createFile({
@@ -838,10 +621,9 @@ export * as ${namespace} from './__exports';
       fileName: 'index.ts',
       withPrefix: false,
       content: await allExportsTmpl({
-        ...generated,
+        ...baseTmplParams,
         collectedExportFiles: collectedExportFilesFromIndexFile,
         metaInfo,
-        utils,
       }),
     });
   }

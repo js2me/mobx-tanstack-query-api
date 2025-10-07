@@ -1,23 +1,14 @@
 import type { AnyObject, Maybe } from 'yummies/utils/types';
 
-import type {
-  AllImportFileParams,
-  CodegenDataUtils,
-  GenerateQueryApiParams,
-  MetaInfo,
-} from '../index.js';
-
+import type { BaseTmplParams } from '../types/base-tmpl-params.js';
+import type { MetaInfo } from '../types/index.js';
 import {
   formatGroupNameEnumKey,
   formatTagNameEnumKey,
 } from './meta-info.tmpl.js';
 
-export interface NewEndpointTmplParams {
+export interface NewEndpointTmplParams extends BaseTmplParams {
   route: AnyObject;
-  configuration: AnyObject;
-  apiParams: GenerateQueryApiParams;
-  importFileParams: AllImportFileParams;
-  utils: CodegenDataUtils;
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;
 }
@@ -39,7 +30,7 @@ const responseContentKind: AnyObject = {
 
 export const newEndpointTmpl = ({
   route,
-  apiParams,
+  codegenParams,
   importFileParams,
   utils,
   groupName,
@@ -134,12 +125,12 @@ export const newEndpointTmpl = ({
     lastDynamicStructPos++;
   }
 
-  const requestInfoMeta = apiParams.getEndpointMeta?.(route, utils);
-  const requestMeta = apiParams.getRequestMeta?.(route, utils);
+  const requestInfoMeta = codegenParams.getEndpointMeta?.(route, utils);
+  const requestMeta = codegenParams.getRequestMeta?.(route, utils);
   const resultPath =
-    (apiParams.requestPathPrefix ?? '') +
+    (codegenParams.requestPathPrefix ?? '') +
     path +
-    (apiParams.requestPathSuffix ?? '');
+    (codegenParams.requestPathSuffix ?? '');
 
   const bodyContentType =
     requestContentKind[requestBodyInfo.contentKind] || null;

@@ -1,13 +1,7 @@
-import type { AnyObject } from 'yummies/utils/types';
-
-import type { CodegenProcess, GenerateQueryApiParams } from '../index.js';
-
+import type { BaseTmplParams } from '../types/index.js';
 import { LINTERS_IGNORE } from './constants.js';
 
-export interface IndexTsForEndpointPerFileTmplParams extends AnyObject {
-  configuration: AnyObject;
-  apiParams: GenerateQueryApiParams;
-  codegenProcess: CodegenProcess;
+export interface IndexTsForEndpointPerFileTmplParams extends BaseTmplParams {
   generatedRequestFileNames: string[];
 }
 

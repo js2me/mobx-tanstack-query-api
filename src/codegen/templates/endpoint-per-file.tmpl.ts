@@ -1,41 +1,31 @@
 import type { AnyObject, Maybe } from 'yummies/utils/types';
-
-import type {
-  AllImportFileParams,
-  CodegenDataUtils,
-  CodegenProcess,
-  GenerateQueryApiParams,
-  MetaInfo,
-} from '../index.js';
-
+import type { BaseTmplParams, MetaInfo } from '../types/index.js';
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 import { endpointJSDocTmpl } from './endpoint-jsdoc.tmpl.js';
 import { newEndpointTmpl } from './new-endpoint.tmpl.js';
 
-export interface EndpointPerFileTmplParams extends AnyObject {
+export interface EndpointPerFileTmplParams extends BaseTmplParams {
   route: AnyObject;
-  configuration: AnyObject;
-  apiParams: GenerateQueryApiParams;
-  codegenProcess: CodegenProcess;
-  importFileParams: AllImportFileParams;
-  utils: CodegenDataUtils;
   relativePathDataContracts: string;
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;
 }
 
-export const endpointPerFileTmpl = async ({
-  route,
-  configuration,
-  apiParams,
-  formatTSContent,
-  importFileParams,
-  utils,
-  relativePathDataContracts,
-  groupName,
-  metaInfo,
-}: EndpointPerFileTmplParams) => {
+export const endpointPerFileTmpl = async (
+  params: EndpointPerFileTmplParams,
+) => {
+  const {
+    route,
+    configuration,
+    codegenParams,
+    formatTSContent,
+    importFileParams,
+    utils,
+    relativePathDataContracts,
+    groupName,
+    metaInfo,
+  } = params;
   const { _ } = utils;
 
   const {
@@ -43,11 +33,8 @@ export const endpointPerFileTmpl = async ({
     reservedDataContractNames,
     localModelTypes,
   } = newEndpointTmpl({
+    ...params,
     route,
-    configuration,
-    apiParams,
-    importFileParams,
-    utils,
     groupName,
     metaInfo,
   });
@@ -74,7 +61,7 @@ export const endpointPerFileTmpl = async ({
     );
   }
 
-  const requestInfoMeta = apiParams.getEndpointMeta?.(route, utils);
+  const requestInfoMeta = codegenParams.getEndpointMeta?.(route, utils);
 
   if (requestInfoMeta?.typeNameImportPath && requestInfoMeta.typeName) {
     extraImportLines.push(
@@ -89,7 +76,7 @@ export const endpointPerFileTmpl = async ({
         RequestParams,
         HttpResponse,
         HttpMultistatusResponse,
-      } from "${apiParams.libImports?.['mobx-tanstack-query-api'] ?? 'mobx-tanstack-query-api'}";
+      } from "${codegenParams.libImports?.['mobx-tanstack-query-api'] ?? 'mobx-tanstack-query-api'}";
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
@@ -119,7 +106,7 @@ export const endpointPerFileTmpl = async ({
             }
 
             const contractType = await dataContractTmpl({
-              configuration,
+              ...params,
               contract: modelType,
               addExportKeyword: true,
             });
@@ -135,7 +122,7 @@ export const endpointPerFileTmpl = async ({
         await Promise.all(
           localModelTypes.map(async (modelType) => {
             const contractType = await dataContractTmpl({
-              configuration,
+              ...params,
               contract: modelType,
               addExportKeyword: true,
             });
@@ -148,9 +135,8 @@ export const endpointPerFileTmpl = async ({
         .join('\n\n')}
       
       ${endpointJSDocTmpl({
+        ...params,
         route,
-        configuration,
-        apiParams,
       })}
       export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}
       `),

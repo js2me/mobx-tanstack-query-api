@@ -1,20 +1,14 @@
 import { splitTextByLines } from 'yummies/text';
 import type { AnyObject } from 'yummies/utils/types';
+import type { BaseTmplParams } from '../types/base-tmpl-params.js';
 
-import type { GenerateQueryApiParams } from '../index.js';
-
-export interface EndpointJSDocTmplParams {
+export interface EndpointJSDocTmplParams extends BaseTmplParams {
   route: AnyObject;
-  configuration: AnyObject;
-  apiParams: GenerateQueryApiParams;
   offset?: number;
 }
 
-export const endpointJSDocTmpl = ({
-  route,
-  configuration,
-  offset = 0,
-}: EndpointJSDocTmplParams) => {
+export const endpointJSDocTmpl = (params: EndpointJSDocTmplParams) => {
+  const { route, configuration, offset = 0 } = params;
   const { routeName } = route;
   const rawRoute = route.raw as AnyObject;
   const routeRequest = route.request as AnyObject;

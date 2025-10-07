@@ -1,14 +1,16 @@
 import type { Maybe } from 'yummies/utils/types';
 
-import type { CodegenDataUtils, MetaInfo } from '../index.js';
+import type {
+  BaseTmplParams,
+  CodegenDataUtils,
+  MetaInfo,
+} from '../types/index.js';
 
 import { LINTERS_IGNORE } from './constants.js';
 
-export interface AllExportsTmplParams {
-  formatTSContent: (...args: any[]) => Promise<string>;
+export interface AllExportsTmplParams extends BaseTmplParams {
   collectedExportFiles: string[];
   metaInfo: Maybe<MetaInfo>;
-  utils: CodegenDataUtils;
 }
 
 export const formatGroupNameEnumKey = (

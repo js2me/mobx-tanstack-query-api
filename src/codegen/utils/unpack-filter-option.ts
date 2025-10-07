@@ -1,5 +1,10 @@
 import type { Maybe } from 'yummies/utils/types';
-import type { FilterOption } from '../index.js';
+
+export type FilterOption<T extends (...args: any[]) => boolean> =
+  | T
+  | string
+  | RegExp
+  | (RegExp | string)[];
 
 export const unpackFilterOption = <TArgs extends any[]>(
   option: Maybe<FilterOption<(...args: TArgs) => boolean>>,

@@ -1,7 +1,7 @@
 import type { AnyObject } from 'yummies/utils/types';
+import type { BaseTmplParams } from '../types/index.js';
 
-export interface DataContractTmplParams {
-  configuration: AnyObject;
+export interface DataContractTmplParams extends BaseTmplParams {
   contract: AnyObject;
   addExportKeyword?: boolean;
 }
