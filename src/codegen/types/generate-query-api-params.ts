@@ -19,6 +19,10 @@ export interface GenerateQueryApiParams {
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#input)
    */
   input: string | AnyObject;
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#mixininput)
+   */
+  mixinInput?: string | AnyObject;
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#requestpathprefix)
@@ -184,6 +188,13 @@ export interface GenerateQueryApiParams {
     tagEnumValue?: (tag: string, namespace?: Maybe<string>) => string;
   };
 
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#cleanoutput)
+   */
   cleanOutput?: boolean;
+
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#nometainfo)
+   */
   noMetaInfo?: boolean;
 }

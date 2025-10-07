@@ -60,6 +60,11 @@ Sometimes will be helpful to use [`fetchSchemaRequestOptions`](#fetchschemareque
 input: 'https://gitlab.com/api/v4/openapi.json'
 ```
 
+#### `mixinInput`   
+
+Additional input swagger schema or spec which allows to mix two swagger files.   
+This might be helpful if you need to merge two OpenAPI/Swagger files.  
+
 
 #### `output`   
 
@@ -563,3 +568,7 @@ export const getFruits = new Endpoint<
 
 getFruits.meta.somedata; // '123'
 ```
+
+#### `noMetaInfo`  
+
+Allows to disable generation `meta-info.ts` file   

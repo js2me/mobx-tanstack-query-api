@@ -118,8 +118,6 @@ export const generateApi = async (
 
   let codegenProcess!: any;
 
-  const inputData: AnyObject = {};
-
   if (!params.input) {
     console.warn(
       '[mobx-tanstack-query-api/codegen]',
@@ -129,16 +127,22 @@ export const generateApi = async (
     return;
   }
 
-  if (typeof params.input === 'string') {
-    inputData.input = params.input;
-    inputData.url = params.input;
-  } else {
-    inputData.spec = params.input;
-  }
+  const inputToCodegenInput = (input: Maybe<string | AnyObject>): AnyObject => {
+    const inputData: AnyObject = {};
+
+    if (typeof input === 'string') {
+      inputData.input = input;
+      inputData.url = input;
+    } else {
+      inputData.spec = input;
+    }
+
+    return inputData;
+  };
 
   const generated = await generateApiFromSwagger({
     ...(swaggerTypescriptApiCodegenBaseParams as any),
-    ...inputData,
+    ...inputToCodegenInput(params.input),
     hooks: {
       onInit: (configuration, codeGenProcessFromInit) => {
         codegenProcess = codeGenProcessFromInit;
@@ -201,6 +205,55 @@ export const generateApi = async (
       },
     },
   });
+
+  const generatedExtra = params.mixinInput
+    ? await generateApiFromSwagger({
+        ...(swaggerTypescriptApiCodegenBaseParams as any),
+        ...inputToCodegenInput(params.mixinInput),
+        hooks: {
+          onPrepareConfig: (config) => {
+            config.routes.combined?.forEach((routeInfo) => {
+              routeInfo.routes.sort((routeA, routeB) =>
+                routeA.routeName.usage.localeCompare(routeB.routeName.usage),
+              );
+            });
+          },
+          onFormatRouteName: (routeInfo, usageRouteName) => {
+            let formattedRouteName = usageRouteName;
+
+            if (
+              params.addPathSegmentToRouteName === true ||
+              typeof params.addPathSegmentToRouteName === 'number'
+            ) {
+              const pathSegmentForSuffix =
+                typeof params.addPathSegmentToRouteName === 'number'
+                  ? params.addPathSegmentToRouteName
+                  : 0;
+
+              const pathSegments = routeInfo.route.split('/').filter(Boolean);
+              const { _ } = codegenProcess.getRenderTemplateData()
+                .utils as CodegenDataUtils;
+
+              formattedRouteName = _.camelCase(
+                `${pathSegments[pathSegmentForSuffix] || ''}_${formattedRouteName}`,
+              );
+            }
+
+            const endpointName = formattedRouteName;
+
+            return (
+              params?.formatEndpointName?.(endpointName, routeInfo) ??
+              swaggerTypescriptApiCodegenBaseParams?.hooks?.onFormatRouteName?.(
+                routeInfo,
+                endpointName,
+              ) ??
+              endpointName
+            );
+          },
+        },
+      })
+    : null;
+
   //#endregion
 
   const utils = codegenProcess.getRenderTemplateData()
@@ -232,6 +285,62 @@ export const generateApi = async (
 
   codegenFs.cleanDir(params.output);
   codegenFs.createDir(params.output);
+
+  if (generatedExtra) {
+    const allExtraOperationIdsSet = new Set([
+      ...(generated.configuration.routes.outOfModule?.map(
+        (r) => r.raw.operationId,
+      ) ?? []),
+      ...(generated.configuration.routes.combined?.flatMap((r) =>
+        r.routes.map((r) => r.raw.operationId),
+      ) ?? []),
+    ]);
+    const allExtraModelTypesSet = new Set([
+      ...generated.configuration.modelTypes.map((m) => m.name),
+    ]);
+
+    generated.configuration.routes.outOfModule =
+      generated.configuration.routes.outOfModule ?? [];
+    generated.configuration.routes.outOfModule = [
+      ...generated.configuration.routes.outOfModule.filter(
+        (route) => !allExtraOperationIdsSet.has(route.raw.operationId),
+      ),
+      ...generatedExtra.configuration.routes.outOfModule,
+    ];
+
+    generated.configuration.routes.combined =
+      generated.configuration.routes.combined ?? [];
+
+    generated.configuration.routes.combined.forEach((group) => {
+      group.routes = [
+        ...group.routes.filter(
+          (route) => !allExtraOperationIdsSet.has(route.raw.operationId),
+        ),
+        ...(generatedExtra.configuration.routes.combined?.find(
+          (g) => g.moduleName === group.moduleName,
+        )?.routes ?? []),
+      ];
+    });
+
+    const notExistedCombinedExtra =
+      generatedExtra.configuration.routes.combined?.filter(
+        (group) =>
+          !generated.configuration.routes.combined?.some(
+            (g) => g.moduleName === group.moduleName,
+          ),
+      );
+
+    generated.configuration.routes.combined.push(
+      ...(notExistedCombinedExtra ?? []),
+    );
+
+    generated.configuration.modelTypes = [
+      ...generated.configuration.modelTypes.filter(
+        (it) => !allExtraModelTypesSet.has(it.name),
+      ),
+      ...generatedExtra.configuration.modelTypes,
+    ];
+  }
 
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
