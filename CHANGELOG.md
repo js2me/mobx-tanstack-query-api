@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.19.1
+
+### Patch Changes
+
+- [`d9c58dc`](https://github.com/js2me/mobx-tanstack-query-api/commit/d9c58dcfc39f6998ffeea9318110648a7a58b906) Thanks [@js2me](https://github.com/js2me)! - update yummies to latest (better treeshaking)
+
 ## 0.19.0
 
 ### Minor Changes
