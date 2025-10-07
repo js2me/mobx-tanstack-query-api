@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.20.0
+
+### Minor Changes
+
+- [`bdab7c3`](https://github.com/js2me/mobx-tanstack-query-api/commit/bdab7c318d4acb04c087a73d241770720eadc139) Thanks [@js2me](https://github.com/js2me)! - added `ToEndpointMutation` and `ToEndpointQuery` utility types
+
 ## 0.19.1
 
 ### Patch Changes
