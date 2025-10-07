@@ -23,6 +23,8 @@ import type {
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
 
+export * from './types/index.js';
+
 const __filename = fileURLToPath(import.meta.url);
 
 const __dirname = path.dirname(__filename);
