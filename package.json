@@ -80,7 +80,7 @@
     "@vitest/coverage-istanbul": "^3.2.4",
     "commitfmt": "^1.0.0",
     "js2me-biome-config": "^1.0.5",
-    "sborshik": "^1.0.12",
+    "sborshik": "^1.0.25",
     "jsdom": "^26.0.0",
     "lefthook": "^1.11.13",
     "nodemon": "^3.1.9",
