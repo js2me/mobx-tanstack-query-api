@@ -185,4 +185,5 @@ export interface GenerateQueryApiParams {
   };
 
   cleanOutput?: boolean;
+  noMetaInfo?: boolean;
 }

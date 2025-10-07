@@ -270,10 +270,12 @@ export const generateApi = async (
           route,
           relativePathDataContracts: '../data-contracts',
           groupName: null,
-          metaInfo: {
-            groupNames: [],
-            namespace,
-          },
+          metaInfo: params.noMetaInfo
+            ? null
+            : {
+                groupNames: [],
+                namespace,
+              },
         });
 
         if (Array.isArray(route.raw.tags)) {
@@ -323,10 +325,12 @@ export const generateApi = async (
           routes: allRoutes,
           relativePathDataContracts: './data-contracts',
           groupName: null,
-          metaInfo: {
-            namespace,
-            groupNames: [],
-          },
+          metaInfo: params.noMetaInfo
+            ? null
+            : {
+                namespace,
+                groupNames: [],
+              },
         });
 
       reservedDataContractNames.forEach((name) => {
@@ -432,10 +436,12 @@ export const generateApi = async (
             route,
             relativePathDataContracts: '../../data-contracts',
             groupName,
-            metaInfo: {
-              namespace,
-              groupNames: [],
-            },
+            metaInfo: params.noMetaInfo
+              ? null
+              : {
+                  namespace,
+                  groupNames: [],
+                },
           });
 
           reservedDataContractNames.forEach((name) => {
@@ -483,10 +489,12 @@ export const generateApi = async (
           routes,
           relativePathDataContracts: '../data-contracts',
           groupName,
-          metaInfo: {
-            namespace,
-            groupNames: [],
-          },
+          metaInfo: params.noMetaInfo
+            ? null
+            : {
+                namespace,
+                groupNames: [],
+              },
         });
 
         reservedDataContractNames.forEach((name) => {
@@ -562,6 +570,7 @@ export * as ${exportGroupName} from './endpoints';
   }
 
   const metaInfo: Maybe<MetaInfo> =
+    !params.noMetaInfo &&
     (namespace ?? (nonEmptyGroups.size > 0 || tagsSet.size > 0))
       ? {
           namespace,
@@ -588,15 +597,17 @@ export * as ${exportGroupName} from './endpoints';
     content: dataContractsContent,
   });
 
-  codegenFs.createFile({
-    path: paths.outputDir,
-    fileName: 'meta-info.ts',
-    withPrefix: false,
-    content: await metaInfoTmpl({
-      ...baseTmplParams,
-      metaInfo,
-    }),
-  });
+  if (metaInfo) {
+    codegenFs.createFile({
+      path: paths.outputDir,
+      fileName: 'meta-info.ts',
+      withPrefix: false,
+      content: await metaInfoTmpl({
+        ...baseTmplParams,
+        metaInfo,
+      }),
+    });
+  }
 
   if (namespace) {
     codegenFs.createFile({
