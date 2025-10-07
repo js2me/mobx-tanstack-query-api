@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.21.1
+
+### Patch Changes
+
+- [`780b91a`](https://github.com/js2me/mobx-tanstack-query-api/commit/780b91abc6c260805114d763f07bc5cbb4c152ea) Thanks [@js2me](https://github.com/js2me)! - missing codegen typings
+
 ## 0.21.0
 
 ### Minor Changes
