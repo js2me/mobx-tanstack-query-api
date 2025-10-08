@@ -33,8 +33,8 @@ importers:
         specifier: ^6.8.2
         version: 6.8.2(@tanstack/query-core@5.90.2)(mobx@6.13.7)(react@19.1.1)
       swagger-typescript-api:
-        specifier: 13.2.14
-        version: 13.2.14(magicast@0.3.5)
+        specifier: 13.2.15
+        version: 13.2.15(magicast@0.3.5)
       ts-morph:
         specifier: ^26.0.0
         version: 26.0.0
@@ -3180,8 +3180,8 @@ packages:
   swagger-schema-official@2.0.0-bab6bed:
     resolution: {integrity: sha512-rCC0NWGKr/IJhtRuPq/t37qvZHI/mH4I4sxflVM+qgVe5Z2uOCivzWaVbuioJaB61kvm5UvB7b49E+oBY0M8jA==}
 
-  swagger-typescript-api@13.2.14:
-    resolution: {integrity: sha512-ohEhHEdaosvE+RUxUBfb5fD1UZZNO2PgNXN2Mklkzkv7kiZYRD64WOKGzNsiOsPUf0lmpLmRVQ8vyTcde5v5bw==}
+  swagger-typescript-api@13.2.15:
+    resolution: {integrity: sha512-rdnPhAp989mJieOigCkicvQJzHYSORwC7eQGikdIiepIkfDm849va5uiJsNiAPxwzs5/9ReTvli02sCuO2u09Q==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -6875,7 +6875,7 @@ snapshots:
 
   swagger-schema-official@2.0.0-bab6bed: {}
 
-  swagger-typescript-api@13.2.14(magicast@0.3.5):
+  swagger-typescript-api@13.2.15(magicast@0.3.5):
     dependencies:
       '@biomejs/js-api': 3.0.0(@biomejs/wasm-nodejs@2.2.5)
       '@biomejs/wasm-nodejs': 2.2.5
