@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.23.0
+
+### Minor Changes
+
+- [`254588e`](https://github.com/js2me/mobx-tanstack-query-api/commit/254588ebdb121b6a71f34ca0ec30e30dcef9db8d) Thanks [@js2me](https://github.com/js2me)! - added ability to filter type (`filterTypes` option)
+
+### Patch Changes
+
+- [`2358aef`](https://github.com/js2me/mobx-tanstack-query-api/commit/2358aef5bca9be24886e27b6ad3207137b34d358) Thanks [@js2me](https://github.com/js2me)! - fix sorting types with use `mixinInput` property
+
 ## 0.22.1
 
 ### Patch Changes
