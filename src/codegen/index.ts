@@ -343,6 +343,18 @@ export const generateApi = async (
       filterTypes(modelType),
     );
 
+  generated.configuration.modelTypes = generated.configuration.modelTypes.sort(
+    (modelType1, modelType2) => {
+      if (modelType1.name > modelType2.name) {
+        return 1;
+      }
+      if (modelType1.name < modelType2.name) {
+        return -1;
+      }
+      return 0;
+    },
+  );
+
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
     .flatMap((routeGroup) =>
