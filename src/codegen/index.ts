@@ -141,6 +141,54 @@ export const generateApi = async (
     return inputData;
   };
 
+  const generatedExtra = params.mixinInput
+    ? await generateApiFromSwagger({
+        ...(swaggerTypescriptApiCodegenBaseParams as any),
+        ...inputToCodegenInput(params.mixinInput),
+        hooks: {
+          onPrepareConfig: (config) => {
+            config.routes.combined?.forEach((routeInfo) => {
+              routeInfo.routes.sort((routeA, routeB) =>
+                routeA.routeName.usage.localeCompare(routeB.routeName.usage),
+              );
+            });
+          },
+          onFormatRouteName: (routeInfo, usageRouteName) => {
+            let formattedRouteName = usageRouteName;
+
+            if (
+              params.addPathSegmentToRouteName === true ||
+              typeof params.addPathSegmentToRouteName === 'number'
+            ) {
+              const pathSegmentForSuffix =
+                typeof params.addPathSegmentToRouteName === 'number'
+                  ? params.addPathSegmentToRouteName
+                  : 0;
+
+              const pathSegments = routeInfo.route.split('/').filter(Boolean);
+              const { _ } = codegenProcess.getRenderTemplateData()
+                .utils as CodegenDataUtils;
+
+              formattedRouteName = _.camelCase(
+                `${pathSegments[pathSegmentForSuffix] || ''}_${formattedRouteName}`,
+              );
+            }
+
+            const endpointName = formattedRouteName;
+
+            return (
+              params?.formatEndpointName?.(endpointName, routeInfo) ??
+              swaggerTypescriptApiCodegenBaseParams?.hooks?.onFormatRouteName?.(
+                routeInfo,
+                endpointName,
+              ) ??
+              endpointName
+            );
+          },
+        },
+      })
+    : null;
+
   const generated = await generateApiFromSwagger({
     ...(swaggerTypescriptApiCodegenBaseParams as any),
     ...inputToCodegenInput(params.input),
@@ -148,14 +196,23 @@ export const generateApi = async (
       onInit: (configuration, codeGenProcessFromInit) => {
         codegenProcess = codeGenProcessFromInit;
 
-        // @ts-expect-error
-        configuration.swaggerSchema.components =
-          // @ts-expect-error
-          configuration.swaggerSchema.components || {};
-        // @ts-expect-error
-        configuration.swaggerSchema.components.schemas =
-          // @ts-expect-error
-          configuration.swaggerSchema.components.schemas || {};
+        const resultSwaggerSchema = configuration.swaggerSchema as AnyObject;
+        const extraSwaggerSchema = generatedExtra?.configuration?.config
+          ?.swaggerSchema as Maybe<AnyObject>;
+
+        resultSwaggerSchema.components = resultSwaggerSchema.components || {};
+        resultSwaggerSchema.components.schemas =
+          resultSwaggerSchema.components.schemas || {};
+
+        resultSwaggerSchema.paths = {
+          ...resultSwaggerSchema.paths,
+          ...extraSwaggerSchema?.paths,
+        };
+
+        resultSwaggerSchema.components.schemas = {
+          ...resultSwaggerSchema.components.schemas,
+          ...extraSwaggerSchema?.components?.schemas,
+        };
 
         return swaggerTypescriptApiCodegenBaseParams?.hooks?.onInit?.(
           configuration,
@@ -207,54 +264,6 @@ export const generateApi = async (
     },
   });
 
-  const generatedExtra = params.mixinInput
-    ? await generateApiFromSwagger({
-        ...(swaggerTypescriptApiCodegenBaseParams as any),
-        ...inputToCodegenInput(params.mixinInput),
-        hooks: {
-          onPrepareConfig: (config) => {
-            config.routes.combined?.forEach((routeInfo) => {
-              routeInfo.routes.sort((routeA, routeB) =>
-                routeA.routeName.usage.localeCompare(routeB.routeName.usage),
-              );
-            });
-          },
-          onFormatRouteName: (routeInfo, usageRouteName) => {
-            let formattedRouteName = usageRouteName;
-
-            if (
-              params.addPathSegmentToRouteName === true ||
-              typeof params.addPathSegmentToRouteName === 'number'
-            ) {
-              const pathSegmentForSuffix =
-                typeof params.addPathSegmentToRouteName === 'number'
-                  ? params.addPathSegmentToRouteName
-                  : 0;
-
-              const pathSegments = routeInfo.route.split('/').filter(Boolean);
-              const { _ } = codegenProcess.getRenderTemplateData()
-                .utils as CodegenDataUtils;
-
-              formattedRouteName = _.camelCase(
-                `${pathSegments[pathSegmentForSuffix] || ''}_${formattedRouteName}`,
-              );
-            }
-
-            const endpointName = formattedRouteName;
-
-            return (
-              params?.formatEndpointName?.(endpointName, routeInfo) ??
-              swaggerTypescriptApiCodegenBaseParams?.hooks?.onFormatRouteName?.(
-                routeInfo,
-                endpointName,
-              ) ??
-              endpointName
-            );
-          },
-        },
-      })
-    : null;
-
   //#endregion
 
   const utils = codegenProcess.getRenderTemplateData()
@@ -277,62 +286,6 @@ export const generateApi = async (
   codegenFs.cleanDir(params.output);
   codegenFs.createDir(params.output);
 
-  if (generatedExtra) {
-    const allExtraOperationIdsSet = new Set([
-      ...(generatedExtra.configuration.routes.outOfModule?.map(
-        (r) => r.raw.operationId,
-      ) ?? []),
-      ...(generatedExtra.configuration.routes.combined?.flatMap((r) =>
-        r.routes.map((r) => r.raw.operationId),
-      ) ?? []),
-    ]);
-    const allExtraModelTypesSet = new Set([
-      ...generatedExtra.configuration.modelTypes.map((m) => m.name),
-    ]);
-
-    generated.configuration.routes.outOfModule =
-      generated.configuration.routes.outOfModule ?? [];
-    generated.configuration.routes.outOfModule = [
-      ...generated.configuration.routes.outOfModule.filter(
-        (route) => !allExtraOperationIdsSet.has(route.raw.operationId),
-      ),
-      ...generatedExtra.configuration.routes.outOfModule,
-    ];
-
-    generated.configuration.routes.combined =
-      generated.configuration.routes.combined ?? [];
-
-    generated.configuration.routes.combined.forEach((group) => {
-      group.routes = [
-        ...group.routes.filter(
-          (route) => !allExtraOperationIdsSet.has(route.raw.operationId),
-        ),
-        ...(generatedExtra.configuration.routes.combined?.find(
-          (g) => g.moduleName === group.moduleName,
-        )?.routes ?? []),
-      ];
-    });
-
-    const notExistedCombinedExtra =
-      generatedExtra.configuration.routes.combined?.filter(
-        (group) =>
-          !generated.configuration.routes.combined?.some(
-            (g) => g.moduleName === group.moduleName,
-          ),
-      );
-
-    generated.configuration.routes.combined.push(
-      ...(notExistedCombinedExtra ?? []),
-    );
-
-    generated.configuration.modelTypes = [
-      ...generated.configuration.modelTypes.filter(
-        (it) => !allExtraModelTypesSet.has(it.name),
-      ),
-      ...generatedExtra.configuration.modelTypes,
-    ];
-  }
-
   const filterTypes = unpackFilterOption(
     params.filterTypes,
     (modelType) => modelType.name,
@@ -342,18 +295,6 @@ export const generateApi = async (
     generated.configuration.modelTypes.filter((modelType) =>
       filterTypes(modelType),
     );
-
-  generated.configuration.modelTypes = generated.configuration.modelTypes.sort(
-    (modelType1, modelType2) => {
-      if (modelType1.name > modelType2.name) {
-        return 1;
-      }
-      if (modelType1.name < modelType2.name) {
-        return -1;
-      }
-      return 0;
-    },
-  );
 
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
