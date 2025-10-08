@@ -1,6 +1,5 @@
 import { Mutation } from 'mobx-tanstack-query';
 import type { AnyObject, Maybe } from 'yummies/utils/types';
-import type { Endpoint } from './endpoint.js';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type {
   EndpointMutationOptions,
@@ -27,10 +26,11 @@ export class EndpointMutation<
 > {
   constructor(
     private endpoint: AnyEndpoint,
-    queryClient: EndpointQueryClient,
+    inputQueryClient: EndpointQueryClient,
     {
       transform: transformResponse,
       invalidateEndpoints,
+      queryClient: overridedQueryClient,
       ...mutationOptions
     }: EndpointMutationOptions<
       TEndpoint,
@@ -40,6 +40,7 @@ export class EndpointMutation<
       TOnMutateResult
     >,
   ) {
+    const queryClient = overridedQueryClient ?? inputQueryClient;
     super({
       ...mutationOptions,
       queryClient,
@@ -106,17 +107,3 @@ export class EndpointMutation<
     });
   }
 }
-
-export type ToEndpointMutation<
-  T,
-  TMutationMeta extends AnyObject | void = void,
-  TOnMutateResult = unknown,
-> = T extends Endpoint<infer TResponse, infer TParams, any>
-  ? EndpointMutation<
-      T,
-      TResponse['data'],
-      TParams,
-      TMutationMeta,
-      TOnMutateResult
-    >
-  : ToEndpointMutation<AnyEndpoint>;

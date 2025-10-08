@@ -54,7 +54,7 @@ export class EndpointQuery<
 
   constructor(
     private endpoint: AnyEndpoint,
-    queryClient: EndpointQueryClient,
+    inputQueryClient: EndpointQueryClient,
     queryOptionsInput:
       | EndpointQueryOptions<TEndpoint, TQueryFnData, TError, TData, TQueryData>
       | (() => EndpointQueryFlattenOptions<
@@ -74,8 +74,11 @@ export class EndpointQuery<
       uniqKey,
       transform: transformResponse,
       params,
+      queryClient: overridedQueryClient,
       ...queryOptions
     } = unpackedQueryOptionsInput;
+
+    const queryClient = overridedQueryClient ?? inputQueryClient;
 
     const _observableData: InternalObservableData<TEndpoint> = {
       params: null,

@@ -9,6 +9,7 @@ import type {
 import type { Endpoint } from './endpoint.js';
 import type { AnyEndpoint, ToEndpoint } from './endpoint.types.js';
 import type { EndpointQuery } from './endpoint-query.js';
+import type { EndpointQueryClient } from './endpoint-query-client.js';
 
 export interface EndpointQueryMeta {
   endpointId: string;
@@ -47,6 +48,7 @@ type ShortQueryConfig<
   ExcludedQueryKeys
 > & {
   enabled?: boolean;
+  queryClient?: EndpointQueryClient;
 };
 
 export type EndpointQueryFlattenOptions<

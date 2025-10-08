@@ -1,14 +1,15 @@
+import type { ParsedRoute } from 'swagger-typescript-api';
 import type { AnyObject, Maybe } from 'yummies/utils/types';
-
 import type { BaseTmplParams } from '../types/base-tmpl-params.js';
 import type { MetaInfo } from '../types/index.js';
+import { createShortModelType } from '../utils/create-short-model-type.js';
 import {
   formatGroupNameEnumKey,
   formatTagNameEnumKey,
 } from './meta-info.tmpl.js';
 
 export interface NewEndpointTmplParams extends BaseTmplParams {
-  route: AnyObject;
+  route: ParsedRoute;
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;
 }
@@ -35,15 +36,20 @@ export const newEndpointTmpl = ({
   utils,
   groupName,
   metaInfo,
+  filterTypes,
+  configuration,
 }: NewEndpointTmplParams) => {
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
-    (it: AnyObject) => +it.status >= 200 && +it.status < 300,
+    (it) =>
+      +it.status >= 200 &&
+      +it.status < 300 &&
+      (!(it as AnyObject).typeData || filterTypes((it as AnyObject).typeData)),
   );
 
   const { requestBodyInfo, responseBodyInfo } = route as AnyObject;
   const routeRequest = route.request as AnyObject;
-  const routeResponse = route.response as AnyObject;
+  const routeResponse = route.response;
 
   const { parameters, path, method, payload, query, requestParams, security } =
     routeRequest;
@@ -102,10 +108,18 @@ export const newEndpointTmpl = ({
   };
 
   const tags = (raw.tags || []).filter(Boolean);
-  const requestOutputDataTypes = positiveResponseTypes.map(
-    (it: AnyObject) => it.type,
-  );
-  const requestOutputErrorType = routeResponse.errorType;
+  const requestOutputDataTypes = positiveResponseTypes.map((it) => it.type);
+
+  const foundErrorModelType =
+    (routeResponse.errorType &&
+      configuration.modelTypes.find(
+        (it) => it.name === routeResponse.errorType,
+      )) ||
+    null;
+
+  const requestOutputErrorType = foundErrorModelType
+    ? routeResponse.errorType
+    : 'any';
 
   const pathParamsToInline = path.split('/').slice(1) as string[];
 
@@ -139,7 +153,7 @@ export const newEndpointTmpl = ({
 
   const reservedDataContractNames: string[] = _.uniq([
     ...requestOutputDataTypes,
-    requestOutputErrorType,
+    requestOutputErrorType || 'any',
     ...getArgs({
       withPayload: true,
     }).map((it) => it.type),
@@ -149,17 +163,21 @@ export const newEndpointTmpl = ({
 
   const getHttpRequestGenerics = () => {
     const defaultOkResponse = positiveResponseTypes?.[0]?.type || 'unknown';
-    const defaultBadResponse = routeResponse.errorType;
+    const defaultBadResponse = requestOutputErrorType;
     const responses =
-      raw.responsesTypes?.filter((it: AnyObject) => it.status !== 'default') ||
-      [];
+      raw.responsesTypes?.filter(
+        (it) =>
+          it.status !== 'default' &&
+          (!(it as AnyObject).typeData ||
+            filterTypes((it as AnyObject).typeData)),
+      ) || [];
 
     if (!responses?.length) {
-      return `HttpResponse<unknown, ${routeResponse.errorType}>`;
+      return `HttpResponse<unknown, ${requestOutputErrorType}>`;
     }
 
     if (responses.length === 1 && responses[0].isSuccess) {
-      return `HttpResponse<${responses[0].type}, ${routeResponse.errorType}>`;
+      return `HttpResponse<${responses[0].type}, ${requestOutputErrorType}>`;
     }
 
     return `HttpMultistatusResponse<{
@@ -179,7 +197,7 @@ export const newEndpointTmpl = ({
   >`;
   };
 
-  const requestInputTypeDc = {
+  const requestInputTypeDc = createShortModelType({
     typeIdentifier: 'type',
     name: _.upperFirst(_.camelCase(`${route.routeName.usage}Params`)),
     content: `{
@@ -190,15 +208,17 @@ export const newEndpointTmpl = ({
       .filter(Boolean)
       .join(', ')}
   }`,
-  };
+  });
+
+  const isAllowedInputType = filterTypes(requestInputTypeDc);
 
   return {
     reservedDataContractNames,
-    localModelTypes: [requestInputTypeDc],
+    localModelTypes: isAllowedInputType ? [requestInputTypeDc] : [],
     content: `
 new ${importFileParams.endpoint.exportName}<
   ${getHttpRequestGenerics()},
-  ${requestInputTypeDc.name},
+  ${isAllowedInputType ? requestInputTypeDc.name : 'any'},
   ${requestInfoMeta?.typeName ?? 'any'}
 >(
     {

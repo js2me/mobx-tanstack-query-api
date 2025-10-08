@@ -1,3 +1,4 @@
+import type { ParsedRoute } from 'swagger-typescript-api';
 import type { AnyObject, Maybe } from 'yummies/utils/types';
 import type { BaseTmplParams, MetaInfo } from '../types/index.js';
 import { LINTERS_IGNORE } from './constants.js';
@@ -6,7 +7,7 @@ import { endpointJSDocTmpl } from './endpoint-jsdoc.tmpl.js';
 import { newEndpointTmpl } from './new-endpoint.tmpl.js';
 
 export interface EndpointPerFileTmplParams extends BaseTmplParams {
-  route: AnyObject;
+  route: ParsedRoute;
   relativePathDataContracts: string;
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;

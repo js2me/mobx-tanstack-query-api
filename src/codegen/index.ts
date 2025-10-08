@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  type GenerateApiConfiguration,
   generateApi as generateApiFromSwagger,
   type ParsedRoute,
 } from 'swagger-typescript-api';
@@ -259,16 +260,6 @@ export const generateApi = async (
   const utils = codegenProcess.getRenderTemplateData()
     .utils as CodegenDataUtils;
 
-  const baseTmplParams: BaseTmplParams = {
-    ...generated,
-    codegenParams: params,
-    configuration: generated.configuration,
-    formatTSContent: generated.formatTSContent,
-    codegenProcess,
-    importFileParams,
-    utils,
-  };
-
   const { _ } = utils;
 
   let namespace: Maybe<string> = null;
@@ -342,6 +333,16 @@ export const generateApi = async (
     ];
   }
 
+  const filterTypes = unpackFilterOption(
+    params.filterTypes,
+    (modelType) => modelType.name,
+  );
+
+  generated.configuration.modelTypes =
+    generated.configuration.modelTypes.filter((modelType) =>
+      filterTypes(modelType),
+    );
+
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
     .flatMap((routeGroup) =>
@@ -352,6 +353,17 @@ export const generateApi = async (
     params.filterEndpoints,
     (route) => route.raw?.operationId || '',
   );
+
+  const baseTmplParams: BaseTmplParams = {
+    ...generated,
+    codegenParams: params,
+    configuration: generated.configuration as GenerateApiConfiguration,
+    formatTSContent: generated.formatTSContent,
+    codegenProcess,
+    importFileParams,
+    utils,
+    filterTypes,
+  };
 
   const reservedDataContractNamesMap = new Map<string, number>();
 

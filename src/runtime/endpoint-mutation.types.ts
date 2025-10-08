@@ -3,7 +3,10 @@ import type {
   MutationInvalidateQueriesOptions,
 } from 'mobx-tanstack-query';
 import type { AnyObject, IsPartial, Maybe } from 'yummies/utils/types';
+import type { Endpoint } from './endpoint.js';
 import type { AnyEndpoint } from './endpoint.types.js';
+import type { EndpointMutation } from './endpoint-mutation.js';
+import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 
 export interface EndpointMutationInvalidateQueriesOptions
@@ -62,4 +65,20 @@ export type EndpointMutationOptions<
     TOnMutateResult
   >,
   'queryClient' | 'mutationFn' | 'invalidateQueries'
->;
+> & {
+    queryClient?: EndpointQueryClient;
+  };
+
+export type ToEndpointMutation<
+  T,
+  TMutationMeta extends AnyObject | void = void,
+  TOnMutateResult = unknown,
+> = T extends Endpoint<infer TResponse, infer TParams, any>
+  ? EndpointMutation<
+      T,
+      TResponse['data'],
+      TParams,
+      TMutationMeta,
+      TOnMutateResult
+    >
+  : ToEndpointMutation<AnyEndpoint>;

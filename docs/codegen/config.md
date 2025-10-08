@@ -279,11 +279,24 @@ export const v1GetById = new Endpoint<...>
 ::: tip If you need to format route name better to use [`formatEndpointName`](#formatendpointname)
 :::
 
-
 #### `otherCodegenParams`   
 
 Other codegen params for `swagger-typescript-api` codegen.   
 See [swagger-typescript-api](https://github.com/acacode/swagger-typescript-api) for more info.   
+
+#### `filterTypes`   
+
+This options is needed to filter all generated types from swagger schema.   
+It might be helpful if you need only specific interfaces in output.   
+
+Example:   
+_Swagger files have 3 types: `DataDC`, `FruitsDC`, `MemeDC`_   
+_But we need only `DataDC` in output_  
+
+```ts
+filterTypes: (type) => type.name !== 'DataDC'
+```
+
 
 #### `filterGroups`   
 

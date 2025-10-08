@@ -1,27 +1,39 @@
 import type { Maybe } from 'yummies/utils/types';
 
-export type FilterOption<T extends (...args: any[]) => boolean> =
+type AnyFilterOptionFn = (...args: any[]) => boolean;
+
+export type FilterOption<T extends AnyFilterOptionFn> =
   | T
   | string
   | RegExp
   | (RegExp | string)[];
 
-export const unpackFilterOption = <TArgs extends any[]>(
-  option: Maybe<FilterOption<(...args: TArgs) => boolean>>,
-  argsToString: (...args: TArgs) => string,
+export type UnpackedFilterOption<T extends FilterOption<any>> = Extract<
+  T,
+  AnyFilterOptionFn
+>;
+
+export const unpackFilterOption = <
+  TOption extends FilterOption<AnyFilterOptionFn>,
+>(
+  option: Maybe<TOption>,
+  argsToString: (...args: Parameters<UnpackedFilterOption<TOption>>) => string,
   defaultReturnValue: boolean = true,
-): ((...args: TArgs) => boolean) => {
+): UnpackedFilterOption<TOption> => {
   if (typeof option === 'function') {
+    // @ts-expect-error
     return option;
   }
 
   if (option == null) {
+    // @ts-expect-error
     return () => defaultReturnValue;
   }
 
   const inputs = Array.isArray(option) ? option : [option];
 
-  return (...args: TArgs) =>
+  // @ts-expect-error
+  return (...args: Parameters<UnpackedFilterOption<TOption>>) =>
     inputs.some((input) => {
       const str = argsToString(...args);
 

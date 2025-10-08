@@ -5,10 +5,7 @@ import type { FilterOption } from '../utils/unpack-filter-option.js';
 import type { CodegenDataUtils } from './codegen-data-utils.js';
 import type { EndpointData } from './endpoint-data.js';
 import type { ImportFileParams } from './import-file-params.js';
-
-type FilterEndpointsOption = FilterOption<(endpoint: EndpointData) => boolean>;
-
-type FilterGroupsOption = FilterOption<(groupName: string) => boolean>;
+import type { TypeInfo } from './type-info.js';
 
 export interface GenerateQueryApiParams {
   /**
@@ -170,12 +167,17 @@ export interface GenerateQueryApiParams {
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#filterendpoints)
    */
-  filterEndpoints?: FilterEndpointsOption;
+  filterEndpoints?: FilterOption<(endpoint: EndpointData) => boolean>;
+
+  /**
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#filtertypes)
+   */
+  filterTypes?: FilterOption<(type: TypeInfo) => boolean>;
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#filtergroups)
    */
-  filterGroups?: FilterGroupsOption;
+  filterGroups?: FilterOption<(groupName: string) => boolean>;
 
   libImports?: {
     'mobx-tanstack-query-api'?: string;
