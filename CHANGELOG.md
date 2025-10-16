@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.24.0
+
+### Minor Changes
+
+- [`058dc9c`](https://github.com/js2me/mobx-tanstack-query-api/commit/058dc9cc0b7550db58c8c6a66147efc6c3198023) Thanks [@js2me](https://github.com/js2me)! - better support stringify the query params (use `qs`)
+
 ## 0.23.4
 
 ### Patch Changes
