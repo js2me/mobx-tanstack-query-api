@@ -3,7 +3,8 @@ import type {
   HttpSuccessStatusCode,
 } from 'http-status-code-types';
 import { action, makeObservable, observable } from 'mobx';
-import type { Maybe, ValueOf } from 'yummies/utils/types';
+import { type BooleanOptional, type IStringifyOptions, stringify } from 'qs';
+import type { AnyObject, Defined, Maybe, ValueOf } from 'yummies/utils/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 
 export type QueryParamsType = Record<string | number, any>;
@@ -39,7 +40,8 @@ export interface HttpClientConfig<TMeta = unknown> {
   fetch?: typeof globalThis.fetch;
   baseApiParams?: Omit<RequestParams, 'baseUrl' | 'cancelToken' | 'signal'>;
   contentFormatters?: Record<string, (input: any) => any>;
-  toQueryString?: (query?: QueryParamsType) => string;
+  queryStringifyOptions?: IStringifyOptions<BooleanOptional>;
+  toQueryString?: (query?: AnyObject) => string;
   buildUrl?: (
     fullParams: FullRequestParams,
     formattedParts: { baseUrl: string; path: string; query: string },
@@ -124,6 +126,8 @@ export class HttpClient<TMeta = unknown> {
 
   badResponse: unknown;
 
+  protected toQueryString: Defined<HttpClientConfig<TMeta>['toQueryString']>;
+
   constructor(config?: HttpClientConfig<TMeta>) {
     this.config = config ?? {};
     this.badResponse = null;
@@ -132,6 +136,10 @@ export class HttpClient<TMeta = unknown> {
       config?.fetch ??
       ((...fetchParams: Parameters<typeof globalThis.fetch>) =>
         globalThis.fetch(...fetchParams));
+    this.toQueryString =
+      config?.toQueryString ??
+      ((query) => stringify(query, config?.queryStringifyOptions));
+
     this.baseApiParams = {
       credentials: 'same-origin',
       headers: {},
@@ -177,40 +185,6 @@ export class HttpClient<TMeta = unknown> {
   public setBadResponse = (response: unknown) => {
     this.badResponse = response;
   };
-
-  protected encodeQueryParam(key: string, value: any) {
-    const encodedKey = encodeURIComponent(key);
-    return `${encodedKey}=${encodeURIComponent(
-      typeof value === 'number' ? value : `${value}`,
-    )}`;
-  }
-
-  protected addQueryParam(query: QueryParamsType, key: string) {
-    return this.encodeQueryParam(key, query[key]);
-  }
-
-  protected addArrayQueryParam(query: QueryParamsType, key: string) {
-    const value = query[key];
-    return value.map((v: any) => this.encodeQueryParam(key, v)).join('&');
-  }
-
-  protected toQueryString(rawQuery?: QueryParamsType): string {
-    if (this.config.toQueryString) {
-      return this.config.toQueryString(rawQuery);
-    }
-
-    const query = rawQuery || {};
-    const keys = Object.keys(query).filter(
-      (key) => 'undefined' !== typeof query[key],
-    );
-    return keys
-      .map((key) =>
-        Array.isArray(query[key])
-          ? this.addArrayQueryParam(query, key)
-          : this.addQueryParam(query, key),
-      )
-      .join('&');
-  }
 
   private contentFormatters: Record<string, (input: any) => any> = {
     'application/json': (input: any) =>
