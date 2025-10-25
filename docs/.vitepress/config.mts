@@ -1,32 +1,24 @@
-import path from 'path';
-import fs from 'fs';
+import { defineDocsVitepressConfig } from "sborshik/vitepress";
+import { ConfigsManager } from "sborshik/utils/configs-manager";
 
-import { defineGhPagesDocConfig} from "sborshik/vitepress/define-gh-pages-doc-config";
+const configs = ConfigsManager.create("../")
 
-
-const pckgJson = JSON.parse(
-  fs.readFileSync(
-    path.resolve(__dirname, '../../package.json'),
-    { encoding: 'utf-8' },
-  ),
-);
-
-export default defineGhPagesDocConfig(pckgJson, {
+export default defineDocsVitepressConfig(configs, {
   appearance: 'dark',
   createdYear: '2025',
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Introduction', link: '/introduction/overview' },
-      { text: 'Changelog', link: `https://github.com/${pckgJson.author}/${pckgJson.name}/releases` },
+      { text: 'Changelog', link: `https://github.com/${configs.package.author}/${configs.package.name}/releases` },
       {
-        text: `${pckgJson.version}`,
+        text: `${configs.package.version}`,
         items: [
           {
             items: [
               {
-                text: `${pckgJson.version}`,
-                link: `https://github.com/${pckgJson.author}/${pckgJson.name}/releases/tag/${pckgJson.version}`,
+                text: `${configs.package.version}`,
+                link: `https://github.com/${configs.package.author}/${configs.package.name}/releases/tag/${configs.package.version}`,
               },
             ],
           },
