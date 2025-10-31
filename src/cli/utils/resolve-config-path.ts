@@ -1,6 +1,6 @@
 import fs, { existsSync } from 'node:fs';
 import path from 'node:path';
-import type { Maybe } from 'yummies/utils/types';
+import type { Maybe } from 'yummies/types';
 
 const projectDir = process.cwd();
 

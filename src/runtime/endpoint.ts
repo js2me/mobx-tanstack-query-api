@@ -8,7 +8,7 @@ import type {
 } from '@tanstack/query-core';
 import type { IQueryClientCore } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
-import type { AnyObject, IsPartial, Maybe } from 'yummies/utils/types';
+import type { AnyObject, IsPartial, Maybe } from 'yummies/types';
 import type {
   EndpointConfiguration,
   EndpointMutationPresets,

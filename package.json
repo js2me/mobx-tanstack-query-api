@@ -71,7 +71,7 @@
     "swagger-typescript-api": "13.2.15",
     "ts-morph": "^26.0.0",
     "undici-types": "^7.11.0",
-    "yummies": "^5.11.1"
+    "yummies": "^6.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",

@@ -2,7 +2,7 @@ import type {
   MutationConfig,
   MutationInvalidateQueriesOptions,
 } from 'mobx-tanstack-query';
-import type { AnyObject, IsPartial, Maybe } from 'yummies/utils/types';
+import type { AnyObject, IsPartial, Maybe } from 'yummies/types';
 import type { Endpoint } from './endpoint.js';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type { EndpointMutation } from './endpoint-mutation.js';

@@ -2,7 +2,7 @@ import type {
   GenerateApiConfiguration,
   GenerateApiParams,
 } from 'swagger-typescript-api';
-import type { Defined } from 'yummies/utils/types';
+import type { Defined } from 'yummies/types';
 import type { UnpackedFilterOption } from '../utils/unpack-filter-option.js';
 import type { AllImportFileParams } from './all-import-file-params.js';
 import type { CodegenDataUtils } from './codegen-data-utils.js';

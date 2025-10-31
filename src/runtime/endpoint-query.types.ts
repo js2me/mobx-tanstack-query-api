@@ -1,11 +1,6 @@
 import type { DefaultError } from '@tanstack/query-core';
 import type { QueryConfig } from 'mobx-tanstack-query';
-import type {
-  AnyObject,
-  Maybe,
-  MaybeFalsy,
-  MaybeFn,
-} from 'yummies/utils/types';
+import type { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/types';
 import type { Endpoint } from './endpoint.js';
 import type { AnyEndpoint, ToEndpoint } from './endpoint.types.js';
 import type { EndpointQuery } from './endpoint-query.js';

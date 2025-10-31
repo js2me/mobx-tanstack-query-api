@@ -1,4 +1,4 @@
-import type { Maybe } from 'yummies/utils/types';
+import type { Maybe } from 'yummies/types';
 import type { GenerateQueryApiParams } from '../../codegen/types/index.js';
 
 export const defineConfig = (

@@ -1,5 +1,5 @@
 import type { ParsedRoute } from 'swagger-typescript-api';
-import type { AnyObject, Maybe } from 'yummies/utils/types';
+import type { AnyObject, Maybe } from 'yummies/types';
 import type { BaseTmplParams } from '../types/base-tmpl-params.js';
 import type { MetaInfo } from '../types/index.js';
 import { createShortModelType } from '../utils/create-short-model-type.js';

@@ -1,5 +1,5 @@
 import { Mutation } from 'mobx-tanstack-query';
-import type { AnyObject, Maybe } from 'yummies/utils/types';
+import type { AnyObject, Maybe } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type {
   EndpointMutationOptions,

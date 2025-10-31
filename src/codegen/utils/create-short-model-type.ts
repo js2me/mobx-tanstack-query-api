@@ -1,5 +1,5 @@
 import type { ModelType } from 'swagger-typescript-api';
-import type { PartialKeys } from 'yummies/utils/types';
+import type { PartialKeys } from 'yummies/types';
 import type { TypeInfo } from '../types/type-info.js';
 
 export const createShortModelType = (

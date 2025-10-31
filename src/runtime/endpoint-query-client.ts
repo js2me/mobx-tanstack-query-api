@@ -1,6 +1,6 @@
 import { hashKey, type InvalidateOptions } from '@tanstack/query-core';
 import { QueryClient, type QueryClientConfig } from 'mobx-tanstack-query';
-import type { Maybe } from 'yummies/utils/types';
+import type { Maybe } from 'yummies/types';
 import type { EndpointQueryMeta } from './endpoint-query.types.js';
 import type {
   EndpointStringFilter,

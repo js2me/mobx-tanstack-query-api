@@ -1,5 +1,5 @@
 import { splitTextByLines } from 'yummies/text';
-import type { AnyObject } from 'yummies/utils/types';
+import type { AnyObject } from 'yummies/types';
 import type { BaseTmplParams } from '../types/base-tmpl-params.js';
 
 export interface EndpointJSDocTmplParams extends BaseTmplParams {

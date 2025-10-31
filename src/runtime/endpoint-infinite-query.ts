@@ -5,7 +5,7 @@ import type {
 } from '@tanstack/query-core';
 import { makeObservable, observable, runInAction } from 'mobx';
 import { InfiniteQuery } from 'mobx-tanstack-query';
-import type { Maybe, MaybeFalsy } from 'yummies/utils/types';
+import type { Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type {
   EndpointInfiniteQueryFlattenOptions,

@@ -16,12 +16,7 @@ import {
 import { Query, type QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
 import { getMobxAdministration, lazyObserve } from 'yummies/mobx';
-import type {
-  AnyObject,
-  Maybe,
-  MaybeFalsy,
-  MaybeFn,
-} from 'yummies/utils/types';
+import type { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type {
   EndpointQueryFlattenOptions,

@@ -1,5 +1,5 @@
 import type { LoDashStatic } from 'lodash';
-import type { AnyObject } from 'yummies/utils/types';
+import type { AnyObject } from 'yummies/types';
 
 export type CodegenDataUtils = {
   _: LoDashStatic;

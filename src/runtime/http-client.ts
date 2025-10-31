@@ -4,7 +4,7 @@ import type {
 } from 'http-status-code-types';
 import { action, makeObservable, observable } from 'mobx';
 import { type BooleanOptional, type IStringifyOptions, stringify } from 'qs';
-import type { AnyObject, Defined, Maybe, ValueOf } from 'yummies/utils/types';
+import type { AnyObject, Defined, Maybe, ValueOf } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 
 export type QueryParamsType = Record<string | number, any>;

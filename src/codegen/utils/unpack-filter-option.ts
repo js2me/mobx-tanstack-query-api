@@ -1,4 +1,4 @@
-import type { Maybe } from 'yummies/utils/types';
+import type { Maybe } from 'yummies/types';
 
 type AnyFilterOptionFn = (...args: any[]) => boolean;
 

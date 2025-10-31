@@ -5,7 +5,7 @@ import type {
   InfiniteQueryOptions,
   InfiniteQueryUpdateOptions,
 } from 'mobx-tanstack-query';
-import type { AnyObject, MaybeFalsy } from 'yummies/utils/types';
+import type { AnyObject, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type {
   EndpointQueryUniqKey,
