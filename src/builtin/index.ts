@@ -2,7 +2,7 @@ import {
   EndpointQueryClient,
   HttpClient,
   isHttpBadResponse,
-} from '../runtime/index.js';
+} from 'mobx-tanstack-query-api';
 
 const MAX_FAILURE_COUNT = 3;
 

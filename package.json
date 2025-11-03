@@ -10,7 +10,7 @@
     "check": "npm run lint:check && npm run ts:check",
     "prebuild": "npm run clean && npm run check",
     "build:watch": "pnpm build && nodemon --delay 0.5 --watch src --ext ts,tsx --exec \"pnpm build\"",
-    "build": "sborshik build --fillDist",
+    "build": "vite build",
     "pub": "pnpm build && sborshik publish --useDistDir",
     "pub:patch": "PUBLISH_VERSION=patch pnpm run build",
     "pub:minor": "PUBLISH_VERSION=minor pnpm run build",
@@ -37,15 +37,6 @@
   "author": "js2me",
   "license": "MIT",
   "type": "module",
-  "zshy": {
-    "bin": "src/cli/bin.ts",
-    "exports": {
-      "./package.json": "./package.json",
-      ".": "./src/index.ts",
-      "./builtin": "./src/builtin/index.ts",
-      "./cli": "./src/cli/index.ts"
-    }
-  },
   "bugs": {
     "url": "https://github.com/js2me/mobx-tanstack-query-api/issues"
   },
@@ -87,11 +78,11 @@
     "lefthook": "^1.11.13",
     "nodemon": "^3.1.9",
     "rimraf": "^6.0.1",
-    "sborshik": "^1.0.25",
+    "sborshik": "^1.9.10",
     "typescript": "^5.8.3",
     "unplugin-swc": "^1.5.1",
-    "vitest": "^3.2.4",
-    "zshy": "^0.4.2"
+    "vite": "^7.1.12",
+    "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903"
 }
