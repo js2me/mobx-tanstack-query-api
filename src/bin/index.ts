@@ -1,6 +1,6 @@
+#!/usr/bin/env node
 import { cac } from 'cac';
-import { generateApi } from '../codegen/index.js';
-import { defineConfig } from './utils/define-config.js';
+import { defineConfig, generateApi } from 'mobx-tanstack-query-api/cli';
 import { execConfigPath } from './utils/exec-config-path.js';
 import { resolveConfigPath } from './utils/resolve-config-path.js';
 

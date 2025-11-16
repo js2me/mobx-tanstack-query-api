@@ -25,7 +25,8 @@
     "paths": {
       "mobx-tanstack-query-api": ["./src/index.ts"],
       "mobx-tanstack-query-api/builtin": ["./src/builtin/index.ts"],
-      "mobx-tanstack-query-api/cli": ["./src/cli/index.ts"]
+      "mobx-tanstack-query-api/cli": ["./src/cli/index.ts"],
+      "mobx-tanstack-query-api/bin": ["./src/bin/index.ts"]
     }
   },
   "include": [

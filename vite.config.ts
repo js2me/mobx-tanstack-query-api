@@ -2,9 +2,10 @@ import { defineLibViteConfig } from "sborshik/vite";
 import { ConfigsManager } from "sborshik/utils";
  
 export default defineLibViteConfig(ConfigsManager.create(), {
-  binPath: './cli.js',
+  binPath: './bin.js',
   externalDeps: [
     'node:url',
-    'node:path'
+    'node:path',
+    'node:fs'
   ]
 }) 
