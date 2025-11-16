@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.26.0
+
+### Minor Changes
+
+- [`757b34f`](https://github.com/js2me/mobx-tanstack-query-api/commit/757b34f0efc1d6b52cee61a1997ae0b6220028ba) Thanks [@js2me](https://github.com/js2me)! - [internal] build modification (use vite)
+
+### Patch Changes
+
+- [`4459943`](https://github.com/js2me/mobx-tanstack-query-api/commit/4459943a3b9d8753112836073559d64f1f163c2f) Thanks [@js2me](https://github.com/js2me)! - try to fix bug #30 (missing shebang in the binary)
+
 ## 0.25.0
 
 ### Minor Changes
