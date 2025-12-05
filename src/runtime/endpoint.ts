@@ -8,7 +8,7 @@ import type {
 } from '@tanstack/query-core';
 import type { IQueryClientCore } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
-import type { AnyObject, IsPartial, Maybe } from 'yummies/types';
+import type { AnyObject, Defined, IsPartial, Maybe } from 'yummies/types';
 import type {
   EndpointConfiguration,
   EndpointMutationPresets,
@@ -250,7 +250,7 @@ export class Endpoint<
 
   toQuery<
     TQueryFnData = TResponse['data'],
-    TError = DefaultError,
+    TError = DefaultError | Defined<TResponse['error']>,
     TData = TQueryFnData,
     TQueryData = TQueryFnData,
   >(
