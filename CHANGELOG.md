@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.27.0
+
+### Minor Changes
+
+- [`b0e5192`](https://github.com/js2me/mobx-tanstack-query-api/commit/b0e519223670fb0d84a3a8b58aa9770e263c51c4) Thanks [@js2me](https://github.com/js2me)! - added `checkResponse()` method for Endpoint
+
 ## 0.26.3
 
 ### Patch Changes
