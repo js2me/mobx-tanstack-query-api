@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.26.2
+
+### Patch Changes
+
+- [`0307872`](https://github.com/js2me/mobx-tanstack-query-api/commit/0307872747fbf3b71145f2c75c24f48847e5fa83) Thanks [@js2me](https://github.com/js2me)! - fix typings for multi status http response
+
 ## 0.26.1
 
 ### Patch Changes
