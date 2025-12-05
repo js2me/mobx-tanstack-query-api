@@ -84,12 +84,20 @@ export type HttpMultistatusResponse<
           error: K extends HttpSuccessStatusCode
             ? TDefaultBadResponse
             : TResponsesByStatusMap[K];
+          request: {
+            url: string;
+            params: globalThis.RequestInit;
+          };
         };
       }>
     | {
         status: Exclude<HttpStatusCode, keyof TResponsesByStatusMap>;
         data: TDefaultOkResponse;
         error: TDefaultBadResponse;
+        request: {
+          url: string;
+          params: globalThis.RequestInit;
+        };
       }
   );
 
