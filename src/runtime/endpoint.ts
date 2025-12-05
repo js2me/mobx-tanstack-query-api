@@ -28,10 +28,10 @@ import type {
   EndpointQueryUniqKey,
 } from './endpoint-query.types.js';
 import type { EndpointQueryClient } from './endpoint-query-client.js';
-import type { HttpClient, HttpResponse } from './http-client.js';
+import type { AnyResponse, HttpClient } from './http-client.js';
 
 export interface Endpoint<
-  TResponse extends HttpResponse<any, any>,
+  TResponse extends AnyResponse,
   TParams extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
 > {
@@ -48,7 +48,7 @@ export interface Endpoint<
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/)
  */
 export class Endpoint<
-  TResponse extends HttpResponse<any, any>,
+  TResponse extends AnyResponse,
   TParams extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
 > {

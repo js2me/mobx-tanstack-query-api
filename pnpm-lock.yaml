@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@tanstack/query-core':
-        specifier: ^5.90.2
-        version: 5.90.2
+        specifier: ^5.90.12
+        version: 5.90.12
       '@types/lodash':
         specifier: ^4.17.16
         version: 4.17.16
@@ -36,8 +36,8 @@ importers:
         specifier: ^6.13.6
         version: 6.13.7
       mobx-tanstack-query:
-        specifier: ^6.8.5
-        version: 6.8.5(@tanstack/query-core@5.90.2)(mobx@6.13.7)(react@19.1.1)
+        specifier: ^6.11.3
+        version: 6.11.3(@tanstack/query-core@5.90.12)(mobx@6.13.7)(react@19.1.1)
       qs:
         specifier: ^6.14.0
         version: 6.14.0
@@ -1249,8 +1249,8 @@ packages:
     resolution: {integrity: sha512-XIB2XbzHTN6ieIjfIMV9hlVcfPU26s2vafYWQcZHWXHOxiaRZYEDKEwdl129Zyg50+foYV2jCgtrqSA6qNuNSA==}
     engines: {node: '>=6'}
 
-  '@tanstack/query-core@5.90.2':
-    resolution: {integrity: sha512-k/TcR3YalnzibscALLwxeiLUub6jN5EDLwKDiO7q5f4ICEoptJ+n9+7vcEFy5/x/i6Q+Lb/tXrsKCggf5uQJXQ==}
+  '@tanstack/query-core@5.90.12':
+    resolution: {integrity: sha512-T1/8t5DhV/SisWjDnaiU2drl6ySvsHj1bHBCWNXd+/T+Hh1cf6JodyEYMd5sgwm+b/mETT4EV3H+zCVczCU5hg==}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -3071,8 +3071,8 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  mobx-tanstack-query@6.8.5:
-    resolution: {integrity: sha512-3Jt3IFrADSE6j8QlyuhgU0DQyr6zWjTrpb74ul4ph7EAPcVVyRn6YBRZybiRHM97z9Zq0tZ4nNJXnz+VLAqEYA==}
+  mobx-tanstack-query@6.11.3:
+    resolution: {integrity: sha512-QZGj1oPeCox2NMgCfQodnyRjJ5gZMFalZeUJDFrIUwNb5HmgUsX8Nq2w5fKjkfBvkxyKg+zBWB2XjsNAqj0YSA==}
     peerDependencies:
       '@tanstack/query-core': ^5.90.2
       mobx: ^6.12.4
@@ -4304,17 +4304,6 @@ packages:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
 
-  yummies@5.11.1:
-    resolution: {integrity: sha512-MCZunDh53RRRN0mPoii9AstSn2gC/H+L++7r+AatNoxSrqL4Prz0CY/E+cjkVNMFb5c6wrLaOIkpYQ3i46cN6A==}
-    peerDependencies:
-      mobx: ^6.12.4
-      react: ^18 || ^19
-    peerDependenciesMeta:
-      mobx:
-        optional: true
-      react:
-        optional: true
-
   yummies@6.0.0:
     resolution: {integrity: sha512-Cz3eui7Inq2CvQPWaHRHYIyT0yc9R6ZeYaZrjsAkUJYSD5YTIEoWI9o1DjBXOHytpLb0EYzp3rK6RFqF1A9EBQ==}
     peerDependencies:
@@ -5507,7 +5496,7 @@ snapshots:
     dependencies:
       defer-to-connect: 1.1.3
 
-  '@tanstack/query-core@5.90.2': {}
+  '@tanstack/query-core@5.90.12': {}
 
   '@testing-library/dom@10.4.1':
     dependencies:
@@ -7600,12 +7589,12 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
-  mobx-tanstack-query@6.8.5(@tanstack/query-core@5.90.2)(mobx@6.13.7)(react@19.1.1):
+  mobx-tanstack-query@6.11.3(@tanstack/query-core@5.90.12)(mobx@6.13.7)(react@19.1.1):
     dependencies:
-      '@tanstack/query-core': 5.90.2
+      '@tanstack/query-core': 5.90.12
       linked-abort-controller: 1.1.0
       mobx: 6.13.7
-      yummies: 5.11.1(mobx@6.13.7)(react@19.1.1)
+      yummies: 6.0.0(mobx@6.13.7)(react@19.1.1)
     transitivePeerDependencies:
       - react
 
@@ -9107,18 +9096,6 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
-
-  yummies@5.11.1(mobx@6.13.7)(react@19.1.1):
-    dependencies:
-      class-variance-authority: 0.7.1
-      clsx: 2.1.1
-      dayjs: 1.11.13
-      dompurify: 3.2.6
-      nanoid: 5.1.6
-      tailwind-merge: 3.3.1
-    optionalDependencies:
-      mobx: 6.13.7
-      react: 19.1.1
 
   yummies@6.0.0(mobx@6.13.7)(react@19.1.1):
     dependencies:

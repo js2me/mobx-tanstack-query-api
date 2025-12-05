@@ -65,8 +65,12 @@ export interface HttpResponse<TData, TError = null, TStatus = number>
   };
 }
 
+type ResponsesByStatusMap = {
+  [K in HttpStatusCode]?: any;
+};
+
 export type HttpMultistatusResponse<
-  TResponsesByStatusMap extends Partial<Record<HttpStatusCode, any>>,
+  TResponsesByStatusMap extends ResponsesByStatusMap,
   TDefaultOkResponse,
   TDefaultBadResponse = unknown,
 > = Omit<Response, 'status'> &
@@ -100,6 +104,14 @@ export type GetHttpResponse<T> = T extends (...args: any[]) => infer R
 export type HttpBadResponse<T = any> = HttpResponse<null, T>;
 
 export type AnyHttpResponse = HttpResponse<any, any>;
+
+export type AnyHttpMultistatusResponse = HttpMultistatusResponse<
+  ResponsesByStatusMap,
+  any,
+  any
+>;
+
+export type AnyResponse = AnyHttpResponse | AnyHttpMultistatusResponse;
 
 export const isHttpResponse = (
   response: unknown,
@@ -291,7 +303,7 @@ export class HttpClient<TMeta = unknown> {
     fullParams: FullRequestParams,
     endpoint?: Maybe<AnyEndpoint>,
   ): Promise<HttpResponse<T, E>>;
-  public request<THttpResponse extends HttpResponse<any, any>>(
+  public request<THttpResponse extends AnyResponse>(
     fullParams: FullRequestParams,
     endpoint?: Maybe<AnyEndpoint>,
   ): Promise<THttpResponse>;
