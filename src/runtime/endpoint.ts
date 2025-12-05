@@ -6,6 +6,7 @@ import type {
   QueryFunctionContext,
   QueryKey,
 } from '@tanstack/query-core';
+import type { HttpStatusCode } from 'http-status-code-types';
 import type { IQueryClientCore } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
 import type { AnyObject, Defined, IsPartial, Maybe } from 'yummies/types';
@@ -28,7 +29,11 @@ import type {
   EndpointQueryUniqKey,
 } from './endpoint-query.types.js';
 import type { EndpointQueryClient } from './endpoint-query-client.js';
-import type { AnyResponse, HttpClient } from './http-client.js';
+import {
+  type AnyResponse,
+  type HttpClient,
+  isHttpResponse,
+} from './http-client.js';
 
 export interface Endpoint<
   TResponse extends AnyResponse,
@@ -154,6 +159,15 @@ export class Endpoint<
 
   get namespace() {
     return this.configuration.namespace;
+  }
+
+  checkResponse<TStatus extends HttpStatusCode>(
+    response: unknown,
+    status: TStatus,
+  ): response is Extract<TResponse, { status: TStatus }>;
+  checkResponse(response: unknown): response is TResponse;
+  checkResponse(response: unknown, status?: HttpStatusCode) {
+    return isHttpResponse(response, status);
   }
 
   request(
