@@ -35,10 +35,16 @@ export class EndpointQueryClient extends QueryClient {
       tag,
       predicate,
       endpoint,
+      exclude,
       ...queryFilters
     }: InvalidateEndpointsFilters,
     options?: InvalidateOptions,
   ) {
+    const endpointIdsToExclude = new Set<string>(
+      exclude?.endpoints?.map((it) => it.endpointId),
+    );
+    const endpointTagsToExclude = new Set<string>(exclude?.tags ?? []);
+
     let endpointIdsToFilter: Maybe<Set<string>>;
 
     if (Array.isArray(endpoint)) {
@@ -56,6 +62,14 @@ export class EndpointQueryClient extends QueryClient {
           }
 
           const meta = query.meta as unknown as EndpointQueryMeta;
+
+          if (
+            endpointIdsToExclude.has(meta.endpointId) ||
+            (endpointTagsToExclude.size &&
+              meta.tags.some((tag) => endpointTagsToExclude.has(tag)))
+          ) {
+            return false;
+          }
 
           if (
             endpointIdsToFilter &&

@@ -18,4 +18,8 @@ export interface InvalidateEndpointsFilters
   group?: EndpointStringFilter;
   operationId?: EndpointStringFilter;
   tag?: EndpointStringFilter;
+  exclude?: {
+    endpoints?: AnyEndpoint[];
+    tags?: string[];
+  };
 }
