@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.29.0
+
+### Minor Changes
+
+- [`426365a`](https://github.com/js2me/mobx-tanstack-query-api/commit/426365ada14ec286edacda791e2baa60bde70d47) Thanks [@js2me](https://github.com/js2me)! - added `exclude` parameter for `invalidateEndpoints` method in QueryClient
+
 ## 0.28.0
 
 ### Minor Changes
