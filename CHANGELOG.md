@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.30.0
+
+### Minor Changes
+
+- [`1e89559`](https://github.com/js2me/mobx-tanstack-query-api/commit/1e895597db9a8726f6f1a70b63fc1e4c31298565) Thanks [@js2me](https://github.com/js2me)! - added `noBarrelFiles` flag
+
 ## 0.29.0
 
 ### Minor Changes
