@@ -199,4 +199,11 @@ export interface GenerateQueryApiParams {
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#nometainfo)
    */
   noMetaInfo?: boolean;
+
+  /**
+   * Disable generation of index.ts barrel files.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#nobarrelfiles)
+   */
+  noBarrelFiles?: boolean;
 }

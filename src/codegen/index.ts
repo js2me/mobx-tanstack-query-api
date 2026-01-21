@@ -273,6 +273,8 @@ export const generateApi = async (
 
   const { _ } = utils;
 
+  const shouldGenerateBarrelFiles = !params.noBarrelFiles;
+
   let namespace: Maybe<string> = null;
 
   if (params.namespace) {
@@ -383,15 +385,17 @@ export const generateApi = async (
         });
       }
 
-      codegenFs.createFile({
-        path: path.resolve(params.output, 'endpoints'),
-        fileName: 'index.ts',
-        withPrefix: false,
-        content: await indexTsForEndpointPerFileTmpl({
-          ...baseTmplParams,
-          generatedRequestFileNames: fileNamesWithRequestInfo,
-        }),
-      });
+      if (shouldGenerateBarrelFiles) {
+        codegenFs.createFile({
+          path: path.resolve(params.output, 'endpoints'),
+          fileName: 'index.ts',
+          withPrefix: false,
+          content: await indexTsForEndpointPerFileTmpl({
+            ...baseTmplParams,
+            generatedRequestFileNames: fileNamesWithRequestInfo,
+          }),
+        });
+      }
       // #endregion
     } else {
       // #region кодогенерация несколько эндпоинтов в 1 файле без группировки
@@ -614,16 +618,21 @@ export const generateApi = async (
           ? params.formatExportGroupName(_.camelCase(groupName), utils)
           : _.camelCase(groupName);
 
-        codegenFs.createFile({
-          path: groupDirectory,
-          fileName: 'index.ts',
-          withPrefix: false,
-          content: `${LINTERS_IGNORE}
+        if (shouldGenerateBarrelFiles) {
+          codegenFs.createFile({
+            path: groupDirectory,
+            fileName: 'index.ts',
+            withPrefix: false,
+            content: `${LINTERS_IGNORE}
 export * as ${exportGroupName} from './endpoints';
 `,
-        });
+          });
+        }
 
-        if (params.outputType === 'one-endpoint-per-file') {
+        if (
+          shouldGenerateBarrelFiles &&
+          params.outputType === 'one-endpoint-per-file'
+        ) {
           codegenFs.createFile({
             path: path.resolve(groupDirectory, 'endpoints'),
             fileName: 'index.ts',
@@ -696,25 +705,29 @@ export * as ${exportGroupName} from './endpoints';
         metaInfo,
       }),
     });
-    codegenFs.createFile({
-      path: paths.outputDir,
-      fileName: 'index.ts',
-      withPrefix: false,
-      content: `${LINTERS_IGNORE}
+    if (shouldGenerateBarrelFiles) {
+      codegenFs.createFile({
+        path: paths.outputDir,
+        fileName: 'index.ts',
+        withPrefix: false,
+        content: `${LINTERS_IGNORE}
 export * as ${namespace} from './__exports';
 `,
-    });
+      });
+    }
   } else {
-    codegenFs.createFile({
-      path: paths.outputDir,
-      fileName: 'index.ts',
-      withPrefix: false,
-      content: await allExportsTmpl({
-        ...baseTmplParams,
-        collectedExportFiles: collectedExportFilesFromIndexFile,
-        metaInfo,
-      }),
-    });
+    if (shouldGenerateBarrelFiles) {
+      codegenFs.createFile({
+        path: paths.outputDir,
+        fileName: 'index.ts',
+        withPrefix: false,
+        content: await allExportsTmpl({
+          ...baseTmplParams,
+          collectedExportFiles: collectedExportFilesFromIndexFile,
+          metaInfo,
+        }),
+      });
+    }
   }
 
   if (params.removeUnusedTypes) {

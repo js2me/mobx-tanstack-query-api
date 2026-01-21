@@ -585,3 +585,22 @@ getFruits.meta.somedata; // '123'
 #### `noMetaInfo`  
 
 Allows to disable generation `meta-info.ts` file   
+
+#### `noBarrelFiles`
+
+Disables generation of all `index.ts` barrel files in output.  
+Default: `false`
+
+Example:
+```ts
+noBarrelFiles: true
+```
+
+Example without groups, `one-endpoint-per-file`:
+```
+* outputdir
+*  endpoints
+*    get-endpoint-1.ts
+*    get-endpoint-n.ts
+*  data-contracts.ts
+```
