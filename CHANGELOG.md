@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.31.0
+
+### Minor Changes
+
+- [`966a72c`](https://github.com/js2me/mobx-tanstack-query-api/commit/966a72c824d7ac1bf63e8eeeb8ff0b1cfaa722c9) Thanks [@js2me](https://github.com/js2me)! - remove default json format
+
+- [`19a142d`](https://github.com/js2me/mobx-tanstack-query-api/commit/19a142d8bae20b475e6b63346c4681dfde202d85) Thanks [@js2me](https://github.com/js2me)! - remove json defaults for requests
+
 ## 0.30.0
 
 ### Minor Changes
