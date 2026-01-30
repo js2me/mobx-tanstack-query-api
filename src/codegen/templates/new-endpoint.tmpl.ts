@@ -19,12 +19,14 @@ const requestContentKind: AnyObject = {
   URL_ENCODED: '"application/x-www-form-urlencoded"',
   FORM_DATA: '"multipart/form-data"',
   TEXT: '"text/plain"',
+  JSON: '"application/json"',
   BINARY: '"application/octet-stream"',
 };
 // RequestParams["format"]
 const responseContentKind: AnyObject = {
   TEXT: '"text"',
   IMAGE: '"blob"',
+  JSON: '"json"',
   FORM_DATA: '"formData"',
   BYTES: '"bytes"',
 };

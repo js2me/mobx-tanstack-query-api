@@ -322,12 +322,7 @@ export class HttpClient<TMeta = unknown> {
   ): Promise<any> {
     this.setBadResponse(null);
 
-    const {
-      body,
-      contentType = 'application/json',
-      format,
-      ...params
-    } = fullParams;
+    const { body, contentType, format, ...params } = fullParams;
 
     let requestParams = this.mergeRequestParams(params);
 
@@ -337,7 +332,6 @@ export class HttpClient<TMeta = unknown> {
         requestParams;
     }
 
-    const payloadFormatter = this.contentFormatters[contentType];
     const responseFormat = format || requestParams.format;
 
     const url = this.buildUrl(fullParams);
@@ -352,15 +346,29 @@ export class HttpClient<TMeta = unknown> {
       headers = new Headers(requestParams.headers);
     }
 
-    if (!headers.has('Content-Type')) {
-      headers.set('Content-Type', contentType);
+    let bodyToSend: Maybe<BodyInit>;
+
+    if (contentType) {
+      if (!headers.has('Content-Type')) {
+        headers.set('Content-Type', contentType);
+      }
+
+      const payloadFormatter = this.contentFormatters[contentType];
+
+      if (body == null) {
+        bodyToSend = null;
+      } else if (payloadFormatter) {
+        bodyToSend = payloadFormatter(body);
+      } else {
+        bodyToSend = body as any;
+      }
     }
 
     const fetchUrl: string = url;
     const fetchParams: RequestInit = {
       ...requestParams,
       headers,
-      body: body == null ? null : payloadFormatter(body),
+      body: bodyToSend,
     };
 
     let response: Response | undefined;
