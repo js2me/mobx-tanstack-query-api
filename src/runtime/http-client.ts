@@ -325,7 +325,7 @@ export class HttpClient<TMeta = unknown> {
     const {
       body,
       contentType = 'application/json',
-      format = 'json',
+      format,
       ...params
     } = fullParams;
 
