@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.32.1
+
+### Patch Changes
+
+- [`20e5099`](https://github.com/js2me/mobx-tanstack-query-api/commit/20e50993cb61cd76e41450341d21e01c4c6c4a7d) Thanks [@js2me](https://github.com/js2me)! - fixed empty responses should ignore transforming response body
+
 ## 0.32.0
 
 ### Minor Changes
