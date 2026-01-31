@@ -147,6 +147,8 @@ export const isHttpBadResponse = (
   return isHttpResponse(response) && (!response.ok || !!response.error);
 };
 
+export const emptyStatusCodesSet = new Set([204, 205, 304]);
+
 export class HttpClient<TMeta = unknown> {
   private config: HttpClientConfig<TMeta>;
   private fetch: Required<HttpClientConfig<TMeta>>['fetch'];
@@ -260,6 +262,24 @@ export class HttpClient<TMeta = unknown> {
     };
   }
 
+  protected isEmptyResponseBody(response: Response): boolean {
+    if (emptyStatusCodesSet.has(response.status)) {
+      return true;
+    }
+
+    const contentLength = response.headers.get('content-length');
+
+    if (contentLength !== null && contentLength === '0') {
+      return true;
+    }
+
+    if (response.body === null) {
+      return true;
+    }
+
+    return false;
+  }
+
   protected async createResponse(
     responseFormat: FullRequestParams['format'],
     raw: Response,
@@ -275,7 +295,7 @@ export class HttpClient<TMeta = unknown> {
     response.data = null;
     response.error = null;
 
-    if (responseFormat) {
+    if (responseFormat && !this.isEmptyResponseBody(response)) {
       try {
         const formatted = await response[responseFormat]();
         if (response.ok) {
