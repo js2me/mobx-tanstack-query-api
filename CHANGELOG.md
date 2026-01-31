@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.32.0
+
+### Minor Changes
+
+- [`7bf4717`](https://github.com/js2me/mobx-tanstack-query-api/commit/7bf4717776181fd6f85ca193516520325aaaf688) Thanks [@js2me](https://github.com/js2me)! - added `ContentType` object with predefined content types
+
+### Patch Changes
+
+- [`9b58769`](https://github.com/js2me/mobx-tanstack-query-api/commit/9b5876943b42cb5ffc1f38b7e2e0d428ab2b34ee) Thanks [@js2me](https://github.com/js2me)! - fixed ResponseFormat
+
 ## 0.31.0
 
 ### Minor Changes
