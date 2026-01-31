@@ -31,6 +31,14 @@ export interface FullRequestParams extends Omit<RequestInit, 'body'> {
   meta?: Record<string, any>;
 }
 
+export const ContentType = {
+  Json: 'application/json',
+  FormData: 'multipart/form-data',
+  UrlEncoded: 'application/x-www-form-urlencoded',
+  Text: 'text/plain',
+  Binary: 'application/octet-stream',
+} as const;
+
 export type RequestParams = Omit<
   FullRequestParams,
   'body' | 'method' | 'query' | 'path' | 'serviceName'
