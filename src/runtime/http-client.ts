@@ -281,35 +281,30 @@ export class HttpClient<TMeta = unknown> {
   }
 
   protected async createResponse(
-    responseFormat: FullRequestParams['format'],
+    responseFormat: FullRequestParams['format'] = 'json',
     raw: Response,
     url: string,
     params: RequestInit,
   ): Promise<AnyHttpResponse> {
     const response = raw as AnyHttpResponse;
 
-    response.request = {
-      url,
-      params,
-    };
+    response.request = { url, params };
     response.data = null;
     response.error = null;
 
-    if (responseFormat && !this.isEmptyResponseBody(response)) {
-      try {
-        const formatted = await response[responseFormat]();
-        if (response.ok) {
-          response.data = formatted;
-        } else {
-          response.error = formatted;
-        }
-      } catch (error) {
-        if (response.ok) {
-          response.error = error;
-        } else {
-          response.error = null;
-        }
+    if (this.isEmptyResponseBody(response)) {
+      return response;
+    }
+
+    try {
+      const formatted = await response[responseFormat]();
+      if (response.ok) {
+        response.data = formatted;
+      } else {
+        response.error = formatted;
       }
+    } catch (error) {
+      response.error = error;
     }
 
     if (!response.ok || response.error) {
@@ -379,7 +374,10 @@ export class HttpClient<TMeta = unknown> {
     let bodyToSend: Maybe<BodyInit>;
 
     if (contentType) {
-      if (!headers.has('Content-Type')) {
+      if (
+        contentType !== ContentType.FormData &&
+        !headers.has('Content-Type')
+      ) {
         headers.set('Content-Type', contentType);
       }
 
