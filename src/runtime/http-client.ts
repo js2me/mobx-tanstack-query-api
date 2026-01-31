@@ -8,7 +8,9 @@ import type { AnyObject, Defined, Maybe, ValueOf } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 
 export type QueryParamsType = Record<string | number, any>;
-export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>;
+export type ResponseFormat = ValueOf<{
+  [K in keyof Body]: Body[K] extends Function ? K : never;
+}>;
 
 export interface FullRequestParams extends Omit<RequestInit, 'body'> {
   /** set parameter to `true` for call `securityWorker` for this request */
