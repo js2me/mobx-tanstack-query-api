@@ -1,5 +1,5 @@
 {
-  "version": "0.32.1",
+  "version": "0.32.0",
   "name": "mobx-tanstack-query-api",
   "description": "OpenAPI/Swagger client codegen + endpoints integration with mobx-tanstack-query",
   "scripts": {
@@ -54,15 +54,15 @@
     "@types/lodash-es": "^4.17.12",
     "@types/qs": "^6.14.0",
     "cac": "^6.7.14",
-    "http-status-code-types": "^0.0.2",
+    "http-status-code-types": "^1.0.1",
     "jiti": "^2.5.1",
     "lodash-es": "^4.17.21",
-    "mobx-tanstack-query": "^6.11.3",
-    "qs": "^6.14.0",
+    "mobx-tanstack-query": "^6.12.0",
+    "qs": "^6.14.1",
     "swagger-typescript-api": "13.2.15",
     "ts-morph": "^26.0.0",
     "undici-types": "^7.11.0",
-    "yummies": "^7.0.1"
+    "yummies": "^7.3.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.4",

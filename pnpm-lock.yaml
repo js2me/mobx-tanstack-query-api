@@ -24,8 +24,8 @@ importers:
         specifier: ^6.7.14
         version: 6.7.14
       http-status-code-types:
-        specifier: ^0.0.2
-        version: 0.0.2
+        specifier: ^1.0.1
+        version: 1.0.1
       jiti:
         specifier: ^2.5.1
         version: 2.5.1
@@ -36,11 +36,11 @@ importers:
         specifier: ^6.13.6
         version: 6.13.7
       mobx-tanstack-query:
-        specifier: ^6.11.3
-        version: 6.11.3(@tanstack/query-core@5.90.12)(mobx@6.13.7)(react@19.1.1)
+        specifier: ^6.12.0
+        version: 6.12.0(@tanstack/query-core@5.90.12)(mobx@6.13.7)(react@19.1.1)
       qs:
-        specifier: ^6.14.0
-        version: 6.14.0
+        specifier: ^6.14.1
+        version: 6.14.1
       swagger-typescript-api:
         specifier: 13.2.15
         version: 13.2.15(magicast@0.3.5)
@@ -51,8 +51,8 @@ importers:
         specifier: ^7.11.0
         version: 7.11.0
       yummies:
-        specifier: ^7.0.1
-        version: 7.0.1(mobx@6.13.7)(react@19.1.1)
+        specifier: ^7.3.1
+        version: 7.3.1(mobx@6.13.7)(react@19.1.1)
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.2.4
@@ -1826,10 +1826,6 @@ packages:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
 
-  chalk@5.4.1:
-    resolution: {integrity: sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==}
-    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
-
   changelog-parser@3.0.1:
     resolution: {integrity: sha512-1AEVJgnFEO4v5ukfEH/j9cr2Z39Y/GCieNi605azhufAolXF4vQAwZBY8BrUVRkvlI3gwe3i621/PIAW0zmmEQ==}
     engines: {node: '>=14'}
@@ -2118,10 +2114,6 @@ packages:
   dot-prop@5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
-
-  dotenv@16.5.0:
-    resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
-    engines: {node: '>=12'}
 
   dotenv@17.2.2:
     resolution: {integrity: sha512-Sf2LSQP+bOlhKWWyhFsn0UsfdK/kCWRv1iuA2gXAwt3dyNabr6QSj00I2V10pidqz69soatm9ZwZvpQMTIOd5Q==}
@@ -2480,8 +2472,8 @@ packages:
     resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
     engines: {node: '>= 14'}
 
-  http-status-code-types@0.0.2:
-    resolution: {integrity: sha512-ErJgeRLR9UWzvsQ0mGTLoR0HbZ+6xrFTSCg6DY0R6T/gLPy2nZNuSJNTqL4fqNezJ86ZC08PHpjqnDHi2qTZcw==}
+  http-status-code-types@1.0.1:
+    resolution: {integrity: sha512-2g31Q7LgBL8eEN+NNbHiEDNscrBNX19I2N72qbYtd2JypiK03owSwXRk8ooNclEnsq5Mjhpsnivy7ibRbJSZ9w==}
 
   http2-client@1.3.5:
     resolution: {integrity: sha512-EC2utToWl4RKfs5zd36Mxq7nzHHBuomZboI0yYL6Y0RmBgT7Sgkq4rQ0ezFTYoIsSs7Tm9SJe+o2FcAg6GBhGA==}
@@ -3071,8 +3063,8 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  mobx-tanstack-query@6.11.3:
-    resolution: {integrity: sha512-QZGj1oPeCox2NMgCfQodnyRjJ5gZMFalZeUJDFrIUwNb5HmgUsX8Nq2w5fKjkfBvkxyKg+zBWB2XjsNAqj0YSA==}
+  mobx-tanstack-query@6.12.0:
+    resolution: {integrity: sha512-BHd27JvZ4qgIn0OX/il6dM3fZtRmmv9Nvkh9lFzJdBpj25vVqp0aeEZGaZxJITzYN2ITBSmlurweetK+A4386A==}
     peerDependencies:
       '@tanstack/query-core': ^5.90.2
       mobx: ^6.12.4
@@ -3372,8 +3364,8 @@ packages:
     resolution: {integrity: sha512-l1jNAspIBSFqbT+y+5FosojNpVpF94nlI+wDUpqP9enwOTfHx9f0gh5nB96vl+6yTpsJsypeNrwfzPrKuHB41A==}
     engines: {node: '>=8'}
 
-  qs@6.14.0:
-    resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
+  qs@6.14.1:
+    resolution: {integrity: sha512-4EK3+xJl8Ts67nLYNwqw/dsFVnCf+qR7RgXSK9jEEm9unao3njwMDdmsdvoKBKHzxd7tCYz5e5M+SnMjdtXGQQ==}
     engines: {node: '>=0.6'}
 
   quansync@0.2.11:
@@ -4304,19 +4296,8 @@ packages:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
 
-  yummies@6.0.0:
-    resolution: {integrity: sha512-Cz3eui7Inq2CvQPWaHRHYIyT0yc9R6ZeYaZrjsAkUJYSD5YTIEoWI9o1DjBXOHytpLb0EYzp3rK6RFqF1A9EBQ==}
-    peerDependencies:
-      mobx: ^6.12.4
-      react: ^18 || ^19
-    peerDependenciesMeta:
-      mobx:
-        optional: true
-      react:
-        optional: true
-
-  yummies@7.0.1:
-    resolution: {integrity: sha512-bVZnDi1EvW1Cj0bbZqJuoPCFg5miwPNxgIjcZreSn+G3lGIoFh2Q6Aw3ILNs4UKBiumyCYhyQ+5FPMuB99v1eg==}
+  yummies@7.3.1:
+    resolution: {integrity: sha512-qcJemYsvsogrHsrjNaC2/qFRpmcpW/D21eGSS2yckEMtz7CNlpdnxt4zyau9oTJM1OGrC24L/RJZOihsldTBbg==}
     peerDependencies:
       mobx: ^6.12.4
       react: ^18 || ^19
@@ -6221,8 +6202,6 @@ snapshots:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
 
-  chalk@5.4.1: {}
-
   changelog-parser@3.0.1:
     dependencies:
       line-reader: 0.2.4
@@ -6473,8 +6452,6 @@ snapshots:
   dot-prop@5.3.0:
     dependencies:
       is-obj: 2.0.0
-
-  dotenv@16.5.0: {}
 
   dotenv@17.2.2: {}
 
@@ -6916,10 +6893,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  http-status-code-types@0.0.2:
-    dependencies:
-      chalk: 5.4.1
-      dotenv: 16.5.0
+  http-status-code-types@1.0.1: {}
 
   http2-client@1.3.5: {}
 
@@ -7600,12 +7574,12 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
-  mobx-tanstack-query@6.11.3(@tanstack/query-core@5.90.12)(mobx@6.13.7)(react@19.1.1):
+  mobx-tanstack-query@6.12.0(@tanstack/query-core@5.90.12)(mobx@6.13.7)(react@19.1.1):
     dependencies:
       '@tanstack/query-core': 5.90.12
       linked-abort-controller: 1.1.0
       mobx: 6.13.7
-      yummies: 6.0.0(mobx@6.13.7)(react@19.1.1)
+      yummies: 7.3.1(mobx@6.13.7)(react@19.1.1)
     transitivePeerDependencies:
       - react
 
@@ -7900,7 +7874,7 @@ snapshots:
     dependencies:
       escape-goat: 2.1.1
 
-  qs@6.14.0:
+  qs@6.14.1:
     dependencies:
       side-channel: 1.1.0
 
@@ -9108,19 +9082,7 @@ snapshots:
       y18n: 5.0.8
       yargs-parser: 21.1.1
 
-  yummies@6.0.0(mobx@6.13.7)(react@19.1.1):
-    dependencies:
-      class-variance-authority: 0.7.1
-      clsx: 2.1.1
-      dayjs: 1.11.13
-      dompurify: 3.2.6
-      nanoid: 5.1.6
-      tailwind-merge: 3.3.1
-    optionalDependencies:
-      mobx: 6.13.7
-      react: 19.1.1
-
-  yummies@7.0.1(mobx@6.13.7)(react@19.1.1):
+  yummies@7.3.1(mobx@6.13.7)(react@19.1.1):
     dependencies:
       class-variance-authority: 0.7.1
       clsx: 2.1.1
