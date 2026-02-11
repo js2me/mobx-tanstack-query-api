@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.33.1
+
+### Patch Changes
+
+- [`12efd58`](https://github.com/js2me/mobx-tanstack-query-api/commit/12efd58cd4b2d6e3a4bdf3dfe0e51e671e08b07f) Thanks [@js2me](https://github.com/js2me)! - try to fix rewrite data error request fields for Response class instance
+
 ## 0.33.0
 
 ### Minor Changes
