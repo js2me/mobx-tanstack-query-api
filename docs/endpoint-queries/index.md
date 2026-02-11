@@ -4,7 +4,7 @@
 class EndpointQuery<> {}
 ```
 
-This is `mobx-tanstack-query` Query wrapper for `Endpoint` object.  
+This is `mobx-tanstack-query` [`Query`](https://js2me.github.io/mobx-tanstack-query/api/Query) wrapper for `Endpoint` object.  
 
 Example:  
 ```ts
@@ -15,8 +15,37 @@ export const yourEndpointQuery = yourEndpoint.toQuery({})
 console.log(yourEndpointQuery.isLoading, yourEndpointQuery.data);
 ``` 
 
+## API
 
-## Differences between `EndpointQuery` and `Query`   
+### params
+
+Current endpoint params used to build query key and to detect query enabled state.
+
+```ts
+const fruitsQuery = getFruits.toQuery({
+  params: { query: { limit: 10 } },
+});
+
+console.log(fruitsQuery.params); // { query: { limit: 10 } }
+```
+
+### response
+
+Raw HTTP response returned by endpoint request.
+
+```ts
+const fruitsQuery = getFruits.toQuery({
+  params: { query: { limit: 10 } },
+});
+
+await fruitsQuery.refetch();
+
+console.log(fruitsQuery.response?.status); // e.g. 200
+console.log(fruitsQuery.response?.data); // same payload source for query result
+```
+
+
+## Differences between `EndpointQuery` and [`Query`](https://js2me.github.io/mobx-tanstack-query/api/Query)   
 
 #### `params`   
 This is the input params for `EndpointQuery` which are needed to enable or disable query.   

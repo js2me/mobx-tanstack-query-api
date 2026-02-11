@@ -24,8 +24,13 @@ export class EndpointMutation<
   TEndpoint['__response']['error'],
   TOnMutateResult
 > {
+  /**
+   * Creates `EndpointMutation` instance.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-mutations/#constructor)
+   */
   constructor(
-    private endpoint: AnyEndpoint,
+    endpoint: AnyEndpoint,
     inputQueryClient: EndpointQueryClient,
     {
       transform: transformResponse,

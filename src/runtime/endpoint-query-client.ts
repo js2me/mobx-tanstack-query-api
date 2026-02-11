@@ -13,6 +13,11 @@ import type {
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-query-client/)
  */
 export class EndpointQueryClient extends QueryClient {
+  /**
+   * Creates `EndpointQueryClient` instance.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-query-client/#constructor)
+   */
   constructor(config?: QueryClientConfig) {
     super({
       ...config,
@@ -27,6 +32,11 @@ export class EndpointQueryClient extends QueryClient {
     });
   }
 
+  /**
+   * Invalidates endpoint queries by endpoint metadata filters.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-query-client/#invalidateendpoints)
+   */
   invalidateEndpoints(
     {
       group,

@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/correctness/noUnusedVariables: <explanation> */
+/** biome-ignore-all lint/correctness/noUnusedVariables: generic type imports are intentional */
 import type {
   DefaultError,
   QueryFunctionContext,
@@ -47,6 +47,11 @@ export class EndpointQuery<
 > extends Query<TQueryFnData, TError, TData, TQueryData> {
   private _observableData: InternalObservableData<TEndpoint>;
 
+  /**
+   * Creates `EndpointQuery` instance.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/#constructor)
+   */
   constructor(
     private endpoint: AnyEndpoint,
     inputQueryClient: EndpointQueryClient,
@@ -242,14 +247,29 @@ export class EndpointQuery<
     this._observableData = _observableData;
   }
 
+  /**
+   * Current endpoint params used by this query.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/#params)
+   */
   get params() {
     return this._observableData.params;
   }
 
+  /**
+   * Last raw HTTP response returned by endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/#response)
+   */
   get response() {
     return this._observableData.response;
   }
 
+  /**
+   * Updates query options and optionally params.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/#update)
+   */
   update(
     updateParams: Omit<
       QueryUpdateOptionsAllVariants<TQueryFnData, TError, TData, TQueryData>,
@@ -285,6 +305,11 @@ export class EndpointQuery<
     }
   }
 
+  /**
+   * Refetches query when params are initialized.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/#refetch)
+   */
   refetch(
     options?: RefetchOptions,
   ): Promise<QueryObserverResult<TData, TError>> {
@@ -294,6 +319,11 @@ export class EndpointQuery<
     return Promise.resolve(this.queryObserver.getCurrentResult());
   }
 
+  /**
+   * Sets params and starts query execution.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/#start)
+   */
   async start(
     params: MaybeFalsy<TEndpoint['__params']>,
   ): Promise<QueryObserverResult<TData, TError>> {

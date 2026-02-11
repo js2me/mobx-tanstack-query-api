@@ -6,6 +6,21 @@ class EndpointMutation<> {}
 
 This is `mobx-tanstack-query` Mutation wrapper for `Endpoint` object.  
 
+## API
+
+### constructor
+
+Creates `EndpointMutation` from endpoint and mutation options.
+
+### options.invalidateEndpoints
+
+Configures automatic endpoint query invalidation on successful mutation.
+
+### options.transform
+
+Transforms raw endpoint response to the final mutation data.
+
+
 Example:  
 ```ts
 import { yourEndpoint } from "@/shared/api/__generated__";

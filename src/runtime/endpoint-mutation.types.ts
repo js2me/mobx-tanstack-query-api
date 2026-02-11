@@ -38,6 +38,8 @@ export type EndpointMutationOptions<
    *
    * The value `true` will use dynamic definition of `by-group` | `by-tag` values.
    * If there is a group, it will use `by-group` invalidation, if there is a tag then `by-tag`
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-mutations/#optionsinvalidateendpoints)
    */
   invalidateEndpoints?:
     | true
@@ -46,6 +48,8 @@ export type EndpointMutationOptions<
     | InvalidateEndpointsFilters;
   /**
    * Transform response to TData
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-mutations/#optionstransform)
    */
   transform?: (response: TEndpoint['__response']) => TData | Promise<TData>;
   invalidateQueries?:
