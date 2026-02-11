@@ -280,6 +280,32 @@ export class HttpClient<TMeta = unknown> {
     return false;
   }
 
+  /**
+   * Some custom fetch implementations expose read-only accessors (e.g. `data`),
+   * so plain assignment can throw in strict mode.
+   */
+  private setResponseField = <
+    TKey extends keyof Pick<AnyHttpResponse, 'request' | 'data' | 'error'>,
+  >(
+    response: AnyHttpResponse,
+    key: TKey,
+    value: AnyHttpResponse[TKey],
+  ) => {
+    try {
+      response[key] = value;
+      return;
+    } catch {
+      // Fallback for getter-only inherited descriptors.
+    }
+
+    Object.defineProperty(response, key, {
+      value,
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
+  };
+
   protected async createResponse(
     responseFormat: FullRequestParams['format'] = 'json',
     raw: Response,
@@ -288,9 +314,9 @@ export class HttpClient<TMeta = unknown> {
   ): Promise<AnyHttpResponse> {
     const response = raw as AnyHttpResponse;
 
-    response.request = { url, params };
-    response.data = null;
-    response.error = null;
+    this.setResponseField(response, 'request', { url, params });
+    this.setResponseField(response, 'data', null);
+    this.setResponseField(response, 'error', null);
 
     if (this.isEmptyResponseBody(response)) {
       return response;
@@ -299,12 +325,12 @@ export class HttpClient<TMeta = unknown> {
     try {
       const formatted = await response[responseFormat]();
       if (response.ok) {
-        response.data = formatted;
+        this.setResponseField(response, 'data', formatted);
       } else {
-        response.error = formatted;
+        this.setResponseField(response, 'error', formatted);
       }
     } catch (error) {
-      response.error = error;
+      this.setResponseField(response, 'error', error);
     }
 
     if (!response.ok || response.error) {
