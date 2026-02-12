@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.34.0
+
+### Minor Changes
+
+- [`67b8305`](https://github.com/js2me/mobx-tanstack-query-api/commit/67b83054aee49ecdc77ff69576eb647153b42905) Thanks [@js2me](https://github.com/js2me)! - add `HttpResponse` as own class for http responses with using composition
+
 ## 0.33.1
 
 ### Patch Changes
