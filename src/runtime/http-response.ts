@@ -21,7 +21,7 @@ export type HttpMultistatusResponse<
   TDefaultBadResponse = unknown,
 > =
   | ValueOf<{
-      [K in keyof TResponsesByStatusMap]: HttpResponse<
+      [K in keyof TResponsesByStatusMap]-?: HttpResponse<
         K extends HttpSuccessStatusCode
           ? TResponsesByStatusMap[K]
           : TDefaultOkResponse,

@@ -117,11 +117,24 @@ describe('Endpoint generated example', () => {
       headers: { 'x-test-header': 'x-test-value' },
     };
 
-    await endpoint.request({
+    const response = await endpoint.request({
       fruitId: 73,
       body: { name: 'apple', color: 'red' },
       requestParams,
     });
+
+    if (response.status === 200) {
+      expectTypeOf(response.data).toEqualTypeOf<StarData>();
+      expectTypeOf(response.error).toEqualTypeOf<PlanetError>();
+    }
+
+    if (response.status === 409) {
+      expectTypeOf(response.data).toEqualTypeOf<StarData>();
+      expectTypeOf(response.error).toEqualTypeOf<StarConflictError>();
+    } else if (response.status !== 200) {
+      expectTypeOf(response.data).toEqualTypeOf<StarData>();
+      expectTypeOf(response.error).toEqualTypeOf<PlanetError>();
+    }
 
     expect(requestMock).toHaveBeenCalledTimes(1);
     expect(requestMock).toHaveBeenCalledWith(
