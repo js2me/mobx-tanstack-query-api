@@ -19,33 +19,23 @@ export type HttpMultistatusResponse<
   TResponsesByStatusMap extends ResponsesByStatusMap,
   TDefaultOkResponse,
   TDefaultBadResponse = unknown,
-> = Omit<Response, 'status'> &
-  (
-    | ValueOf<{
-        [K in keyof TResponsesByStatusMap]: {
-          status: K;
-          data: K extends HttpSuccessStatusCode
-            ? TResponsesByStatusMap[K]
-            : TDefaultOkResponse;
-          error: K extends HttpSuccessStatusCode
-            ? TDefaultBadResponse
-            : TResponsesByStatusMap[K];
-          request: {
-            url: string;
-            params: globalThis.RequestInit;
-          };
-        };
-      }>
-    | {
-        status: Exclude<HttpStatusCode, keyof TResponsesByStatusMap>;
-        data: TDefaultOkResponse;
-        error: TDefaultBadResponse;
-        request: {
-          url: string;
-          params: globalThis.RequestInit;
-        };
-      }
-  );
+> =
+  | ValueOf<{
+      [K in keyof TResponsesByStatusMap]: HttpResponse<
+        K extends HttpSuccessStatusCode
+          ? TResponsesByStatusMap[K]
+          : TDefaultOkResponse,
+        K extends HttpSuccessStatusCode
+          ? TDefaultBadResponse
+          : TResponsesByStatusMap[K],
+        number & K
+      >;
+    }>
+  | HttpResponse<
+      TDefaultOkResponse,
+      TDefaultBadResponse,
+      Exclude<HttpStatusCode, keyof TResponsesByStatusMap>
+    >;
 
 export type GetHttpResponse<T> = T extends (...args: any[]) => infer R
   ? R extends Promise<HttpResponse<any, any>>

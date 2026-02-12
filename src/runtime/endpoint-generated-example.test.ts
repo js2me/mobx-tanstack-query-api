@@ -1,0 +1,166 @@
+import { describe, expect, expectTypeOf, it, vi } from 'vitest';
+import { Endpoint } from './endpoint.js';
+import type { EndpointQueryClient } from './endpoint-query-client.js';
+import type { RequestParams } from './http-client.js';
+import type { HttpMultistatusResponse } from './http-response.js';
+
+type StarData = Record<string, unknown>;
+
+interface FruitBody {
+  name: string;
+  color: string;
+  size?: string;
+  note?: string;
+}
+
+type PlanetError = {
+  code?: number;
+  details?: { count: number }[];
+  message?: string;
+};
+
+type FruitParams = {
+  fruitId: number;
+  body: FruitBody;
+  requestParams?: RequestParams;
+};
+
+interface StarConflictError {
+  code?: number;
+  details?: { text: string }[];
+  message?: string;
+}
+
+const createFruitEndpoint = (
+  queryClient: EndpointQueryClient,
+  httpClient: {
+    request: ReturnType<typeof vi.fn>;
+    buildUrl: ReturnType<typeof vi.fn>;
+  },
+) =>
+  new Endpoint<
+    HttpMultistatusResponse<
+      {
+        200: StarData;
+        409: StarConflictError;
+      },
+      StarData,
+      PlanetError
+    >,
+    FruitParams,
+    any
+  >(
+    {
+      params: ({ fruitId, body, requestParams }) => ({
+        path: `/api/v1/fruits/${fruitId}/stars`,
+        method: 'POST',
+        body,
+        contentType: 'application/json',
+        format: 'json',
+        ...requestParams,
+      }),
+      requiredParams: ['fruitId', 'body'],
+      operationId: 'addFruitStar',
+      path: ['api', 'v1', 'fruits', '{fruitId}', 'stars'],
+      tags: ['TestFruits'],
+      meta: {} as any,
+    },
+    queryClient,
+    httpClient as any,
+  );
+
+describe('Endpoint generated example', () => {
+  it('проверяет тип возвращаемого значения createFruitEndpoint', () => {
+    type EndpointInstance = ReturnType<typeof createFruitEndpoint>;
+    type EndpointRequestResponse = Awaited<
+      ReturnType<EndpointInstance['request']>
+    >;
+    type EndpointCallableResponse = Awaited<ReturnType<EndpointInstance>>;
+    type ExpectedResponse = HttpMultistatusResponse<
+      {
+        200: StarData;
+        409: StarConflictError;
+      },
+      StarData,
+      PlanetError
+    >;
+
+    type Response200 = Extract<EndpointRequestResponse, { status: 200 }>;
+    type Response409 = Extract<EndpointRequestResponse, { status: 409 }>;
+
+    expectTypeOf<EndpointRequestResponse>().toEqualTypeOf<ExpectedResponse>();
+    expectTypeOf<EndpointCallableResponse>().toEqualTypeOf<ExpectedResponse>();
+    expectTypeOf<Response200['data']>().toEqualTypeOf<StarData>();
+    expectTypeOf<Response200['error']>().toEqualTypeOf<PlanetError>();
+    expectTypeOf<Response409['data']>().toEqualTypeOf<StarData>();
+    expectTypeOf<Response409['error']>().toEqualTypeOf<StarConflictError>();
+  });
+
+  it('формирует запрос с телом и requestParams', async () => {
+    const requestMock = vi.fn().mockResolvedValue({
+      status: 200,
+      ok: true,
+      data: { id: 1 },
+      error: null,
+    });
+    const buildUrlMock = vi.fn();
+    const queryClient = {
+      invalidateQueries: vi.fn(),
+    } as unknown as EndpointQueryClient;
+
+    const endpoint = createFruitEndpoint(queryClient, {
+      request: requestMock,
+      buildUrl: buildUrlMock,
+    });
+
+    const requestParams: RequestParams = {
+      headers: { 'x-test-header': 'x-test-value' },
+    };
+
+    await endpoint.request({
+      fruitId: 73,
+      body: { name: 'apple', color: 'red' },
+      requestParams,
+    });
+
+    expect(requestMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenCalledWith(
+      {
+        path: '/api/v1/fruits/73/stars',
+        method: 'POST',
+        body: { name: 'apple', color: 'red' },
+        contentType: 'application/json',
+        format: 'json',
+        headers: { 'x-test-header': 'x-test-value' },
+      },
+      endpoint,
+    );
+  });
+
+  it('callable-инстанс endpoint вызывает request', async () => {
+    const requestMock = vi.fn().mockResolvedValue({
+      status: 200,
+      ok: true,
+      data: {},
+      error: null,
+    });
+    const queryClient = {
+      invalidateQueries: vi.fn(),
+    } as unknown as EndpointQueryClient;
+
+    const endpoint = createFruitEndpoint(queryClient, {
+      request: requestMock,
+      buildUrl: vi.fn(),
+    });
+
+    await endpoint({
+      fruitId: 9,
+      body: { name: 'banana', color: 'yellow' },
+    });
+
+    expect(requestMock).toHaveBeenCalledTimes(1);
+    expect(endpoint.configuration.requiredParams).toEqual(['fruitId', 'body']);
+    expect(endpoint.operationId).toBe('addFruitStar');
+    expect(endpoint.pathDeclaration).toBe('api/v1/fruits/{fruitId}/stars');
+  });
+});
