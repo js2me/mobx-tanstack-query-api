@@ -7,3 +7,4 @@ export * from './endpoint-query.types.js';
 export * from './endpoint-query-client.js';
 export * from './endpoint-query-client.types.js';
 export * from './http-client.js';
+export * from './http-response.js';

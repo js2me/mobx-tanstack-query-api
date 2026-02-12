@@ -1,16 +1,15 @@
-import type {
-  HttpStatusCode,
-  HttpSuccessStatusCode,
-} from 'http-status-code-types';
 import { action, makeObservable, observable } from 'mobx';
 import { type BooleanOptional, type IStringifyOptions, stringify } from 'qs';
-import type { AnyObject, Defined, Maybe, ValueOf } from 'yummies/types';
+import type { AnyObject, Defined, Maybe } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
+import {
+  type AnyHttpResponse,
+  type AnyResponse,
+  HttpResponse,
+  type ResponseFormat,
+} from './http-response.js';
 
 export type QueryParamsType = Record<string | number, any>;
-export type ResponseFormat = ValueOf<{
-  [K in keyof Body]: Body[K] extends Function ? K : never;
-}>;
 
 export interface FullRequestParams extends Omit<RequestInit, 'body'> {
   /** set parameter to `true` for call `securityWorker` for this request */
@@ -63,91 +62,6 @@ export interface HttpClientConfig<TMeta = unknown> {
     endpoint?: Maybe<AnyEndpoint>,
   ) => Promise<RequestParams | void> | RequestParams | void;
 }
-
-export interface HttpResponse<TData, TError = null, TStatus = number>
-  extends Omit<Response, 'status'> {
-  data: TData;
-  error: TError;
-  status: TStatus;
-  request: {
-    url: string;
-    params: globalThis.RequestInit;
-  };
-}
-
-type ResponsesByStatusMap = {
-  [K in HttpStatusCode]?: any;
-};
-
-export type HttpMultistatusResponse<
-  TResponsesByStatusMap extends ResponsesByStatusMap,
-  TDefaultOkResponse,
-  TDefaultBadResponse = unknown,
-> = Omit<Response, 'status'> &
-  (
-    | ValueOf<{
-        [K in keyof TResponsesByStatusMap]: {
-          status: K;
-          data: K extends HttpSuccessStatusCode
-            ? TResponsesByStatusMap[K]
-            : TDefaultOkResponse;
-          error: K extends HttpSuccessStatusCode
-            ? TDefaultBadResponse
-            : TResponsesByStatusMap[K];
-          request: {
-            url: string;
-            params: globalThis.RequestInit;
-          };
-        };
-      }>
-    | {
-        status: Exclude<HttpStatusCode, keyof TResponsesByStatusMap>;
-        data: TDefaultOkResponse;
-        error: TDefaultBadResponse;
-        request: {
-          url: string;
-          params: globalThis.RequestInit;
-        };
-      }
-  );
-
-export type GetHttpResponse<T> = T extends (...args: any[]) => infer R
-  ? R extends Promise<HttpResponse<any, any>>
-    ? Awaited<R>
-    : R extends Promise<HttpMultistatusResponse<any, any, any>>
-      ? Awaited<R>
-      : HttpResponse<any, any>
-  : HttpResponse<any, any>;
-
-export type HttpBadResponse<T = any> = HttpResponse<null, T>;
-
-export type AnyHttpResponse = HttpResponse<any, any>;
-
-export type AnyHttpMultistatusResponse = HttpMultistatusResponse<
-  ResponsesByStatusMap,
-  any,
-  any
->;
-
-export type AnyResponse = AnyHttpResponse | AnyHttpMultistatusResponse;
-
-export const isHttpResponse = (
-  response: unknown,
-  status?: number,
-): response is AnyHttpResponse =>
-  !!response &&
-  typeof response === 'object' &&
-  response instanceof Response &&
-  'data' in response &&
-  (!status || response.status === status);
-
-export const isHttpBadResponse = (
-  response: unknown,
-): response is HttpResponse<null, any> => {
-  return isHttpResponse(response) && (!response.ok || !!response.error);
-};
-
-export const emptyStatusCodesSet = new Set([204, 205, 304]);
 
 export class HttpClient<TMeta = unknown> {
   private config: HttpClientConfig<TMeta>;
@@ -262,76 +176,19 @@ export class HttpClient<TMeta = unknown> {
     };
   }
 
-  protected isEmptyResponseBody(response: Response): boolean {
-    if (emptyStatusCodesSet.has(response.status)) {
-      return true;
-    }
-
-    const contentLength = response.headers.get('content-length');
-
-    if (contentLength !== null && contentLength === '0') {
-      return true;
-    }
-
-    if (response.body === null) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
-   * Some custom fetch implementations expose read-only accessors (e.g. `data`),
-   * so plain assignment can throw in strict mode.
-   */
-  private setResponseField = <
-    TKey extends keyof Pick<AnyHttpResponse, 'request' | 'data' | 'error'>,
-  >(
-    response: AnyHttpResponse,
-    key: TKey,
-    value: AnyHttpResponse[TKey],
-  ) => {
-    try {
-      response[key] = value;
-      return;
-    } catch {
-      // Fallback for getter-only inherited descriptors.
-    }
-
-    Object.defineProperty(response, key, {
-      value,
-      writable: true,
-      configurable: true,
-      enumerable: true,
-    });
-  };
-
   protected async createResponse(
     responseFormat: FullRequestParams['format'] = 'json',
     raw: Response,
     url: string,
     params: RequestInit,
   ): Promise<AnyHttpResponse> {
-    const response = raw as AnyHttpResponse;
+    const response = new HttpResponse<any, any>(raw, { url, params });
 
-    this.setResponseField(response, 'request', { url, params });
-    this.setResponseField(response, 'data', null);
-    this.setResponseField(response, 'error', null);
-
-    if (this.isEmptyResponseBody(response)) {
+    if (response.isEmpty()) {
       return response;
     }
 
-    try {
-      const formatted = await response[responseFormat]();
-      if (response.ok) {
-        this.setResponseField(response, 'data', formatted);
-      } else {
-        this.setResponseField(response, 'error', formatted);
-      }
-    } catch (error) {
-      this.setResponseField(response, 'error', error);
-    }
+    await response.resolveBody(responseFormat);
 
     if (!response.ok || response.error) {
       this.setBadResponse(response);

@@ -29,11 +29,8 @@ import type {
   EndpointQueryUniqKey,
 } from './endpoint-query.types.js';
 import type { EndpointQueryClient } from './endpoint-query-client.js';
-import {
-  type AnyResponse,
-  type HttpClient,
-  isHttpResponse,
-} from './http-client.js';
+import type { HttpClient } from './http-client.js';
+import { type AnyResponse, isHttpResponse } from './http-response.js';
 
 export interface Endpoint<
   TResponse extends AnyResponse,
