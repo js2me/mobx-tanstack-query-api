@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.34.1
+
+### Patch Changes
+
+- [`e81fdbf`](https://github.com/js2me/mobx-tanstack-query-api/commit/e81fdbfd40e9ad9873913f3ae1e8330fd88a99b8) Thanks [@js2me](https://github.com/js2me)! - fixed types for `MultipleHttpResponse`
+
 ## 0.34.0
 
 ### Minor Changes
