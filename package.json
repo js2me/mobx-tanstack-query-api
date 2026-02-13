@@ -1,5 +1,5 @@
 {
-  "version": "0.34.1",
+  "version": "0.35.0",
   "name": "mobx-tanstack-query-api",
   "description": "OpenAPI/Swagger client codegen + endpoints integration with mobx-tanstack-query",
   "scripts": {
