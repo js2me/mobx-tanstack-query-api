@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.35.0
+
+### Minor Changes
+
+- [`dcd89c9`](https://github.com/js2me/mobx-tanstack-query-api/commit/dcd89c9837736f2a9ea8195d0830efc2a447a3f4) Thanks [@js2me](https://github.com/js2me)! - better throw\catch errors during processing http response (`HttpClient`)
+
 ## 0.34.1
 
 ### Patch Changes
