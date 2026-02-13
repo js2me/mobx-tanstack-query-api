@@ -1,6 +1,9 @@
+import { noop } from 'lodash-es';
+import { computed, makeObservable, reaction } from 'mobx';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
+import { sleep } from 'yummies/async';
 import { Endpoint } from './endpoint.js';
-import type { EndpointQueryClient } from './endpoint-query-client.js';
+import { EndpointQueryClient } from './endpoint-query-client.js';
 import type { RequestParams } from './http-client.js';
 import type { HttpMultistatusResponse } from './http-response.js';
 
@@ -175,5 +178,73 @@ describe('Endpoint generated example', () => {
     expect(endpoint.configuration.requiredParams).toEqual(['fruitId', 'body']);
     expect(endpoint.operationId).toBe('addFruitStar');
     expect(endpoint.pathDeclaration).toBe('api/v1/fruits/{fruitId}/stars');
+  });
+
+  it('вызывает onDone один раз при чтении query.data внутри computed', async ({
+    signal,
+  }) => {
+    const requestMock = vi.fn().mockResolvedValue({
+      status: 200,
+      ok: true,
+      data: {
+        foo: {
+          foo: 'bar',
+        },
+      },
+      error: null,
+    });
+    const queryClient = new EndpointQueryClient({
+      defaultOptions: {
+        queries: {
+          enableOnDemand: true,
+        },
+      },
+    });
+    const endpoint = createFruitEndpoint(queryClient, {
+      request: requestMock,
+      buildUrl: vi.fn(),
+    });
+    const onDone = vi.fn();
+
+    class Foo {
+      query = endpoint.toQuery({
+        enableOnDemand: true,
+        params: {
+          fruitId: 42,
+          body: { name: 'apple', color: 'red' },
+        },
+        onDone: () => {
+          this.data?.foo;
+          onDone();
+        },
+      });
+
+      constructor() {
+        makeObservable(this, {
+          data: computed.struct,
+        });
+      }
+
+      get data(): { foo?: string } | null {
+        return this.query.data?.foo || null;
+      }
+    }
+
+    const foo = new Foo();
+
+    reaction(() => foo.data, noop, { fireImmediately: true, signal });
+
+    await sleep();
+    // await foo.query.refetch();
+
+    expect(onDone).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenCalledTimes(1);
+
+    await foo.query.refetch();
+
+    expect(onDone).toHaveBeenCalledTimes(2);
+    expect(requestMock).toHaveBeenCalledTimes(2);
+
+    foo.query.destroy();
   });
 });

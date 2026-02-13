@@ -282,12 +282,16 @@ export class HttpClient<TMeta = unknown> {
       body: bodyToSend,
     };
 
-    let response: Response | undefined;
+    let response: Response;
 
     try {
       response = await this.fetch(fetchUrl, fetchParams);
     } catch (error) {
-      response = error as Response;
+      if (error instanceof Response) {
+        response = error;
+      } else {
+        throw error;
+      }
     }
 
     const httpResponse = await this.createResponse(

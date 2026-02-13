@@ -74,6 +74,7 @@ export class EndpointQuery<
       uniqKey,
       transform: transformResponse,
       params,
+      onDone: onDoneInput,
       queryClient: overridedQueryClient,
       ...queryOptions
     } = unpackedQueryOptionsInput;
@@ -102,8 +103,21 @@ export class EndpointQuery<
       dynamicOptions: observable,
     });
 
+    const lastHandledDataUpdatedAt = -1;
+    const onDone =
+      onDoneInput &&
+      ((...args: Parameters<NonNullable<typeof onDoneInput>>) => {
+        // const currentDataUpdatedAt = this.dataUpdatedAt ?? 0;
+        // if (currentDataUpdatedAt === lastHandledDataUpdatedAt) {
+        //   return;
+        // }
+        // lastHandledDataUpdatedAt = currentDataUpdatedAt;
+        onDoneInput(...args);
+      });
+
     super({
       ...queryOptions,
+      onDone,
       queryClient,
       meta: endpoint.toQueryMeta(queryOptions.meta),
       options: (): any => {

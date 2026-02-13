@@ -67,4 +67,63 @@ describe('HttpClient', () => {
     expect(headers.get('Content-Type')).toBe(ContentType.Json);
     expect(fetchParams.body).toBe(JSON.stringify({ name: 'John' }));
   });
+
+  it('request обрабатывает Response, выброшенный из fetch, как HttpResponse', async () => {
+    const responseError = new Response(
+      JSON.stringify({ message: 'from throw' }),
+      {
+        status: 429,
+      },
+    );
+    const fetchMock = vi
+      .fn<typeof globalThis.fetch>()
+      .mockRejectedValue(responseError);
+
+    const client = new HttpClient({
+      baseUrl: 'https://api.example.com',
+      fetch: fetchMock,
+    });
+
+    let thrown: unknown;
+    try {
+      await client.request<{ ok: boolean }, { message: string }>({
+        path: '/users',
+        method: 'GET',
+        format: 'json',
+      });
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(thrown).toBeDefined();
+    expect(isHttpResponse(thrown, 429)).toBe(true);
+    expect(client.badResponse).toBe(thrown);
+  });
+
+  it('request пробрасывает не-Response ошибку из fetch без изменений', async () => {
+    const networkError = new TypeError('Network failed');
+    const fetchMock = vi
+      .fn<typeof globalThis.fetch>()
+      .mockRejectedValue(networkError);
+
+    const client = new HttpClient({
+      baseUrl: 'https://api.example.com',
+      fetch: fetchMock,
+    });
+
+    let thrown: unknown;
+    try {
+      await client.request({
+        path: '/users',
+        method: 'GET',
+      });
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(thrown).toBe(networkError);
+    expect(client.badResponse).toBeNull();
+  });
 });
