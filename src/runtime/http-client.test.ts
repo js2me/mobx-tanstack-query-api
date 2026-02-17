@@ -126,4 +126,35 @@ describe('HttpClient', () => {
     expect(thrown).toBe(networkError);
     expect(client.badResponse).toBeNull();
   });
+
+  it('request пробрасывает response-like ошибку, если это не instanceof Response', async () => {
+    const responseLikeError = {
+      ok: false,
+      status: 502,
+      headers: new Headers(),
+      body: null,
+    };
+    const fetchMock = vi
+      .fn<typeof globalThis.fetch>()
+      .mockRejectedValue(responseLikeError);
+
+    const client = new HttpClient({
+      baseUrl: 'https://api.example.com',
+      fetch: fetchMock,
+    });
+
+    let thrown: unknown;
+    try {
+      await client.request({
+        path: '/users',
+        method: 'GET',
+      });
+    } catch (error) {
+      thrown = error;
+    }
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(thrown).toBe(responseLikeError);
+    expect(client.badResponse).toBeNull();
+  });
 });

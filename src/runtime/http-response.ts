@@ -83,9 +83,9 @@ export class HttpResponse<
     public request: RequestInfo,
   ) {
     this.headers = originalResponse.headers;
-    this.ok = originalResponse.ok;
-    this.body = originalResponse.body;
-    this.redirected = originalResponse.redirected;
+    this.ok = originalResponse.ok ?? false;
+    this.body = originalResponse.body ?? null;
+    this.redirected = originalResponse.redirected ?? false;
     this.status = originalResponse.status as TStatus;
     this.statusText = originalResponse.statusText;
     this.type = originalResponse.type;
@@ -103,7 +103,7 @@ export class HttpResponse<
       return true;
     }
 
-    const contentLength = this.headers.get('content-length');
+    const contentLength = this.headers?.get('content-length');
 
     if (contentLength !== null && contentLength === '0') {
       return true;

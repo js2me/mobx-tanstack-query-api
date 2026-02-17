@@ -49,4 +49,23 @@ describe('HttpResponse', () => {
     expect(badResponse.data).toBeNull();
     expect(badResponse.error).toEqual({ message: 'fail' });
   });
+
+  it("isEmpty бросает Cannot read properties of undefined (reading 'get') при отсутствии headers", () => {
+    const request = createRequestInfo();
+    const invalidResponseLike = {
+      headers: undefined,
+      ok: false,
+      body: null,
+      redirected: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+      type: 'basic',
+      url: request.url,
+      clone: () => invalidResponseLike,
+    } as unknown as Response;
+
+    const response = new HttpResponse(invalidResponseLike, request);
+
+    expect(response.isEmpty()).toBe(true);
+  });
 });
