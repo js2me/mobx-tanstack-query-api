@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.35.1
+
+### Patch Changes
+
+- [`23844d6`](https://github.com/js2me/mobx-tanstack-query-api/commit/23844d6eb732691037c4ca86396d791aa6637d5f) Thanks [@js2me](https://github.com/js2me)! - fixed strange http response with non response input
+
 ## 0.35.0
 
 ### Minor Changes
