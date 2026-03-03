@@ -17,6 +17,7 @@ if (!parsed.options.help) {
     typeof parsed.options.config === 'string' ? parsed.options.config : null,
   );
 
+  // biome-ignore lint/nursery/noFloatingPromises: <explanation>
   execConfigPath(configPath).then((generateApiParams) => {
     defineConfig(generateApiParams as any).forEach(generateApi);
   });

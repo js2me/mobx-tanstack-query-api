@@ -731,7 +731,7 @@ export * as ${namespace} from './__exports';
   }
 
   if (params.removeUnusedTypes) {
-    removeUnusedTypes({
+    await removeUnusedTypes({
       directory: params.output,
       keepTypes:
         params.removeUnusedTypes === true

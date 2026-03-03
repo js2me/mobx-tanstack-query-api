@@ -77,12 +77,13 @@ export type ToEndpointMutation<
   T,
   TMutationMeta extends AnyObject | void = void,
   TOnMutateResult = unknown,
-> = T extends Endpoint<infer TResponse, infer TParams, any>
-  ? EndpointMutation<
-      T,
-      TResponse['data'],
-      TParams,
-      TMutationMeta,
-      TOnMutateResult
-    >
-  : ToEndpointMutation<AnyEndpoint>;
+> =
+  T extends Endpoint<infer TResponse, infer TParams, any>
+    ? EndpointMutation<
+        T,
+        TResponse['data'],
+        TParams,
+        TMutationMeta,
+        TOnMutateResult
+      >
+    : ToEndpointMutation<AnyEndpoint>;

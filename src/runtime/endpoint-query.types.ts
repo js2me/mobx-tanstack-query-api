@@ -86,6 +86,7 @@ export type ToEndpointQuery<
   T extends AnyEndpoint,
   TData = ToEndpoint<T>['__response']['data'],
   TQueryData = ToEndpoint<T>['__response']['data'],
-> = T extends Endpoint<infer TResponse, any, any>
-  ? EndpointQuery<T, TResponse['data'], TResponse['error'], TData, TQueryData>
-  : ToEndpointQuery<AnyEndpoint>;
+> =
+  T extends Endpoint<infer TResponse, any, any>
+    ? EndpointQuery<T, TResponse['data'], TResponse['error'], TData, TQueryData>
+    : ToEndpointQuery<AnyEndpoint>;
