@@ -70,9 +70,8 @@ export const endpointPerFileTmpl = async (
     );
   }
 
-  return {
-    reservedDataContractNames: dataContractNamesInThisFile,
-    content: await formatTSContent(`${LINTERS_IGNORE}
+  const dataContractImportToken = '/*__DATA_CONTRACT_IMPORTS__*/';
+  const contentWithImportToken = await formatTSContent(`${LINTERS_IGNORE}
       import {
         RequestParams,
         HttpResponse,
@@ -82,18 +81,7 @@ export const endpointPerFileTmpl = async (
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
       ${extraImportLines.join('\n')}
-
-      ${
-        configuration.modelTypes.length > 0
-          ? `
-      import { ${configuration.modelTypes
-        .map((it: AnyObject) => it.name)
-        .filter(
-          (it: any) => !dataContractNamesInThisFile.includes(it),
-        )} } from "${relativePathDataContracts}";
-      `
-          : ''
-      }
+      ${dataContractImportToken}
 
       ${(
         await Promise.all(
@@ -140,6 +128,32 @@ export const endpointPerFileTmpl = async (
         route,
       })}
       export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}
-      `),
+      `);
+
+  const escapeRegExp = (value: string) =>
+    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  const usedDataContractNames = configuration.modelTypes
+    .map((modelType: AnyObject) => modelType.name as string)
+    .filter(
+      (modelTypeName) =>
+        !dataContractNamesInThisFile.includes(modelTypeName) &&
+        dataContactNames.has(modelTypeName) &&
+        new RegExp(`\\b${escapeRegExp(modelTypeName)}\\b`).test(
+          contentWithImportToken,
+        ),
+    );
+
+  const dataContractImportLine =
+    usedDataContractNames.length > 0
+      ? `import { ${usedDataContractNames.join(', ')} } from "${relativePathDataContracts}";`
+      : '';
+
+  return {
+    reservedDataContractNames: dataContractNamesInThisFile,
+    content: contentWithImportToken.replace(
+      dataContractImportToken,
+      dataContractImportLine,
+    ),
   };
 };

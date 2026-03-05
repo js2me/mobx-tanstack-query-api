@@ -124,17 +124,13 @@ const removeUnusedTypesItteration = async ({
 
   let removedCount = 0;
 
-  const isNeedToRemoveType = unpackFilterOption(
-    keepTypes,
-    (name) => name,
-    false,
-  );
+  const isKeepType = unpackFilterOption(keepTypes, (name) => name, false);
 
   for (const [name, declarations] of candidateTypes) {
     if (usedTypes.has(name)) continue;
 
     for (const decl of declarations) {
-      if ('remove' in decl && isNeedToRemoveType(name)) {
+      if ('remove' in decl && !isKeepType(name)) {
         decl.remove();
         removedCount++;
       }

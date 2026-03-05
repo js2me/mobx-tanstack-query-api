@@ -4,3 +4,5 @@ coverage
 playground
 unit-tests-coverage
 docs/.vitepress/cache
+tmp
+__generated__

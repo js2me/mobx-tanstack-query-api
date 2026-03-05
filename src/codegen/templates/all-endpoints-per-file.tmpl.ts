@@ -31,19 +31,17 @@ export const allEndpointPerFileTmpl = async (
   const { _ } = utils;
 
   const dataContractNamesInThisFile: string[] = [];
-
+  const dataContactNames = new Set(
+    Object.keys(
+      (configuration.config.swaggerSchema as any)?.components?.schemas,
+    ).map((schemaName) => utils.formatModelName(schemaName)),
+  );
   const newEndpointTemplates = routes.map((route) => {
     const newEndpointTemplateData = newEndpointTmpl({
       ...params,
       route,
     });
     const { reservedDataContractNames } = newEndpointTemplateData;
-
-    const dataContactNames = new Set(
-      Object.keys(
-        (configuration.config.swaggerSchema as any)?.components?.schemas,
-      ).map((schemaName) => utils.formatModelName(schemaName)),
-    );
 
     reservedDataContractNames.forEach((reservedDataContractName) => {
       if (!dataContactNames.has(reservedDataContractName)) {
@@ -98,15 +96,18 @@ export const allEndpointPerFileTmpl = async (
     ),
   );
 
+  const endpointTemplatesContent = endpointTemplates
+    .filter(Boolean)
+    .join('\n\n');
+
   if (metaInfo) {
     extraImportLines.push(
       `import { ${[groupName && 'Group', metaInfo?.namespace && 'namespace', 'Tag'].filter(Boolean).join(',')} } from "${groupName ? '../' : './'}meta-info";`,
     );
   }
 
-  return {
-    reservedDataContractNames: dataContractNamesInThisFile,
-    content: await formatTSContent(`${LINTERS_IGNORE}
+  const dataContractImportToken = '/*__DATA_CONTRACT_IMPORTS__*/';
+  const contentWithImportToken = await formatTSContent(`${LINTERS_IGNORE}
       import {
         RequestParams,
         HttpResponse,
@@ -116,18 +117,7 @@ export const allEndpointPerFileTmpl = async (
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
       ${extraImportLines.join('\n')}
-
-      ${
-        configuration.modelTypes.length > 0
-          ? `
-      import { ${configuration.modelTypes
-        .map((it: AnyObject) => it.name)
-        .filter(
-          (it: any) => !dataContractNamesInThisFile.includes(it),
-        )} } from "${relativePathDataContracts}";
-      `
-          : ''
-      }
+      ${dataContractImportToken}
 
       ${(
         await Promise.all(
@@ -153,7 +143,33 @@ export const allEndpointPerFileTmpl = async (
         .filter(Boolean)
         .join('\n\n')}
 
-      ${endpointTemplates.filter(Boolean).join('\n\n')}
-      `),
+      ${endpointTemplatesContent}
+      `);
+
+  const escapeRegExp = (value: string) =>
+    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  const usedDataContractNames = configuration.modelTypes
+    .map((modelType: AnyObject) => modelType.name as string)
+    .filter(
+      (modelTypeName) =>
+        !dataContractNamesInThisFile.includes(modelTypeName) &&
+        dataContactNames.has(modelTypeName) &&
+        new RegExp(`\\b${escapeRegExp(modelTypeName)}\\b`).test(
+          contentWithImportToken,
+        ),
+    );
+
+  const dataContractImportLine =
+    usedDataContractNames.length > 0
+      ? `import { ${usedDataContractNames.join(', ')} } from "${relativePathDataContracts}";`
+      : '';
+
+  return {
+    reservedDataContractNames: dataContractNamesInThisFile,
+    content: contentWithImportToken.replace(
+      dataContractImportToken,
+      dataContractImportLine,
+    ),
   };
 };

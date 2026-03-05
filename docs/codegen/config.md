@@ -17,6 +17,9 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   input: 'path-or-url-to-openapi.{yaml|json}' | object,
   output: 'path-to-output-directory',
+  noBarrelFiles: true,
+  removeUnusedTypes: true,
+  outputType: 'one-endpoint-per-file',
 })
 ```
 
@@ -35,6 +38,7 @@ export default defineConfig([
   {
     input: 'path-or-url-to-openapi.{yaml|json}' | object,
     output: 'path-to-output-directory',
+    removeUnusedTypes: true,
   },
   {
     input: 'path-or-url-to-openapi.{yaml|json}' | object,
@@ -43,6 +47,7 @@ export default defineConfig([
   {
     input: 'path-or-url-to-openapi.{yaml|json}' | object,
     output: 'path-to-output-directory',
+    outputType: 'one-endpoint-per-file',
   }
 ])
 ```

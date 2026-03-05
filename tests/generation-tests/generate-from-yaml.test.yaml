@@ -1,0 +1,354 @@
+openapi: 3.1.0
+info:
+  title: Quantum Orchard Registry API
+  version: 9.4.2
+  summary: Public interface for neon orchard coordination.
+  description: |
+    This specification describes a fictional platform that manages
+    orchard nodes, harvest cycles, relay messages, and access credentials.
+servers:
+  - url: https://api.quantum-orchard.example/v3
+    description: Primary cluster
+  - url: https://staging.quantum-orchard.example/v3
+    description: Sandbox cluster
+tags:
+  - name: NodeLedger
+    description: Operations related to orchard nodes.
+  - name: CycleMatrix
+    description: Harvest cycle orchestration.
+  - name: RelayChannel
+    description: Event relay publishing and inspection.
+paths:
+  /node-ledger:
+    get:
+      tags: [NodeLedger]
+      operationId: browseNodeLedger
+      summary: List orchard nodes
+      parameters:
+        - $ref: '#/components/parameters/OffsetMarker'
+        - $ref: '#/components/parameters/BatchSize'
+      responses:
+        '200':
+          description: A paginated collection of nodes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodePageEnvelope'
+        '401':
+          $ref: '#/components/responses/AccessDenied'
+    post:
+      tags: [NodeLedger]
+      operationId: registerNodeLedgerEntry
+      summary: Register a new node
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NodeDraftPayload'
+      responses:
+        '201':
+          description: Created node record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeRecord'
+        '409':
+          $ref: '#/components/responses/RecordConflict'
+  /node-ledger/{ledgerNodeId}:
+    parameters:
+      - $ref: '#/components/parameters/LedgerNodeId'
+    get:
+      tags: [NodeLedger]
+      operationId: inspectNodeLedgerEntry
+      summary: Retrieve single node details
+      responses:
+        '200':
+          description: Node details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeRecord'
+        '404':
+          $ref: '#/components/responses/EntryMissing'
+    patch:
+      tags: [NodeLedger]
+      operationId: tuneNodeLedgerEntry
+      summary: Update node profile fields
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/NodePatchPayload'
+      responses:
+        '200':
+          description: Updated node details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NodeRecord'
+  /cycle-matrix:
+    get:
+      tags: [CycleMatrix]
+      operationId: listCycleMatrixRows
+      summary: List harvest cycles
+      responses:
+        '200':
+          description: Collection of cycle snapshots.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CycleSnapshot'
+    post:
+      tags: [CycleMatrix]
+      operationId: createCycleMatrixRow
+      summary: Create new harvest cycle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CycleDraftPayload'
+      responses:
+        '201':
+          description: Created cycle snapshot.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CycleSnapshot'
+  /relay-channel/publish:
+    post:
+      tags: [RelayChannel]
+      operationId: publishRelaySignal
+      summary: Publish relay signal packet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelaySignalPacket'
+      responses:
+        '202':
+          description: Packet accepted for distribution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DispatchReceipt'
+        '422':
+          $ref: '#/components/responses/ValidationTrap'
+components:
+  securitySchemes:
+    NovaBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    OffsetMarker:
+      name: offsetMarker
+      in: query
+      required: false
+      schema:
+        type: string
+        pattern: '^mk_[A-Za-z0-9]{8,32}$'
+      description: Cursor marker for forward pagination.
+    BatchSize:
+      name: batchSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 40
+      description: Maximum number of rows returned.
+    LedgerNodeId:
+      name: ledgerNodeId
+      in: path
+      required: true
+      schema:
+        type: string
+        pattern: '^nd_[A-Za-z0-9]{12}$'
+      description: Stable node identifier.
+  responses:
+    AccessDenied:
+      description: Access token is absent or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemArtifact'
+    RecordConflict:
+      description: Record conflicts with existing data.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemArtifact'
+    EntryMissing:
+      description: Requested record is not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemArtifact'
+    ValidationTrap:
+      description: Input payload failed semantic checks.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemArtifact'
+  schemas:
+    NodePageEnvelope:
+      type: object
+      required: [rows, pageInfo]
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/NodeRecord'
+        pageInfo:
+          $ref: '#/components/schemas/PageInfoToken'
+    NodeRecord:
+      type: object
+      required: [ledgerNodeId, displayLabel, shardClass, lifecycleState, telemetry]
+      properties:
+        ledgerNodeId:
+          type: string
+          example: nd_7fR4Qp2Lm8Za
+        displayLabel:
+          type: string
+          minLength: 3
+          maxLength: 90
+          example: Amber-Vector-17
+        shardClass:
+          type: string
+          enum: [copper, cobalt, graphite, iridium]
+        lifecycleState:
+          type: string
+          enum: [queued, active, frozen, retired]
+        telemetry:
+          $ref: '#/components/schemas/NodeTelemetryBlock'
+    NodeTelemetryBlock:
+      type: object
+      required: [heartbeatEpochMs, signalGrade, anomalyScore]
+      properties:
+        heartbeatEpochMs:
+          type: integer
+          format: int64
+          minimum: 0
+        signalGrade:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+        anomalyScore:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+    NodeDraftPayload:
+      type: object
+      required: [displayLabel, shardClass]
+      properties:
+        displayLabel:
+          type: string
+        shardClass:
+          type: string
+          enum: [copper, cobalt, graphite, iridium]
+    NodePatchPayload:
+      type: object
+      additionalProperties: false
+      properties:
+        displayLabel:
+          type: string
+        lifecycleState:
+          type: string
+          enum: [queued, active, frozen, retired]
+    CycleDraftPayload:
+      type: object
+      required: [cycleAlias, targetNodeIds, schedule]
+      properties:
+        cycleAlias:
+          type: string
+          example: cycle-nebula-prime
+        targetNodeIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        schedule:
+          $ref: '#/components/schemas/ScheduleBlock'
+    CycleSnapshot:
+      type: object
+      required: [cycleId, cycleAlias, runState, schedule]
+      properties:
+        cycleId:
+          type: string
+          example: cy_hL84mQ1zNfR5
+        cycleAlias:
+          type: string
+        runState:
+          type: string
+          enum: [draft, armed, running, suspended, archived]
+        schedule:
+          $ref: '#/components/schemas/ScheduleBlock'
+    ScheduleBlock:
+      type: object
+      required: [timezoneCode, cronMask]
+      properties:
+        timezoneCode:
+          type: string
+          example: UTC
+        cronMask:
+          type: string
+          example: '15 */2 * * *'
+    RelaySignalPacket:
+      type: object
+      required: [channelCode, eventVerb, payload]
+      properties:
+        channelCode:
+          type: string
+          enum: [orchard.node, orchard.cycle, orchard.audit]
+        eventVerb:
+          type: string
+          enum: [spawned, tuned, halted, resumed, removed]
+        payload:
+          type: object
+          additionalProperties: true
+    DispatchReceipt:
+      type: object
+      required: [receiptId, acceptedEpochMs]
+      properties:
+        receiptId:
+          type: string
+          example: rc_B3z9Wq5Lt2Pm
+        acceptedEpochMs:
+          type: integer
+          format: int64
+    PageInfoToken:
+      type: object
+      required: [hasNext, nextMarker]
+      properties:
+        hasNext:
+          type: boolean
+        nextMarker:
+          type: string
+          nullable: true
+    ProblemArtifact:
+      type: object
+      required: [problemCode, problemTitle, statusCode]
+      properties:
+        problemCode:
+          type: string
+          example: relay.validation.failed
+        problemTitle:
+          type: string
+          example: Validation failed for packet body.
+        statusCode:
+          type: integer
+          example: 422
+        problemDetail:
+          type: string
+          nullable: true
+security:
+  - NovaBearer: []
