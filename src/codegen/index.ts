@@ -273,6 +273,7 @@ export const generateApi = async (
 
   const { _ } = utils;
 
+  const outputType = params.outputType ?? 'one-endpoint-per-file';
   const shouldGenerateBarrelFiles = !params.noBarrelFiles;
 
   let namespace: Maybe<string> = null;
@@ -287,8 +288,8 @@ export const generateApi = async (
 
   const codegenFs = codegenProcess.fileSystem as any;
 
-  codegenFs.cleanDir(params.output);
-  codegenFs.createDir(params.output);
+  codegenFs.cleanDir(paths.outputDir);
+  codegenFs.createDir(paths.outputDir);
 
   const filterTypes = unpackFilterOption(
     params.filterTypes,
@@ -333,7 +334,7 @@ export const generateApi = async (
   if (params.groupBy == null) {
     collectedExportFilesFromIndexFile.push('endpoints');
 
-    if (params.outputType === 'one-endpoint-per-file') {
+    if (outputType === 'one-endpoint-per-file') {
       // #region кодогенерация 1 эндпоинт - 1 файл без группировки
       codegenFs.createDir(path.resolve(params.output, 'endpoints'));
 
@@ -438,7 +439,7 @@ export const generateApi = async (
         collectedExportFilesFromIndexFile.push('endpoints');
 
         codegenFs.createFile({
-          path: params.output,
+          path: paths.outputDir,
           fileName,
           withPrefix: false,
           content: requestInfoPerFileContent,
@@ -503,7 +504,7 @@ export const generateApi = async (
 
       let hasFilteredRoutes = false;
 
-      if (params.outputType === 'one-endpoint-per-file') {
+      if (outputType === 'one-endpoint-per-file') {
         // #region Генерация одного эндпоинта на 1 файл
         codegenFs.createDir(path.resolve(groupDirectory, 'endpoints'));
 
@@ -631,7 +632,7 @@ export * as ${exportGroupName} from './endpoints';
 
         if (
           shouldGenerateBarrelFiles &&
-          params.outputType === 'one-endpoint-per-file'
+          outputType === 'one-endpoint-per-file'
         ) {
           codegenFs.createFile({
             path: path.resolve(groupDirectory, 'endpoints'),
@@ -732,7 +733,7 @@ export * as ${namespace} from './__exports';
 
   if (params.removeUnusedTypes) {
     await removeUnusedTypes({
-      directory: params.output,
+      directory: paths.outputDir,
       keepTypes:
         params.removeUnusedTypes === true
           ? undefined

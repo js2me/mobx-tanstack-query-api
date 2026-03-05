@@ -7,6 +7,20 @@ To generate code based on your configuration file use command:
 npx mobx-tanstack-query-api
 ```
 
+Or via `package.json` scripts:
+
+```json
+{
+  "scripts": {
+    "codegen": "mobx-tanstack-query-api"
+  }
+}
+```
+
+```bash
+npm run codegen
+```
+
 ## Options   
 
 #### `-c, --config <path>`   
