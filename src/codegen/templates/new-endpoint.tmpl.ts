@@ -31,6 +31,154 @@ const responseContentKind: AnyObject = {
   BYTES: '"bytes"',
 };
 
+/** Infer response format from raw OpenAPI operation (produces or responses content) when contentKind is not set */
+function inferResponseFormatFromRaw(raw: AnyObject): string | null {
+  const contentTypes: string[] = [];
+  if (Array.isArray(raw.produces)) {
+    contentTypes.push(...raw.produces);
+  }
+  const successStatus =
+    raw.responses &&
+    Object.keys(raw.responses).find((s) => {
+      const code = Number.parseInt(s, 10);
+      return code >= 200 && code < 300;
+    });
+  const content = successStatus && raw.responses[successStatus]?.content;
+  if (content && typeof content === 'object') {
+    contentTypes.push(...Object.keys(content));
+  }
+  if (contentTypes.length === 0) return null;
+
+  const mimeToFormat = (mime: string): string | null => {
+    if (mime.includes('application/json') || mime.includes('+json'))
+      return '"json"';
+    if (mime.startsWith('text/')) return '"text"';
+    if (mime.includes('form-data') || mime.includes('multipart'))
+      return '"formData"';
+    // binary: blob() in Fetch API — IANA binary types: application/*, image/*, audio/*, video/*, font/*, model/*, message/*, haptics/*
+    if (
+      mime.includes('octet-stream') ||
+      mime.includes('spreadsheet') ||
+      mime.includes('vnd.') ||
+      mime.startsWith('application/') ||
+      mime.startsWith('image/') ||
+      mime.startsWith('audio/') ||
+      mime.startsWith('video/') ||
+      mime.startsWith('font/') ||
+      mime.startsWith('model/') ||
+      mime.startsWith('message/') ||
+      mime.startsWith('haptics/')
+    )
+      return '"blob"';
+    return null;
+  };
+
+  // Prefer json for typed responses, then first recognized format
+  const preferredOrder = ['"json"', '"text"', '"formData"', '"blob"'] as const;
+  for (const fmt of preferredOrder) {
+    const found = contentTypes.map(mimeToFormat).find((f) => f === fmt);
+    if (found) return found;
+  }
+  return null;
+}
+
+/** Resolve response format from contentKind, then from raw operation (produces / responses content) */
+function getResponseFormat(
+  responseBodyInfo: AnyObject,
+  raw: AnyObject,
+  configuration: AnyObject,
+  path: string,
+  method: string,
+): string | null {
+  const fromContentKind =
+    responseContentKind[responseBodyInfo.success?.schema?.contentKind];
+  if (fromContentKind) return fromContentKind;
+  const swaggerSchema =
+    configuration.config?.swaggerSchema ?? configuration.swaggerSchema;
+  const schemaPaths = swaggerSchema?.paths;
+  const pathKey = path?.startsWith('/') ? path : `/${path || ''}`;
+  const methodKey = method?.toLowerCase?.() ?? method;
+  const schemaOperation =
+    pathKey && methodKey ? schemaPaths?.[pathKey]?.[methodKey] : null;
+  const rawWithProduces =
+    schemaOperation && typeof schemaOperation === 'object'
+      ? { ...schemaOperation, ...raw }
+      : raw;
+  return inferResponseFormatFromRaw(rawWithProduces);
+}
+
+/** Infer request body contentType from raw OpenAPI operation (consumes or requestBody.content) */
+function inferRequestBodyContentTypeFromRaw(raw: AnyObject): string | null {
+  const contentTypes: string[] = [];
+  if (Array.isArray(raw.consumes)) {
+    contentTypes.push(...raw.consumes);
+  }
+  const requestBody = raw.requestBody;
+  if (requestBody?.content && typeof requestBody.content === 'object') {
+    contentTypes.push(...Object.keys(requestBody.content));
+  }
+  if (contentTypes.length === 0) return null;
+
+  const mimeToContentType = (mime: string): string | null => {
+    if (mime.includes('application/json') || mime.includes('+json'))
+      return '"application/json"';
+    if (mime.includes('application/x-www-form-urlencoded'))
+      return '"application/x-www-form-urlencoded"';
+    if (mime.includes('multipart/form-data') || mime.includes('multipart/'))
+      return '"multipart/form-data"';
+    if (mime.startsWith('text/')) return '"text/plain"';
+    if (
+      mime.includes('octet-stream') ||
+      mime.startsWith('application/') ||
+      mime.startsWith('image/') ||
+      mime.startsWith('audio/') ||
+      mime.startsWith('video/') ||
+      mime.startsWith('font/') ||
+      mime.startsWith('model/') ||
+      mime.includes('vnd.')
+    )
+      return '"application/octet-stream"';
+    return null;
+  };
+
+  const preferredOrder = [
+    '"application/json"',
+    '"application/x-www-form-urlencoded"',
+    '"multipart/form-data"',
+    '"text/plain"',
+    '"application/octet-stream"',
+  ] as const;
+  for (const ct of preferredOrder) {
+    const found = contentTypes.map(mimeToContentType).find((c) => c === ct);
+    if (found) return found;
+  }
+  return null;
+}
+
+/** Resolve request body contentType from contentKind, then from raw (consumes / requestBody.content) */
+function getRequestBodyContentType(
+  requestBodyInfo: AnyObject,
+  raw: AnyObject,
+  configuration: AnyObject,
+  path: string,
+  method: string,
+): string | null {
+  const fromContentKind = requestContentKind[requestBodyInfo?.contentKind];
+  if (fromContentKind) return fromContentKind;
+  const swaggerSchema =
+    configuration.config?.swaggerSchema ?? configuration.swaggerSchema;
+  const schemaPaths = swaggerSchema?.paths;
+  const pathKey = path?.startsWith('/') ? path : `/${path || ''}`;
+  const methodKey = method?.toLowerCase?.() ?? method;
+  const schemaOperation =
+    pathKey && methodKey ? schemaPaths?.[pathKey]?.[methodKey] : null;
+  const rawWithConsumes =
+    schemaOperation && typeof schemaOperation === 'object'
+      ? { ...schemaOperation, ...raw }
+      : raw;
+  return inferRequestBodyContentTypeFromRaw(rawWithConsumes);
+}
+
 export const newEndpointTmpl = ({
   route,
   codegenParams,
@@ -149,9 +297,21 @@ export const newEndpointTmpl = ({
     (codegenParams.requestPathSuffix ?? '');
 
   const bodyContentType =
-    requestContentKind[requestBodyInfo.contentKind] || null;
+    getRequestBodyContentType(
+      requestBodyInfo,
+      raw,
+      configuration as AnyObject,
+      path,
+      method,
+    ) || null;
   const responseFormat =
-    responseContentKind[responseBodyInfo.success?.schema?.contentKind] || null;
+    getResponseFormat(
+      responseBodyInfo,
+      raw,
+      configuration as AnyObject,
+      path,
+      method,
+    ) || null;
 
   const reservedDataContractNames: string[] = _.uniq([
     ...requestOutputDataTypes,

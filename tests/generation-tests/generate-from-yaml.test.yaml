@@ -19,6 +19,30 @@ tags:
   - name: RelayChannel
     description: Event relay publishing and inspection.
 paths:
+  /foo/bar/baz:
+    get:
+      operationId: fooBarBaz
+      parameters:
+      - in: query
+        name: a
+        required: true
+        type: string
+      - collectionFormat: multi
+        in: query
+        items:
+          type: string
+        name: excludeRt
+        type: array
+      - in: query
+        name: login
+        type: string
+      produces:
+        - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            "$ref": "#/components/schemas/Keoddd"
   /node-ledger:
     get:
       tags: [NodeLedger]
@@ -119,6 +143,243 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CycleSnapshot'
+  # Endpoints for response format inference tests (mimeToFormat coverage)
+  /reports/plain-text:
+    get:
+      operationId: getTextReport
+      summary: Plain text report
+      responses:
+        '200':
+          description: Text report
+          content:
+            text/plain:
+              schema:
+                type: string
+  /reports/multipart:
+    get:
+      operationId: getMultipartReport
+      summary: Multipart report
+      responses:
+        '200':
+          description: Multipart form data
+          content:
+            multipart/form-data:
+              schema:
+                type: object
+  /reports/binary:
+    get:
+      operationId: getBinaryReport
+      summary: Binary file (octet-stream)
+      security:
+        - TestBearer: []
+      externalDocs:
+        url: https://api.example.com/docs/binary-report
+        description: Binary report API reference
+      responses:
+        '200':
+          description: Binary content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /reports/image:
+    get:
+      operationId: getImageReport
+      summary: Image response
+      responses:
+        '200':
+          description: PNG image
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+  /reports/audio:
+    get:
+      operationId: getAudioReport
+      summary: Audio response
+      responses:
+        '200':
+          description: Audio file
+          content:
+            audio/mpeg:
+              schema:
+                type: string
+                format: binary
+  /reports/video:
+    get:
+      operationId: getVideoReport
+      summary: Video response
+      responses:
+        '200':
+          description: Video file
+          content:
+            video/mp4:
+              schema:
+                type: string
+                format: binary
+  /reports/font:
+    get:
+      operationId: getFontReport
+      summary: Font file response
+      responses:
+        '200':
+          description: Web font
+          content:
+            font/woff2:
+              schema:
+                type: string
+                format: binary
+  /reports/json-variant:
+    get:
+      operationId: getJsonVariantReport
+      summary: JSON variant (+json suffix)
+      responses:
+        '200':
+          description: Vendor JSON
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+  /reports/model:
+    get:
+      operationId: getModelReport
+      summary: 3D model (model/*)
+      responses:
+        '200':
+          description: GLTF binary model
+          content:
+            model/gltf-binary:
+              schema:
+                type: string
+                format: binary
+  /reports/message:
+    get:
+      operationId: getMessageReport
+      summary: Message (message/*)
+      responses:
+        '200':
+          description: RFC822 message
+          content:
+            message/rfc822:
+              schema:
+                type: string
+                format: binary
+  # Request body contentType inference (inferRequestBodyContentTypeFromRaw)
+  /reports/form-encoded:
+    post:
+      operationId: submitFormEncodedReport
+      summary: Submit form-urlencoded payload
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                field:
+                  type: string
+      responses:
+        '200':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+  /reports/upload:
+    post:
+      operationId: submitMultipartReport
+      summary: Upload multipart form data
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+  /reports/plain-body:
+    post:
+      operationId: submitPlainTextReport
+      summary: Submit plain text body
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Accepted
+          content:
+            text/plain:
+              schema:
+                type: string
+  /reports/binary-upload:
+    post:
+      operationId: submitBinaryUploadReport
+      summary: Upload binary (octet-stream)
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+  /reports/multi-content:
+    post:
+      operationId: submitMultiContentReport
+      summary: Accepts both JSON and form (preferred order json first)
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+  /reports/merge-patch:
+    patch:
+      operationId: applyMergePatchReport
+      summary: Merge patch (+json → application/json)
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
   /relay-channel/publish:
     post:
       tags: [RelayChannel]
@@ -141,7 +402,7 @@ paths:
           $ref: '#/components/responses/ValidationTrap'
 components:
   securitySchemes:
-    NovaBearer:
+    TestBearer:
       type: http
       scheme: bearer
       bearerFormat: JWT
@@ -334,6 +595,8 @@ components:
         nextMarker:
           type: string
           nullable: true
+    Keoddd:
+      type: object
     ProblemArtifact:
       type: object
       required: [problemCode, problemTitle, statusCode]
@@ -351,4 +614,4 @@ components:
           type: string
           nullable: true
 security:
-  - NovaBearer: []
+  - TestBearer: []
