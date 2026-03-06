@@ -28,7 +28,6 @@ function getRequestContentTypes(raw: AnyObject): string[] {
   if (body && typeof body === 'object') out.push(...Object.keys(body));
   return [...new Set(out)];
 }
-
 type JSDocLine = { name?: string; content?: string };
 
 function getSecuritySchemeNames(security: unknown): string[] {

@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.36.1
+
+### Patch Changes
+
+- [`8f6bfde`](https://github.com/js2me/mobx-tanstack-query-api/commit/8f6bfde12fd612890206f611f92fb44683e55117) Thanks [@js2me](https://github.com/js2me)! - fixed incorrect handling outputType
+
+- [`fb118b8`](https://github.com/js2me/mobx-tanstack-query-api/commit/fb118b8cbb1ff23bbe40f1382a9688924476b108) Thanks [@js2me](https://github.com/js2me)! - fixed `removeUnusedTypes` property work
+
+- [`8f6bfde`](https://github.com/js2me/mobx-tanstack-query-api/commit/8f6bfde12fd612890206f611f92fb44683e55117) Thanks [@js2me](https://github.com/js2me)! - update docs
+
 ## 0.36.0
 
 ### Minor Changes
