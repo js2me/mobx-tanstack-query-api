@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.37.0
+
+### Minor Changes
+
+- [`7ad0ecc`](https://github.com/js2me/mobx-tanstack-query-api/commit/7ad0ecca7c2fe109b1362a3ccb078eea9c930f4b) Thanks [@js2me](https://github.com/js2me)! - better processing fields: `consumes`, `produces` (pass more correct `format`, `contentType` fields)
+
+- [`7ad0ecc`](https://github.com/js2me/mobx-tanstack-query-api/commit/7ad0ecca7c2fe109b1362a3ccb078eea9c930f4b) Thanks [@js2me](https://github.com/js2me)! - more jsdoc content for endpoints
+
 ## 0.36.1
 
 ### Patch Changes
