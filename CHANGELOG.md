@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.37.1
+
+### Patch Changes
+
+- [`4ccb805`](https://github.com/js2me/mobx-tanstack-query-api/commit/4ccb8052bf221b5beede944ecc3e267f6b5453ff) Thanks [@js2me](https://github.com/js2me)! - updated swagger-typescript-api to 13.3.1
+
 ## 0.37.0
 
 ### Minor Changes
