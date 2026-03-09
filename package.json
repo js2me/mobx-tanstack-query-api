@@ -46,7 +46,13 @@
     "url": "git://github.com/js2me/mobx-tanstack-query-api"
   },
   "peerDependencies": {
-    "mobx": "^6.13.6"
+    "mobx": "^6.13.6",
+    "zod": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@tanstack/query-core": "^5.90.20",

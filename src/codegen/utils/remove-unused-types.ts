@@ -13,7 +13,7 @@ export interface RemoveUnusedTypesParams {
 const removeUnusedTypesItteration = async ({
   directory,
   keepTypes,
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: iterative AST traversal
 }: RemoveUnusedTypesParams) => {
   const project = new Project();
 

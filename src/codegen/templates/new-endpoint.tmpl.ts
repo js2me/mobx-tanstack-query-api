@@ -4,6 +4,11 @@ import type { BaseTmplParams } from '../types/base-tmpl-params.js';
 import type { MetaInfo } from '../types/index.js';
 import { createShortModelType } from '../utils/create-short-model-type.js';
 import {
+  buildEndpointZodContractsCode,
+  getResponseSchemaKeyFromOperation,
+  typeNameToSchemaKey,
+} from '../utils/zod/build-endpoint-zod-contracts-code.js';
+import {
   formatGroupNameEnumKey,
   formatTagNameEnumKey,
 } from './meta-info.tmpl.js';
@@ -12,6 +17,10 @@ export interface NewEndpointTmplParams extends BaseTmplParams {
   route: ParsedRoute;
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;
+  /** When true, generates Zod contracts (params + data) and adds contracts to endpoint config */
+  generateZodContracts?: boolean;
+  /** When set, auxiliary Zod schemas are not inlined; endpoint imports them from this path (e.g. '../schemas') */
+  relativePathZodSchemas?: string | null;
 }
 
 // RequestParams["type"]
@@ -188,6 +197,9 @@ export const newEndpointTmpl = ({
   metaInfo,
   filterTypes,
   configuration,
+  generateZodContracts,
+  relativePathZodSchemas,
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: codegen template, many branches by design
 }: NewEndpointTmplParams) => {
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
@@ -374,9 +386,78 @@ export const newEndpointTmpl = ({
 
   const isAllowedInputType = filterTypes(requestInputTypeDc);
 
+  const defaultOkResponseType = positiveResponseTypes?.[0]?.type ?? 'unknown';
+  const contractsVarName = generateZodContracts
+    ? `${_.camelCase(route.routeName.usage)}Contracts`
+    : null;
+  const swaggerSchema =
+    (configuration.config as AnyObject)?.swaggerSchema ??
+    (configuration as AnyObject)?.swaggerSchema;
+  const componentsSchemas = swaggerSchema?.components?.schemas as Record<
+    string,
+    AnyObject
+  > | null;
+  let operationFromSpec: AnyObject | null = null;
+  const pathKeyForSpec = path?.startsWith('/') ? path : `/${path || ''}`;
+  const methodKey = method?.toLowerCase?.() ?? method;
+  if (pathKeyForSpec && methodKey && swaggerSchema?.paths?.[pathKeyForSpec]) {
+    operationFromSpec = swaggerSchema.paths[pathKeyForSpec][methodKey] ?? null;
+  }
+  if (!operationFromSpec && swaggerSchema?.paths && raw?.operationId) {
+    for (const pathItem of Object.values(swaggerSchema.paths) as AnyObject[]) {
+      const op = pathItem?.[methodKey];
+      if (op?.operationId === raw.operationId) {
+        operationFromSpec = op;
+        break;
+      }
+    }
+  }
+  let responseSchemaKey = getResponseSchemaKeyFromOperation(
+    operationFromSpec ?? raw,
+  );
+  if (!responseSchemaKey && componentsSchemas && configuration.modelTypes) {
+    const aliasType = configuration.modelTypes.find(
+      (m: AnyObject) => m.name === defaultOkResponseType,
+    );
+    if (
+      aliasType?.typeIdentifier === 'type' &&
+      typeof aliasType.content === 'string' &&
+      /^[A-Za-z0-9_]+$/.test(aliasType.content.trim())
+    ) {
+      const resolved = typeNameToSchemaKey(aliasType.content.trim(), 'DC');
+      if (resolved in componentsSchemas) responseSchemaKey = resolved;
+    }
+  }
+  if (!responseSchemaKey && componentsSchemas) {
+    const match = defaultOkResponseType.match(/^Get(.+)DataDC$/);
+    if (match) {
+      const candidate = match[1];
+      if (candidate in componentsSchemas) responseSchemaKey = candidate;
+    }
+  }
+  const contractsCode =
+    generateZodContracts && contractsVarName
+      ? buildEndpointZodContractsCode({
+          routeNameUsage: route.routeName.usage,
+          inputParams,
+          responseDataTypeName: defaultOkResponseType,
+          contractsVarName,
+          utils,
+          componentsSchemas: componentsSchemas ?? undefined,
+          typeSuffix: 'DC',
+          responseSchemaKey: responseSchemaKey ?? undefined,
+          useExternalZodSchemas: Boolean(relativePathZodSchemas),
+        })
+      : null;
+
+  const contractsLine =
+    contractsVarName != null ? `contracts: ${contractsVarName},` : '';
+
   return {
     reservedDataContractNames,
     localModelTypes: isAllowedInputType ? [requestInputTypeDc] : [],
+    contractsCode: contractsCode ?? undefined,
+    contractsVarName: contractsVarName ?? undefined,
     content: `
 new ${importFileParams.endpoint.exportName}<
   ${getHttpRequestGenerics()},
@@ -412,6 +493,7 @@ new ${importFileParams.endpoint.exportName}<
         ${groupName ? `group: ${metaInfo ? `Group.${formatGroupNameEnumKey(groupName, utils)}` : `"${groupName}"`},` : ''}
         ${metaInfo?.namespace ? `namespace,` : ''}
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
+        ${contractsLine}
     },
     ${importFileParams.queryClient.exportName},
     ${importFileParams.httpClient.exportName},

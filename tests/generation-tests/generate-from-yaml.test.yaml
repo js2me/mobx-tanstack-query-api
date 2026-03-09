@@ -112,6 +112,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NodeRecord'
+  /golden-apples/{id}:
+    get:
+      tags:
+        - GoldenApple
+      x-ogen-operation-group: 'GoldenApple'
+      operationId: getGoldenApple
+      security:
+        - accessCookieAuth: [ ]
+      summary: Get a specific golden apple
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Golden apple
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoldenApple'
+        'default':
+          description: Unable to retrieve
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /cycle-matrix:
     get:
       tags: [CycleMatrix]
@@ -613,5 +642,172 @@ components:
         problemDetail:
           type: string
           nullable: true
+    Core:
+      type: object
+      properties:
+        title:
+          type: string
+        id:
+          type: string
+          format: uuid
+      required:
+        - title
+        - id
+    Ripeness:
+      type: string
+      enum:
+        - active
+        - draft
+        - archived
+    GardenerName:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        father_name:
+          type: string
+          maxLength: 100
+    SeedScore:
+      type: number
+      nullable: true
+      minimum: 0
+      maximum: 5
+    JuiceRatio:
+      type: number
+      format: float
+      nullable: true
+      minimum: 0
+      maximum: 1
+    HarvestGrade:
+      type: number
+      format: float
+      nullable: true
+      minimum: 0
+      maximum: 100
+    BasketGrade:
+      type: object
+      properties:
+        interview:
+          $ref: '#/components/schemas/HarvestGrade'
+        trial_review:
+          $ref: '#/components/schemas/HarvestGrade'
+        tech_review:
+          $ref: '#/components/schemas/HarvestGrade'
+    TreeRequirements:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        grade_id:
+          type: string
+          format: uuid
+        competency:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            title:
+              type: string
+              minLength: 1
+          required:
+            - id
+            - title
+        description:
+          nullable: true
+          type: string
+          maxLength: 500
+        marks:
+          type: object
+          properties:
+            tech_review:
+              $ref: '#/components/schemas/SeedScore'
+            interview:
+              $ref: '#/components/schemas/SeedScore'
+            trial_review:
+              $ref: '#/components/schemas/SeedScore'
+      required:
+        - id
+        - grade_id
+        - competency
+        - marks
+    BranchMarks:
+      type: object
+      properties:
+        interview:
+          $ref: '#/components/schemas/JuiceRatio'
+        trial_review:
+          $ref: '#/components/schemas/JuiceRatio'
+        tech_review:
+          $ref: '#/components/schemas/JuiceRatio'
+    OrchardRequirements:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        group:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            title:
+              type: string
+              minLength: 1
+          required:
+            - id
+            - title
+        requirements:
+          type: array
+          items:
+            $ref: '#/components/schemas/TreeRequirements'
+        marks:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/BranchMarks'
+    Apple:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        role:
+          $ref: '#/components/schemas/Core'
+        updated_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/Ripeness'
+        version: 
+          type: integer
+        editor:
+          $ref: '#/components/schemas/GardenerName'
+      required:
+        - id
+        - role
+        - updated_at
+        - status
+        - version
+    GoldenApple:
+      allOf:
+        - $ref: '#/components/schemas/Apple'
+        - type: object
+          properties:
+            marks:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/BasketGrade'
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrchardRequirements'
 security:
   - TestBearer: []

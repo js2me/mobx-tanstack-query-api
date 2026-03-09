@@ -206,4 +206,10 @@ export interface GenerateQueryApiParams {
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#nobarrelfiles)
    */
   noBarrelFiles?: boolean;
+
+  /**
+   * When true, generates Zod contracts (params + data schemas) for each endpoint
+   * and adds a `contracts` field to the endpoint config. Requires `zod` to be installed.
+   */
+  generateZodContracts?: boolean;
 }

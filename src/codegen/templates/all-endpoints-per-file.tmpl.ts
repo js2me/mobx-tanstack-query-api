@@ -11,6 +11,7 @@ export interface AllEndpointPerFileTmplParams extends BaseTmplParams {
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;
   relativePathDataContracts: string;
+  relativePathZodSchemas?: string | null;
 }
 
 export const allEndpointPerFileTmpl = async (
@@ -26,6 +27,7 @@ export const allEndpointPerFileTmpl = async (
     relativePathDataContracts,
     groupName,
     metaInfo,
+    relativePathZodSchemas,
   } = params;
 
   const { _ } = utils;
@@ -40,6 +42,10 @@ export const allEndpointPerFileTmpl = async (
     const newEndpointTemplateData = newEndpointTmpl({
       ...params,
       route,
+      groupName,
+      metaInfo,
+      generateZodContracts: codegenParams.generateZodContracts === true,
+      relativePathZodSchemas: relativePathZodSchemas ?? undefined,
     });
     const { reservedDataContractNames } = newEndpointTemplateData;
 
@@ -54,12 +60,31 @@ export const allEndpointPerFileTmpl = async (
 
   const extraImportLines: string[] = [];
 
+  const hasAnyZodContracts = newEndpointTemplates.some(
+    (t) => t.contractsCode != null,
+  );
+  const allZodSchemaImportNames = new Set<string>();
+  newEndpointTemplates.forEach((t) => {
+    const c = t.contractsCode;
+    if (c != null && typeof c === 'object' && c.zodSchemaImportNames?.length) {
+      for (const n of c.zodSchemaImportNames) {
+        allZodSchemaImportNames.add(n);
+      }
+    }
+  });
+  const zodImportLine = hasAnyZodContracts ? 'import * as z from "zod";' : '';
+  const zodSchemasImportLine =
+    allZodSchemaImportNames.size && relativePathZodSchemas
+      ? `import { ${[...allZodSchemaImportNames].sort().join(', ')} } from "${relativePathZodSchemas}";`
+      : '';
+
   const endpointTemplates = await Promise.all(
     newEndpointTemplates.map(
       async ({
         content: requestInfoInstanceContent,
         localModelTypes,
         route,
+        contractsCode,
       }) => {
         const requestInfoMeta = codegenParams.getEndpointMeta?.(route, utils);
 
@@ -68,6 +93,13 @@ export const allEndpointPerFileTmpl = async (
             `import { ${requestInfoMeta.typeName} } from "${requestInfoMeta.typeNameImportPath}";`,
           );
         }
+
+        const contractsResult =
+          contractsCode != null && typeof contractsCode === 'object'
+            ? contractsCode
+            : null;
+        const contractsBlock =
+          contractsResult != null ? `\n\n${contractsResult.content}\n\n` : '';
 
         return `
       ${(
@@ -85,7 +117,7 @@ export const allEndpointPerFileTmpl = async (
       )
         .filter(Boolean)
         .join('\n\n')}
-      
+      ${contractsBlock}
       ${endpointJSDocTmpl({
         ...params,
         route,
@@ -117,6 +149,7 @@ export const allEndpointPerFileTmpl = async (
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
       ${extraImportLines.join('\n')}
+      ${[zodImportLine, zodSchemasImportLine].filter(Boolean).join('\n')}
       ${dataContractImportToken}
 
       ${(

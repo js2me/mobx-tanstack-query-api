@@ -11,6 +11,8 @@ import { LINTERS_IGNORE } from './constants.js';
 export interface AllExportsTmplParams extends BaseTmplParams {
   collectedExportFiles: string[];
   metaInfo: Maybe<MetaInfo>;
+  /** When true, add export * from './schemas' (Zod schemas from generateZodContracts) */
+  exportSchemas?: boolean;
 }
 
 export const formatGroupNameEnumKey = (
@@ -22,10 +24,11 @@ export const allExportsTmpl = async ({
   collectedExportFiles,
   metaInfo,
   formatTSContent,
+  exportSchemas,
 }: AllExportsTmplParams) => {
   return await formatTSContent(`${LINTERS_IGNORE}
   export * from './data-contracts';
-  ${collectedExportFiles.map((fileName) => `export * from './${fileName}';`).join('\n')}
+  ${exportSchemas ? "  export * from './schemas';\n  " : ''}${collectedExportFiles.map((fileName) => `export * from './${fileName}';`).join('\n')}
   ${metaInfo ? 'export * from "./meta-info";' : ''}
     `);
 };

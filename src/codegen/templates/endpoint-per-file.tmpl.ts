@@ -11,6 +11,8 @@ export interface EndpointPerFileTmplParams extends BaseTmplParams {
   relativePathDataContracts: string;
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;
+  /** When set (e.g. '../schemas'), endpoint imports shared Zod schemas from this path instead of inlining them */
+  relativePathZodSchemas?: string | null;
 }
 
 export const endpointPerFileTmpl = async (
@@ -26,6 +28,7 @@ export const endpointPerFileTmpl = async (
     relativePathDataContracts,
     groupName,
     metaInfo,
+    relativePathZodSchemas,
   } = params;
   const { _ } = utils;
 
@@ -33,11 +36,14 @@ export const endpointPerFileTmpl = async (
     content: requestInfoInstanceContent,
     reservedDataContractNames,
     localModelTypes,
+    contractsCode,
   } = newEndpointTmpl({
     ...params,
     route,
     groupName,
     metaInfo,
+    generateZodContracts: codegenParams.generateZodContracts === true,
+    relativePathZodSchemas: relativePathZodSchemas ?? undefined,
   });
 
   const dataContactNames = new Set(
@@ -71,6 +77,21 @@ export const endpointPerFileTmpl = async (
   }
 
   const dataContractImportToken = '/*__DATA_CONTRACT_IMPORTS__*/';
+  const contractsResult =
+    contractsCode != null && typeof contractsCode === 'object'
+      ? contractsCode
+      : null;
+  const zodImportLine =
+    contractsResult != null ? 'import * as z from "zod";' : '';
+  const zodSchemasImportLine =
+    contractsResult?.zodSchemaImportNames?.length && relativePathZodSchemas
+      ? `import { ${contractsResult.zodSchemaImportNames.join(', ')} } from "${relativePathZodSchemas}";`
+      : '';
+  const contractsBlock =
+    contractsResult != null ? `\n\n${contractsResult.content}\n\n` : '';
+  const zodImportsBlock = [zodImportLine, zodSchemasImportLine]
+    .filter(Boolean)
+    .join('\n');
   const contentWithImportToken = await formatTSContent(`${LINTERS_IGNORE}
       import {
         RequestParams,
@@ -81,6 +102,7 @@ export const endpointPerFileTmpl = async (
       import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
       ${extraImportLines.join('\n')}
+      ${zodImportsBlock}
       ${dataContractImportToken}
 
       ${(
@@ -122,7 +144,7 @@ export const endpointPerFileTmpl = async (
       )
         .filter(Boolean)
         .join('\n\n')}
-      
+      ${contractsBlock}
       ${endpointJSDocTmpl({
         ...params,
         route,

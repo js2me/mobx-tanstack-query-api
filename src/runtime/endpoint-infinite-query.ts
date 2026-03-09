@@ -29,14 +29,6 @@ export class EndpointInfiniteQuery<
 
   private uniqKey?: EndpointQueryUniqKey;
 
-  private paramsFn: EndpointInfiniteQueryFlattenOptions<
-    TEndpoint,
-    TQueryFnData,
-    TError,
-    TPageParam,
-    TData
-  >['params'];
-
   constructor(
     private endpoint: AnyEndpoint,
     queryClient: EndpointQueryClient,
@@ -147,7 +139,6 @@ export class EndpointInfiniteQuery<
       },
     });
 
-    this.paramsFn = paramsFn;
     this.uniqKey = uniqKey;
 
     observable.ref(this, 'response');

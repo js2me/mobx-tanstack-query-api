@@ -3,6 +3,15 @@ import type { Endpoint } from './endpoint.js';
 import type { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 import type { FullRequestParams } from './http-client.js';
 
+/**
+ * Optional Zod (or compatible) contracts for params and response data validation.
+ * When using zod, pass { params: zSchemaForParams, data: zSchemaForResponseData }.
+ */
+export interface EndpointContracts {
+  params?: unknown;
+  data?: unknown;
+}
+
 export interface EndpointConfiguration<
   TInput extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
@@ -15,6 +24,8 @@ export interface EndpointConfiguration<
   requiredParams: string[];
   params: (input: Partial<TInput>) => FullRequestParams;
   tags: string[];
+  /** Optional validation contracts (e.g. zod schemas) for params and data */
+  contracts?: EndpointContracts;
 }
 
 export type AnyEndpoint = Endpoint<any, any, any>;
