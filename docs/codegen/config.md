@@ -1,10 +1,10 @@
 # Configuration file   
 
-This project is requires a configuration file.   
-You need to create a configuration file named as `api-codegen.config.{ts|js|mjs|json}`. Recommends to create `api-codegen.config.ts` or you can create a configuration file with your own name, but you need to use `-c`, `--config` option in cli.   
+This project requires a configuration file.   
+You need to create a configuration file named `api-codegen.config.{ts|js|mjs|json}`. It is recommended to create `api-codegen.config.ts`, or you can create a configuration file with your own name and use the `-c` or `--config` option in the CLI.   
 
 ::: tip use `defineConfig` function
-This function is exports from `mobx-tanstack-query-api/cli` import. It adds typings for your configuration file.  
+This function is exported from the `mobx-tanstack-query-api/cli` package. It adds typings for your configuration file.  
 :::
 
 ```ts
@@ -91,11 +91,11 @@ fetchSchemaRequestOptions: {
 
 #### `httpClient`   
 
-This is import property configuration for all your generated endpoints.   
+This is an important property configuration for all your generated endpoints.   
 Default value: `'builtin'` which means use built-in http client.  
 You can override it to use your own http client.   
 
-Sometime this is useful if you need to customize fetch api behavior or add your own initialization for `HttpClient`.   
+Sometimes this is useful if you need to customize fetch api behavior or add your own initialization for `HttpClient`.   
 
 Example:  
 
@@ -118,7 +118,7 @@ httpClient: {
   path: '@/shared/api/http-client',
 }
 ```
-So you will in generated endpoint files this code lines:   
+So in generated endpoint files you will see these code lines:   
 
 _src/shared/api/\_\_generated\_\__
 ```ts{1,27}
@@ -156,11 +156,11 @@ export const getMyData = new Endpoint<
 
 Same as [`httpClient`](#httpclient) but for `queryClient`.   
 
-This is import property configuration for all your generated endpoints.   
+This is an important property configuration for all your generated endpoints.   
 Default value: `'builtin'` which means use built-in Tanstack's query client.  
 You can override it to use your own query client.   
 
-Sometime this is useful if you need to add configuration for `EndpointQueryClient`  
+Sometimes this is useful if you need to add configuration for `EndpointQueryClient`  
 
 Example:  
 
@@ -195,7 +195,7 @@ queryClient: {
   path: '@/shared/api/query-client',
 }
 ```
-So you will in generated endpoint files this code lines:   
+So in generated endpoint files you will see these code lines:   
 
 _src/shared/api/\_\_generated\_\__
 ```ts{1,26}
@@ -243,20 +243,20 @@ export const getMyData = new MyEndpoint<
 
 #### `filterEndpoints`   
 
-This option is needed to filter endpoints.  
-You can pass string or array of strings or regular expression which will be comparing with `Endpoint.operationId`.  
-Also you can pass function to manual filter endpoints.   
+This option is used to filter endpoints.  
+You can pass string or array of strings or regular expression which will be compared with `Endpoint.operationId`.  
+You can also pass a function to manually filter endpoints.   
 
 Example:  
 ```ts
 filterEndpoints: (endpoint) => 
   endpoint.raw.operationId !== 'getMyData' &&
-  !endpont.raw.route.startsWith('/my/another/data')
+  !endpoint.raw.route.startsWith('/my/another/data')
 ```
 
 #### `addPathSegmentToRouteName`   
 
-This option is needed to add path segment to route name.  
+This option is used to add path segment to route name.  
 Default: `false`  
 Examples:  
 ```ts
@@ -291,7 +291,7 @@ See [swagger-typescript-api](https://github.com/acacode/swagger-typescript-api) 
 
 #### `filterTypes`   
 
-This options is needed to filter all generated types from swagger schema.   
+This option is used to filter all generated types from swagger schema.   
 It might be helpful if you need only specific interfaces in output.   
 
 Example:   
@@ -305,9 +305,9 @@ filterTypes: (type) => type.name !== 'DataDC'
 
 #### `filterGroups`   
 
-This option is needed to filter endpoint groups.   
-You can pass string or array of strings or regular expression which will be comparing with group name.   
-Also you can pass function to manual filter endpoint groups.   
+This option is used to filter endpoint groups.   
+You can pass string or array of strings or regular expression which will be compared with the group name.   
+You can also pass a function to manually filter endpoint groups.   
 
 
 #### `namespace`   
@@ -340,7 +340,7 @@ namespace: 'api'
 
 #### `requestPathPrefix`   
 
-This option is allow to add path prefix to endpoint request path   
+This option allows to add path prefix to endpoint request path   
 
 Example:   
 ```ts
@@ -368,7 +368,7 @@ export const getMyData = new Endpoint<...>(
 
 #### `requestPathSuffix`   
 
-This option is allow to add path suffix to endpoint request path   
+This option allows to add path suffix to endpoint request path   
 
 Example:   
 ```ts
@@ -397,7 +397,7 @@ export const getMyData = new Endpoint<...>(
 
 #### `removeUnusedTypes`   
 
-This option is removes all data contracts which are not used in any endpoint.   
+This option removes all data contracts which are not used in any endpoint.   
 Default: `false`  
 
 ::: info This is slow operation
@@ -413,9 +413,94 @@ removeUnusedTypes: {
 ```
 
 
+#### `zodContracts`  
+
+Enables generation of Zod contracts (`contracts`) for each endpoint and (optionally) validation of input parameters and response data via `validateContracts` at runtime.
+
+Requires `zod` to be installed.
+
+Options:
+
+- **`true`** – generate contracts and enable validation for both `params` and `data`:
+
+```ts
+zodContracts: true
+// → in the generated Endpoint config:
+// contracts: <...>,
+// validateContracts: true,
+```
+
+- **`false`** (or omitting the field) – do not generate `contracts` and do not enable validation.
+
+- **`{ validate: boolean }`** – always enable or disable validation (for both `params` and `data`) with a boolean value:
+
+```ts
+zodContracts: {
+  validate: true,
+}
+// → validateContracts: true,
+
+zodContracts: {
+  validate: false,
+}
+// → validateContracts: false,
+```
+
+- **`{ validate: string }`** – specify an expression that will be inserted into the code as-is (e.g., enable validation only in dev environment):
+
+```ts
+zodContracts: {
+  validate: "process.env.NODE_ENV === 'development'",
+}
+// → validateContracts: process.env.NODE_ENV === 'development',
+```
+
+- **`{ validate: { params?: boolean | string; data?: boolean | string } }`** – control validation of `params` and `data` separately; each value can be a boolean or a string expression:
+
+```ts
+zodContracts: {
+  validate: {
+    // always validate input parameters
+    params: true,
+    // validate data only in development
+    data: "process.env.NODE_ENV === 'development'",
+  },
+}
+// → validateContracts: { params: true, data: process.env.NODE_ENV === 'development' },
+```
+
+When using the object form, you can also set **`throw`** to control `throwContracts` (throw on validation errors vs. only warn):
+
+- **`{ throw: boolean }`** – set `throwContracts` to that boolean.
+- **`{ throw: string }`** – set `throwContracts` to an expression (inserted as-is).
+- **`{ throw: { params?: boolean | string; data?: boolean | string } }`** – set `throwContracts` to an object; each value is a boolean or a string expression.
+
+```ts
+zodContracts: {
+  validate: true,
+  throw: true,
+}
+// → validateContracts: true, throwContracts: true,
+
+zodContracts: {
+  validate: { params: true, data: true },
+  throw: { params: true, data: "process.env.NODE_ENV === 'development'" },
+}
+// → validateContracts: { params: true, data: true }, throwContracts: { params: true, data: process.env.NODE_ENV === 'development' },
+```
+
+Runtime logic:
+
+- `validateContracts: true` – both `params` and `data` are validated;
+- `validateContracts: false` or `undefined` – validation is not performed;
+- `validateContracts: { params?: boolean; data?: boolean }` – only the parts where the value is `true` are validated.
+- `throwContracts` – when `true`, validation errors throw; when `false` or omitted, only warnings are logged. Object form controls `params`/`data` independently.
+
+
+
 #### `formatEndpointName`   
 
-This option is allow to format endpoint name.
+This option allows to format endpoint name.
 
 Example:  
 ```ts
@@ -428,7 +513,7 @@ formatEndpointName: (endpointName, endpointData) => {
 
 #### `groupBy`   
 
-This option is allow to group endpoints into object.    
+This option allows to group endpoints into object.    
 Default: `false`  
 
 You can group endpoints by:    
@@ -459,7 +544,7 @@ groupBy: endpoint => {
 
 #### `formatExportGroupName`   
 
-This option is allow to format endpoints group export name.  
+This option allows to format endpoints group export name.  
 
 Example:  
 ```ts
@@ -471,7 +556,7 @@ formatExportGroupName: (groupName) => {
 
 #### `outputType`   
 
-This option is allow to choose output type.   
+This option allows to choose output type.   
 Default: `one-endpoint-per-file`   
 
 Variants:   
@@ -515,8 +600,8 @@ Example without groups:
 
 
 #### `getRequestMeta`   
-This option is allow to add some meta information for endpoint request.   
-Can be helpful if you need customize base url for http request.  
+This option allows to add some meta information for endpoint request.   
+Can be helpful if you need to customize the base URL for http request.  
 
 Example:   
 ```ts{2}
@@ -547,7 +632,7 @@ export const getFruits = new Endpoint<
 ```
 
 #### `getEndpointMeta`   
-This option is allow to add some meta information for endpoint.   
+This option allows to add some meta information for endpoint.   
 
 
 Example:   

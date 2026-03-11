@@ -22,8 +22,10 @@ describe('generateApi with yaml input file', () => {
       noBarrelFiles: true,
       removeUnusedTypes: true,
       outputType: 'one-endpoint-per-file',
+      zodContracts: true,
       filterEndpoints: [
         /^fooBarBaz$/i,
+        /^getGoldenApple$/i,
         /^browseNodeLedger$/i,
         /^createCycleMatrixRow$/i,
         /^publishRelaySignal$/i,
@@ -60,6 +62,7 @@ describe('generateApi with yaml input file', () => {
       expect.arrayContaining([
         'browse-node-ledger.ts',
         'create-cycle-matrix-row.ts',
+        'get-golden-apple.ts',
         'publish-relay-signal.ts',
         'get-text-report.ts',
         'get-multipart-report.ts',
@@ -231,6 +234,18 @@ describe('generateApi with yaml input file', () => {
     expect(submitMultiContentContent).toContain(
       'contentType: "application/json"',
     );
+    // generateZodContracts: zod contracts for params and data
+    expect(submitMultiContentContent).toContain('import * as z from "zod"');
+    expect(submitMultiContentContent).toContain(
+      'submitMultiContentReportContracts',
+    );
+    expect(submitMultiContentContent).toContain(
+      'params: submitMultiContentReportParamsSchema',
+    );
+    expect(submitMultiContentContent).toContain(
+      'data: submitMultiContentReportDataSchema',
+    );
+    expect(submitMultiContentContent).toContain('contracts: submitMultiContentReportContracts');
     // application/merge-patch+json (+json) → "application/json"
     const applyMergePatchContent = await readEndpoint(
       'apply-merge-patch-report.ts',

@@ -23,6 +23,7 @@ import type {
 } from './types/index.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
+import { buildCentralZodSchemasFile } from './utils/zod/build-endpoint-zod-contracts-code.js';
 
 export * from './types/index.js';
 
@@ -33,7 +34,7 @@ const __execdirname = process.cwd();
 
 export const generateApi = async (
   params: GenerateQueryApiParams | GenerateQueryApiParams[],
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: orchestration with many code paths
 ): Promise<void> => {
   if (Array.isArray(params)) {
     for await (const param of params) {
@@ -325,6 +326,18 @@ export const generateApi = async (
 
   const reservedDataContractNamesMap = new Map<string, number>();
 
+  const componentsSchemasForZod =
+    (generated.configuration as AnyObject).config?.swaggerSchema?.components
+      ?.schemas ??
+    (generated.configuration as AnyObject).swaggerSchema?.components?.schemas;
+  const hasZodSchemasFile =
+    (params.zodContracts === true ||
+      (typeof params.zodContracts === 'object' &&
+        params.zodContracts != null)) &&
+    componentsSchemasForZod &&
+    typeof componentsSchemasForZod === 'object' &&
+    Object.keys(componentsSchemasForZod).length > 0;
+
   const collectedExportFilesFromIndexFile: string[] = [];
 
   const groupsMap = new Map<string, ParsedRoute[]>();
@@ -355,6 +368,7 @@ export const generateApi = async (
                 groupNames: [],
                 namespace,
               },
+          relativePathZodSchemas: hasZodSchemasFile ? '../schemas' : null,
         });
 
         if (Array.isArray(route.raw.tags)) {
@@ -412,6 +426,7 @@ export const generateApi = async (
                 namespace,
                 groupNames: [],
               },
+          relativePathZodSchemas: hasZodSchemasFile ? './schemas' : null,
         });
 
       reservedDataContractNames.forEach((name) => {
@@ -683,6 +698,22 @@ export * as ${exportGroupName} from './endpoints';
     content: dataContractsContent,
   });
 
+  if (hasZodSchemasFile && componentsSchemasForZod) {
+    const schemasTsContent = buildCentralZodSchemasFile({
+      componentsSchemas: componentsSchemasForZod as Record<string, AnyObject>,
+      utils,
+    });
+    const formattedSchemasContent = await generated.formatTSContent(
+      `${LINTERS_IGNORE}\n${schemasTsContent}`,
+    );
+    codegenFs.createFile({
+      path: paths.outputDir,
+      fileName: 'schemas.ts',
+      withPrefix: false,
+      content: formattedSchemasContent,
+    });
+  }
+
   if (metaInfo) {
     codegenFs.createFile({
       path: paths.outputDir,
@@ -704,6 +735,7 @@ export * as ${exportGroupName} from './endpoints';
         ...baseTmplParams,
         collectedExportFiles: collectedExportFilesFromIndexFile,
         metaInfo,
+        exportSchemas: hasZodSchemasFile,
       }),
     });
     if (shouldGenerateBarrelFiles) {
@@ -726,6 +758,7 @@ export * as ${namespace} from './__exports';
           ...baseTmplParams,
           collectedExportFiles: collectedExportFilesFromIndexFile,
           metaInfo,
+          exportSchemas: hasZodSchemasFile,
         }),
       });
     }

@@ -4,14 +4,36 @@ import type { BaseTmplParams } from '../types/base-tmpl-params.js';
 import type { MetaInfo } from '../types/index.js';
 import { createShortModelType } from '../utils/create-short-model-type.js';
 import {
+  buildEndpointZodContractsCode,
+  getResponseSchemaKeyFromOperation,
+  typeNameToSchemaKey,
+} from '../utils/zod/build-endpoint-zod-contracts-code.js';
+import {
   formatGroupNameEnumKey,
   formatTagNameEnumKey,
 } from './meta-info.tmpl.js';
+
+export type ZodContractsOption =
+  | boolean
+  | {
+      validate:
+        | boolean
+        | string
+        | { params?: boolean | string; data?: boolean | string };
+      throw?:
+        | boolean
+        | string
+        | { params?: boolean | string; data?: boolean | string };
+    };
 
 export interface NewEndpointTmplParams extends BaseTmplParams {
   route: ParsedRoute;
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;
+  /** Generate Zod contracts and optionally enable validation. */
+  zodContracts?: ZodContractsOption;
+  /** When set, auxiliary Zod schemas are not inlined; endpoint imports them from this path (e.g. '../schemas') */
+  relativePathZodSchemas?: string | null;
 }
 
 // RequestParams["type"]
@@ -188,7 +210,29 @@ export const newEndpointTmpl = ({
   metaInfo,
   filterTypes,
   configuration,
+  zodContracts,
+  relativePathZodSchemas,
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: codegen template, many branches by design
 }: NewEndpointTmplParams) => {
+  const zodContractsIsObject =
+    typeof zodContracts === 'object' && zodContracts !== null;
+  const hasZodContracts = zodContracts === true || zodContractsIsObject;
+  const validateOpt = zodContractsIsObject
+    ? zodContracts.validate
+    : zodContracts === true
+      ? true
+      : undefined;
+  const throwOpt = zodContractsIsObject ? zodContracts.throw : undefined;
+  const validateOptObj =
+    validateOpt != null &&
+    typeof validateOpt === 'object' &&
+    !Array.isArray(validateOpt)
+      ? (validateOpt as { params?: boolean | string; data?: boolean | string })
+      : null;
+  const throwOptObj =
+    throwOpt != null && typeof throwOpt === 'object' && !Array.isArray(throwOpt)
+      ? (throwOpt as { params?: boolean | string; data?: boolean | string })
+      : null;
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
     (it) =>
@@ -374,9 +418,114 @@ export const newEndpointTmpl = ({
 
   const isAllowedInputType = filterTypes(requestInputTypeDc);
 
+  const defaultOkResponseType = positiveResponseTypes?.[0]?.type ?? 'unknown';
+  const contractsVarName = hasZodContracts
+    ? `${_.camelCase(route.routeName.usage)}Contracts`
+    : null;
+  const swaggerSchema =
+    (configuration.config as AnyObject)?.swaggerSchema ??
+    (configuration as AnyObject)?.swaggerSchema;
+  const componentsSchemas = swaggerSchema?.components?.schemas as Record<
+    string,
+    AnyObject
+  > | null;
+  let operationFromSpec: AnyObject | null = null;
+  const pathKeyForSpec = path?.startsWith('/') ? path : `/${path || ''}`;
+  const methodKey = method?.toLowerCase?.() ?? method;
+  if (pathKeyForSpec && methodKey && swaggerSchema?.paths?.[pathKeyForSpec]) {
+    operationFromSpec = swaggerSchema.paths[pathKeyForSpec][methodKey] ?? null;
+  }
+  if (!operationFromSpec && swaggerSchema?.paths && raw?.operationId) {
+    for (const pathItem of Object.values(swaggerSchema.paths) as AnyObject[]) {
+      const op = pathItem?.[methodKey];
+      if (op?.operationId === raw.operationId) {
+        operationFromSpec = op;
+        break;
+      }
+    }
+  }
+  let responseSchemaKey = getResponseSchemaKeyFromOperation(
+    operationFromSpec ?? raw,
+  );
+  if (!responseSchemaKey && componentsSchemas && configuration.modelTypes) {
+    const aliasType = configuration.modelTypes.find(
+      (m: AnyObject) => m.name === defaultOkResponseType,
+    );
+    if (
+      aliasType?.typeIdentifier === 'type' &&
+      typeof aliasType.content === 'string' &&
+      /^[A-Za-z0-9_]+$/.test(aliasType.content.trim())
+    ) {
+      const resolved = typeNameToSchemaKey(aliasType.content.trim(), 'DC');
+      if (resolved in componentsSchemas) responseSchemaKey = resolved;
+    }
+  }
+  if (!responseSchemaKey && componentsSchemas) {
+    const match = defaultOkResponseType.match(/^Get(.+)DataDC$/);
+    if (match) {
+      const candidate = match[1];
+      if (candidate in componentsSchemas) responseSchemaKey = candidate;
+    }
+  }
+  const contractsCode =
+    hasZodContracts && contractsVarName
+      ? buildEndpointZodContractsCode({
+          routeNameUsage: route.routeName.usage,
+          inputParams,
+          responseDataTypeName: defaultOkResponseType,
+          contractsVarName,
+          utils,
+          componentsSchemas: componentsSchemas ?? undefined,
+          typeSuffix: 'DC',
+          responseSchemaKey: responseSchemaKey ?? undefined,
+          useExternalZodSchemas: Boolean(relativePathZodSchemas),
+        })
+      : null;
+
+  const contractsLine =
+    contractsVarName != null ? `contracts: ${contractsVarName},` : '';
+  const validateContractsLine = (() => {
+    if (validateOpt === undefined) return '';
+    if (typeof validateOpt === 'string')
+      return `validateContracts: ${validateOpt},`;
+    if (typeof validateOpt === 'boolean')
+      return `validateContracts: ${validateOpt},`;
+    if (validateOptObj !== null) {
+      const parts: string[] = [];
+      if (validateOptObj.params !== undefined)
+        parts.push(
+          `params: ${typeof validateOptObj.params === 'string' ? validateOptObj.params : validateOptObj.params}`,
+        );
+      if (validateOptObj.data !== undefined)
+        parts.push(
+          `data: ${typeof validateOptObj.data === 'string' ? validateOptObj.data : validateOptObj.data}`,
+        );
+      return parts.length > 0
+        ? `validateContracts: { ${parts.join(', ')} },`
+        : '';
+    }
+    return '';
+  })();
+  const throwContractsLine = (() => {
+    if (throwOpt === undefined) return '';
+    if (typeof throwOpt === 'string') return `throwContracts: ${throwOpt},`;
+    if (typeof throwOpt === 'boolean') return `throwContracts: ${throwOpt},`;
+    if (throwOptObj !== null) {
+      const parts: string[] = [];
+      if (throwOptObj.params !== undefined)
+        parts.push(`params: ${throwOptObj.params}`);
+      if (throwOptObj.data !== undefined)
+        parts.push(`data: ${throwOptObj.data}`);
+      return parts.length > 0 ? `throwContracts: { ${parts.join(', ')} },` : '';
+    }
+    return '';
+  })();
+
   return {
     reservedDataContractNames,
     localModelTypes: isAllowedInputType ? [requestInputTypeDc] : [],
+    contractsCode: contractsCode ?? undefined,
+    contractsVarName: contractsVarName ?? undefined,
     content: `
 new ${importFileParams.endpoint.exportName}<
   ${getHttpRequestGenerics()},
@@ -412,6 +561,9 @@ new ${importFileParams.endpoint.exportName}<
         ${groupName ? `group: ${metaInfo ? `Group.${formatGroupNameEnumKey(groupName, utils)}` : `"${groupName}"`},` : ''}
         ${metaInfo?.namespace ? `namespace,` : ''}
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
+        ${contractsLine}
+        ${validateContractsLine}
+        ${throwContractsLine}
     },
     ${importFileParams.queryClient.exportName},
     ${importFileParams.httpClient.exportName},
