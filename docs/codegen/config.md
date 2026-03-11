@@ -469,11 +469,39 @@ zodContracts: {
 // → validateContracts: { params: true, data: process.env.NODE_ENV === 'development' },
 ```
 
-When using the object form, you can also set **`throw`** to control `throwContracts` (throw on validation errors vs. only warn):
+When using the object form, you can also set:
 
-- **`{ throw: boolean }`** – set `throwContracts` to that boolean.
-- **`{ throw: string }`** – set `throwContracts` to an expression (inserted as-is).
-- **`{ throw: { params?: boolean | string; data?: boolean | string } }`** – set `throwContracts` to an object; each value is a boolean or a string expression.
+- **`appendRule`** – one field, either a string (runtime) or a function (codegen-time):
+  - **string**: expression inserted as-is → `contracts: <expression> ? <contractsVar> : undefined` (e.g. enable contracts only in development).
+  - **function** `(contractName, routeInfo) => boolean`: at codegen time, include `contracts: <contractsVar>` only when the function returns `true`; otherwise `contracts: undefined`. The contracts variable is still generated; only its inclusion in the endpoint config is conditional.
+
+```ts
+// Runtime condition (string)
+zodContracts: {
+  validate: true,
+  appendRule: 'process.env.NODE_ENV === "development"',
+}
+// → contracts: process.env.NODE_ENV === "development" ? getBinaryReportContracts : undefined,
+
+// Codegen-time filter (function)
+zodContracts: {
+  validate: true,
+  appendRule: (name) => name === 'getBinaryReportContracts',
+}
+// → contracts: getBinaryReportContracts,
+
+zodContracts: {
+  validate: true,
+  appendRule: () => false,
+}
+// → contracts: undefined,
+```
+
+- **`throw`** – control `throwContracts` (throw on validation errors vs. only warn):
+
+  - **`{ throw: boolean }`** – set `throwContracts` to that boolean.
+  - **`{ throw: string }`** – set `throwContracts` to an expression (inserted as-is).
+  - **`{ throw: { params?: boolean | string; data?: boolean | string } }`** – set `throwContracts` to an object; each value is a boolean or a string expression.
 
 ```ts
 zodContracts: {

@@ -225,6 +225,10 @@ export interface GenerateQueryApiParams {
    * - `{ throw: boolean }`: set `throwContracts` to that boolean.
    * - `{ throw: string }`: set `throwContracts` to the expression (inserted as-is).
    * - `{ throw: { params?: boolean | string; data?: boolean | string } }`: set `throwContracts` to an object; each value is literal or expression (string inserted as-is).
+   *
+   * Optional `appendRule`: either a string (runtime) or a function (codegen-time).
+   * - **string**: expression inserted as-is → `contracts: <expr> ? <contractsVar> : undefined`. E.g. `"process.env.NODE_ENV === \"development\""`.
+   * - **function** (contractName, routeInfo) => boolean: at codegen time, if true → `contracts: <contractsVar>`, if false → `contracts: undefined`.
    */
   zodContracts?:
     | boolean
@@ -237,5 +241,20 @@ export interface GenerateQueryApiParams {
           | boolean
           | string
           | { params?: boolean | string; data?: boolean | string };
+        /** String: runtime condition. Function: codegen-time filter for (contractName, routeInfo). */
+        appendRule?:
+          | string
+          | ((
+              contractName: string,
+              routeInfo: ZodContractsRouteInfo,
+            ) => boolean);
       };
+}
+
+/** Route info passed to zodContracts.appendRule at codegen time. */
+export interface ZodContractsRouteInfo {
+  operationId: string;
+  path: string;
+  method: string;
+  contractName: string;
 }

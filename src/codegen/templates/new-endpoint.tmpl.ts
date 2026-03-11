@@ -24,6 +24,18 @@ export type ZodContractsOption =
         | boolean
         | string
         | { params?: boolean | string; data?: boolean | string };
+      /** String: runtime condition. Function: codegen-time filter for (contractName, routeInfo). */
+      appendRule?:
+        | string
+        | ((
+            contractName: string,
+            routeInfo: {
+              operationId: string;
+              path: string;
+              method: string;
+              contractName: string;
+            },
+          ) => boolean);
     };
 
 export interface NewEndpointTmplParams extends BaseTmplParams {
@@ -486,8 +498,34 @@ export const newEndpointTmpl = ({
         })
       : null;
 
-  const contractsLine =
-    contractsVarName != null ? `contracts: ${contractsVarName},` : '';
+  const appendRuleOpt =
+    zodContractsIsObject && zodContracts.appendRule != null
+      ? zodContracts.appendRule
+      : null;
+  const routeInfoForAppend =
+    contractsVarName != null
+      ? {
+          operationId: raw.operationId ?? '',
+          path,
+          method,
+          contractName: contractsVarName,
+        }
+      : null;
+  const contractsLine = (() => {
+    if (contractsVarName == null) return '';
+    if (typeof appendRuleOpt === 'string')
+      return `contracts: ${appendRuleOpt} ? ${contractsVarName} : undefined,`;
+    if (typeof appendRuleOpt === 'function' && routeInfoForAppend) {
+      const include = appendRuleOpt(
+        routeInfoForAppend.contractName,
+        routeInfoForAppend,
+      );
+      return include
+        ? `contracts: ${contractsVarName},`
+        : 'contracts: undefined,';
+    }
+    return `contracts: ${contractsVarName},`;
+  })();
   const validateContractsLine = (() => {
     if (validateOpt === undefined) return '';
     if (typeof validateOpt === 'string')
