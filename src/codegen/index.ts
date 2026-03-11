@@ -4,9 +4,10 @@ import { cloneDeep } from 'lodash-es';
 import {
   type GenerateApiConfiguration,
   generateApi as generateApiFromSwagger,
+  type Hooks,
   type ParsedRoute,
 } from 'swagger-typescript-api';
-import type { AnyObject, Maybe } from 'yummies/types';
+import type { AnyObject, Defined, Maybe } from 'yummies/types';
 import { allEndpointPerFileTmpl } from './templates/all-endpoints-per-file.tmpl.js';
 import { allExportsTmpl } from './templates/all-exports.tmpl.js';
 import { LINTERS_IGNORE } from './templates/constants.js';
@@ -88,7 +89,7 @@ export const generateApi = async (
   };
 
   //#region swagger-typescript-api
-  const swaggerTypescriptApiCodegenBaseParams: Partial<AnyObject> = {
+  const swaggerTypescriptApiCodegenBaseParams = {
     httpClientType: 'fetch',
     cleanOutput: params.cleanOutput ?? true,
     modular: true,
@@ -107,12 +108,30 @@ export const generateApi = async (
     sortTypes: true,
     templates: paths.templates.toString(),
     primitiveTypeConstructs: (constructs: AnyObject) => {
-      return {
+      const result = {
         ...(constructs as any),
         object: () => `Record<string, any>`,
         float: () => `number`,
-        ...params.otherCodegenParams?.primitiveTypeConstructs?.(constructs),
       };
+
+      if (params.otherCodegenParams?.primitiveTypeConstructs) {
+        if (
+          typeof params.otherCodegenParams?.primitiveTypeConstructs ===
+          'function'
+        ) {
+          Object.assign(
+            result,
+            params.otherCodegenParams.primitiveTypeConstructs(result),
+          );
+        } else {
+          Object.assign(
+            result,
+            params.otherCodegenParams.primitiveTypeConstructs,
+          );
+        }
+      }
+
+      return result;
     },
     requestOptions: params.fetchSchemaRequestOptions,
     ...params.otherCodegenParams,
@@ -128,6 +147,57 @@ export const generateApi = async (
     );
     return;
   }
+
+  const prepareConfig: Defined<Hooks['onPrepareConfig']> = (config) => {
+    config.routes.combined?.forEach((routeInfo) => {
+      routeInfo.routes.sort((routeA, routeB) =>
+        routeA.routeName.usage.localeCompare(routeB.routeName.usage),
+      );
+    });
+    return params.otherCodegenParams?.hooks?.onPrepareConfig?.(config);
+  };
+
+  const formatRouteName: Defined<Hooks['onFormatRouteName']> = (
+    routeInfo,
+    usageRouteName,
+  ) => {
+    let formattedRouteName = usageRouteName;
+
+    if (
+      params.addPathSegmentToRouteName === true ||
+      typeof params.addPathSegmentToRouteName === 'number'
+    ) {
+      const pathSegmentForSuffix =
+        typeof params.addPathSegmentToRouteName === 'number'
+          ? params.addPathSegmentToRouteName
+          : 0;
+
+      const pathSegments = routeInfo.route.split('/').filter(Boolean);
+      const { _ } = codegenProcess.getRenderTemplateData()
+        .utils as CodegenDataUtils;
+
+      formattedRouteName = _.camelCase(
+        `${pathSegments[pathSegmentForSuffix] || ''}_${formattedRouteName}`,
+      );
+    }
+
+    const endpointName = formattedRouteName;
+
+    const resultRouteName =
+      params?.formatEndpointName?.(endpointName, routeInfo) ??
+      swaggerTypescriptApiCodegenBaseParams?.hooks?.onFormatRouteName?.(
+        routeInfo,
+        endpointName,
+      ) ??
+      endpointName;
+
+    return (
+      params.otherCodegenParams?.hooks?.onFormatRouteName?.(
+        routeInfo,
+        resultRouteName,
+      ) ?? resultRouteName
+    );
+  };
 
   const inputToCodegenInput = (input: Maybe<string | AnyObject>): AnyObject => {
     const inputData: AnyObject = {};
@@ -148,48 +218,11 @@ export const generateApi = async (
       ...(swaggerTypescriptApiCodegenBaseParams as any),
       ...inputToCodegenInput(params.mixinInput),
       hooks: {
-        onInit: (configuration) => {
+        onInit: (configuration, codegenProcess) => {
           mixinSwaggerSchema = cloneDeep(configuration.swaggerSchema);
         },
-        onPrepareConfig: (config) => {
-          config.routes.combined?.forEach((routeInfo) => {
-            routeInfo.routes.sort((routeA, routeB) =>
-              routeA.routeName.usage.localeCompare(routeB.routeName.usage),
-            );
-          });
-        },
-        onFormatRouteName: (routeInfo, usageRouteName) => {
-          let formattedRouteName = usageRouteName;
-
-          if (
-            params.addPathSegmentToRouteName === true ||
-            typeof params.addPathSegmentToRouteName === 'number'
-          ) {
-            const pathSegmentForSuffix =
-              typeof params.addPathSegmentToRouteName === 'number'
-                ? params.addPathSegmentToRouteName
-                : 0;
-
-            const pathSegments = routeInfo.route.split('/').filter(Boolean);
-            const { _ } = codegenProcess.getRenderTemplateData()
-              .utils as CodegenDataUtils;
-
-            formattedRouteName = _.camelCase(
-              `${pathSegments[pathSegmentForSuffix] || ''}_${formattedRouteName}`,
-            );
-          }
-
-          const endpointName = formattedRouteName;
-
-          return (
-            params?.formatEndpointName?.(endpointName, routeInfo) ??
-            swaggerTypescriptApiCodegenBaseParams?.hooks?.onFormatRouteName?.(
-              routeInfo,
-              endpointName,
-            ) ??
-            endpointName
-          );
-        },
+        onPrepareConfig: prepareConfig,
+        onFormatRouteName: formatRouteName,
       },
     });
   }
@@ -222,48 +255,8 @@ export const generateApi = async (
           codeGenProcessFromInit,
         );
       },
-      onPrepareConfig: (config) => {
-        config.routes.combined?.forEach((routeInfo) => {
-          routeInfo.routes.sort((routeA, routeB) =>
-            routeA.routeName.usage.localeCompare(routeB.routeName.usage),
-          );
-        });
-        return swaggerTypescriptApiCodegenBaseParams?.hooks?.onPrepareConfig?.(
-          config,
-        );
-      },
-      onFormatRouteName: (routeInfo, usageRouteName) => {
-        let formattedRouteName = usageRouteName;
-
-        if (
-          params.addPathSegmentToRouteName === true ||
-          typeof params.addPathSegmentToRouteName === 'number'
-        ) {
-          const pathSegmentForSuffix =
-            typeof params.addPathSegmentToRouteName === 'number'
-              ? params.addPathSegmentToRouteName
-              : 0;
-
-          const pathSegments = routeInfo.route.split('/').filter(Boolean);
-          const { _ } = codegenProcess.getRenderTemplateData()
-            .utils as CodegenDataUtils;
-
-          formattedRouteName = _.camelCase(
-            `${pathSegments[pathSegmentForSuffix] || ''}_${formattedRouteName}`,
-          );
-        }
-
-        const endpointName = formattedRouteName;
-
-        return (
-          params?.formatEndpointName?.(endpointName, routeInfo) ??
-          swaggerTypescriptApiCodegenBaseParams?.hooks?.onFormatRouteName?.(
-            routeInfo,
-            endpointName,
-          ) ??
-          endpointName
-        );
-      },
+      onPrepareConfig: prepareConfig,
+      onFormatRouteName: formatRouteName,
     },
   });
 

@@ -1,4 +1,7 @@
-import type { RawRouteInfo } from 'swagger-typescript-api';
+import type {
+  GenerateApiConfiguration,
+  RawRouteInfo,
+} from 'swagger-typescript-api';
 import type { AnyObject, Maybe } from 'yummies/types';
 import type { RemoveUnusedTypesParams } from '../utils/remove-unused-types.js';
 import type { FilterOption } from '../utils/unpack-filter-option.js';
@@ -162,7 +165,7 @@ export interface GenerateQueryApiParams {
    */
   fetchSchemaRequestOptions?: RequestInit;
 
-  otherCodegenParams?: AnyObject;
+  otherCodegenParams?: Partial<GenerateApiConfiguration['config']>;
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#filterendpoints)
