@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.39.0
+
+### Minor Changes
+
+- [`c00b34f`](https://github.com/js2me/mobx-tanstack-query-api/commit/c00b34f6aa6d026948e1ec8b2633d5defd6f3cff) Thanks [@js2me](https://github.com/js2me)! - update swagger-typescript-api (binary types)
+
+- [`5e2ec12`](https://github.com/js2me/mobx-tanstack-query-api/commit/5e2ec126074255cfe7c86225260c6c50aed030a2) Thanks [@js2me](https://github.com/js2me)! - added `appendRule` function for `zodContracts`
+
 ## 0.38.2
 
 ### Patch Changes
