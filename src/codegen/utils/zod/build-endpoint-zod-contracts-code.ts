@@ -311,6 +311,8 @@ function queryParamsToZodObject(
 
 /**
  * Generate auxiliary Zod schema definitions for referenced schemas (so that z.lazy can reference them).
+ * Для детекции цикла передаём только текущий ключ (cyclePath), а не все уже обработанные —
+ * иначе любой ref на ранее сгенерированную схему ошибочно считался бы циклом и получал ZodTypeAny.
  */
 function generateAuxiliarySchemas(
   schemaKeys: string[],
@@ -325,11 +327,12 @@ function generateAuxiliarySchemas(
     const schema = schemas[key];
     if (!schema) continue;
     const varName = schemaKeyToVarNameFn(key);
+    const cyclePath = new Set<string>([key]);
     const expr = schemaToZodExpr(
       schema,
       schemas,
       schemaKeyToVarNameFn,
-      visited,
+      cyclePath,
     );
     lines.push(`export const ${varName} = ${expr};`);
   }

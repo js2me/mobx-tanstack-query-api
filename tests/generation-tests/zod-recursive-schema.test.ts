@@ -93,10 +93,10 @@ describe('zod params schema — query object from OpenAPI operation parameters',
     ];
 
     const { content } = buildEndpointZodContractsCode({
-      routeNameUsage: 'getResourceList',
+      routeNameUsage: 'getItems',
       inputParams,
       responseDataTypeName: 'unknown',
-      contractsVarName: 'getResourceListContracts',
+      contractsVarName: 'getItemsContracts',
       utils,
       componentsSchemas: {},
       openApiOperation: operation,
@@ -138,5 +138,136 @@ describe('zod params schema — query object from OpenAPI operation parameters',
     });
 
     expect(content).toContain('"filterKey": z.string().optional()');
+  });
+});
+
+describe('zod central schemas — no ZodTypeAny for non-cyclic refs', () => {
+  const nonCyclicSchemas: Record<string, OpenAPISchema> = {
+    StatusKind: { type: 'string', enum: ['STATUS_A', 'STATUS_B'] },
+    MetaInfo: {
+      type: 'object',
+      properties: {
+        timestamp: { type: 'string', format: 'date-time' },
+        user: { type: 'string' },
+      },
+      required: ['user', 'timestamp'],
+    },
+    LinkRef: {
+      type: 'object',
+      properties: { name: { type: 'string' }, url: { type: 'string' } },
+      required: ['name', 'url'],
+    },
+    ItemInfo: {
+      type: 'object',
+      properties: { id: { type: 'integer' }, name: { type: 'string' } },
+      required: ['id', 'name'],
+    },
+    ItemSchema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        size: { type: 'integer' },
+      },
+      required: ['name'],
+    },
+    ChildSchema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        name: { type: 'string' },
+      },
+    },
+    MetaSchema: {
+      type: 'object',
+      properties: {
+        value: { type: 'number' },
+        total: { type: 'number' },
+      },
+    },
+    ContainerSchema: {
+      type: 'object',
+      properties: {
+        canEdit: { type: 'boolean' },
+        id: { type: 'integer' },
+        lastModified: { $ref: '#/components/schemas/MetaInfo' },
+        links: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/LinkRef' },
+        },
+        name: { type: 'string' },
+        refInfo: { $ref: '#/components/schemas/ItemInfo' },
+        status: { $ref: '#/components/schemas/StatusKind' },
+        items: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/ItemSchema' },
+        },
+      },
+      required: ['id', 'name'],
+    },
+    NodeWithChildren: {
+      type: 'object',
+      properties: {
+        items: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/ItemSchema' },
+        },
+        children: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/ChildSchema' },
+        },
+        name: { type: 'string' },
+        meta: { $ref: '#/components/schemas/MetaSchema' },
+      },
+      required: ['name'],
+    },
+  };
+
+  it('buildCentralZodSchemasFile does not emit ZodTypeAny for refs to other schemas (only for self-ref)', () => {
+    const content = buildCentralZodSchemasFile({
+      componentsSchemas: nonCyclicSchemas,
+      utils,
+    });
+
+    expect(content).toContain('containerSchemaSchema');
+    expect(content).toContain('nodeWithChildrenSchema');
+
+    // Ref'ы на другие схемы — без явного return type (тип выводится)
+    expect(content).toContain('z.lazy(() => metaInfoSchema)');
+    expect(content).toContain('z.lazy(() => linkRefSchema)');
+    expect(content).toContain('z.lazy(() => itemInfoSchema)');
+    expect(content).toContain('z.lazy(() => statusKindSchema)');
+    expect(content).toContain('z.lazy(() => itemSchemaSchema)');
+    expect(content).toContain('z.lazy(() => childSchemaSchema)');
+    expect(content).toContain('z.lazy(() => metaSchemaSchema)');
+
+    // В этом наборе нет самореференсов — ZodTypeAny не должен встречаться
+    expect(content).not.toContain('z.lazy((): z.ZodTypeAny =>');
+  });
+
+  it('buildCentralZodSchemasFile emits ZodTypeAny only for self-reference in same schema set', () => {
+    const withRecursive: Record<string, OpenAPISchema> = {
+      ...nonCyclicSchemas,
+      RecursiveBox: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+          nested: { $ref: '#/components/schemas/RecursiveBox' },
+        },
+        required: ['id'],
+      },
+    };
+    const content = buildCentralZodSchemasFile({
+      componentsSchemas: withRecursive,
+      utils,
+    });
+
+    // Только рекурсивная схема использует ZodTypeAny
+    const lazyAnyCount = (content.match(/z\.lazy\(\(\):\s*z\.ZodTypeAny\s*=>/g) ?? []).length;
+    expect(lazyAnyCount).toBe(1);
+    expect(content).toContain('z.lazy((): z.ZodTypeAny => recursiveBoxSchema)');
+
+    // Остальные ref'ы по-прежнему без ZodTypeAny
+    expect(content).toContain('z.lazy(() => metaInfoSchema)');
+    expect(content).toContain('z.lazy(() => itemSchemaSchema)');
   });
 });
