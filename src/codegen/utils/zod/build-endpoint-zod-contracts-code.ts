@@ -2,15 +2,23 @@ import type { AnyObject } from 'yummies/types';
 
 import {
   type EndpointZodContractsResult,
+  type OpenAPIParameter,
   type OpenAPISchema,
   type OperationWithResponses,
   REF_PREFIX,
+  REF_PREFIX_PARAMS,
   type RequestParam,
 } from './types.js';
 
 function parseRef(ref: string): string | null {
   if (typeof ref !== 'string' || !ref.startsWith(REF_PREFIX)) return null;
   return ref.slice(REF_PREFIX.length);
+}
+
+function parseParamRef(ref: string): string | null {
+  if (typeof ref !== 'string' || !ref.startsWith(REF_PREFIX_PARAMS))
+    return null;
+  return ref.slice(REF_PREFIX_PARAMS.length);
 }
 
 /**
@@ -138,8 +146,13 @@ function schemaToZodExpr(
   if (!schema) return 'z.any()';
   if (schema.$ref) {
     const key = parseRef(schema.$ref);
-    if (key && key in schemas)
-      return `z.lazy(() => ${schemaKeyToVarName(key)})`;
+    if (key && key in schemas) {
+      // Явный return type только при цикле (рекурсия), иначе TS сужает тип до any
+      const isCycle = visited.has(key);
+      return isCycle
+        ? `z.lazy((): z.ZodTypeAny => ${schemaKeyToVarName(key)})`
+        : `z.lazy(() => ${schemaKeyToVarName(key)})`;
+    }
     return 'z.any()';
   }
   if (schema.allOf && schema.allOf.length > 0) {
@@ -218,6 +231,82 @@ export function schemaKeyToVarName(
 ): string {
   const _ = utils._ as typeof import('lodash-es');
   return `${_.camelCase(key)}Schema`;
+}
+
+/**
+ * Resolve operation.parameters to a list of query params { name, required, schema }.
+ * Expands $ref from components.parameters. Supports OAS2 (type/items on param) and OAS3 (param.schema).
+ */
+function resolveQueryParameters(
+  operation: {
+    parameters?: Array<{
+      $ref?: string;
+      in?: string;
+      name?: string;
+      required?: boolean;
+      schema?: OpenAPISchema;
+      type?: string;
+      format?: string;
+      items?: OpenAPISchema;
+    }>;
+  },
+  componentsParameters: Record<string, OpenAPIParameter> | null,
+): Array<{ name: string; required: boolean; schema: OpenAPISchema }> {
+  const list: Array<{
+    name: string;
+    required: boolean;
+    schema: OpenAPISchema;
+  }> = [];
+  const params = operation?.parameters;
+  if (!Array.isArray(params) || !params.length) return list;
+  for (const p of params) {
+    let param: OpenAPIParameter = p as OpenAPIParameter;
+    if (p.$ref && componentsParameters) {
+      const key = parseParamRef(p.$ref);
+      if (key && key in componentsParameters)
+        param = componentsParameters[key] as OpenAPIParameter;
+    }
+    if (param.in !== 'query') continue;
+    const name = param.name;
+    if (!name) continue;
+    const schema: OpenAPISchema = param.schema ?? {
+      type: param.type ?? 'string',
+      format: param.format,
+      items: param.items,
+    };
+    list.push({
+      name,
+      required: param.required === true,
+      schema,
+    });
+  }
+  return list;
+}
+
+/**
+ * Build zod object expression string from resolved query parameters.
+ */
+function queryParamsToZodObject(
+  queryParams: Array<{
+    name: string;
+    required: boolean;
+    schema: OpenAPISchema;
+  }>,
+  schemas: Record<string, OpenAPISchema>,
+  schemaKeyToVarName: (key: string) => string,
+): string {
+  if (queryParams.length === 0) return 'z.object({})';
+  const entries = queryParams.map(({ name, required, schema }) => {
+    const expr = schemaToZodExpr(
+      schema,
+      schemas,
+      schemaKeyToVarName,
+      new Set<string>(),
+    );
+    const field = required ? expr : `${expr}.optional()`;
+    return `  ${JSON.stringify(name)}: ${field}`;
+  });
+  return `z.object({\n${entries.join(',\n')}\n})`;
 }
 
 /**
@@ -355,6 +444,20 @@ function schemaKeyToZod(
  * Builds the source code for endpoint Zod contracts: params schema, data schema, and the contracts object.
  * When components.schemas are provided, generates detailed Zod from OpenAPI schemas.
  */
+/** Minimal operation shape for resolving query parameters */
+export type OpenAPIOperationForZod = {
+  parameters?: Array<{
+    $ref?: string;
+    in?: string;
+    name?: string;
+    required?: boolean;
+    schema?: OpenAPISchema;
+    type?: string;
+    format?: string;
+    items?: OpenAPISchema;
+  }>;
+};
+
 export function buildEndpointZodContractsCode(params: {
   routeNameUsage: string;
   inputParams: RequestParam[];
@@ -368,6 +471,12 @@ export function buildEndpointZodContractsCode(params: {
   responseSchemaKey?: string | null;
   /** When true, do not emit auxiliary schemas inline; they are expected from a central schemas.ts (zodSchemaImportNames will be non-empty) */
   useExternalZodSchemas?: boolean;
+  /** OpenAPI operation (path + method) to build query object schema from parameters with in: 'query' */
+  openApiOperation?: OpenAPIOperationForZod | null;
+  /** OpenAPI components.parameters to resolve $ref in operation.parameters */
+  openApiComponentsParameters?: Record<string, OpenAPIParameter> | null;
+  /** Name of the input param that holds query (default 'query') */
+  queryParamName?: string;
 }): EndpointZodContractsResult {
   const {
     routeNameUsage,
@@ -379,6 +488,9 @@ export function buildEndpointZodContractsCode(params: {
     typeSuffix = 'DC',
     responseSchemaKey,
     useExternalZodSchemas = false,
+    openApiOperation = null,
+    openApiComponentsParameters = null,
+    queryParamName = 'query',
   } = params;
   const _ = utils._ as typeof import('lodash-es');
 
@@ -388,13 +500,39 @@ export function buildEndpointZodContractsCode(params: {
   const allAuxiliaryKeys = new Set<string>();
   const paramParts: string[] = [];
 
+  const resolvedQueryParams =
+    openApiOperation &&
+    (openApiComponentsParameters || openApiOperation.parameters?.length)
+      ? resolveQueryParameters(openApiOperation, openApiComponentsParameters)
+      : [];
+
+  const schemaKeyToVarNameFn = (key: string) => schemaKeyToVarName(key, utils);
+
   for (const p of inputParams) {
-    const { expr, refs: refKeys } = typeToZodSchemaWithSchema(
-      p.type,
-      componentsSchemas,
-      utils,
-      typeSuffix,
-    );
+    let expr: string;
+    let refKeys: string[] = [];
+
+    if (
+      p.name === queryParamName &&
+      resolvedQueryParams.length > 0 &&
+      componentsSchemas
+    ) {
+      expr = queryParamsToZodObject(
+        resolvedQueryParams,
+        componentsSchemas,
+        schemaKeyToVarNameFn,
+      );
+    } else {
+      const result = typeToZodSchemaWithSchema(
+        p.type,
+        componentsSchemas,
+        utils,
+        typeSuffix,
+      );
+      expr = result.expr;
+      refKeys = result.refs;
+    }
+
     for (const k of refKeys) allAuxiliaryKeys.add(k);
     const schemaWithOptional = p.optional ? `${expr}.optional()` : expr;
     paramParts.push(`${p.name}: ${schemaWithOptional}`);
@@ -411,7 +549,6 @@ export function buildEndpointZodContractsCode(params: {
           utils,
           typeSuffix,
         );
-  const schemaKeyToVarNameFn = (key: string) => schemaKeyToVarName(key, utils);
   const useDataSchemaFromCentral =
     useExternalZodSchemas &&
     responseSchemaKey &&

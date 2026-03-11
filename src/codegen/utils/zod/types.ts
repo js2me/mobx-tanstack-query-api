@@ -27,6 +27,18 @@ export type OpenAPISchema = {
 };
 
 export const REF_PREFIX = '#/components/schemas/';
+export const REF_PREFIX_PARAMS = '#/components/parameters/';
+
+/** OpenAPI parameter (operation.parameters item or resolved from components.parameters) */
+export type OpenAPIParameter = {
+  name?: string;
+  in?: string;
+  required?: boolean;
+  schema?: OpenAPISchema;
+  type?: string;
+  format?: string;
+  items?: OpenAPISchema;
+};
 
 /** Minimal shape used to extract response schema $ref; accepts raw OpenAPI operation or route raw. */
 export type OperationWithResponses = {

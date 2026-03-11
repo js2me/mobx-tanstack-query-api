@@ -479,6 +479,10 @@ export const newEndpointTmpl = ({
           typeSuffix: 'DC',
           responseSchemaKey: responseSchemaKey ?? undefined,
           useExternalZodSchemas: Boolean(relativePathZodSchemas),
+          openApiOperation: operationFromSpec ?? undefined,
+          openApiComponentsParameters:
+            (swaggerSchema?.components as AnyObject)?.parameters ?? undefined,
+          queryParamName: queryName,
         })
       : null;
 
