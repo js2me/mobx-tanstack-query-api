@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.38.0
+
+### Minor Changes
+
+- [`42592f5`](https://github.com/js2me/mobx-tanstack-query-api/commit/42592f56a6c4be6b865b1be16f79321de9dcad15) Thanks [@js2me](https://github.com/js2me)! - added zod contracts support
+
+  - PR https://github.com/js2me/mobx-tanstack-query-api/pull/51
+
 ## 0.37.1
 
 ### Patch Changes
