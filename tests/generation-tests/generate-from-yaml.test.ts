@@ -22,7 +22,7 @@ describe('generateApi with yaml input file', () => {
       noBarrelFiles: true,
       removeUnusedTypes: true,
       outputType: 'one-endpoint-per-file',
-      generateZodContracts: true,
+      zodContracts: true,
       filterEndpoints: [
         /^fooBarBaz$/i,
         /^getGoldenApple$/i,

@@ -11,7 +11,7 @@ import { LINTERS_IGNORE } from './constants.js';
 export interface AllExportsTmplParams extends BaseTmplParams {
   collectedExportFiles: string[];
   metaInfo: Maybe<MetaInfo>;
-  /** When true, add export * from './schemas' (Zod schemas from generateZodContracts) */
+  /** When true, add export * from './schemas' (Zod schemas from zodContracts) */
   exportSchemas?: boolean;
 }
 

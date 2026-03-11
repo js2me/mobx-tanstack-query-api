@@ -331,7 +331,9 @@ export const generateApi = async (
       ?.schemas ??
     (generated.configuration as AnyObject).swaggerSchema?.components?.schemas;
   const hasZodSchemasFile =
-    params.generateZodContracts &&
+    (params.zodContracts === true ||
+      (typeof params.zodContracts === 'object' &&
+        params.zodContracts != null)) &&
     componentsSchemasForZod &&
     typeof componentsSchemasForZod === 'object' &&
     Object.keys(componentsSchemasForZod).length > 0;

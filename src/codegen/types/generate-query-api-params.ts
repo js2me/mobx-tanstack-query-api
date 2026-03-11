@@ -208,8 +208,26 @@ export interface GenerateQueryApiParams {
   noBarrelFiles?: boolean;
 
   /**
-   * When true, generates Zod contracts (params + data schemas) for each endpoint
-   * and adds a `contracts` field to the endpoint config. Requires `zod` to be installed.
+   * Generate Zod contracts (params + data schemas) for each endpoint and add `contracts` to the endpoint config.
+   * When truthy, can also enable validation via `validateContracts` in the endpoint config.
+   * Requires `zod` to be installed.
+   *
+   * - `true`: generate contracts and set `validateContracts: true` (validate params + data).
+   * - `false`: no contracts, no validation.
+   * - `{ validate: boolean }`: set `validateContracts` to that boolean.
+   * - `{ validate: string }`: set `validateContracts` to the expression (inserted as-is). E.g. `"process.env.NODE_ENV === 'development'"`.
+   * - `{ validate: { params?: boolean | string; data?: boolean | string } }`: set `validateContracts` to an object; each value is literal or expression (string inserted as-is).
    */
-  generateZodContracts?: boolean;
+  zodContracts?:
+    | boolean
+    | {
+        validate:
+          | boolean
+          | string
+          | { params?: boolean | string; data?: boolean | string };
+        throw?:
+          | boolean
+          | string
+          | { params?: boolean | string; data?: boolean | string };
+      };
 }

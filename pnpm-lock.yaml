@@ -53,6 +53,9 @@ importers:
       yummies:
         specifier: ^7.10.0
         version: 7.10.0(mobx@6.13.7)
+      zod:
+        specifier: '>=4'
+        version: 4.3.6
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.4.5
@@ -4353,6 +4356,9 @@ packages:
         optional: true
       react:
         optional: true
+
+  zod@4.3.6:
+    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -9087,5 +9093,7 @@ snapshots:
       tailwind-merge: 3.3.1
     optionalDependencies:
       mobx: 6.13.7
+
+  zod@4.3.6: {}
 
   zwitch@2.0.4: {}

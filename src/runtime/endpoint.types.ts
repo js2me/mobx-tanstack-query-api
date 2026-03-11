@@ -7,9 +7,17 @@ import type { FullRequestParams } from './http-client.js';
  * Optional Zod (or compatible) contracts for params and response data validation.
  * When using zod, pass { params: zSchemaForParams, data: zSchemaForResponseData }.
  */
+export interface SafeParseAsyncSchema<TInput = unknown> {
+  safeParseAsync: (
+    input: unknown,
+  ) => Promise<
+    { success: true; data: TInput } | { success: false; error: any }
+  >;
+}
+
 export interface EndpointContracts {
-  params?: unknown;
-  data?: unknown;
+  params?: SafeParseAsyncSchema;
+  data?: SafeParseAsyncSchema;
 }
 
 export interface EndpointConfiguration<
@@ -26,6 +34,10 @@ export interface EndpointConfiguration<
   tags: string[];
   /** Optional validation contracts (e.g. zod schemas) for params and data */
   contracts?: EndpointContracts;
+  /** When true, validates both params and data; when false, skips. When object, validates params/data only when the corresponding property is true. Values may come from runtime expressions. */
+  validateContracts?: boolean | { params?: boolean; data?: boolean };
+  /** When true, throws on contract validation errors; when false, only warns. When object, controls throwing for params/data independently. */
+  throwContracts?: boolean | { params?: boolean; data?: boolean };
 }
 
 export type AnyEndpoint = Endpoint<any, any, any>;

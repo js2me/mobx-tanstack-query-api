@@ -413,6 +413,70 @@ removeUnusedTypes: {
 ```
 
 
+#### `zodContracts`  
+
+Enable генерацию Zod‑контрактов (`contracts`) для каждого эндпоинта и (опционально) валидацию входных параметров/данных ответа через `validateContracts` в рантайме.
+
+Требуется установленный `zod`.
+
+Варианты:
+
+- **`true`** – сгенерировать контракты и включить валидацию и `params`, и `data`:
+
+```ts
+zodContracts: true
+// → в сгенерированном Endpoint-конфиге:
+// contracts: <...>,
+// validateContracts: true,
+```
+
+- **`false`** (или отсутствие поля) – не генерировать `contracts` и не включать валидацию.
+
+- **`{ validate: boolean }`** – всегда включать/отключать валидацию (и `params`, и `data`) по булевому значению:
+
+```ts
+zodContracts: {
+  validate: true,
+}
+// → validateContracts: true,
+
+zodContracts: {
+  validate: false,
+}
+// → validateContracts: false,
+```
+
+- **`{ validate: string }`** – задать выражение, которое будет вставлено в код как есть (например, включать валидацию только в dev‑окружении):
+
+```ts
+zodContracts: {
+  validate: "process.env.NODE_ENV === 'development'",
+}
+// → validateContracts: process.env.NODE_ENV === 'development',
+```
+
+- **`{ validate: { params?: boolean | string; data?: boolean | string } }`** – управлять валидацией `params` и `data` отдельно; каждое значение может быть булевым или строковым выражением:
+
+```ts
+zodContracts: {
+  validate: {
+    // всегда валидировать входные параметры
+    params: true,
+    // валидировать data только в development
+    data: "process.env.NODE_ENV === 'development'",
+  },
+}
+// → validateContracts: { params: true, data: process.env.NODE_ENV === 'development' },
+```
+
+Логика в рантайме:
+
+- `validateContracts: true` – валидируются и `params`, и `data`;
+- `validateContracts: false` или `undefined` – валидация не выполняется;
+- `validateContracts: { params?: boolean; data?: boolean }` – валидируются только те части, где значение `true`.
+
+
+
 #### `formatEndpointName`   
 
 This option is allow to format endpoint name.

@@ -44,7 +44,7 @@ export const allEndpointPerFileTmpl = async (
       route,
       groupName,
       metaInfo,
-      generateZodContracts: codegenParams.generateZodContracts === true,
+      zodContracts: codegenParams.zodContracts,
       relativePathZodSchemas: relativePathZodSchemas ?? undefined,
     });
     const { reservedDataContractNames } = newEndpointTemplateData;

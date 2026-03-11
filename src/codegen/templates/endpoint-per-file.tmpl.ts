@@ -42,7 +42,7 @@ export const endpointPerFileTmpl = async (
     route,
     groupName,
     metaInfo,
-    generateZodContracts: codegenParams.generateZodContracts === true,
+    zodContracts: codegenParams.zodContracts,
     relativePathZodSchemas: relativePathZodSchemas ?? undefined,
   });
 

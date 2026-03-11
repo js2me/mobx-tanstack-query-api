@@ -13,12 +13,25 @@ import {
   formatTagNameEnumKey,
 } from './meta-info.tmpl.js';
 
+export type ZodContractsOption =
+  | boolean
+  | {
+      validate:
+        | boolean
+        | string
+        | { params?: boolean | string; data?: boolean | string };
+      throw?:
+        | boolean
+        | string
+        | { params?: boolean | string; data?: boolean | string };
+    };
+
 export interface NewEndpointTmplParams extends BaseTmplParams {
   route: ParsedRoute;
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;
-  /** When true, generates Zod contracts (params + data) and adds contracts to endpoint config */
-  generateZodContracts?: boolean;
+  /** Generate Zod contracts and optionally enable validation. */
+  zodContracts?: ZodContractsOption;
   /** When set, auxiliary Zod schemas are not inlined; endpoint imports them from this path (e.g. '../schemas') */
   relativePathZodSchemas?: string | null;
 }
@@ -197,10 +210,29 @@ export const newEndpointTmpl = ({
   metaInfo,
   filterTypes,
   configuration,
-  generateZodContracts,
+  zodContracts,
   relativePathZodSchemas,
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: codegen template, many branches by design
 }: NewEndpointTmplParams) => {
+  const zodContractsIsObject =
+    typeof zodContracts === 'object' && zodContracts !== null;
+  const hasZodContracts = zodContracts === true || zodContractsIsObject;
+  const validateOpt = zodContractsIsObject
+    ? zodContracts.validate
+    : zodContracts === true
+      ? true
+      : undefined;
+  const throwOpt = zodContractsIsObject ? zodContracts.throw : undefined;
+  const validateOptObj =
+    validateOpt != null &&
+    typeof validateOpt === 'object' &&
+    !Array.isArray(validateOpt)
+      ? (validateOpt as { params?: boolean | string; data?: boolean | string })
+      : null;
+  const throwOptObj =
+    throwOpt != null && typeof throwOpt === 'object' && !Array.isArray(throwOpt)
+      ? (throwOpt as { params?: boolean | string; data?: boolean | string })
+      : null;
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
     (it) =>
@@ -387,7 +419,7 @@ export const newEndpointTmpl = ({
   const isAllowedInputType = filterTypes(requestInputTypeDc);
 
   const defaultOkResponseType = positiveResponseTypes?.[0]?.type ?? 'unknown';
-  const contractsVarName = generateZodContracts
+  const contractsVarName = hasZodContracts
     ? `${_.camelCase(route.routeName.usage)}Contracts`
     : null;
   const swaggerSchema =
@@ -436,7 +468,7 @@ export const newEndpointTmpl = ({
     }
   }
   const contractsCode =
-    generateZodContracts && contractsVarName
+    hasZodContracts && contractsVarName
       ? buildEndpointZodContractsCode({
           routeNameUsage: route.routeName.usage,
           inputParams,
@@ -452,6 +484,42 @@ export const newEndpointTmpl = ({
 
   const contractsLine =
     contractsVarName != null ? `contracts: ${contractsVarName},` : '';
+  const validateContractsLine = (() => {
+    if (validateOpt === undefined) return '';
+    if (typeof validateOpt === 'string')
+      return `validateContracts: ${validateOpt},`;
+    if (typeof validateOpt === 'boolean')
+      return `validateContracts: ${validateOpt},`;
+    if (validateOptObj !== null) {
+      const parts: string[] = [];
+      if (validateOptObj.params !== undefined)
+        parts.push(
+          `params: ${typeof validateOptObj.params === 'string' ? validateOptObj.params : validateOptObj.params}`,
+        );
+      if (validateOptObj.data !== undefined)
+        parts.push(
+          `data: ${typeof validateOptObj.data === 'string' ? validateOptObj.data : validateOptObj.data}`,
+        );
+      return parts.length > 0
+        ? `validateContracts: { ${parts.join(', ')} },`
+        : '';
+    }
+    return '';
+  })();
+  const throwContractsLine = (() => {
+    if (throwOpt === undefined) return '';
+    if (typeof throwOpt === 'string') return `throwContracts: ${throwOpt},`;
+    if (typeof throwOpt === 'boolean') return `throwContracts: ${throwOpt},`;
+    if (throwOptObj !== null) {
+      const parts: string[] = [];
+      if (throwOptObj.params !== undefined)
+        parts.push(`params: ${throwOptObj.params}`);
+      if (throwOptObj.data !== undefined)
+        parts.push(`data: ${throwOptObj.data}`);
+      return parts.length > 0 ? `throwContracts: { ${parts.join(', ')} },` : '';
+    }
+    return '';
+  })();
 
   return {
     reservedDataContractNames,
@@ -494,6 +562,8 @@ new ${importFileParams.endpoint.exportName}<
         ${metaInfo?.namespace ? `namespace,` : ''}
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
         ${contractsLine}
+        ${validateContractsLine}
+        ${throwContractsLine}
     },
     ${importFileParams.queryClient.exportName},
     ${importFileParams.httpClient.exportName},

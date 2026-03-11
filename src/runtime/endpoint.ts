@@ -32,6 +32,16 @@ import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { HttpClient } from './http-client.js';
 import { type AnyResponse, isHttpResponse } from './http-response.js';
 
+function isContractOptionEnabled(
+  option: boolean | { params?: boolean; data?: boolean } | undefined,
+  key: 'params' | 'data',
+): boolean {
+  return (
+    option === true ||
+    (typeof option === 'object' && option !== null && option[key] === true)
+  );
+}
+
 export interface Endpoint<
   TResponse extends AnyResponse,
   TParams extends AnyObject,
@@ -67,6 +77,11 @@ export class Endpoint<
 
   meta!: TMetaData;
 
+  protected validateParams: boolean = false;
+  protected validateData: boolean = false;
+  protected throwParams: boolean = false;
+  protected throwData: boolean = false;
+
   constructor(
     public configuration: EndpointConfiguration<NoInfer<TParams>, TMetaData>,
     public queryClient: EndpointQueryClient,
@@ -74,6 +89,12 @@ export class Endpoint<
   ) {
     this.endpointId = globalThis.crypto.randomUUID();
     this.meta = configuration.meta ?? ({} as TMetaData);
+    const vc = configuration.validateContracts;
+    this.validateParams = isContractOptionEnabled(vc, 'params');
+    this.validateData = isContractOptionEnabled(vc, 'data');
+    const tc = configuration.throwContracts;
+    this.throwParams = isContractOptionEnabled(tc, 'params');
+    this.throwData = isContractOptionEnabled(tc, 'data');
     // Сохраняем оригинальный инстанс
     const instance = this;
 
@@ -167,15 +188,94 @@ export class Endpoint<
     return isHttpResponse(response, status);
   }
 
-  request(
+  protected async validateContract(
+    kind: 'params' | 'data',
+    contract: { safeParseAsync: (input: unknown) => Promise<any> } | undefined,
+    payload: unknown,
+    options?: { throw?: boolean },
+  ) {
+    if (!contract?.safeParseAsync) return;
+
+    const label = kind === 'params' ? 'Params' : 'Data';
+    const shouldThrow = options?.throw === true;
+
+    try {
+      const result = await contract.safeParseAsync(payload);
+      if (!result?.success) {
+        if (shouldThrow) {
+          throw result?.error;
+        } else {
+          console.warn(
+            `[mobx-tanstack-query-api] ${label} contract validation failed for "${this.operationId}"`,
+            result?.error,
+            payload,
+          );
+        }
+      }
+    } catch (error) {
+      if (shouldThrow) {
+        throw error;
+      } else {
+        console.warn(
+          `[mobx-tanstack-query-api] ${label} contract validation threw for "${this.operationId}"`,
+          error,
+          payload,
+        );
+      }
+    }
+  }
+
+  async request(
     ...args: IsPartial<TParams> extends true
       ? [params?: Maybe<TParams>]
       : [params: TParams]
   ) {
-    return this.httpClient.request<TResponse>(
-      this.configuration.params(args[0] ?? ({} as TParams)),
+    const rawParams = (args[0] ?? {}) as TParams;
+
+    const contracts = this.configuration.contracts;
+
+    if (this.validateParams) {
+      await this.validateContract(
+        'params',
+        contracts?.params as any,
+        rawParams,
+        {
+          throw: this.throwParams,
+        },
+      );
+    }
+
+    const response = await this.httpClient.request<TResponse>(
+      this.configuration.params(rawParams),
       this,
     );
+
+    if (
+      this.validateData &&
+      contracts?.data?.safeParseAsync &&
+      this.checkResponse(response) &&
+      response.ok
+    ) {
+      try {
+        await this.validateContract(
+          'data',
+          contracts?.data as any,
+          response.data,
+          { throw: this.throwData },
+        );
+      } catch (error) {
+        if (this.throwData) {
+          throw error;
+        }
+        console.warn(
+          `[mobx-tanstack-query-api] Data contract validation threw for "${this.operationId}"`,
+          error,
+          (response as any)?.data,
+        );
+      }
+    }
+
+    return response;
   }
 
   toQueryMeta = (meta?: AnyObject) =>
