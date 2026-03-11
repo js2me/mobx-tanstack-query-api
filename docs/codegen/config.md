@@ -425,7 +425,7 @@ Options:
 
 ```ts
 zodContracts: true
-// → в сгенерированном Endpoint-конфиге:
+// → in the generated Endpoint config:
 // contracts: <...>,
 // validateContracts: true,
 ```
@@ -469,11 +469,32 @@ zodContracts: {
 // → validateContracts: { params: true, data: process.env.NODE_ENV === 'development' },
 ```
 
+When using the object form, you can also set **`throw`** to control `throwContracts` (throw on validation errors vs. only warn):
+
+- **`{ throw: boolean }`** – set `throwContracts` to that boolean.
+- **`{ throw: string }`** – set `throwContracts` to an expression (inserted as-is).
+- **`{ throw: { params?: boolean | string; data?: boolean | string } }`** – set `throwContracts` to an object; each value is a boolean or a string expression.
+
+```ts
+zodContracts: {
+  validate: true,
+  throw: true,
+}
+// → validateContracts: true, throwContracts: true,
+
+zodContracts: {
+  validate: { params: true, data: true },
+  throw: { params: true, data: "process.env.NODE_ENV === 'development'" },
+}
+// → validateContracts: { params: true, data: true }, throwContracts: { params: true, data: process.env.NODE_ENV === 'development' },
+```
+
 Runtime logic:
 
 - `validateContracts: true` – both `params` and `data` are validated;
 - `validateContracts: false` or `undefined` – validation is not performed;
 - `validateContracts: { params?: boolean; data?: boolean }` – only the parts where the value is `true` are validated.
+- `throwContracts` – when `true`, validation errors throw; when `false` or omitted, only warnings are logged. Object form controls `params`/`data` independently.
 
 
 

@@ -217,6 +217,11 @@ export interface GenerateQueryApiParams {
    * - `{ validate: boolean }`: set `validateContracts` to that boolean.
    * - `{ validate: string }`: set `validateContracts` to the expression (inserted as-is). E.g. `"process.env.NODE_ENV === 'development'"`.
    * - `{ validate: { params?: boolean | string; data?: boolean | string } }`: set `validateContracts` to an object; each value is literal or expression (string inserted as-is).
+   *
+   * When using an object form, optional `throw` controls `throwContracts` (throw on validation errors vs warn):
+   * - `{ throw: boolean }`: set `throwContracts` to that boolean.
+   * - `{ throw: string }`: set `throwContracts` to the expression (inserted as-is).
+   * - `{ throw: { params?: boolean | string; data?: boolean | string } }`: set `throwContracts` to an object; each value is literal or expression (string inserted as-is).
    */
   zodContracts?:
     | boolean

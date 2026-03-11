@@ -193,7 +193,7 @@ export class Endpoint<
     contract: { safeParseAsync: (input: unknown) => Promise<any> } | undefined,
     payload: unknown,
     options?: { throw?: boolean },
-  ) {
+  ): Promise<unknown> {
     if (!contract?.safeParseAsync) return;
 
     const label = kind === 'params' ? 'Params' : 'Data';
@@ -210,8 +210,10 @@ export class Endpoint<
             result?.error,
             payload,
           );
+          return;
         }
       }
+      return result.data;
     } catch (error) {
       if (shouldThrow) {
         throw error;
@@ -221,6 +223,7 @@ export class Endpoint<
           error,
           payload,
         );
+        return;
       }
     }
   }
@@ -234,19 +237,18 @@ export class Endpoint<
 
     const contracts = this.configuration.contracts;
 
-    if (this.validateParams) {
-      await this.validateContract(
-        'params',
-        contracts?.params as any,
-        rawParams,
-        {
-          throw: this.throwParams,
-        },
-      );
-    }
+    const params =
+      this.validateParams && contracts?.params
+        ? (((await this.validateContract(
+            'params',
+            contracts?.params as any,
+            rawParams,
+            { throw: this.throwParams },
+          )) ?? rawParams) as TParams)
+        : rawParams;
 
     const response = await this.httpClient.request<TResponse>(
-      this.configuration.params(rawParams),
+      this.configuration.params(params),
       this,
     );
 
@@ -256,12 +258,15 @@ export class Endpoint<
       this.checkResponse(response) &&
       response.ok
     ) {
-      await this.validateContract(
+      const parsedData = await this.validateContract(
         'data',
         contracts?.data as any,
         response.data,
         { throw: this.throwData },
       );
+      if (parsedData !== undefined) {
+        response.data = parsedData as TResponse['data'];
+      }
     }
 
     return response;
