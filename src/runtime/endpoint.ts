@@ -256,23 +256,12 @@ export class Endpoint<
       this.checkResponse(response) &&
       response.ok
     ) {
-      try {
-        await this.validateContract(
-          'data',
-          contracts?.data as any,
-          response.data,
-          { throw: this.throwData },
-        );
-      } catch (error) {
-        if (this.throwData) {
-          throw error;
-        }
-        console.warn(
-          `[mobx-tanstack-query-api] Data contract validation threw for "${this.operationId}"`,
-          error,
-          (response as any)?.data,
-        );
-      }
+      await this.validateContract(
+        'data',
+        contracts?.data as any,
+        response.data,
+        { throw: this.throwData },
+      );
     }
 
     return response;
