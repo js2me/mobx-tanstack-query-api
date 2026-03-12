@@ -4,12 +4,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { defineConfig } from '../../src/cli/utils/define-config.js';
 import { generateApi } from '../../src/codegen/index.js';
 
-const INPUT_DIR = path.resolve(__dirname, './generate-from-yaml.test.yaml')
-const OUTPUT_DIR = path.resolve(__dirname, './__generated__')
+const INPUT_DIR = path.resolve(__dirname, './generate-from-yaml.test.yaml');
+const OUTPUT_DIR = path.resolve(__dirname, './__generated__/yaml');
 
 describe('generateApi with yaml input file', () => {
   beforeEach(async () => {
-    await fs.rm(path.resolve('./__generated__'), {
+    await fs.rm(OUTPUT_DIR, {
       recursive: true,
       force: true,
     });
@@ -52,10 +52,7 @@ describe('generateApi with yaml input file', () => {
 
     await generateApi(config);
 
-    const generatedEndpointsPath = path.resolve(
-      OUTPUT_DIR, 
-      'endpoints',
-    );
+    const generatedEndpointsPath = path.resolve(OUTPUT_DIR, 'endpoints');
     const generatedFiles = await fs.readdir(generatedEndpointsPath);
 
     expect(generatedFiles).toEqual(

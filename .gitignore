@@ -5,5 +5,4 @@ playground
 unit-tests-coverage
 docs/.vitepress/cache
 tmp
-__generated__
-__generated_zod__
+**/__generated__/

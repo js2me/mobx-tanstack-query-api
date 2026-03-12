@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { cloneDeep } from 'lodash-es';
@@ -218,7 +219,7 @@ export const generateApi = async (
       ...(swaggerTypescriptApiCodegenBaseParams as any),
       ...inputToCodegenInput(params.mixinInput),
       hooks: {
-        onInit: (configuration, codegenProcess) => {
+        onInit: (configuration, _codegenProcess) => {
           mixinSwaggerSchema = cloneDeep(configuration.swaggerSchema);
         },
         onPrepareConfig: prepareConfig,
@@ -282,8 +283,11 @@ export const generateApi = async (
 
   const codegenFs = codegenProcess.fileSystem as any;
 
-  codegenFs.cleanDir(paths.outputDir);
-  codegenFs.createDir(paths.outputDir);
+  await Promise.resolve(codegenFs.cleanDir(paths.outputDir));
+  // swagger-typescript-api FileSystem.createDir не создает вложенные директории рекурсивно,
+  // а нам важно поддерживать output вида ".../__generated__/subdir".
+  await fs.mkdir(paths.outputDir, { recursive: true });
+  await Promise.resolve(codegenFs.createDir(paths.outputDir));
 
   const filterTypes = unpackFilterOption(
     params.filterTypes,
@@ -342,7 +346,12 @@ export const generateApi = async (
 
     if (outputType === 'one-endpoint-per-file') {
       // #region кодогенерация 1 эндпоинт - 1 файл без группировки
-      codegenFs.createDir(path.resolve(params.output, 'endpoints'));
+      await fs.mkdir(path.resolve(paths.outputDir, 'endpoints'), {
+        recursive: true,
+      });
+      await Promise.resolve(
+        codegenFs.createDir(path.resolve(params.output, 'endpoints')),
+      );
 
       const fileNamesWithRequestInfo: string[] = [];
 

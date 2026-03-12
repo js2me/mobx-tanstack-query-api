@@ -6,7 +6,7 @@ import { generateApi } from '../../src/codegen/index.js';
 import type { GenerateQueryApiParams } from '../../src/codegen/types/generate-query-api-params.js';
 
 const INPUT_DIR = path.resolve(__dirname, './generate-from-yaml.test.yaml');
-const OUTPUT_DIR = path.resolve(__dirname, './__generated_zod__');
+const OUTPUT_DIR = path.resolve(__dirname, './__generated__/zod');
 const ENDPOINT_FILE = path.resolve(
   OUTPUT_DIR,
   'endpoints',
@@ -55,6 +55,9 @@ describe('generateApi — zodContracts все вариации', () => {
 
   beforeEach(async () => {
     await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
+    // swagger-typescript-api fileSystem.createDir не создает вложенные директории рекурсивно
+    // поэтому гарантируем существование родителя (__generated__)
+    await fs.mkdir(path.dirname(OUTPUT_DIR), { recursive: true });
   });
 
   it('zodContracts: false — нет контрактов и валидации', async () => {

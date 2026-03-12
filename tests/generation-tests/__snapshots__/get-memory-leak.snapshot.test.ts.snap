@@ -1,0 +1,56 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi — snapshot getMemoryLeak > генерирует endpoint и совпадает со snapshot 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Tag } from "../meta-info";
+
+import { NeutralStatusDC } from "../data-contracts";
+
+export type GetMemoryLeakErrorDC = NeutralStatusDC;
+
+export type GetMemoryLeakParams = {
+  query: {
+    cursor: string;
+    filters?: string[];
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Нейтральный бинарный отчёт**
+ *
+ * @operationId getMemoryLeak
+ * @tags neutral
+ * @request **GET:/api/v1/memory/leak**
+ * @produces application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+ * @responses
+ * @**200** Blob A successful response.
+ * @**default** NeutralStatusDC An unexpected error response.
+ */
+export const getMemoryLeak = new Endpoint<
+  HttpResponse<Blob, GetMemoryLeakErrorDC>,
+  GetMemoryLeakParams,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/api/v1/memory/leak\`,
+      method: "GET",
+      query: query,
+      format: "blob",
+      ...requestParams,
+    }),
+    requiredParams: ["query"],
+    operationId: "getMemoryLeak",
+    path: ["api", "v1", "memory", "leak"],
+    tags: [Tag.Neutral],
+    meta: {} as any,
+  },
+  queryClient,
+  http,
+);
+"
+`;
