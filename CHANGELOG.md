@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.40.0
+
+### Minor Changes
+
+- [`9d9ee3a`](https://github.com/js2me/mobx-tanstack-query-api/commit/9d9ee3a499ac7599872dbd94d257cfe339970795) Thanks [@js2me](https://github.com/js2me)! - fixed codegen (binary responses)
+
 ## 0.39.1
 
 ### Patch Changes
