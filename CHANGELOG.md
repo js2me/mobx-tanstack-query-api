@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.40.1
+
+### Patch Changes
+
+- [`31222a6`](https://github.com/js2me/mobx-tanstack-query-api/commit/31222a61387982f1c9e5c0d5d4a3a23e8d9a7661) Thanks [@js2me](https://github.com/js2me)! - mkdir is not a function bug
+
 ## 0.40.0
 
 ### Minor Changes
