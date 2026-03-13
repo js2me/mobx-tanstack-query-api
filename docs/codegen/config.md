@@ -415,7 +415,7 @@ removeUnusedTypes: {
 
 #### `zodContracts`  
 
-Enables generation of Zod contracts (`contracts`) for each endpoint and (optionally) validation of input parameters and response data via `validateContracts` at runtime.
+Enables generation of Zod contracts (`contract`) for each endpoint and (optionally) validation of input parameters and response data via `validateContract` at runtime.
 
 Requires `zod` to be installed.
 
@@ -426,11 +426,11 @@ Options:
 ```ts
 zodContracts: true
 // → in the generated Endpoint config:
-// contracts: <...>,
-// validateContracts: true,
+// contract: <...>,
+// validateContract: true,
 ```
 
-- **`false`** (or omitting the field) – do not generate `contracts` and do not enable validation.
+- **`false`** (or omitting the field) – do not generate `contract` and do not enable validation.
 
 - **`{ validate: boolean }`** – always enable or disable validation (for both `params` and `data`) with a boolean value:
 
@@ -438,12 +438,12 @@ zodContracts: true
 zodContracts: {
   validate: true,
 }
-// → validateContracts: true,
+// → validateContract: true,
 
 zodContracts: {
   validate: false,
 }
-// → validateContracts: false,
+// → validateContract: false,
 ```
 
 - **`{ validate: string }`** – specify an expression that will be inserted into the code as-is (e.g., enable validation only in dev environment):
@@ -452,7 +452,19 @@ zodContracts: {
 zodContracts: {
   validate: "process.env.NODE_ENV === 'development'",
 }
-// → validateContracts: process.env.NODE_ENV === 'development',
+// → validateContract: process.env.NODE_ENV === 'development',
+```
+
+- **`{ validate: (contractName, routeInfo) => ... }`** – compute `validateContract` at codegen time for each endpoint. The function may return a boolean, a runtime expression string, or an object with separate `params` / `data` rules:
+
+```ts
+zodContracts: {
+  validate: (contractName, routeInfo) => ({
+    params: contractName.endsWith('Contract'),
+    data: routeInfo.method === 'post',
+  }),
+}
+// → validateContract: { params: true, data: true },
 ```
 
 - **`{ validate: { params?: boolean | string; data?: boolean | string } }`** – control validation of `params` and `data` separately; each value can be a boolean or a string expression:
@@ -466,14 +478,26 @@ zodContracts: {
     data: "process.env.NODE_ENV === 'development'",
   },
 }
-// → validateContracts: { params: true, data: process.env.NODE_ENV === 'development' },
+// → validateContract: { params: true, data: process.env.NODE_ENV === 'development' },
 ```
 
 When using the object form, you can also set:
 
+- **`suffix`** – suffix for all generated Zod contract variables. Default: `"Contract"`:
+
+```ts
+zodContracts: {
+  validate: true,
+  suffix: "Validator",
+}
+// → shared file: contracts.ts
+// → export const nodePageEnvelopeValidator = ...
+// → export const getBinaryReportValidator = { ... }
+```
+
 - **`appendRule`** – one field, either a string (runtime) or a function (codegen-time):
-  - **string**: expression inserted as-is → `contracts: <expression> ? <contractsVar> : undefined` (e.g. enable contracts only in development).
-  - **function** `(contractName, routeInfo) => boolean`: at codegen time, include `contracts: <contractsVar>` only when the function returns `true`; otherwise `contracts: undefined`. The contracts variable is still generated; only its inclusion in the endpoint config is conditional.
+  - **string**: expression inserted as-is → `contract: <expression> ? <contractVar> : undefined` (e.g. enable contracts only in development).
+  - **function** `(contractName, routeInfo) => boolean`: at codegen time, include `contract: <contractVar>` only when the function returns `true`; otherwise `contract: undefined`. The contract variable is still generated; only its inclusion in the endpoint config is conditional.
 
 ```ts
 // Runtime condition (string)
@@ -481,26 +505,27 @@ zodContracts: {
   validate: true,
   appendRule: 'process.env.NODE_ENV === "development"',
 }
-// → contracts: process.env.NODE_ENV === "development" ? getBinaryReportContracts : undefined,
+// → contract: process.env.NODE_ENV === "development" ? getBinaryReportContract : undefined,
 
 // Codegen-time filter (function)
 zodContracts: {
   validate: true,
-  appendRule: (name) => name === 'getBinaryReportContracts',
+  appendRule: (name) => name === 'getBinaryReportContract',
 }
-// → contracts: getBinaryReportContracts,
+// → contract: getBinaryReportContract,
 
 zodContracts: {
   validate: true,
   appendRule: () => false,
 }
-// → contracts: undefined,
+// → contract: undefined,
 ```
 
 - **`throw`** – control `throwContracts` (throw on validation errors vs. only warn):
 
   - **`{ throw: boolean }`** – set `throwContracts` to that boolean.
   - **`{ throw: string }`** – set `throwContracts` to an expression (inserted as-is).
+  - **`{ throw: (contractName, routeInfo) => ... }`** – compute `throwContracts` at codegen time for each endpoint. The function may return a boolean, a runtime expression string, or an object with separate `params` / `data` rules.
   - **`{ throw: { params?: boolean | string; data?: boolean | string } }`** – set `throwContracts` to an object; each value is a boolean or a string expression.
 
 ```ts
@@ -508,20 +533,27 @@ zodContracts: {
   validate: true,
   throw: true,
 }
-// → validateContracts: true, throwContracts: true,
+// → validateContract: true, throwContracts: true,
 
 zodContracts: {
   validate: { params: true, data: true },
   throw: { params: true, data: "process.env.NODE_ENV === 'development'" },
 }
-// → validateContracts: { params: true, data: true }, throwContracts: { params: true, data: process.env.NODE_ENV === 'development' },
+// → validateContract: { params: true, data: true }, throwContracts: { params: true, data: process.env.NODE_ENV === 'development' },
+
+zodContracts: {
+  validate: true,
+  throw: (contractName, routeInfo) =>
+    routeInfo.operationId === 'getBinaryReport' && contractName.endsWith('Contract'),
+}
+// → throwContracts: true,
 ```
 
 Runtime logic:
 
-- `validateContracts: true` – both `params` and `data` are validated;
-- `validateContracts: false` or `undefined` – validation is not performed;
-- `validateContracts: { params?: boolean; data?: boolean }` – only the parts where the value is `true` are validated.
+- `validateContract: true` – both `params` and `data` are validated;
+- `validateContract: false` or `undefined` – validation is not performed;
+- `validateContract: { params?: boolean; data?: boolean }` – only the parts where the value is `true` are validated.
 - `throwContracts` – when `true`, validation errors throw; when `false` or omitted, only warnings are logged. Object form controls `params`/`data` independently.
 
 

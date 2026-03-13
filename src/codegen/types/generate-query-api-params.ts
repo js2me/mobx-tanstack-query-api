@@ -2,13 +2,15 @@ import type {
   GenerateApiConfiguration,
   RawRouteInfo,
 } from 'swagger-typescript-api';
-import type { AnyObject, Maybe } from 'yummies/types';
+import type { AnyObject, Maybe, MaybeFn } from 'yummies/types';
 import type { RemoveUnusedTypesParams } from '../utils/remove-unused-types.js';
 import type { FilterOption } from '../utils/unpack-filter-option.js';
 import type { CodegenDataUtils } from './codegen-data-utils.js';
 import type { EndpointData } from './endpoint-data.js';
 import type { ImportFileParams } from './import-file-params.js';
 import type { TypeInfo } from './type-info.js';
+
+type RuntimeExpressionOrBoolean = string | boolean;
 
 export interface GenerateQueryApiParams {
   /**
@@ -211,15 +213,15 @@ export interface GenerateQueryApiParams {
   noBarrelFiles?: boolean;
 
   /**
-   * Generate Zod contracts (params + data schemas) for each endpoint and add `contracts` to the endpoint config.
-   * When truthy, can also enable validation via `validateContracts` in the endpoint config.
+   * Generate Zod contracts (params + data schemas) for each endpoint and add `contract` to the endpoint config.
+   * When truthy, can also enable validation via `validateContract` in the endpoint config.
    * Requires `zod` to be installed.
    *
-   * - `true`: generate contracts and set `validateContracts: true` (validate params + data).
+   * - `true`: generate contracts and set `validateContract: true` (validate params + data).
    * - `false`: no contracts, no validation.
-   * - `{ validate: boolean }`: set `validateContracts` to that boolean.
-   * - `{ validate: string }`: set `validateContracts` to the expression (inserted as-is). E.g. `"process.env.NODE_ENV === 'development'"`.
-   * - `{ validate: { params?: boolean | string; data?: boolean | string } }`: set `validateContracts` to an object; each value is literal or expression (string inserted as-is).
+   * - `{ validate: boolean }`: set `validateContract` to that boolean.
+   * - `{ validate: string }`: set `validateContract` to the expression (inserted as-is). E.g. `"process.env.NODE_ENV === 'development'"`.
+   * - `{ validate: { params?: boolean | string; data?: boolean | string } }`: set `validateContract` to an object; each value is literal or expression (string inserted as-is).
    *
    * When using an object form, optional `throw` controls `throwContracts` (throw on validation errors vs warn):
    * - `{ throw: boolean }`: set `throwContracts` to that boolean.
@@ -227,27 +229,38 @@ export interface GenerateQueryApiParams {
    * - `{ throw: { params?: boolean | string; data?: boolean | string } }`: set `throwContracts` to an object; each value is literal or expression (string inserted as-is).
    *
    * Optional `appendRule`: either a string (runtime) or a function (codegen-time).
-   * - **string**: expression inserted as-is → `contracts: <expr> ? <contractsVar> : undefined`. E.g. `"process.env.NODE_ENV === \"development\""`.
-   * - **function** (contractName, routeInfo) => boolean: at codegen time, if true → `contracts: <contractsVar>`, if false → `contracts: undefined`.
+   * - **string**: expression inserted as-is → `contract: <expr> ? <contractVar> : undefined`. E.g. `"process.env.NODE_ENV === \"development\""`.
+   * - **function** (contractName, routeInfo) => boolean: at codegen time, if true → `contract: <contractVar>`, if false → `contract: undefined`.
+   *
+   * Optional `suffix`: suffix for generated Zod contract variables.
+   * Default: `"Contract"`.
    */
   zodContracts?:
     | boolean
     | {
-        validate:
-          | boolean
-          | string
-          | { params?: boolean | string; data?: boolean | string };
-        throw?:
-          | boolean
-          | string
-          | { params?: boolean | string; data?: boolean | string };
+        validate: MaybeFn<
+          | RuntimeExpressionOrBoolean
+          | {
+              params?: RuntimeExpressionOrBoolean;
+              data?: RuntimeExpressionOrBoolean;
+            },
+          [contractName: string, routeInfo: ZodContractsRouteInfo]
+        >;
+        throw?: MaybeFn<
+          | RuntimeExpressionOrBoolean
+          | {
+              params?: RuntimeExpressionOrBoolean;
+              data?: RuntimeExpressionOrBoolean;
+            },
+          [contractName: string, routeInfo: ZodContractsRouteInfo]
+        >;
         /** String: runtime condition. Function: codegen-time filter for (contractName, routeInfo). */
-        appendRule?:
-          | string
-          | ((
-              contractName: string,
-              routeInfo: ZodContractsRouteInfo,
-            ) => boolean);
+        appendRule?: MaybeFn<
+          RuntimeExpressionOrBoolean,
+          [contractName: string, routeInfo: ZodContractsRouteInfo]
+        >;
+        /** Suffix for all generated Zod contract variables. Default: "Contract". */
+        suffix?: string;
       };
 }
 

@@ -63,19 +63,23 @@ export const allEndpointPerFileTmpl = async (
   const hasAnyZodContracts = newEndpointTemplates.some(
     (t) => t.contractsCode != null,
   );
-  const allZodSchemaImportNames = new Set<string>();
+  const allZodContractImportNames = new Set<string>();
   newEndpointTemplates.forEach((t) => {
     const c = t.contractsCode;
-    if (c != null && typeof c === 'object' && c.zodSchemaImportNames?.length) {
-      for (const n of c.zodSchemaImportNames) {
-        allZodSchemaImportNames.add(n);
+    if (
+      c != null &&
+      typeof c === 'object' &&
+      c.zodContractImportNames?.length
+    ) {
+      for (const n of c.zodContractImportNames) {
+        allZodContractImportNames.add(n);
       }
     }
   });
   const zodImportLine = hasAnyZodContracts ? 'import * as z from "zod";' : '';
   const zodSchemasImportLine =
-    allZodSchemaImportNames.size && relativePathZodSchemas
-      ? `import { ${[...allZodSchemaImportNames].sort().join(', ')} } from "${relativePathZodSchemas}";`
+    allZodContractImportNames.size && relativePathZodSchemas
+      ? `import { ${[...allZodContractImportNames].sort().join(', ')} } from "${relativePathZodSchemas}";`
       : '';
 
   const endpointTemplates = await Promise.all(

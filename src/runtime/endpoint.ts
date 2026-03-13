@@ -89,7 +89,7 @@ export class Endpoint<
   ) {
     this.endpointId = globalThis.crypto.randomUUID();
     this.meta = configuration.meta ?? ({} as TMetaData);
-    const vc = configuration.validateContracts;
+    const vc = configuration.validateContract;
     this.validateParams = isContractOptionEnabled(vc, 'params');
     this.validateData = isContractOptionEnabled(vc, 'data');
     const tc = configuration.throwContracts;
@@ -235,13 +235,13 @@ export class Endpoint<
   ) {
     const rawParams = (args[0] ?? {}) as TParams;
 
-    const contracts = this.configuration.contracts;
+    const contract = this.configuration.contract;
 
     const params =
-      this.validateParams && contracts?.params
+      this.validateParams && contract?.params
         ? (((await this.validateContract(
             'params',
-            contracts?.params as any,
+            contract?.params as any,
             rawParams,
             { throw: this.throwParams },
           )) ?? rawParams) as TParams)
@@ -254,13 +254,13 @@ export class Endpoint<
 
     if (
       this.validateData &&
-      contracts?.data?.safeParseAsync &&
+      contract?.data?.safeParseAsync &&
       this.checkResponse(response) &&
       response.ok
     ) {
       const parsedData = await this.validateContract(
         'data',
-        contracts?.data as any,
+        contract?.data as any,
         response.data,
         { throw: this.throwData },
       );

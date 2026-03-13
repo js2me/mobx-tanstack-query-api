@@ -11,7 +11,7 @@ import { LINTERS_IGNORE } from './constants.js';
 export interface AllExportsTmplParams extends BaseTmplParams {
   collectedExportFiles: string[];
   metaInfo: Maybe<MetaInfo>;
-  /** When true, add export * from './schemas' (Zod schemas from zodContracts) */
+  /** When true, add export * from './contracts' (shared Zod contracts from zodContracts) */
   exportSchemas?: boolean;
 }
 
@@ -28,7 +28,7 @@ export const allExportsTmpl = async ({
 }: AllExportsTmplParams) => {
   return await formatTSContent(`${LINTERS_IGNORE}
   export * from './data-contracts';
-  ${exportSchemas ? "  export * from './schemas';\n  " : ''}${collectedExportFiles.map((fileName) => `export * from './${fileName}';`).join('\n')}
+  ${exportSchemas ? "  export * from './contracts';\n  " : ''}${collectedExportFiles.map((fileName) => `export * from './${fileName}';`).join('\n')}
   ${metaInfo ? 'export * from "./meta-info";' : ''}
     `);
 };

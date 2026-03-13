@@ -1,42 +1,34 @@
 import type { ParsedRoute } from 'swagger-typescript-api';
-import type { AnyObject, Maybe } from 'yummies/types';
+import type { AnyObject, Maybe, MaybeFn } from 'yummies/types';
 import type { BaseTmplParams } from '../types/base-tmpl-params.js';
-import type { MetaInfo } from '../types/index.js';
+import type {
+  GenerateQueryApiParams,
+  MetaInfo,
+  ZodContractsRouteInfo,
+} from '../types/index.js';
 import { createShortModelType } from '../utils/create-short-model-type.js';
 import {
   buildEndpointZodContractsCode,
   getResponseSchemaKeyFromOperation,
   typeNameToSchemaKey,
 } from '../utils/zod/build-endpoint-zod-contracts-code.js';
+import { getZodContractSuffix } from '../utils/zod/contract-suffix.js';
 import {
   formatGroupNameEnumKey,
   formatTagNameEnumKey,
 } from './meta-info.tmpl.js';
 
-export type ZodContractsOption =
-  | boolean
+type RuntimeExpressionOrBoolean = string | boolean;
+type RuntimeContractsRule =
+  | RuntimeExpressionOrBoolean
   | {
-      validate:
-        | boolean
-        | string
-        | { params?: boolean | string; data?: boolean | string };
-      throw?:
-        | boolean
-        | string
-        | { params?: boolean | string; data?: boolean | string };
-      /** String: runtime condition. Function: codegen-time filter for (contractName, routeInfo). */
-      appendRule?:
-        | string
-        | ((
-            contractName: string,
-            routeInfo: {
-              operationId: string;
-              path: string;
-              method: string;
-              contractName: string;
-            },
-          ) => boolean);
+      params?: RuntimeExpressionOrBoolean;
+      data?: RuntimeExpressionOrBoolean;
     };
+
+export type ZodContractsOption = NonNullable<
+  GenerateQueryApiParams['zodContracts']
+>;
 
 export interface NewEndpointTmplParams extends BaseTmplParams {
   route: ParsedRoute;
@@ -44,7 +36,7 @@ export interface NewEndpointTmplParams extends BaseTmplParams {
   metaInfo: Maybe<MetaInfo>;
   /** Generate Zod contracts and optionally enable validation. */
   zodContracts?: ZodContractsOption;
-  /** When set, auxiliary Zod schemas are not inlined; endpoint imports them from this path (e.g. '../schemas') */
+  /** When set, shared Zod contracts are not inlined; endpoint imports them from this path (e.g. '../contracts') */
   relativePathZodSchemas?: string | null;
 }
 
@@ -229,22 +221,7 @@ export const newEndpointTmpl = ({
   const zodContractsIsObject =
     typeof zodContracts === 'object' && zodContracts !== null;
   const hasZodContracts = zodContracts === true || zodContractsIsObject;
-  const validateOpt = zodContractsIsObject
-    ? zodContracts.validate
-    : zodContracts === true
-      ? true
-      : undefined;
-  const throwOpt = zodContractsIsObject ? zodContracts.throw : undefined;
-  const validateOptObj =
-    validateOpt != null &&
-    typeof validateOpt === 'object' &&
-    !Array.isArray(validateOpt)
-      ? (validateOpt as { params?: boolean | string; data?: boolean | string })
-      : null;
-  const throwOptObj =
-    throwOpt != null && typeof throwOpt === 'object' && !Array.isArray(throwOpt)
-      ? (throwOpt as { params?: boolean | string; data?: boolean | string })
-      : null;
+  const contractSuffix = getZodContractSuffix(zodContracts);
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
     (it) =>
@@ -431,9 +408,54 @@ export const newEndpointTmpl = ({
   const isAllowedInputType = filterTypes(requestInputTypeDc);
 
   const defaultOkResponseType = positiveResponseTypes?.[0]?.type ?? 'unknown';
-  const contractsVarName = hasZodContracts
-    ? `${_.camelCase(route.routeName.usage)}Contracts`
+  const contractVarName = hasZodContracts
+    ? `${_.camelCase(route.routeName.usage)}${contractSuffix}`
     : null;
+  const routeInfoForContracts =
+    contractVarName != null
+      ? {
+          operationId: raw.operationId ?? '',
+          path,
+          method,
+          contractName: contractVarName,
+        }
+      : null;
+  const resolveZodContractsMaybeFn = <TValue>(
+    value:
+      | MaybeFn<
+          TValue,
+          [contractName: string, routeInfo: ZodContractsRouteInfo]
+        >
+      | undefined,
+  ): TValue | undefined => {
+    if (typeof value === 'function' && routeInfoForContracts != null) {
+      return (
+        value as (
+          contractName: string,
+          routeInfo: ZodContractsRouteInfo,
+        ) => TValue
+      )(routeInfoForContracts.contractName, routeInfoForContracts);
+    }
+    return value as TValue | undefined;
+  };
+  const validateOpt = zodContractsIsObject
+    ? resolveZodContractsMaybeFn(zodContracts.validate)
+    : zodContracts === true
+      ? true
+      : undefined;
+  const throwOpt = zodContractsIsObject
+    ? resolveZodContractsMaybeFn(zodContracts.throw)
+    : undefined;
+  const isRuntimeContractsRuleObject = (
+    value: RuntimeContractsRule | undefined,
+  ): value is {
+    params?: RuntimeExpressionOrBoolean;
+    data?: RuntimeExpressionOrBoolean;
+  } => value != null && typeof value === 'object' && !Array.isArray(value);
+  const validateOptObj = isRuntimeContractsRuleObject(validateOpt)
+    ? validateOpt
+    : null;
+  const throwOptObj = isRuntimeContractsRuleObject(throwOpt) ? throwOpt : null;
   const swaggerSchema =
     (configuration.config as AnyObject)?.swaggerSchema ??
     (configuration as AnyObject)?.swaggerSchema;
@@ -480,17 +502,18 @@ export const newEndpointTmpl = ({
     }
   }
   const contractsCode =
-    hasZodContracts && contractsVarName
+    hasZodContracts && contractVarName
       ? buildEndpointZodContractsCode({
           routeNameUsage: route.routeName.usage,
           inputParams,
           responseDataTypeName: defaultOkResponseType,
-          contractsVarName,
+          contractVarName,
           utils,
           componentsSchemas: componentsSchemas ?? undefined,
           typeSuffix: 'DC',
           responseSchemaKey: responseSchemaKey ?? undefined,
           useExternalZodSchemas: Boolean(relativePathZodSchemas),
+          contractSuffix,
           openApiOperation: operationFromSpec ?? undefined,
           openApiComponentsParameters:
             (swaggerSchema?.components as AnyObject)?.parameters ?? undefined,
@@ -500,38 +523,22 @@ export const newEndpointTmpl = ({
 
   const appendRuleOpt =
     zodContractsIsObject && zodContracts.appendRule != null
-      ? zodContracts.appendRule
+      ? resolveZodContractsMaybeFn(zodContracts.appendRule)
       : null;
-  const routeInfoForAppend =
-    contractsVarName != null
-      ? {
-          operationId: raw.operationId ?? '',
-          path,
-          method,
-          contractName: contractsVarName,
-        }
-      : null;
-  const contractsLine = (() => {
-    if (contractsVarName == null) return '';
+  const contractLine = (() => {
+    if (contractVarName == null) return '';
     if (typeof appendRuleOpt === 'string')
-      return `contracts: ${appendRuleOpt} ? ${contractsVarName} : undefined,`;
-    if (typeof appendRuleOpt === 'function' && routeInfoForAppend) {
-      const include = appendRuleOpt(
-        routeInfoForAppend.contractName,
-        routeInfoForAppend,
-      );
-      return include
-        ? `contracts: ${contractsVarName},`
-        : 'contracts: undefined,';
-    }
-    return `contracts: ${contractsVarName},`;
+      return `contract: ${appendRuleOpt} ? ${contractVarName} : undefined,`;
+    if (appendRuleOpt === false) return 'contract: undefined,';
+    if (appendRuleOpt === true) return `contract: ${contractVarName},`;
+    return `contract: ${contractVarName},`;
   })();
-  const validateContractsLine = (() => {
+  const validateContractLine = (() => {
     if (validateOpt === undefined) return '';
     if (typeof validateOpt === 'string')
-      return `validateContracts: ${validateOpt},`;
+      return `validateContract: ${validateOpt},`;
     if (typeof validateOpt === 'boolean')
-      return `validateContracts: ${validateOpt},`;
+      return `validateContract: ${validateOpt},`;
     if (validateOptObj !== null) {
       const parts: string[] = [];
       if (validateOptObj.params !== undefined)
@@ -543,7 +550,7 @@ export const newEndpointTmpl = ({
           `data: ${typeof validateOptObj.data === 'string' ? validateOptObj.data : validateOptObj.data}`,
         );
       return parts.length > 0
-        ? `validateContracts: { ${parts.join(', ')} },`
+        ? `validateContract: { ${parts.join(', ')} },`
         : '';
     }
     return '';
@@ -567,7 +574,7 @@ export const newEndpointTmpl = ({
     reservedDataContractNames,
     localModelTypes: isAllowedInputType ? [requestInputTypeDc] : [],
     contractsCode: contractsCode ?? undefined,
-    contractsVarName: contractsVarName ?? undefined,
+    contractVarName: contractVarName ?? undefined,
     content: `
 new ${importFileParams.endpoint.exportName}<
   ${getHttpRequestGenerics()},
@@ -603,8 +610,8 @@ new ${importFileParams.endpoint.exportName}<
         ${groupName ? `group: ${metaInfo ? `Group.${formatGroupNameEnumKey(groupName, utils)}` : `"${groupName}"`},` : ''}
         ${metaInfo?.namespace ? `namespace,` : ''}
         meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
-        ${contractsLine}
-        ${validateContractsLine}
+        ${contractLine}
+        ${validateContractLine}
         ${throwContractsLine}
     },
     ${importFileParams.queryClient.exportName},

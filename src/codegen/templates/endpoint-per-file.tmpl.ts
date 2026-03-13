@@ -11,7 +11,7 @@ export interface EndpointPerFileTmplParams extends BaseTmplParams {
   relativePathDataContracts: string;
   groupName: Maybe<string>;
   metaInfo: Maybe<MetaInfo>;
-  /** When set (e.g. '../schemas'), endpoint imports shared Zod schemas from this path instead of inlining them */
+  /** When set (e.g. '../contracts'), endpoint imports shared Zod contracts from this path instead of inlining them */
   relativePathZodSchemas?: string | null;
 }
 
@@ -84,8 +84,8 @@ export const endpointPerFileTmpl = async (
   const zodImportLine =
     contractsResult != null ? 'import * as z from "zod";' : '';
   const zodSchemasImportLine =
-    contractsResult?.zodSchemaImportNames?.length && relativePathZodSchemas
-      ? `import { ${contractsResult.zodSchemaImportNames.join(', ')} } from "${relativePathZodSchemas}";`
+    contractsResult?.zodContractImportNames?.length && relativePathZodSchemas
+      ? `import { ${contractsResult.zodContractImportNames.join(', ')} } from "${relativePathZodSchemas}";`
       : '';
   const contractsBlock =
     contractsResult != null ? `\n\n${contractsResult.content}\n\n` : '';

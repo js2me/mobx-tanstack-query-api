@@ -50,6 +50,6 @@ export type OperationWithResponses = {
 
 export interface EndpointZodContractsResult {
   content: string;
-  /** Schema var names to import from the central schemas file (e.g. ['appleSchema', 'coreSchema']) */
-  zodSchemaImportNames: string[];
+  /** Contract var names to import from the central contracts file (e.g. ['appleContract', 'coreContract']) */
+  zodContractImportNames: string[];
 }

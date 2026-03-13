@@ -24,7 +24,8 @@ import type {
 } from './types/index.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
-import { buildCentralZodSchemasFile } from './utils/zod/build-endpoint-zod-contracts-code.js';
+import { buildCentralZodContractsFile } from './utils/zod/build-endpoint-zod-contracts-code.js';
+import { getZodContractSuffix } from './utils/zod/contract-suffix.js';
 
 export * from './types/index.js';
 
@@ -323,7 +324,8 @@ export const generateApi = async (
     (generated.configuration as AnyObject).config?.swaggerSchema?.components
       ?.schemas ??
     (generated.configuration as AnyObject).swaggerSchema?.components?.schemas;
-  const hasZodSchemasFile =
+  const zodContractSuffix = getZodContractSuffix(params.zodContracts);
+  const hasZodContractsFile =
     (params.zodContracts === true ||
       (typeof params.zodContracts === 'object' &&
         params.zodContracts != null)) &&
@@ -361,7 +363,7 @@ export const generateApi = async (
                 groupNames: [],
                 namespace,
               },
-          relativePathZodSchemas: hasZodSchemasFile ? '../schemas' : null,
+          relativePathZodSchemas: hasZodContractsFile ? '../contracts' : null,
         });
 
         if (Array.isArray(route.raw.tags)) {
@@ -419,7 +421,7 @@ export const generateApi = async (
                 namespace,
                 groupNames: [],
               },
-          relativePathZodSchemas: hasZodSchemasFile ? './schemas' : null,
+          relativePathZodSchemas: hasZodContractsFile ? './contracts' : null,
         });
 
       reservedDataContractNames.forEach((name) => {
@@ -524,6 +526,9 @@ export const generateApi = async (
             ...baseTmplParams,
             route,
             relativePathDataContracts: '../../data-contracts',
+            relativePathZodSchemas: hasZodContractsFile
+              ? '../../contracts'
+              : null,
             groupName,
             metaInfo: params.noMetaInfo
               ? null
@@ -577,6 +582,7 @@ export const generateApi = async (
           ...baseTmplParams,
           routes,
           relativePathDataContracts: '../data-contracts',
+          relativePathZodSchemas: hasZodContractsFile ? '../contracts' : null,
           groupName,
           metaInfo: params.noMetaInfo
             ? null
@@ -691,19 +697,20 @@ export * as ${exportGroupName} from './endpoints';
     content: dataContractsContent,
   });
 
-  if (hasZodSchemasFile && componentsSchemasForZod) {
-    const schemasTsContent = buildCentralZodSchemasFile({
+  if (hasZodContractsFile && componentsSchemasForZod) {
+    const contractsTsContent = buildCentralZodContractsFile({
       componentsSchemas: componentsSchemasForZod as Record<string, AnyObject>,
       utils,
+      contractSuffix: zodContractSuffix,
     });
-    const formattedSchemasContent = await generated.formatTSContent(
-      `${LINTERS_IGNORE}\n${schemasTsContent}`,
+    const formattedContractsContent = await generated.formatTSContent(
+      `${LINTERS_IGNORE}\n${contractsTsContent}`,
     );
     codegenFs.createFile({
       path: paths.outputDir,
-      fileName: 'schemas.ts',
+      fileName: 'contracts.ts',
       withPrefix: false,
-      content: formattedSchemasContent,
+      content: formattedContractsContent,
     });
   }
 
@@ -728,7 +735,7 @@ export * as ${exportGroupName} from './endpoints';
         ...baseTmplParams,
         collectedExportFiles: collectedExportFilesFromIndexFile,
         metaInfo,
-        exportSchemas: hasZodSchemasFile,
+        exportSchemas: hasZodContractsFile,
       }),
     });
     if (shouldGenerateBarrelFiles) {
@@ -751,7 +758,7 @@ export * as ${namespace} from './__exports';
           ...baseTmplParams,
           collectedExportFiles: collectedExportFilesFromIndexFile,
           metaInfo,
-          exportSchemas: hasZodSchemasFile,
+          exportSchemas: hasZodContractsFile,
         }),
       });
     }

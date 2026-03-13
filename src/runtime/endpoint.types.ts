@@ -15,7 +15,7 @@ export interface SafeParseAsyncSchema<TInput = unknown> {
   >;
 }
 
-export interface EndpointContracts {
+export interface EndpointContract {
   params?: SafeParseAsyncSchema;
   data?: SafeParseAsyncSchema;
 }
@@ -33,9 +33,9 @@ export interface EndpointConfiguration<
   params: (input: Partial<TInput>) => FullRequestParams;
   tags: string[];
   /** Optional validation contracts (e.g. zod schemas) for params and data */
-  contracts?: EndpointContracts;
+  contract?: EndpointContract;
   /** When true, validates both params and data; when false, skips. When object, validates params/data only when the corresponding property is true. Values may come from runtime expressions. */
-  validateContracts?: boolean | { params?: boolean; data?: boolean };
+  validateContract?: boolean | { params?: boolean; data?: boolean };
   /** When true, throws on contract validation errors; when false, only warns. When object, controls throwing for params/data independently. */
   throwContracts?: boolean | { params?: boolean; data?: boolean };
 }

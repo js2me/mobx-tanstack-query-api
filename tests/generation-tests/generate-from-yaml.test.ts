@@ -94,6 +94,11 @@ describe('generateApi with yaml input file', () => {
         path.resolve(OUTPUT_DIR, 'data-contracts.ts'),
       ),
     ).resolves.toBeUndefined();
+    await expect(
+      fs.access(
+        path.resolve(OUTPUT_DIR, 'contracts.ts'),
+      ),
+    ).resolves.toBeUndefined();
 
     const dataContractsContent = await fs.readFile(
       path.resolve(OUTPUT_DIR, 'data-contracts.ts'),
@@ -234,15 +239,15 @@ describe('generateApi with yaml input file', () => {
     // generateZodContracts: zod contracts for params and data
     expect(submitMultiContentContent).toContain('import * as z from "zod"');
     expect(submitMultiContentContent).toContain(
-      'submitMultiContentReportContracts',
+      'submitMultiContentReportContract',
     );
     expect(submitMultiContentContent).toContain(
-      'params: submitMultiContentReportParamsSchema',
+      'params: z.object({',
     );
-    expect(submitMultiContentContent).toContain(
-      'data: submitMultiContentReportDataSchema',
+    expect(submitMultiContentContent).toMatch(
+      /data:\s*(z\.[^\n]+|[A-Za-z0-9_]+Contract)/,
     );
-    expect(submitMultiContentContent).toContain('contracts: submitMultiContentReportContracts');
+    expect(submitMultiContentContent).toContain('contract: submitMultiContentReportContract');
     // application/merge-patch+json (+json) → "application/json"
     const applyMergePatchContent = await readEndpoint(
       'apply-merge-patch-report.ts',

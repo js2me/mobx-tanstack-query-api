@@ -12,9 +12,14 @@ const ENDPOINT_FILE = path.resolve(
   'endpoints',
   'submit-multi-content-report.ts',
 );
+const CONTRACTS_FILE = path.resolve(OUTPUT_DIR, 'contracts.ts');
 
 async function readEndpointContent(): Promise<string> {
   return fs.readFile(ENDPOINT_FILE, 'utf-8');
+}
+
+async function readContractsContent(): Promise<string> {
+  return fs.readFile(CONTRACTS_FILE, 'utf-8');
 }
 
 function hasZodImport(content: string): boolean {
@@ -23,13 +28,13 @@ function hasZodImport(content: string): boolean {
 
 function hasContracts(content: string): boolean {
   return (
-    content.includes('contracts: submitMultiContentReportContracts') &&
-    content.includes('submitMultiContentReportContracts')
+    content.includes('contract: submitMultiContentReportContract') &&
+    content.includes('submitMultiContentReportContract')
   );
 }
 
 function getValidateContractsLine(content: string): string | null {
-  const match = content.match(/validateContracts:\s*[^\n]+/);
+  const match = content.match(/validateContract:\s*[^\n]+/);
   return match ? match[0].trim().replace(/,?\s*$/, '') : null;
 }
 
@@ -39,7 +44,7 @@ function getThrowContractsLine(content: string): string | null {
 }
 
 function getContractsLine(content: string): string | null {
-  const match = content.match(/contracts:\s*[^\n]+/);
+  const match = content.match(/contract:\s*[^\n]+/);
   return match ? match[0].trim().replace(/,?\s*$/, '') : null;
 }
 
@@ -74,7 +79,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: true — контракты + validateContracts: true', async () => {
+  it('zodContracts: true — контракты + validateContract: true', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -84,11 +89,11 @@ describe('generateApi — zodContracts все вариации', () => {
     const content = await readEndpointContent();
     expect(hasZodImport(content)).toBe(true);
     expect(hasContracts(content)).toBe(true);
-    expect(getValidateContractsLine(content)).toBe('validateContracts: true');
+    expect(getValidateContractsLine(content)).toBe('validateContract: true');
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { validate: true } — только validateContracts: true', async () => {
+  it('zodContracts: { validate: true } — только validateContract: true', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -98,11 +103,28 @@ describe('generateApi — zodContracts все вариации', () => {
     const content = await readEndpointContent();
     expect(hasZodImport(content)).toBe(true);
     expect(hasContracts(content)).toBe(true);
-    expect(getValidateContractsLine(content)).toBe('validateContracts: true');
+    expect(getValidateContractsLine(content)).toBe('validateContract: true');
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { validate: false } — контракты есть, validateContracts: false', async () => {
+  it('zodContracts: { suffix: "Validator" } — кастомный суффикс для всех zod контрактов', async () => {
+    await generateApi(
+      defineConfig({
+        ...baseConfig,
+        zodContracts: { validate: true, suffix: 'Validator' },
+      }),
+    );
+    const endpointContent = await readEndpointContent();
+    const contractsContent = await readContractsContent();
+    expect(endpointContent).toContain('submitMultiContentReportValidator');
+    expect(endpointContent).toContain(
+      'contract: submitMultiContentReportValidator',
+    );
+    expect(contractsContent).toContain('nodePageEnvelopeValidator');
+    expect(contractsContent).not.toContain('nodePageEnvelopeContract');
+  });
+
+  it('zodContracts: { validate: false } — контракты есть, validateContract: false', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -113,12 +135,12 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(hasZodImport(content)).toBe(true);
     expect(hasContracts(content)).toBe(true);
     expect(getValidateContractsLine(content)).toBe(
-      'validateContracts: false',
+      'validateContract: false',
     );
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { validate: "..." } — выражение в validateContracts', async () => {
+  it('zodContracts: { validate: "..." } — выражение в validateContract', async () => {
     const expr = "process.env.NODE_ENV === 'development'";
     await generateApi(
       defineConfig({
@@ -131,12 +153,12 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(hasContracts(content)).toBe(true);
     // в сгенерированном коде строка может быть с двойными кавычками
     expect(getValidateContractsLine(content)).toMatch(
-      /validateContracts:\s*process\.env\.NODE_ENV\s*===\s*["']development["']/,
+      /validateContract:\s*process\.env\.NODE_ENV\s*===\s*["']development["']/,
     );
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { validate: { params: true, data: false } } — объект validateContracts', async () => {
+  it('zodContracts: { validate: { params: true, data: false } } — объект validateContract', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -147,7 +169,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(hasZodImport(content)).toBe(true);
     expect(hasContracts(content)).toBe(true);
     expect(content).toContain(
-      'validateContracts: { params: true, data: false }',
+      'validateContract: { params: true, data: false }',
     );
     expect(getThrowContractsLine(content)).toBeNull();
   });
@@ -168,6 +190,28 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
+  it('zodContracts: { validate: fn } — функция получает contractName и routeInfo', async () => {
+    await generateApi(
+      defineConfig({
+        ...baseConfig,
+        zodContracts: {
+          validate: (contractName, routeInfo) => ({
+            params: contractName === 'submitMultiContentReportContract',
+            data:
+              routeInfo.operationId === 'submitMultiContentReport' &&
+              routeInfo.path === '/reports/multi-content' &&
+              routeInfo.method === 'post' &&
+              routeInfo.contractName === contractName,
+          }),
+        },
+      }),
+    );
+    const content = await readEndpointContent();
+    expect(content).toContain(
+      'validateContract: { params: true, data: true }',
+    );
+  });
+
   it('zodContracts: { throw: true } — throwContracts: true', async () => {
     await generateApi(
       defineConfig({
@@ -178,7 +222,7 @@ describe('generateApi — zodContracts все вариации', () => {
     const content = await readEndpointContent();
     expect(hasZodImport(content)).toBe(true);
     expect(hasContracts(content)).toBe(true);
-    expect(getValidateContractsLine(content)).toBe('validateContracts: true');
+    expect(getValidateContractsLine(content)).toBe('validateContract: true');
     expect(getThrowContractsLine(content)).toBe('throwContracts: true');
   });
 
@@ -225,6 +269,22 @@ describe('generateApi — zodContracts все вариации', () => {
     );
   });
 
+  it('zodContracts: { throw: fn } — функция вычисляет throwContracts на этапе codegen', async () => {
+    await generateApi(
+      defineConfig({
+        ...baseConfig,
+        zodContracts: {
+          validate: true,
+          throw: (contractName, routeInfo) =>
+            routeInfo.contractName === contractName &&
+            routeInfo.operationId === 'submitMultiContentReport',
+        },
+      }),
+    );
+    const content = await readEndpointContent();
+    expect(getThrowContractsLine(content)).toBe('throwContracts: true');
+  });
+
   it('zodContracts: { appendRule: "..." } — условная вставка contracts в рантайме', async () => {
     const condition = 'process.env.NODE_ENV === "development"';
     await generateApi(
@@ -235,11 +295,11 @@ describe('generateApi — zodContracts все вариации', () => {
     );
     const content = await readEndpointContent();
     expect(hasZodImport(content)).toBe(true);
-    expect(content).toContain('submitMultiContentReportContracts');
+    expect(content).toContain('submitMultiContentReportContract');
     expect(content).toContain(condition);
     // Форматтер может разбить строку; проверяем наличие тернарника
     expect(content).toMatch(
-      /contracts:\s*\n?\s*[\s\S]*\?\s*submitMultiContentReportContracts\s*:\s*undefined/,
+      /contract:\s*\n?\s*[\s\S]*\?\s*submitMultiContentReportContract\s*:\s*undefined/,
     );
   });
 
@@ -250,18 +310,18 @@ describe('generateApi — zodContracts все вариации', () => {
         zodContracts: {
           validate: true,
           appendRule: (name) =>
-            name === 'submitMultiContentReportContracts',
+            name === 'submitMultiContentReportContract',
         },
       }),
     );
     const content = await readEndpointContent();
     expect(hasZodImport(content)).toBe(true);
     expect(getContractsLine(content)).toBe(
-      'contracts: submitMultiContentReportContracts',
+      'contract: submitMultiContentReportContract',
     );
   });
 
-  it('zodContracts: { appendRule: () => false } — contracts: undefined', async () => {
+  it('zodContracts: { appendRule: () => false } — contract: undefined', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -273,7 +333,7 @@ describe('generateApi — zodContracts все вариации', () => {
     );
     const content = await readEndpointContent();
     expect(hasZodImport(content)).toBe(true);
-    expect(content).toContain('submitMultiContentReportContracts'); // переменная всё равно генерируется
-    expect(getContractsLine(content)).toBe('contracts: undefined');
+    expect(content).toContain('submitMultiContentReportContract'); // переменная всё равно генерируется
+    expect(getContractsLine(content)).toBe('contract: undefined');
   });
 });
