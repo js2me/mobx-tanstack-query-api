@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.41.0
+
+### Minor Changes
+
+- [`6924304`](https://github.com/js2me/mobx-tanstack-query-api/commit/6924304c08bdc419c0718618055094111c89ba6f) Thanks [@js2me](https://github.com/js2me)! - improve zod contracts and runtime codegen based on it
+
 ## 0.40.1
 
 ### Patch Changes
