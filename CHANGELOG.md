@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.41.1
+
+### Patch Changes
+
+- [`125100e`](https://github.com/js2me/mobx-tanstack-query-api/commit/125100ebe3c0d062c8a66b003fdd4375143d5cea) Thanks [@js2me](https://github.com/js2me)! - fixed circular zod contracts
+
 ## 0.41.0
 
 ### Minor Changes
