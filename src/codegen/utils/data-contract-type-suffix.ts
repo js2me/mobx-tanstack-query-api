@@ -1,0 +1,1 @@
+export const DEFAULT_DATA_CONTRACT_TYPE_SUFFIX = 'DC';

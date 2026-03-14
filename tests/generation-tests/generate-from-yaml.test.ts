@@ -245,7 +245,7 @@ describe('generateApi with yaml input file', () => {
       'params: z.object({',
     );
     expect(submitMultiContentContent).toMatch(
-      /data:\s*(z\.[^\n]+|[A-Za-z0-9_]+Contract)/,
+      /data:\s*(z\.[^\n]+|[A-Za-z0-9_]+(?:Dc|Validator))/,
     );
     expect(submitMultiContentContent).toContain('contract: submitMultiContentReportContract');
     // application/merge-patch+json (+json) → "application/json"

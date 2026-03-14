@@ -42,8 +42,8 @@ describe('zod recursive schema — explicit return type for z.lazy (TS 7024)', (
 
     // Без явного типа (): z.ZodTypeAny => TS выдаёт 7024 при рекурсии
     expect(content).toContain('z.lazy((): z.ZodTypeAny =>');
-    expect(content).toContain('recursiveNodeContract');
-    expect(content).toContain('itemKindContract');
+    expect(content).toContain('recursiveNodeDc');
+    expect(content).toContain('itemKindDc');
   });
 
   it('buildEndpointZodContractsCode emits z.lazy((): z.ZodTypeAny => ...) in auxiliary contracts', () => {
@@ -71,7 +71,7 @@ describe('zod recursive schema — explicit return type for z.lazy (TS 7024)', (
     });
 
     expect(content).toContain('z.lazy((): z.ZodTypeAny =>');
-    expect(content).toContain('treeNodeContract');
+    expect(content).toContain('treeNodeDc');
   });
 });
 
@@ -167,8 +167,8 @@ describe('zod params schema — query object from OpenAPI operation parameters',
       useExternalZodSchemas: true,
     });
 
-    expect(result.zodContractImportNames).toContain('treeNodeValidator');
-    expect(result.content).toContain('data: treeNodeValidator');
+    expect(result.zodContractImportNames).toContain('treeNodeDcValidator');
+    expect(result.content).toContain('data: treeNodeDcValidator');
   });
 });
 
@@ -259,17 +259,17 @@ describe('zod central schemas — no ZodTypeAny for non-cyclic refs', () => {
       utils,
     });
 
-    expect(content).toContain('containerSchemaContract');
-    expect(content).toContain('nodeWithChildrenContract');
+    expect(content).toContain('containerSchemaDc');
+    expect(content).toContain('nodeWithChildrenDc');
 
     // Ref'ы на другие схемы — без явного return type (тип выводится)
-    expect(content).toContain('z.lazy(() => metaInfoContract)');
-    expect(content).toContain('z.lazy(() => linkRefContract)');
-    expect(content).toContain('z.lazy(() => itemInfoContract)');
-    expect(content).toContain('z.lazy(() => statusKindContract)');
-    expect(content).toContain('z.lazy(() => itemSchemaContract)');
-    expect(content).toContain('z.lazy(() => childSchemaContract)');
-    expect(content).toContain('z.lazy(() => metaSchemaContract)');
+    expect(content).toContain('z.lazy(() => metaInfoDc)');
+    expect(content).toContain('z.lazy(() => linkRefDc)');
+    expect(content).toContain('z.lazy(() => itemInfoDc)');
+    expect(content).toContain('z.lazy(() => statusKindDc)');
+    expect(content).toContain('z.lazy(() => itemSchemaDc)');
+    expect(content).toContain('z.lazy(() => childSchemaDc)');
+    expect(content).toContain('z.lazy(() => metaSchemaDc)');
 
     // В этом наборе нет самореференсов — ZodTypeAny не должен встречаться
     expect(content).not.toContain('z.lazy((): z.ZodTypeAny =>');
@@ -295,10 +295,10 @@ describe('zod central schemas — no ZodTypeAny for non-cyclic refs', () => {
     // Только рекурсивная схема использует ZodTypeAny
     const lazyAnyCount = (content.match(/z\.lazy\(\(\):\s*z\.ZodTypeAny\s*=>/g) ?? []).length;
     expect(lazyAnyCount).toBe(1);
-    expect(content).toContain('z.lazy((): z.ZodTypeAny => recursiveBoxContract)');
+    expect(content).toContain('z.lazy((): z.ZodTypeAny => recursiveBoxDc)');
 
     // Остальные ref'ы по-прежнему без ZodTypeAny
-    expect(content).toContain('z.lazy(() => metaInfoContract)');
-    expect(content).toContain('z.lazy(() => itemSchemaContract)');
+    expect(content).toContain('z.lazy(() => metaInfoDc)');
+    expect(content).toContain('z.lazy(() => itemSchemaDc)');
   });
 });

@@ -22,6 +22,7 @@ import type {
   GenerateQueryApiParams,
   MetaInfo,
 } from './types/index.js';
+import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-suffix.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
 import { buildCentralZodContractsFile } from './utils/zod/build-endpoint-zod-contracts-code.js';
@@ -95,7 +96,7 @@ export const generateApi = async (
     cleanOutput: params.cleanOutput ?? true,
     modular: true,
     patch: true,
-    typeSuffix: 'DC',
+    typeSuffix: DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
     disableStrictSSL: false,
     singleHttpClient: true,
     extractRequestBody: true,

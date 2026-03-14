@@ -232,8 +232,9 @@ export interface GenerateQueryApiParams {
    * - **string**: expression inserted as-is → `contract: <expr> ? <contractVar> : undefined`. E.g. `"process.env.NODE_ENV === \"development\""`.
    * - **function** (contractName, routeInfo) => boolean: at codegen time, if true → `contract: <contractVar>`, if false → `contract: undefined`.
    *
-   * Optional `suffix`: suffix for generated Zod contract variables.
-   * Default: `"Contract"`.
+   * Optional `suffix`: suffix for generated shared Zod schema variables.
+   * Shared schema names are based on data contract names in camelCase, e.g. `DispatchReceiptDC` -> `dispatchReceiptDc`.
+   * Default: `""`.
    */
   zodContracts?:
     | boolean
@@ -259,7 +260,7 @@ export interface GenerateQueryApiParams {
           RuntimeExpressionOrBoolean,
           [contractName: string, routeInfo: ZodContractsRouteInfo]
         >;
-        /** Suffix for all generated Zod contract variables. Default: "Contract". */
+        /** Suffix for generated shared Zod schema variables. Default: "". */
         suffix?: string;
       };
 }

@@ -7,12 +7,16 @@ import type {
   ZodContractsRouteInfo,
 } from '../types/index.js';
 import { createShortModelType } from '../utils/create-short-model-type.js';
+import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from '../utils/data-contract-type-suffix.js';
 import {
   buildEndpointZodContractsCode,
   getResponseSchemaKeyFromOperation,
   typeNameToSchemaKey,
 } from '../utils/zod/build-endpoint-zod-contracts-code.js';
-import { getZodContractSuffix } from '../utils/zod/contract-suffix.js';
+import {
+  getEndpointZodContractSuffix,
+  getZodContractSuffix,
+} from '../utils/zod/contract-suffix.js';
 import {
   formatGroupNameEnumKey,
   formatTagNameEnumKey,
@@ -221,7 +225,8 @@ export const newEndpointTmpl = ({
   const zodContractsIsObject =
     typeof zodContracts === 'object' && zodContracts !== null;
   const hasZodContracts = zodContracts === true || zodContractsIsObject;
-  const contractSuffix = getZodContractSuffix(zodContracts);
+  const sharedContractSuffix = getZodContractSuffix(zodContracts);
+  const endpointContractSuffix = getEndpointZodContractSuffix(zodContracts);
   const { _ } = utils;
   const positiveResponseTypes = route.raw.responsesTypes?.filter(
     (it) =>
@@ -409,7 +414,7 @@ export const newEndpointTmpl = ({
 
   const defaultOkResponseType = positiveResponseTypes?.[0]?.type ?? 'unknown';
   const contractVarName = hasZodContracts
-    ? `${_.camelCase(route.routeName.usage)}${contractSuffix}`
+    ? `${_.camelCase(route.routeName.usage)}${endpointContractSuffix}`
     : null;
   const routeInfoForContracts =
     contractVarName != null
@@ -490,7 +495,10 @@ export const newEndpointTmpl = ({
       typeof aliasType.content === 'string' &&
       /^[A-Za-z0-9_]+$/.test(aliasType.content.trim())
     ) {
-      const resolved = typeNameToSchemaKey(aliasType.content.trim(), 'DC');
+      const resolved = typeNameToSchemaKey(
+        aliasType.content.trim(),
+        DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
+      );
       if (resolved in componentsSchemas) responseSchemaKey = resolved;
     }
   }
@@ -510,10 +518,10 @@ export const newEndpointTmpl = ({
           contractVarName,
           utils,
           componentsSchemas: componentsSchemas ?? undefined,
-          typeSuffix: 'DC',
+          typeSuffix: DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
           responseSchemaKey: responseSchemaKey ?? undefined,
           useExternalZodSchemas: Boolean(relativePathZodSchemas),
-          contractSuffix,
+          contractSuffix: sharedContractSuffix,
           openApiOperation: operationFromSpec ?? undefined,
           openApiComponentsParameters:
             (swaggerSchema?.components as AnyObject)?.parameters ?? undefined,

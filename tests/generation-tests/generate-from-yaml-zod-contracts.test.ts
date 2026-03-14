@@ -13,6 +13,71 @@ const ENDPOINT_FILE = path.resolve(
   'submit-multi-content-report.ts',
 );
 const CONTRACTS_FILE = path.resolve(OUTPUT_DIR, 'contracts.ts');
+const DUPLICATE_NAME_ENDPOINT_FILE = path.resolve(
+  OUTPUT_DIR,
+  'endpoints',
+  'get-test-resource.ts',
+);
+
+const DUPLICATE_NAME_INPUT = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Duplicate zod contract names',
+    version: '1.0.0',
+  },
+  paths: {
+    '/api/test/resource': {
+      get: {
+        tags: ['TestTag'],
+        operationId: 'GetTestResource',
+        responses: {
+          200: {
+            description: 'A successful response.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/TestResource',
+                },
+              },
+            },
+          },
+          default: {
+            description: 'An unexpected error response.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/TestStatus',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  components: {
+    schemas: {
+      TestResource: {
+        type: 'object',
+        required: ['value'],
+        properties: {
+          value: {
+            type: 'string',
+          },
+        },
+      },
+      TestStatus: {
+        type: 'object',
+        required: ['message'],
+        properties: {
+          message: {
+            type: 'string',
+          },
+        },
+      },
+    },
+  },
+} satisfies GenerateQueryApiParams['input'];
 
 async function readEndpointContent(): Promise<string> {
   return fs.readFile(ENDPOINT_FILE, 'utf-8');
@@ -20,6 +85,10 @@ async function readEndpointContent(): Promise<string> {
 
 async function readContractsContent(): Promise<string> {
   return fs.readFile(CONTRACTS_FILE, 'utf-8');
+}
+
+async function readGeneratedFile(filePath: string): Promise<string> {
+  return fs.readFile(filePath, 'utf-8');
 }
 
 function hasZodImport(content: string): boolean {
@@ -120,8 +189,8 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(endpointContent).toContain(
       'contract: submitMultiContentReportValidator',
     );
-    expect(contractsContent).toContain('nodePageEnvelopeValidator');
-    expect(contractsContent).not.toContain('nodePageEnvelopeContract');
+    expect(contractsContent).toContain('nodePageEnvelopeDcValidator');
+    expect(contractsContent).not.toContain('nodePageEnvelopeValidator');
   });
 
   it('zodContracts: { validate: false } — контракты есть, validateContract: false', async () => {
@@ -335,5 +404,73 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(hasZodImport(content)).toBe(true);
     expect(content).toContain('submitMultiContentReportContract'); // переменная всё равно генерируется
     expect(getContractsLine(content)).toBe('contract: undefined');
+  });
+
+  it('zodContracts: true — shared zod схемы именуются как data contracts в camelCase', async () => {
+    await generateApi(
+      defineConfig({
+        ...baseConfig,
+        zodContracts: true,
+      }),
+    );
+    const contractsContent = await readContractsContent();
+    expect(contractsContent).toContain('nodePageEnvelopeDc');
+    expect(contractsContent).not.toContain('nodePageEnvelopeContract');
+  });
+
+  it('zodContracts: true — не импортирует shared zod schema с тем же именем, что и endpoint contract', async () => {
+    await generateApi(
+      defineConfig({
+        ...baseConfig,
+        input: DUPLICATE_NAME_INPUT,
+        noMetaInfo: true,
+        filterEndpoints: [/^getTestResource$/i],
+        zodContracts: true,
+      }),
+    );
+
+    const endpointContent = await readGeneratedFile(DUPLICATE_NAME_ENDPOINT_FILE);
+    const contractsContent = await readContractsContent();
+
+    expect(endpointContent).toContain(
+      'import { testResourceDc } from "../contracts";',
+    );
+    expect(endpointContent).not.toContain(
+      'import { testResourceContract } from "../contracts";',
+    );
+    expect(endpointContent).toContain('export const getTestResourceContract = {');
+    expect(endpointContent).toContain('data: testResourceDc');
+    expect(contractsContent).toContain('export const testResourceDc =');
+    expect(contractsContent).not.toContain('export const testResourceContract =');
+  });
+
+  it('zodContracts: { suffix: "Schema" } — сохраняет отсутствие коллизии имён и применяет suffix', async () => {
+    await generateApi(
+      defineConfig({
+        ...baseConfig,
+        input: DUPLICATE_NAME_INPUT,
+        noMetaInfo: true,
+        filterEndpoints: [/^getTestResource$/i],
+        zodContracts: {
+          validate: true,
+          suffix: 'Schema',
+        },
+      }),
+    );
+
+    const endpointContent = await readGeneratedFile(DUPLICATE_NAME_ENDPOINT_FILE);
+    const contractsContent = await readContractsContent();
+
+    expect(endpointContent).toContain(
+      'import { testResourceDcSchema } from "../contracts";',
+    );
+    expect(endpointContent).not.toContain(
+      'import { testResourceSchema } from "../contracts";',
+    );
+    expect(endpointContent).toContain('export const getTestResourceSchema = {');
+    expect(endpointContent).toContain('data: testResourceDcSchema');
+    expect(endpointContent).toContain('contract: getTestResourceSchema');
+    expect(contractsContent).toContain('export const testResourceDcSchema =');
+    expect(contractsContent).not.toContain('export const testResourceSchema =');
   });
 });
