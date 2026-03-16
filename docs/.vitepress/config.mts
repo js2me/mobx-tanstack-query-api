@@ -61,6 +61,10 @@ export default defineDocsVitepressConfig(configs, {
             link: '/endpoint-queries/index.html',
           },
           {
+            text: 'Endpoint infinite queries',
+            link: '/endpoint-infinite-queries/index.html',
+          },
+          {
             text: 'Endpoint mutations',
             link: '/endpoint-mutations/index.html',
           },

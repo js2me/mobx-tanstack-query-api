@@ -32,6 +32,7 @@ You can transform an endpoint into higher-level helpers:
 Read more:
 
 - [Endpoint queries](/endpoint-queries/)
+- [Endpoint infinite queries](/endpoint-infinite-queries/)
 - [Endpoint mutations](/endpoint-mutations/)
 
 ```ts
