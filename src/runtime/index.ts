@@ -1,5 +1,7 @@
 export * from './endpoint.js';
 export * from './endpoint.types.js';
+export * from './endpoint-infinite-query.js';
+export * from './endpoint-infinite-query.types.js';
 export * from './endpoint-mutation.js';
 export * from './endpoint-mutation.types.js';
 export * from './endpoint-query.js';

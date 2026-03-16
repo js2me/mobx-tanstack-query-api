@@ -360,7 +360,8 @@ Use it for paginated endpoints that load data page by page.
 
 ```ts
 const infiniteQuery = endpoint.toInfiniteQuery({
-  params: { limit: 20 },
-  initialPageParam: 0,
+  params: () => this.tableParams,
+  mergePageParam: "body",
+  initialPageParam: { limit: 20, offset: 0 },
 });
 ```

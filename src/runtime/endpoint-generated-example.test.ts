@@ -1,5 +1,11 @@
 import { noop } from 'lodash-es';
-import { computed, makeObservable, reaction } from 'mobx';
+import {
+  computed,
+  makeObservable,
+  observable,
+  reaction,
+  runInAction,
+} from 'mobx';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { sleep } from 'yummies/async';
 import { Endpoint } from './endpoint.js';
@@ -246,5 +252,127 @@ describe('Endpoint generated example', () => {
     expect(requestMock).toHaveBeenCalledTimes(2);
 
     foo.query.destroy();
+  });
+
+  it('toInfiniteQuery мержит pageParam в body и держит base params в queryKey', async () => {
+    const requestMock = vi.fn().mockResolvedValue({
+      status: 200,
+      ok: true,
+      data: {
+        items: [{ id: 1 }],
+      },
+      error: null,
+    });
+    const queryClient = new EndpointQueryClient({
+      defaultOptions: {
+        queries: {
+          enableOnDemand: true,
+        },
+      },
+    });
+    const endpoint = createFruitEndpoint(queryClient, {
+      request: requestMock,
+      buildUrl: vi.fn(),
+    });
+    const baseParams: FruitParams = {
+      fruitId: 11,
+      body: { name: 'orange', color: 'orange' },
+    };
+
+    const query = endpoint.toInfiniteQuery({
+      enableOnDemand: true,
+      params: baseParams,
+      mergePageParam: 'body',
+      initialPageParam: { limit: 50, offset: 0 },
+      getNextPageParam: () => undefined,
+    });
+
+    expect(query.options.queryKey).toEqual(
+      endpoint.toInfiniteQueryKey(baseParams),
+    );
+
+    await query.refetch();
+
+    expect(requestMock).toHaveBeenCalledTimes(1);
+    expect(requestMock).toHaveBeenCalledWith(
+      {
+        path: '/api/v1/fruits/11/stars',
+        method: 'POST',
+        body: {
+          name: 'orange',
+          color: 'orange',
+          limit: 50,
+          offset: 0,
+        },
+        contentType: 'application/json',
+        format: 'json',
+        signal: expect.any(AbortSignal),
+      },
+      endpoint,
+    );
+    expect(query.params).toEqual(baseParams);
+    expect(query.response?.data).toEqual({
+      items: [{ id: 1 }],
+    });
+  });
+
+  it('toInfiniteQuery реактивно обновляет base params', async () => {
+    const requestMock = vi.fn().mockResolvedValue({
+      status: 200,
+      ok: true,
+      data: {
+        items: [],
+      },
+      error: null,
+    });
+    const queryClient = new EndpointQueryClient({
+      defaultOptions: {
+        queries: {
+          enableOnDemand: true,
+        },
+      },
+    });
+    const endpoint = createFruitEndpoint(queryClient, {
+      request: requestMock,
+      buildUrl: vi.fn(),
+    });
+    const tableParams = observable.box<FruitParams | null>(null, {
+      deep: false,
+    });
+    const query = endpoint.toInfiniteQuery(() => ({
+      enableOnDemand: true,
+      params: tableParams.get(),
+      mergePageParam: 'body',
+      initialPageParam: { limit: 25, offset: 0 },
+      getNextPageParam: () => undefined,
+    }));
+    const dispose = reaction(() => query.result, noop, {
+      fireImmediately: true,
+    });
+
+    await sleep();
+    expect(query.params).toBe(null);
+
+    runInAction(() => {
+      tableParams.set({
+        fruitId: 99,
+        body: { name: 'pear', color: 'green' },
+      });
+    });
+
+    await sleep();
+
+    expect(query.params).toEqual({
+      fruitId: 99,
+      body: { name: 'pear', color: 'green' },
+    });
+    expect(query.options.queryKey).toEqual(
+      endpoint.toInfiniteQueryKey({
+        fruitId: 99,
+        body: { name: 'pear', color: 'green' },
+      }),
+    );
+
+    dispose();
   });
 });

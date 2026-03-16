@@ -14,6 +14,11 @@ import type {
   EndpointConfiguration,
   EndpointMutationPresets,
 } from './endpoint.types.js';
+import { EndpointInfiniteQuery } from './endpoint-infinite-query.js';
+import type {
+  EndpointInfiniteQueryFlattenOptions,
+  EndpointInfiniteQueryOptions,
+} from './endpoint-infinite-query.types.js';
 import { EndpointMutation } from './endpoint-mutation.js';
 import type { EndpointMutationOptions } from './endpoint-mutation.types.js';
 import { EndpointQuery } from './endpoint-query.js';
@@ -509,5 +514,44 @@ export class Endpoint<
       this.queryClient,
       options,
     );
+  }
+
+  /**
+   * Creates an `EndpointInfiniteQuery` bound to this endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#toinfinitequery)
+   */
+  toInfiniteQuery<
+    TQueryFnData = TResponse['data'],
+    TError = DefaultError | Defined<TResponse['error']>,
+    TPageParam = unknown,
+    TData = import('@tanstack/query-core').InfiniteData<
+      TQueryFnData,
+      TPageParam
+    >,
+  >(
+    options:
+      | EndpointInfiniteQueryOptions<
+          this,
+          TQueryFnData,
+          TError,
+          TPageParam,
+          TData
+        >
+      | (() => EndpointInfiniteQueryFlattenOptions<
+          this,
+          TQueryFnData,
+          TError,
+          TPageParam,
+          TData
+        >),
+  ) {
+    return new EndpointInfiniteQuery<
+      this,
+      TQueryFnData,
+      TError,
+      TPageParam,
+      TData
+    >(this, this.queryClient, options);
   }
 }
