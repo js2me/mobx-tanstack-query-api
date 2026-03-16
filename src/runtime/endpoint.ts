@@ -14,11 +14,6 @@ import type {
   EndpointConfiguration,
   EndpointMutationPresets,
 } from './endpoint.types.js';
-import { EndpointInfiniteQuery } from './endpoint-infinite-query.js';
-import type {
-  EndpointInfiniteQueryFlattenOptions,
-  EndpointInfiniteQueryOptions,
-} from './endpoint-infinite-query.types.js';
 import { EndpointMutation } from './endpoint-mutation.js';
 import type { EndpointMutationOptions } from './endpoint-mutation.types.js';
 import { EndpointQuery } from './endpoint-query.js';
@@ -64,29 +59,84 @@ export class Endpoint<
   TParams extends AnyObject,
   TMetaData extends AnyObject = AnyObject,
 > {
+  /**
+   * Unique runtime identifier of the endpoint instance.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#endpointid)
+   */
   endpointId: string;
 
+  /**
+   * Mutable presets used by helper factory methods like `toMutation()`.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#presets)
+   */
   presets: {
     mutations: EndpointMutationPresets;
   } = {
     mutations: {},
   };
 
+  /**
+   * Type-only helper that exposes endpoint params shape.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#__params)
+   */
   __params!: TParams;
+
+  /**
+   * Type-only helper that exposes endpoint response shape.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#__response)
+   */
   __response!: TResponse;
 
+  /**
+   * Custom metadata attached to the endpoint configuration.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#meta)
+   */
   meta!: TMetaData;
+
+  /**
+   * Endpoint configuration generated from the contract/codegen layer.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#configuration)
+   */
+  configuration: EndpointConfiguration<NoInfer<TParams>, TMetaData>;
+
+  /**
+   * Query client used by query and mutation helpers.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#queryclient)
+   */
+  queryClient: EndpointQueryClient;
+
+  /**
+   * HTTP client used to build URLs and execute requests.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#httpclient)
+   */
+  httpClient: HttpClient;
 
   protected validateParams: boolean = false;
   protected validateData: boolean = false;
   protected throwParams: boolean = false;
   protected throwData: boolean = false;
 
+  /**
+   * Creates a callable `Endpoint` instance.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#constructor)
+   */
   constructor(
-    public configuration: EndpointConfiguration<NoInfer<TParams>, TMetaData>,
-    public queryClient: EndpointQueryClient,
-    public httpClient: HttpClient,
+    configuration: EndpointConfiguration<NoInfer<TParams>, TMetaData>,
+    queryClient: EndpointQueryClient,
+    httpClient: HttpClient,
   ) {
+    this.configuration = configuration;
+    this.queryClient = queryClient;
+    this.httpClient = httpClient;
     this.endpointId = globalThis.crypto.randomUUID();
     this.meta = configuration.meta ?? ({} as TMetaData);
     const vc = configuration.validateContract;
@@ -126,6 +176,11 @@ export class Endpoint<
     return callable;
   }
 
+  /**
+   * Returns a fully resolved request URL for the provided params.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#getfullurl)
+   */
   getFullUrl(
     ...args: IsPartial<TParams> extends true
       ? [params?: Maybe<TParams>]
@@ -135,6 +190,11 @@ export class Endpoint<
     return this.httpClient.buildUrl(params);
   }
 
+  /**
+   * Returns the resolved request path without the base URL.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#getpath)
+   */
   getPath(
     ...args: IsPartial<TParams> extends true
       ? [params?: Maybe<TParams>]
@@ -144,6 +204,11 @@ export class Endpoint<
     return params.path;
   }
 
+  /**
+   * Extracts endpoint params from TanStack Query function context.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#getparamsfromcontext)
+   */
   getParamsFromContext<
     TQueryKey extends QueryKey = QueryKey,
     TPageParam = never,
@@ -155,30 +220,65 @@ export class Endpoint<
     return (ctx.queryKey.at(-2) || {}) as TParams;
   }
 
+  /**
+   * Tags declared for the endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#tags)
+   */
   get tags() {
     return this.configuration.tags;
   }
 
+  /**
+   * Path segments declared for the endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#path)
+   */
   get path() {
     return this.configuration.path;
   }
 
+  /**
+   * Slash-joined path declaration for the endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#pathdeclaration)
+   */
   get pathDeclaration() {
     return this.path.join('/');
   }
 
+  /**
+   * Operation identifier from the endpoint configuration.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#operationid)
+   */
   get operationId() {
     return this.configuration.operationId;
   }
 
+  /**
+   * Optional endpoint group.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#group)
+   */
   get group() {
     return this.configuration.group;
   }
 
+  /**
+   * Optional endpoint namespace.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#namespace)
+   */
   get namespace() {
     return this.configuration.namespace;
   }
 
+  /**
+   * Narrows unknown values to endpoint HTTP responses.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#checkresponse)
+   */
   checkResponse<TStatus extends HttpStatusCode>(
     response: unknown,
     status: TStatus,
@@ -228,6 +328,11 @@ export class Endpoint<
     }
   }
 
+  /**
+   * Performs the HTTP request and optionally validates contracts.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#request)
+   */
   async request(
     ...args: IsPartial<TParams> extends true
       ? [params?: Maybe<TParams>]
@@ -272,6 +377,11 @@ export class Endpoint<
     return response;
   }
 
+  /**
+   * Builds query metadata payload enriched with endpoint fields.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#toquerymeta)
+   */
   toQueryMeta = (meta?: AnyObject) =>
     ({
       ...meta,
@@ -283,6 +393,11 @@ export class Endpoint<
       endpointQuery: true,
     }) satisfies EndpointQueryMeta;
 
+  /**
+   * Builds a stable TanStack Query key for a regular query.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#toquerykey)
+   */
   toQueryKey(params?: Maybe<TParams>, uniqKey?: EndpointQueryUniqKey): any {
     return [
       ...this.configuration.path,
@@ -292,6 +407,11 @@ export class Endpoint<
     ];
   }
 
+  /**
+   * Builds a stable TanStack Query key for an infinite query.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#toinfinitequerykey)
+   */
   toInfiniteQueryKey(
     params?: Maybe<TParams>,
     uniqKey?: EndpointQueryUniqKey,
@@ -305,6 +425,11 @@ export class Endpoint<
     ];
   }
 
+  /**
+   * Invalidates the exact query produced by this endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#invalidatequery)
+   */
   invalidateQuery(
     ...args: IsPartial<TParams> extends true
       ? [
@@ -328,6 +453,11 @@ export class Endpoint<
     );
   }
 
+  /**
+   * Creates an `EndpointMutation` bound to this endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#tomutation)
+   */
   toMutation<
     TData = TResponse['data'],
     TMutationMeta extends AnyObject | void = void,
@@ -353,6 +483,11 @@ export class Endpoint<
     );
   }
 
+  /**
+   * Creates an `EndpointQuery` bound to this endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#toquery)
+   */
   toQuery<
     TQueryFnData = TResponse['data'],
     TError = DefaultError | Defined<TResponse['error']>,
@@ -370,27 +505,6 @@ export class Endpoint<
         >),
   ) {
     return new EndpointQuery<this, TQueryFnData, TError, TData, TQueryData>(
-      this,
-      this.queryClient,
-      options,
-    );
-  }
-
-  toInfiniteQuery<
-    TData = TResponse['data'],
-    TError = DefaultError,
-    TPageParam = unknown,
-  >(
-    options:
-      | EndpointInfiniteQueryOptions<this, TData, TError, TPageParam>
-      | (() => EndpointInfiniteQueryFlattenOptions<
-          this,
-          TData,
-          TError,
-          TPageParam
-        >),
-  ) {
-    return new EndpointInfiniteQuery<this, TData, TError, TPageParam>(
       this,
       this.queryClient,
       options,
