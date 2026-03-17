@@ -36,14 +36,14 @@ importers:
         specifier: ^6.13.6
         version: 6.13.7
       mobx-tanstack-query:
-        specifier: ^6.12.1
-        version: 6.12.1(@tanstack/query-core@5.90.20)(mobx@6.13.7)
+        specifier: ^6.13.0
+        version: 6.13.0(@tanstack/query-core@5.90.20)(mobx@6.13.7)
       qs:
         specifier: ^6.15.0
         version: 6.15.0
       swagger-typescript-api:
-        specifier: 13.6.3
-        version: 13.6.3(magicast@0.5.2)(mobx@6.13.7)
+        specifier: 13.6.5
+        version: 13.6.5(magicast@0.5.2)(mobx@6.13.7)
       ts-morph:
         specifier: ^27.0.2
         version: 27.0.2
@@ -360,8 +360,8 @@ packages:
       '@biomejs/wasm-web':
         optional: true
 
-  '@biomejs/wasm-nodejs@2.4.6':
-    resolution: {integrity: sha512-YRhedzOovXDMs+ZKzi/ZcDTefZIMcrp3z0Ruq+abrNb622aYUh/2m1Ooj8BcG4anGUGR6o+dTCbvAEx9vc74hw==}
+  '@biomejs/wasm-nodejs@2.4.7':
+    resolution: {integrity: sha512-oCbBK3q3c7syIuxmLFlKG7AC13yKSRkpKQpedrsluX/4J1aWANlF44sbMsONkT8flRa6gOUYlBa5yhDcLF8mrw==}
 
   '@bramus/specificity@2.4.2':
     resolution: {integrity: sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw==}
@@ -2199,6 +2199,9 @@ packages:
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
+  dayjs@1.11.20:
+    resolution: {integrity: sha512-YbwwqR/uYpeoP4pu043q+LTDLFBLApUP6VxRihdfNTqu4ubqMlGDLd6ErXhEgsyvY0K6nCs7nggYumAN+9uEuQ==}
+
   de-indent@1.0.2:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==}
 
@@ -2261,6 +2264,9 @@ packages:
 
   dompurify@3.2.6:
     resolution: {integrity: sha512-/2GogDQlohXPZe6D6NOgQvXLPSYBqIWMnZ8zzOhn09REE4eyAzb+Hed3jhoM9OkuaJ8P6ZGTTVWQKAi8ieIzfQ==}
+
+  dompurify@3.3.3:
+    resolution: {integrity: sha512-Oj6pzI2+RqBfFG+qOaOLbFXLQ90ARpcGG6UePL82bJLtdsa6CYJD7nmiU8MW9nQNOtCHV3lZ/Bzq1X0QYbBZCA==}
 
   dot-prop@5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
@@ -3176,8 +3182,8 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  mobx-tanstack-query@6.12.1:
-    resolution: {integrity: sha512-QY+maPQoiHkiQKQEa48QbO2RGNAy76+bNpVb8S+lx/gOpxUir4RxdsleqS4A5Yah7h8VeoP/bS/JBnBoZmTYbQ==}
+  mobx-tanstack-query@6.13.0:
+    resolution: {integrity: sha512-Z0RpKzqn1utKPvWBJ/q9Qx7coM3lDt/Zi5dO+Uj8QYEZ/GUZuEwqWSjHd33vBxi4T9xKoCJFhrIitXE1a4mW9g==}
     peerDependencies:
       '@tanstack/query-core': ^5.90.2
       mobx: ^6.12.4
@@ -3846,8 +3852,8 @@ packages:
   swagger-schema-official@2.0.0-bab6bed:
     resolution: {integrity: sha512-rCC0NWGKr/IJhtRuPq/t37qvZHI/mH4I4sxflVM+qgVe5Z2uOCivzWaVbuioJaB61kvm5UvB7b49E+oBY0M8jA==}
 
-  swagger-typescript-api@13.6.3:
-    resolution: {integrity: sha512-LS0LNTr4kKyKZZFK079lzCWsBqP7hi3WiU9HagtiUvUGQNPrUvQuskZfBTdSynhFDapyjgthr8CJSI1w4fQC0Q==}
+  swagger-typescript-api@13.6.5:
+    resolution: {integrity: sha512-42dFRKr3VYOWT2EY3qYxLDcDlVrlKqaD5WvoO3ePLc2sNpP4YgDebdPhxYBEhwRQk+Bo7941XtAQZaQzz2znSQ==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -3867,6 +3873,9 @@ packages:
 
   tailwind-merge@3.3.1:
     resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
+
+  tailwind-merge@3.5.0:
+    resolution: {integrity: sha512-I8K9wewnVDkL1NTGoqWmVEIlUcB9gFriAEkXkfCjX5ib8ezGxtR3xD7iZIxrfArjEsH7F1CHD4RFUtxefdqV/A==}
 
   term-size@2.2.1:
     resolution: {integrity: sha512-wK0Ri4fOGjv/XPy8SBHZChl8CM7uMc5VML7SqiQ0zG7+J5Vr+RMQDoHa2CNT6KHUnTGIXH34UDMkPzAUyapBZg==}
@@ -4357,6 +4366,17 @@ packages:
       react:
         optional: true
 
+  yummies@7.11.0:
+    resolution: {integrity: sha512-JuDP4NdO5bPfYCTv4QkGHmJPKjMyJ1KcsxnSLOmge4qPxQFfZuCnP4hvpX1WWvF/xI/v3bytdgGV2i4ZmhDt2Q==}
+    peerDependencies:
+      mobx: ^6.12.4
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      mobx:
+        optional: true
+      react:
+        optional: true
+
   zod@4.3.6:
     resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
@@ -4670,11 +4690,11 @@ snapshots:
   '@biomejs/cli-win32-x64@2.4.5':
     optional: true
 
-  '@biomejs/js-api@4.0.0(@biomejs/wasm-nodejs@2.4.6)':
+  '@biomejs/js-api@4.0.0(@biomejs/wasm-nodejs@2.4.7)':
     optionalDependencies:
-      '@biomejs/wasm-nodejs': 2.4.6
+      '@biomejs/wasm-nodejs': 2.4.7
 
-  '@biomejs/wasm-nodejs@2.4.6': {}
+  '@biomejs/wasm-nodejs@2.4.7': {}
 
   '@bramus/specificity@2.4.2':
     dependencies:
@@ -6507,6 +6527,8 @@ snapshots:
 
   dayjs@1.11.13: {}
 
+  dayjs@1.11.20: {}
+
   de-indent@1.0.2: {}
 
   debug@4.4.3(supports-color@5.5.0):
@@ -6556,6 +6578,10 @@ snapshots:
       path-type: 4.0.0
 
   dompurify@3.2.6:
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
+
+  dompurify@3.3.3:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -7630,7 +7656,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
-  mobx-tanstack-query@6.12.1(@tanstack/query-core@5.90.20)(mobx@6.13.7):
+  mobx-tanstack-query@6.13.0(@tanstack/query-core@5.90.20)(mobx@6.13.7):
     dependencies:
       '@tanstack/query-core': 5.90.20
       linked-abort-controller: 1.1.0
@@ -8466,11 +8492,11 @@ snapshots:
 
   swagger-schema-official@2.0.0-bab6bed: {}
 
-  swagger-typescript-api@13.6.3(magicast@0.5.2)(mobx@6.13.7):
+  swagger-typescript-api@13.6.5(magicast@0.5.2)(mobx@6.13.7):
     dependencies:
       '@apidevtools/swagger-parser': 12.1.0(openapi-types@12.1.3)
-      '@biomejs/js-api': 4.0.0(@biomejs/wasm-nodejs@2.4.6)
-      '@biomejs/wasm-nodejs': 2.4.6
+      '@biomejs/js-api': 4.0.0(@biomejs/wasm-nodejs@2.4.7)
+      '@biomejs/wasm-nodejs': 2.4.7
       '@types/swagger-schema-official': 2.0.25
       c12: 3.3.3(magicast@0.5.2)
       citty: 0.2.1
@@ -8484,7 +8510,7 @@ snapshots:
       type-fest: 5.4.4
       typescript: 5.9.3
       yaml: 2.8.2
-      yummies: 7.10.0(mobx@6.13.7)
+      yummies: 7.11.0(mobx@6.13.7)
     transitivePeerDependencies:
       - '@biomejs/wasm-bundler'
       - '@biomejs/wasm-web'
@@ -8516,6 +8542,8 @@ snapshots:
   tagged-tag@1.0.0: {}
 
   tailwind-merge@3.3.1: {}
+
+  tailwind-merge@3.5.0: {}
 
   term-size@2.2.1: {}
 
@@ -9091,6 +9119,17 @@ snapshots:
       dompurify: 3.2.6
       nanoid: 5.1.6
       tailwind-merge: 3.3.1
+    optionalDependencies:
+      mobx: 6.13.7
+
+  yummies@7.11.0(mobx@6.13.7):
+    dependencies:
+      class-variance-authority: 0.7.1
+      clsx: 2.1.1
+      dayjs: 1.11.20
+      dompurify: 3.3.3
+      nanoid: 5.1.6
+      tailwind-merge: 3.5.0
     optionalDependencies:
       mobx: 6.13.7
 

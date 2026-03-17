@@ -64,9 +64,9 @@
     "http-status-code-types": "^1.0.1",
     "jiti": "^2.6.1",
     "lodash-es": "^4.17.23",
-    "mobx-tanstack-query": "^6.12.1",
+    "mobx-tanstack-query": "^6.13.0",
     "qs": "^6.15.0",
-    "swagger-typescript-api": "13.6.3",
+    "swagger-typescript-api": "13.6.5",
     "ts-morph": "^27.0.2",
     "undici-types": "^7.22.0",
     "yummies": "^7.10.0"

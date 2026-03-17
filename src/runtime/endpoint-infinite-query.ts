@@ -2,7 +2,7 @@
 import type {
   DefaultError,
   InfiniteData,
-  QueryObserverResult,
+  InfiniteQueryObserverResult,
 } from '@tanstack/query-core';
 import {
   comparer,
@@ -387,7 +387,7 @@ export class EndpointInfiniteQuery<
    */
   async start(
     params: MaybeFalsy<TEndpoint['__params']>,
-  ): Promise<QueryObserverResult<TData, TError>> {
+  ): Promise<InfiniteQueryObserverResult<TData, TError>> {
     runInAction(() => {
       this._observableData.params = params;
     });
@@ -433,7 +433,7 @@ export function mergeInfiniteQueryPageParam<
   TPageParam,
 >(
   params: TEndpoint['__params'] & AnyObject,
-  pageParam: TPageParam,
+  pageParam: TPageParam | undefined,
   ctx: any,
   mergePageParam?: EndpointInfiniteQueryMergePageParam<TEndpoint, TPageParam>,
 ): AnyObject {
