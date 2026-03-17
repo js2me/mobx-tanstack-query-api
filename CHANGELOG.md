@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.42.0
+
+### Minor Changes
+
+- [`04be7f8`](https://github.com/js2me/mobx-tanstack-query-api/commit/04be7f808f4336864ad4670b6088a235b5b2b503) Thanks [@js2me](https://github.com/js2me)! - rewrite `EndpointInfiniteQuery` and `toInfiniteQuery` to solve problem with working with `pageParam` + add docs
+
+- [`394cc3a`](https://github.com/js2me/mobx-tanstack-query-api/commit/394cc3a9c6340108ce181f4654084a97bb28bf52) Thanks [@js2me](https://github.com/js2me)! - update mobx-tanstack-query to 6.13.0
+
 ## 0.41.1
 
 ### Patch Changes
