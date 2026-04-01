@@ -340,11 +340,25 @@ namespace: 'api'
 
 #### `requestPathPrefix`   
 
-This option allows to add path prefix to endpoint request path   
+This option adds a prefix to each endpoint’s request `path` string (the template literal passed to `params`, not the `path` array segments).
 
-Example:   
+- **String** — inserted as-is before the OpenAPI route path (same behavior as before).
+- **Function** — called once per endpoint at **codegen** time. It receives an object with `operationId`, `path`, `method`, and `contractName` (the generated endpoint contract variable base name, including the Zod endpoint suffix when applicable). Return the prefix string to use for that endpoint.
+
+The callback argument type is exported as `RouteBaseInfo` from `mobx-tanstack-query-api/cli` (same shape as the `routeInfo` object passed to `zodContracts` `MaybeFn` options).
+
+Example (string):   
 ```ts
 requestPathPrefix: '/__super_api_prefix'
+```
+
+Example (function):
+
+```ts
+import type { RouteBaseInfo } from 'mobx-tanstack-query-api/cli';
+
+requestPathPrefix: (endpoint: RouteBaseInfo) =>
+  endpoint.operationId.startsWith('admin') ? '/admin-api' : '/public-api',
 ```
 ```ts{4,11}
 export const getMyData = new Endpoint<...>(
@@ -368,12 +382,16 @@ export const getMyData = new Endpoint<...>(
 
 #### `requestPathSuffix`   
 
-This option allows to add path suffix to endpoint request path   
+This option adds a suffix after each endpoint’s request `path` string (the template literal in `params`).
 
-Example:   
+- **String** — appended as-is after the OpenAPI route path.
+- **Function** — same as for `requestPathPrefix`: evaluated at **codegen** time per endpoint with a `RouteBaseInfo` argument (`operationId`, `path`, `method`, `contractName`).
+
+Example (string):   
 ```ts
 requestPathSuffix: '/__super_api_fx'
 ```
+_output:_  
 ```ts{4,11}
 export const getMyData = new Endpoint<...>(
   {
@@ -394,6 +412,33 @@ export const getMyData = new Endpoint<...>(
 );
 ```
 
+Example (function):   
+```ts
+import type { RouteBaseInfo } from 'mobx-tanstack-query-api/cli';
+
+requestPathSuffix: (endpoint: RouteBaseInfo) =>
+  endpoint.method.toLowerCase() === 'post' ? '/async' : '',
+```
+_output:_  
+```ts{4,11}
+export const getMyData = new Endpoint<...>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: `/api/v1/get-my-data/async`,
+      method: "POST",
+      query: query,
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "getMyData",
+    path: ["api", "v1", "get-my-data", "async"],
+    tags: [Tag.MyData],
+    meta: {} as any,
+  },
+  myQueryClient,
+  httpClient,
+);
+```
 
 #### `removeUnusedTypes`   
 

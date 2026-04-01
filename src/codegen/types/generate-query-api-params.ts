@@ -12,6 +12,17 @@ import type { TypeInfo } from './type-info.js';
 
 type RuntimeExpressionOrBoolean = string | boolean;
 
+/**
+ * Identity of an endpoint at codegen time (operation, path, generated contract variable base name).
+ * Used by `zodContracts` callbacks and by `requestPathPrefix` / `requestPathSuffix` when they are functions.
+ */
+export interface RouteBaseInfo {
+  operationId: string;
+  path: string;
+  method: string;
+  contractName: string;
+}
+
 export interface GenerateQueryApiParams {
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#output)
@@ -27,13 +38,17 @@ export interface GenerateQueryApiParams {
   mixinInput?: string | AnyObject;
 
   /**
+   * String: inserted as-is before the route path. Function: receives endpoint info and returns the prefix string.
+   *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#requestpathprefix)
    */
-  requestPathPrefix?: string;
+  requestPathPrefix?: string | ((endpoint: RouteBaseInfo) => string);
   /**
+   * String: inserted as-is after the route path. Function: receives endpoint info and returns the suffix string.
+   *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#requestpathsuffix)
    */
-  requestPathSuffix?: string;
+  requestPathSuffix?: string | ((endpoint: RouteBaseInfo) => string);
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#removeunusedtypes)
@@ -245,7 +260,7 @@ export interface GenerateQueryApiParams {
               params?: RuntimeExpressionOrBoolean;
               data?: RuntimeExpressionOrBoolean;
             },
-          [contractName: string, routeInfo: ZodContractsRouteInfo]
+          [contractName: string, routeInfo: RouteBaseInfo]
         >;
         throw?: MaybeFn<
           | RuntimeExpressionOrBoolean
@@ -253,22 +268,14 @@ export interface GenerateQueryApiParams {
               params?: RuntimeExpressionOrBoolean;
               data?: RuntimeExpressionOrBoolean;
             },
-          [contractName: string, routeInfo: ZodContractsRouteInfo]
+          [contractName: string, routeInfo: RouteBaseInfo]
         >;
         /** String: runtime condition. Function: codegen-time filter for (contractName, routeInfo). */
         appendRule?: MaybeFn<
           RuntimeExpressionOrBoolean,
-          [contractName: string, routeInfo: ZodContractsRouteInfo]
+          [contractName: string, routeInfo: RouteBaseInfo]
         >;
         /** Suffix for generated shared Zod schema variables. Default: "". */
         suffix?: string;
       };
-}
-
-/** Route info passed to zodContracts.appendRule at codegen time. */
-export interface ZodContractsRouteInfo {
-  operationId: string;
-  path: string;
-  method: string;
-  contractName: string;
 }

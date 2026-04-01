@@ -1,10 +1,11 @@
 import type { ParsedRoute } from 'swagger-typescript-api';
+import { callFunction } from 'yummies/common';
 import type { AnyObject, Maybe, MaybeFn } from 'yummies/types';
 import type { BaseTmplParams } from '../types/base-tmpl-params.js';
 import type {
   GenerateQueryApiParams,
   MetaInfo,
-  ZodContractsRouteInfo,
+  RouteBaseInfo,
 } from '../types/index.js';
 import { createShortModelType } from '../utils/create-short-model-type.js';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from '../utils/data-contract-type-suffix.js';
@@ -329,10 +330,19 @@ export const newEndpointTmpl = ({
 
   const requestInfoMeta = codegenParams.getEndpointMeta?.(route, utils);
   const requestMeta = codegenParams.getRequestMeta?.(route, utils);
+  const requestPathEndpointCtx: RouteBaseInfo = {
+    operationId: raw.operationId ?? '',
+    path,
+    method,
+    contractName: `${_.camelCase(route.routeName.usage)}${endpointContractSuffix}`,
+  };
+
   const resultPath =
-    (codegenParams.requestPathPrefix ?? '') +
+    (callFunction(codegenParams.requestPathPrefix, requestPathEndpointCtx) ||
+      '') +
     path +
-    (codegenParams.requestPathSuffix ?? '');
+    (callFunction(codegenParams.requestPathSuffix, requestPathEndpointCtx) ||
+      '');
 
   const bodyContentType =
     getRequestBodyContentType(
@@ -427,18 +437,12 @@ export const newEndpointTmpl = ({
       : null;
   const resolveZodContractsMaybeFn = <TValue>(
     value:
-      | MaybeFn<
-          TValue,
-          [contractName: string, routeInfo: ZodContractsRouteInfo]
-        >
+      | MaybeFn<TValue, [contractName: string, routeInfo: RouteBaseInfo]>
       | undefined,
   ): TValue | undefined => {
     if (typeof value === 'function' && routeInfoForContracts != null) {
       return (
-        value as (
-          contractName: string,
-          routeInfo: ZodContractsRouteInfo,
-        ) => TValue
+        value as (contractName: string, routeInfo: RouteBaseInfo) => TValue
       )(routeInfoForContracts.contractName, routeInfoForContracts);
     }
     return value as TValue | undefined;
