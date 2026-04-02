@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.43.0
+
+### Minor Changes
+
+- [`3abe927`](https://github.com/js2me/mobx-tanstack-query-api/commit/3abe927b0d1879a2ad5a78064b2379cb0e7851b4) Thanks [@js2me](https://github.com/js2me)! - [internal] update all deps to latest
+
+- [`eb45f85`](https://github.com/js2me/mobx-tanstack-query-api/commit/eb45f852a2c9009d65fd0f2258c33711fc3aafcf) Thanks [@js2me](https://github.com/js2me)! - enhance `requestPathSuffix` `requestPathPrefix` options
+
 ## 0.42.0
 
 ### Minor Changes
