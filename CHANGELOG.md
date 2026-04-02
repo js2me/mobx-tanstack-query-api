@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.43.1
+
+### Patch Changes
+
+- [`483512c`](https://github.com/js2me/mobx-tanstack-query-api/commit/483512c0de61532f25972c14376c96d697f75000) Thanks [@js2me](https://github.com/js2me)! - fix docs links (anchors) in source code
+
 ## 0.43.0
 
 ### Minor Changes
