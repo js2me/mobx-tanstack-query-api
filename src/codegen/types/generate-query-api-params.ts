@@ -25,40 +25,40 @@ export interface RouteBaseInfo {
 
 export interface GenerateQueryApiParams {
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#output)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#output)
    */
   output: string;
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#input)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#input)
    */
   input: string | AnyObject;
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#mixininput)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#mixininput)
    */
   mixinInput?: string | AnyObject;
 
   /**
    * String: inserted as-is before the route path. Function: receives endpoint info and returns the prefix string.
    *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#requestpathprefix)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#requestpathprefix)
    */
   requestPathPrefix?: string | ((endpoint: RouteBaseInfo) => string);
   /**
    * String: inserted as-is after the route path. Function: receives endpoint info and returns the suffix string.
    *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#requestpathsuffix)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#requestpathsuffix)
    */
   requestPathSuffix?: string | ((endpoint: RouteBaseInfo) => string);
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#removeunusedtypes)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#removeunusedtypes)
    */
   removeUnusedTypes?:
     | true
     | Partial<Omit<RemoveUnusedTypesParams, 'directory'>>;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#formatendpointname)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#formatendpointname)
    */
   formatEndpointName?: (
     endpointName: string,
@@ -66,7 +66,7 @@ export interface GenerateQueryApiParams {
   ) => Maybe<string>;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#formatexportgroupname)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#formatexportgroupname)
    */
   formatExportGroupName?: (
     groupName: string,
@@ -76,7 +76,7 @@ export interface GenerateQueryApiParams {
   /**
    * Various generation output types
    *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#outputtype)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#outputtype)
    *
    * `one-endpoint-per-file`
    * @example
@@ -119,7 +119,7 @@ export interface GenerateQueryApiParams {
   /**
    * Group endpoints and collect it into object
    *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#groupby)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#groupby)
    */
   groupBy?:
     | ((endpoint: EndpointData) => string)
@@ -131,30 +131,30 @@ export interface GenerateQueryApiParams {
   /**
    * Collect all exports into single namespace
    *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#namespace)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#namespace)
    */
   namespace?: string | ((utils: AnyObject) => string);
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#addpathsegmenttoroutename)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#addpathsegmenttoroutename)
    */
   addPathSegmentToRouteName?: boolean | number;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#queryclient)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#queryclient)
    */
   queryClient?: 'builtin' | ImportFileParams;
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#endpoint)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#endpoint)
    */
   endpoint?: 'builtin' | ImportFileParams;
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#httpclient)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#httpclient)
    */
   httpClient?: 'builtin' | ImportFileParams;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#getendpointmeta)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#getendpointmeta)
    */
   getEndpointMeta?: (
     route: AnyObject,
@@ -166,7 +166,7 @@ export interface GenerateQueryApiParams {
   };
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#getrequestmeta)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#getrequestmeta)
    */
   getRequestMeta?: (
     route: AnyObject,
@@ -178,24 +178,24 @@ export interface GenerateQueryApiParams {
   /**
    * Additional parameters used to fetch your OpenAPI schema
    *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#fetchschemarequestoptions)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#fetchschemarequestoptions)
    */
   fetchSchemaRequestOptions?: RequestInit;
 
   otherCodegenParams?: Partial<GenerateApiConfiguration['config']>;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#filterendpoints)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#filterendpoints)
    */
   filterEndpoints?: FilterOption<(endpoint: EndpointData) => boolean>;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#filtertypes)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#filtertypes)
    */
   filterTypes?: FilterOption<(type: TypeInfo) => boolean>;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#filtergroups)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#filtergroups)
    */
   filterGroups?: FilterOption<(groupName: string) => boolean>;
 
@@ -211,19 +211,19 @@ export interface GenerateQueryApiParams {
   };
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#cleanoutput)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#cleanoutput)
    */
   cleanOutput?: boolean;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#nometainfo)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#nometainfo)
    */
   noMetaInfo?: boolean;
 
   /**
    * Disable generation of index.ts barrel files.
    *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config/#nobarrelfiles)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#nobarrelfiles)
    */
   noBarrelFiles?: boolean;
 
