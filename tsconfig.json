@@ -9,7 +9,6 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
     "skipLibCheck": true,
-    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -17,9 +16,7 @@
     "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "typeRoots": [
-      "./node_modules/@types/", "./types", "./node_modules"
-    ],
+    "typeRoots": ["./node_modules/@types", "./types"],
     "noEmit": false,
     "jsx": "react-jsx",
     "paths": {
