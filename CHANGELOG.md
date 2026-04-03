@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.44.0
+
+### Minor Changes
+
+- [`30ffd01`](https://github.com/js2me/mobx-tanstack-query-api/commit/30ffd015e18c583b17d81ca74ef962941d6af51a) Thanks [@js2me](https://github.com/js2me)! - Improved `tmplData` accepts objects for getRequestMeta, getEndpointMeta
+
+- [`fa1828e`](https://github.com/js2me/mobx-tanstack-query-api/commit/fa1828eeb0f3941332edacef01211d318222a499) Thanks [@js2me](https://github.com/js2me)! - [docs] improve docs for options codegen
+
+- [`fa1828e`](https://github.com/js2me/mobx-tanstack-query-api/commit/fa1828eeb0f3941332edacef01211d318222a499) Thanks [@js2me](https://github.com/js2me)! - improved meta info passing for requests and endpoints
+
 ## 0.43.1
 
 ### Patch Changes
