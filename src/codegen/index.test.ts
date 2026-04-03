@@ -16,8 +16,8 @@ const fsMocks = vi.hoisted(() => {
   };
 });
 
-vi.mock('fs', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('fs')>();
+vi.mock('node:fs', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:fs')>();
   return {
     ...actual,
     rmSync: (...args: Parameters<typeof actual.rmSync>) =>

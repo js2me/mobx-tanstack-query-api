@@ -3,5 +3,6 @@ import { defineLibViteConfig } from 'sborshik/vite';
 
 export default defineLibViteConfig(ConfigsManager.create(), {
   binPath: './bin.js',
-  externalDeps: ['node:url', 'node:path', 'node:fs'],
+  // Keep Node `fs` out of the browser stub (`__vite_browser_external`) so cli codegen keeps statSync/rmSync.
+  externalDeps: ['node:url', 'node:path', 'node:fs', 'fs'],
 });

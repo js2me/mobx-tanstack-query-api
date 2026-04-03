@@ -1,7 +1,6 @@
+import { rmSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-// biome-ignore lint/style/useNodejsImportProtocol: `fs` without `node:` — wider tooling/Node compatibility than `node:fs/promises`
-import { rmSync, statSync } from 'fs';
 import { cloneDeep } from 'lodash-es';
 import {
   type GenerateApiConfiguration,
