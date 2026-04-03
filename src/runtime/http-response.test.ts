@@ -7,7 +7,7 @@ const createRequestInfo = () => ({
 });
 
 describe('HttpResponse', () => {
-  it('isEmpty корректно определяет пустые и непустые ответы', () => {
+  it('isEmpty correctly classifies empty and non-empty responses', () => {
     const request = createRequestInfo();
 
     const noContentResponse = new HttpResponse(
@@ -28,7 +28,7 @@ describe('HttpResponse', () => {
     expect(textResponse.isEmpty()).toBe(false);
   });
 
-  it('resolveBody записывает данные в data для ok и в error для не-ok', async () => {
+  it('resolveBody writes payload to data for ok and to error for non-ok', async () => {
     const request = createRequestInfo();
 
     const okResponse = new HttpResponse<{ ok: boolean }, { message: string }>(
@@ -50,7 +50,7 @@ describe('HttpResponse', () => {
     expect(badResponse.error).toEqual({ message: 'fail' });
   });
 
-  it("isEmpty бросает Cannot read properties of undefined (reading 'get') при отсутствии headers", () => {
+  it("isEmpty throws Cannot read properties of undefined (reading 'get') when headers are missing", () => {
     const request = createRequestInfo();
     const invalidResponseLike = {
       headers: undefined,

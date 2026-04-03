@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`generateApi — snapshot getMemoryLeak > генерирует endpoint и совпадает со snapshot 1`] = `
+exports[`generateApi snapshot getMemoryLeak > generates endpoint matching snapshot 1`] = `
 "/* eslint-disable */
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";

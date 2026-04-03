@@ -79,7 +79,7 @@ const createFruitEndpoint = (
   );
 
 describe('Endpoint generated example', () => {
-  it('проверяет тип возвращаемого значения createFruitEndpoint', () => {
+  it('asserts createFruitEndpoint return types', () => {
     type EndpointInstance = ReturnType<typeof createFruitEndpoint>;
     type EndpointRequestResponse = Awaited<
       ReturnType<EndpointInstance['request']>
@@ -105,7 +105,7 @@ describe('Endpoint generated example', () => {
     expectTypeOf<Response409['error']>().toEqualTypeOf<StarConflictError>();
   });
 
-  it('формирует запрос с телом и requestParams', async () => {
+  it('builds request with body and requestParams', async () => {
     const requestMock = vi.fn().mockResolvedValue({
       status: 200,
       ok: true,
@@ -159,7 +159,7 @@ describe('Endpoint generated example', () => {
     );
   });
 
-  it('callable-инстанс endpoint вызывает request', async () => {
+  it('callable endpoint instance delegates to request', async () => {
     const requestMock = vi.fn().mockResolvedValue({
       status: 200,
       ok: true,
@@ -186,7 +186,7 @@ describe('Endpoint generated example', () => {
     expect(endpoint.pathDeclaration).toBe('api/v1/fruits/{fruitId}/stars');
   });
 
-  it('вызывает onDone один раз при чтении query.data внутри computed', async ({
+  it('invokes onDone once when reading query.data inside computed', async ({
     signal,
   }) => {
     const requestMock = vi.fn().mockResolvedValue({
@@ -254,7 +254,7 @@ describe('Endpoint generated example', () => {
     foo.query.destroy();
   });
 
-  it('toInfiniteQuery мержит pageParam в body и держит base params в queryKey', async () => {
+  it('toInfiniteQuery merges pageParam into body and keeps base params in queryKey', async () => {
     const requestMock = vi.fn().mockResolvedValue({
       status: 200,
       ok: true,
@@ -316,7 +316,7 @@ describe('Endpoint generated example', () => {
     });
   });
 
-  it('toInfiniteQuery реактивно обновляет base params', async () => {
+  it('toInfiniteQuery reactively updates base params', async () => {
     const requestMock = vi.fn().mockResolvedValue({
       status: 200,
       ok: true,

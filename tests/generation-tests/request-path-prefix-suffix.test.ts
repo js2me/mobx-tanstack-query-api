@@ -31,13 +31,13 @@ const baseConfig = {
   | 'zodContracts'
 >;
 
-describe('requestPathPrefix и requestPathSuffix', () => {
+describe('requestPathPrefix and requestPathSuffix', () => {
   beforeEach(async () => {
     await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
     await fs.mkdir(path.dirname(OUTPUT_DIR), { recursive: true });
   });
 
-  it('requestPathPrefix: строка подставляется в path как литерал', async () => {
+  it('requestPathPrefix: string is inlined into path as a literal', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -54,7 +54,7 @@ describe('requestPathPrefix и requestPathSuffix', () => {
     expect(content).toContain('path: `/__STATIC_PREFIX__/widgets`');
   });
 
-  it('requestPathPrefix: функция вызывается на codegen и её результат попадает в path', async () => {
+  it('requestPathPrefix: function runs at codegen and result is emitted in path', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -75,7 +75,7 @@ describe('requestPathPrefix и requestPathSuffix', () => {
     expect(content).not.toContain('/default-service');
   });
 
-  it('requestPathSuffix: строка подставляется в path как литерал', async () => {
+  it('requestPathSuffix: string is inlined into path as a literal', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -92,7 +92,7 @@ describe('requestPathPrefix и requestPathSuffix', () => {
     expect(content).toContain('path: `/widgets/__STATIC_SUFFIX__`');
   });
 
-  it('requestPathSuffix: функция вызывается на codegen и её результат попадает в path', async () => {
+  it('requestPathSuffix: function runs at codegen and result is emitted in path', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,

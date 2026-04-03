@@ -12,15 +12,15 @@ const ENDPOINT_FILE = path.resolve(
   'get-memory-leak.ts',
 );
 
-describe('generateApi — snapshot getMemoryLeak', () => {
+describe('generateApi snapshot getMemoryLeak', () => {
   beforeEach(async () => {
     await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
-    // swagger-typescript-api fileSystem.createDir не создает вложенные директории рекурсивно
-    // поэтому гарантируем существование родителя (__generated__)
+    // swagger-typescript-api fileSystem.createDir does not create nested dirs recursively,
+    // so ensure parent (__generated__) exists
     await fs.mkdir(path.dirname(OUTPUT_DIR), { recursive: true });
   });
 
-  it('генерирует endpoint и совпадает со snapshot', async () => {
+  it('generates endpoint matching snapshot', async () => {
     await generateApi(
       defineConfig({
         input: INPUT_FILE,

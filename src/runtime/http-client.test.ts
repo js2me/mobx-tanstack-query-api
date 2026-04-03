@@ -3,7 +3,7 @@ import { ContentType, HttpClient } from './http-client.js';
 import { isHttpResponse } from './http-response.js';
 
 describe('HttpClient', () => {
-  it('request возвращает успешный HttpResponse с распарсенным data', async () => {
+  it('request returns successful HttpResponse with parsed data', async () => {
     const fetchMock = vi
       .fn<typeof globalThis.fetch>()
       .mockResolvedValue(
@@ -32,7 +32,7 @@ describe('HttpClient', () => {
     expect(client.badResponse).toBeNull();
   });
 
-  it('request на не-ok сохраняет badResponse и кидает HttpResponse', async () => {
+  it('request on non-ok keeps badResponse and throws HttpResponse', async () => {
     const fetchMock = vi
       .fn<typeof globalThis.fetch>()
       .mockResolvedValue(
@@ -68,7 +68,7 @@ describe('HttpClient', () => {
     expect(fetchParams.body).toBe(JSON.stringify({ name: 'John' }));
   });
 
-  it('request обрабатывает Response, выброшенный из fetch, как HttpResponse', async () => {
+  it('request treats Response thrown from fetch as HttpResponse', async () => {
     const responseError = new Response(
       JSON.stringify({ message: 'from throw' }),
       {
@@ -101,7 +101,7 @@ describe('HttpClient', () => {
     expect(client.badResponse).toBe(thrown);
   });
 
-  it('request пробрасывает не-Response ошибку из fetch без изменений', async () => {
+  it('request rethrows non-Response errors from fetch unchanged', async () => {
     const networkError = new TypeError('Network failed');
     const fetchMock = vi
       .fn<typeof globalThis.fetch>()
@@ -127,7 +127,7 @@ describe('HttpClient', () => {
     expect(client.badResponse).toBeNull();
   });
 
-  it('request пробрасывает response-like ошибку, если это не instanceof Response', async () => {
+  it('request rethrows response-like errors that are not instanceof Response', async () => {
     const responseLikeError = {
       ok: false,
       status: 502,

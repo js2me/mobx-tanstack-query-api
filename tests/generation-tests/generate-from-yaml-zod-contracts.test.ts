@@ -117,7 +117,7 @@ function getContractsLine(content: string): string | null {
   return match ? match[0].trim().replace(/,?\s*$/, '') : null;
 }
 
-describe('generateApi — zodContracts все вариации', () => {
+describe('generateApi zodContracts all variants', () => {
   const baseConfig: GenerateQueryApiParams = {
     input: INPUT_DIR,
     output: OUTPUT_DIR,
@@ -129,12 +129,12 @@ describe('generateApi — zodContracts все вариации', () => {
 
   beforeEach(async () => {
     await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
-    // swagger-typescript-api fileSystem.createDir не создает вложенные директории рекурсивно
-    // поэтому гарантируем существование родителя (__generated__)
+    // swagger-typescript-api fileSystem.createDir does not create nested dirs recursively,
+    // so ensure parent (__generated__) exists
     await fs.mkdir(path.dirname(OUTPUT_DIR), { recursive: true });
   });
 
-  it('zodContracts: false — нет контрактов и валидации', async () => {
+  it('zodContracts: false — no contracts and no validation', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -148,7 +148,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: true — контракты + validateContract: true', async () => {
+  it('zodContracts: true — contracts + validateContract: true', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -162,7 +162,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { validate: true } — только validateContract: true', async () => {
+  it('zodContracts: { validate: true } — validateContract: true only', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -176,7 +176,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { suffix: "Validator" } — кастомный суффикс для всех zod контрактов', async () => {
+  it('zodContracts: { suffix: "Validator" } — custom suffix for all zod contracts', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -193,7 +193,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(contractsContent).not.toContain('nodePageEnvelopeValidator');
   });
 
-  it('zodContracts: { validate: false } — контракты есть, validateContract: false', async () => {
+  it('zodContracts: { validate: false } — contracts present, validateContract: false', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -209,7 +209,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { validate: "..." } — выражение в validateContract', async () => {
+  it('zodContracts: { validate: "..." } — expression in validateContract', async () => {
     const expr = "process.env.NODE_ENV === 'development'";
     await generateApi(
       defineConfig({
@@ -220,14 +220,14 @@ describe('generateApi — zodContracts все вариации', () => {
     const content = await readEndpointContent();
     expect(hasZodImport(content)).toBe(true);
     expect(hasContracts(content)).toBe(true);
-    // в сгенерированном коде строка может быть с двойными кавычками
+    // generated code may use double-quoted strings
     expect(getValidateContractsLine(content)).toMatch(
       /validateContract:\s*process\.env\.NODE_ENV\s*===\s*["']development["']/,
     );
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { validate: { params: true, data: false } } — объект validateContract', async () => {
+  it('zodContracts: { validate: { params: true, data: false } } — validateContract object', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -243,7 +243,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { validate: { params: true, data: "..." } } — объект с выражением для data', async () => {
+  it('zodContracts: { validate: { params: true, data: "..." } } — object with expression for data', async () => {
     const dataExpr = "process.env.NODE_ENV === 'development'";
     await generateApi(
       defineConfig({
@@ -259,7 +259,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBeNull();
   });
 
-  it('zodContracts: { validate: fn } — функция получает contractName и routeInfo', async () => {
+  it('zodContracts: { validate: fn } — function receives contractName and routeInfo', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -306,7 +306,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBe('throwContracts: false');
   });
 
-  it('zodContracts: { throw: "..." } — выражение в throwContracts', async () => {
+  it('zodContracts: { throw: "..." } — expression in throwContracts', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -322,7 +322,7 @@ describe('generateApi — zodContracts все вариации', () => {
     );
   });
 
-  it('zodContracts: { throw: { params: true, data: false } } — объект throwContracts', async () => {
+  it('zodContracts: { throw: { params: true, data: false } } — throwContracts object', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -338,7 +338,7 @@ describe('generateApi — zodContracts все вариации', () => {
     );
   });
 
-  it('zodContracts: { throw: fn } — функция вычисляет throwContracts на этапе codegen', async () => {
+  it('zodContracts: { throw: fn } — function computes throwContracts at codegen time', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -354,7 +354,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(getThrowContractsLine(content)).toBe('throwContracts: true');
   });
 
-  it('zodContracts: { appendRule: "..." } — условная вставка contracts в рантайме', async () => {
+  it('zodContracts: { appendRule: "..." } — conditional contracts insertion at runtime', async () => {
     const condition = 'process.env.NODE_ENV === "development"';
     await generateApi(
       defineConfig({
@@ -366,13 +366,13 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(hasZodImport(content)).toBe(true);
     expect(content).toContain('submitMultiContentReportContract');
     expect(content).toContain(condition);
-    // Форматтер может разбить строку; проверяем наличие тернарника
+    // Formatter may break the line; assert ternary is present
     expect(content).toMatch(
       /contract:\s*\n?\s*[\s\S]*\?\s*submitMultiContentReportContract\s*:\s*undefined/,
     );
   });
 
-  it('zodContracts: { appendRule: (name) => name === "..." } — контракт только для выбранного эндпоинта', async () => {
+  it('zodContracts: { appendRule: (name) => name === "..." } — contract only for selected endpoint', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -402,11 +402,11 @@ describe('generateApi — zodContracts все вариации', () => {
     );
     const content = await readEndpointContent();
     expect(hasZodImport(content)).toBe(true);
-    expect(content).toContain('submitMultiContentReportContract'); // переменная всё равно генерируется
+    expect(content).toContain('submitMultiContentReportContract'); // variable is still generated
     expect(getContractsLine(content)).toBe('contract: undefined');
   });
 
-  it('zodContracts: true — shared zod схемы именуются как data contracts в camelCase', async () => {
+  it('zodContracts: true — shared zod schemas named as data contracts in camelCase', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -418,7 +418,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(contractsContent).not.toContain('nodePageEnvelopeContract');
   });
 
-  it('zodContracts: true — не импортирует shared zod schema с тем же именем, что и endpoint contract', async () => {
+  it('zodContracts: true — does not import shared zod schema with same name as endpoint contract', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,
@@ -444,7 +444,7 @@ describe('generateApi — zodContracts все вариации', () => {
     expect(contractsContent).not.toContain('export const testResourceContract =');
   });
 
-  it('zodContracts: { suffix: "Schema" } — сохраняет отсутствие коллизии имён и применяет suffix', async () => {
+  it('zodContracts: { suffix: "Schema" } — keeps no name collision and applies suffix', async () => {
     await generateApi(
       defineConfig({
         ...baseConfig,

@@ -15,7 +15,7 @@ describe('generateApi with yaml input file', () => {
     });
   });
 
-  it('читает playground/test.yaml и генерирует только отфильтрованные эндпоинты', async () => {
+  it('reads yaml input and generates only filtered endpoints', async () => {
     const config = defineConfig({
       input: INPUT_DIR,
       output: OUTPUT_DIR,

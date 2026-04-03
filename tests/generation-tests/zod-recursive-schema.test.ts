@@ -9,8 +9,8 @@ import type { OpenAPIParameter, OpenAPISchema } from '../../src/codegen/utils/zo
 const utils = { _ };
 
 /**
- * Репродукция TS(7024): рекурсивная схема без явного return type в z.lazy
- * приводит к "Function implicitly has return type 'any' because it does not have
+ * Repro for TS(7024): a recursive schema without an explicit return type on z.lazy
+ * leads to "Function implicitly has return type 'any' because it does not have
  * a return type annotation and is referenced directly or indirectly in one of its return expressions."
  */
 describe('zod recursive schema — explicit return type for z.lazy (TS 7024)', () => {
@@ -40,7 +40,7 @@ describe('zod recursive schema — explicit return type for z.lazy (TS 7024)', (
       utils,
     });
 
-    // Без явного типа (): z.ZodTypeAny => TS выдаёт 7024 при рекурсии
+    // Without explicit (): z.ZodTypeAny => TS reports 7024 for recursion
     expect(content).toContain('z.lazy((): z.ZodTypeAny =>');
     expect(content).toContain('recursiveNodeDc');
     expect(content).toContain('itemKindDc');
@@ -76,8 +76,8 @@ describe('zod recursive schema — explicit return type for z.lazy (TS 7024)', (
 });
 
 /**
- * Параметр query с вложенным объектом (query?: { filterKey?: string }) должен
- * давать z.object({ filterKey: z.string().optional() }).optional(), а не z.any().optional().
+ * A query param with nested object (query?: { filterKey?: string }) should emit
+ * z.object({ filterKey: z.string().optional() }).optional(), not z.any().optional().
  */
 describe('zod params schema — query object from OpenAPI operation parameters', () => {
   it('buildEndpointZodContractsCode emits z.object with query fields when openApiOperation has query params', () => {
@@ -262,7 +262,7 @@ describe('zod central schemas — no ZodTypeAny for non-cyclic refs', () => {
     expect(content).toContain('containerSchemaDc');
     expect(content).toContain('nodeWithChildrenDc');
 
-    // Ref'ы на другие схемы — без явного return type (тип выводится)
+    // Refs to other schemas — no explicit return type (inferred)
     expect(content).toContain('z.lazy(() => metaInfoDc)');
     expect(content).toContain('z.lazy(() => linkRefDc)');
     expect(content).toContain('z.lazy(() => itemInfoDc)');
@@ -271,7 +271,7 @@ describe('zod central schemas — no ZodTypeAny for non-cyclic refs', () => {
     expect(content).toContain('z.lazy(() => childSchemaDc)');
     expect(content).toContain('z.lazy(() => metaSchemaDc)');
 
-    // В этом наборе нет самореференсов — ZodTypeAny не должен встречаться
+    // No self-references in this set — ZodTypeAny must not appear
     expect(content).not.toContain('z.lazy((): z.ZodTypeAny =>');
   });
 
@@ -292,12 +292,12 @@ describe('zod central schemas — no ZodTypeAny for non-cyclic refs', () => {
       utils,
     });
 
-    // Только рекурсивная схема использует ZodTypeAny
+    // Only the recursive schema uses ZodTypeAny
     const lazyAnyCount = (content.match(/z\.lazy\(\(\):\s*z\.ZodTypeAny\s*=>/g) ?? []).length;
     expect(lazyAnyCount).toBe(1);
     expect(content).toContain('z.lazy((): z.ZodTypeAny => recursiveBoxDc)');
 
-    // Остальные ref'ы по-прежнему без ZodTypeAny
+    // Other refs still omit ZodTypeAny
     expect(content).toContain('z.lazy(() => metaInfoDc)');
     expect(content).toContain('z.lazy(() => itemSchemaDc)');
   });

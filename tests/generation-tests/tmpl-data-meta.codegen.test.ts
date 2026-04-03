@@ -12,13 +12,13 @@ const ENDPOINT_FILE = path.resolve(
   'get-tmpl-data-meta-probe.ts',
 );
 
-describe('codegen: tmplData string | object → meta в сгенерированном endpoint', () => {
+describe('codegen: tmplData string | object → meta in generated endpoint', () => {
   beforeEach(async () => {
     await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
     await fs.mkdir(path.dirname(OUTPUT_DIR), { recursive: true });
   });
 
-  it('строковый tmplData вставляется в код как есть (поля видны в literal-форме)', async () => {
+  it('string tmplData is emitted as-is (fields visible in literal form)', async () => {
     await generateApi(
       defineConfig({
         input: INPUT_FILE,
@@ -45,7 +45,7 @@ describe('codegen: tmplData string | object → meta в сгенерирован
     expect(content).toContain('__endpointMetaStr: "from-string"');
   });
 
-  it('объектный tmplData проходит JSON.stringify (ключи с дефисом остаются в кавычках после форматтера)', async () => {
+  it('object tmplData is JSON.stringify’d (hyphen keys stay quoted after formatter)', async () => {
     await generateApi(
       defineConfig({
         input: INPUT_FILE,
@@ -72,7 +72,7 @@ describe('codegen: tmplData string | object → meta в сгенерирован
     expect(content).toContain('"endpoint-meta-from-object": "from-object"');
   });
 
-  it('requestMeta / endpointMeta как статические объекты (не функции)', async () => {
+  it('requestMeta / endpointMeta as static objects (not functions)', async () => {
     await generateApi(
       defineConfig({
         input: INPUT_FILE,

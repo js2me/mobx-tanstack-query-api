@@ -48,10 +48,14 @@
   },
   "peerDependencies": {
     "mobx": "^6.13.6",
-    "zod": ">=4"
+    "zod": ">=4",
+    "vitest": ">=4"
   },
   "peerDependenciesMeta": {
     "zod": {
+      "optional": true
+    },
+    "vitest": {
       "optional": true
     }
   },

@@ -168,7 +168,7 @@ beforeEach(() => {
 });
 
 describe('falsy input', () => {
-  it('generateApi не вызывает swagger-typescript-api', async () => {
+  it('generateApi does not call swagger-typescript-api', async () => {
     vi.mocked(swaggerCodegen).mockClear();
 
     await generateApi({
@@ -181,7 +181,7 @@ describe('falsy input', () => {
     expect(swaggerCodegen).not.toHaveBeenCalled();
   });
 
-  it('generateApi обрабатывает только конфиги с truthy input', async () => {
+  it('generateApi only processes configs with truthy input', async () => {
     vi.mocked(swaggerCodegen).mockClear();
 
     await generateApi([
@@ -201,7 +201,7 @@ describe('falsy input', () => {
     expect(swaggerCodegen).toHaveBeenCalledTimes(1);
   });
 
-  it('defineConfig оставляет falsy input в массиве; generateApi их отбрасывает', async () => {
+  it('defineConfig keeps falsy input in the array; generateApi skips them', async () => {
     const out = defineConfig(
       { output: 'a', input: '', noBarrelFiles: true },
       {
@@ -221,7 +221,7 @@ describe('falsy input', () => {
 });
 
 describe('generateApi output path handling', () => {
-  it('использует абсолютные пути при относительном output без outputType', async () => {
+  it('uses absolute paths for relative output without outputType', async () => {
     const relativeOutput = './src/shared/api/__generated__';
     const absoluteOutput = path.resolve(process.cwd(), relativeOutput);
 
@@ -270,8 +270,8 @@ describe('generateApi output path handling', () => {
   });
 });
 
-describe('cleanOutputDirectoriesOnDiskBeforeCodegen (через generateApi)', () => {
-  it('вызывает rmSync для существующего каталога output перед кодгеном', async () => {
+describe('cleanOutputDirectoriesOnDiskBeforeCodegen (via generateApi)', () => {
+  it('calls rmSync for existing output directory before codegen', async () => {
     const relativeOutput = './api-out-rm-test';
     const absoluteOutput = path.resolve(process.cwd(), relativeOutput);
 
@@ -298,19 +298,19 @@ describe('cleanOutputDirectoriesOnDiskBeforeCodegen (через generateApi)', (
     });
   });
 
-  it('не вызывает rmSync если путь не существует (ENOENT)', async () => {
+  it('does not call rmSync when path does not exist (ENOENT)', async () => {
     await expect(
       generateApi({
         ...minimalCodegenOptions,
         input: minimalOpenApi,
-        output: './нет-такой-папки',
+        output: './no-such-output-dir',
       }),
     ).resolves.toBeUndefined();
 
     expect(fsMocks.rmSync).not.toHaveBeenCalled();
   });
 
-  it('не вызывает rmSync если по пути не каталог', async () => {
+  it('does not call rmSync when path is not a directory', async () => {
     fsMocks.statSync.mockImplementation(
       () => ({ isDirectory: () => false }) as Stats,
     );
@@ -326,7 +326,7 @@ describe('cleanOutputDirectoriesOnDiskBeforeCodegen (через generateApi)', (
     expect(fsMocks.rmSync).not.toHaveBeenCalled();
   });
 
-  it('при двух конфигах с одним output вызывает rmSync ровно один раз', async () => {
+  it('with two configs sharing one output, calls rmSync exactly once', async () => {
     const relativeOutput = './shared-batch-out';
     const absoluteOutput = path.resolve(process.cwd(), relativeOutput);
 
@@ -356,7 +356,7 @@ describe('cleanOutputDirectoriesOnDiskBeforeCodegen (через generateApi)', (
     });
   });
 
-  it('не удаляет output если у любого конфига с этим путём cleanOutput: false', async () => {
+  it('does not delete output if any config with that path has cleanOutput: false', async () => {
     fsMocks.statSync.mockImplementation(
       () => ({ isDirectory: () => true }) as Stats,
     );

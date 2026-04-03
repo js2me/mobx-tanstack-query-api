@@ -1,6 +1,6 @@
 import { action, makeObservable, observable } from 'mobx';
 import { type BooleanOptional, type IStringifyOptions, stringify } from 'qs';
-import type { AnyObject, Defined, Maybe } from 'yummies/types';
+import type { AnyObject, Class, Defined, Maybe } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import {
   type AnyHttpResponse,
@@ -51,6 +51,10 @@ export interface HttpClientConfig<TMeta = unknown> {
   contentFormatters?: Record<string, (input: any) => any>;
   queryStringifyOptions?: IStringifyOptions<BooleanOptional>;
   toQueryString?: (query?: AnyObject) => string;
+  httpResponseClass?: Class<
+    HttpResponse<any, any, any>,
+    ConstructorParameters<typeof HttpResponse>
+  >;
   buildUrl?: (
     fullParams: FullRequestParams,
     formattedParts: { baseUrl: string; path: string; query: string },
@@ -74,6 +78,8 @@ export class HttpClient<TMeta = unknown> {
 
   protected toQueryString: Defined<HttpClientConfig<TMeta>['toQueryString']>;
 
+  private httpResponseClass;
+
   constructor(config?: HttpClientConfig<TMeta>) {
     this.config = config ?? {};
     this.badResponse = null;
@@ -93,6 +99,8 @@ export class HttpClient<TMeta = unknown> {
       referrerPolicy: 'no-referrer',
     };
 
+    this.httpResponseClass = this.config.httpResponseClass ?? HttpResponse;
+
     this.updateConfig(this.config);
 
     observable.ref(this, 'badResponse');
@@ -106,6 +114,11 @@ export class HttpClient<TMeta = unknown> {
 
   get baseUrl() {
     return this.config.baseUrl ?? '';
+  }
+
+  /** Current `fetch` implementation (e.g. wrap or restore in tests). */
+  getFetch(): typeof globalThis.fetch {
+    return this.fetch;
   }
 
   public updateConfig(update: Partial<HttpClientConfig<TMeta>>) {
@@ -182,7 +195,7 @@ export class HttpClient<TMeta = unknown> {
     url: string,
     params: RequestInit,
   ): Promise<AnyHttpResponse> {
-    const response = new HttpResponse<any, any>(raw, { url, params });
+    const response = new this.httpResponseClass(raw, { url, params });
 
     if (response.isEmpty()) {
       return response;
