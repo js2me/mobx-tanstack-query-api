@@ -141,6 +141,8 @@ vi.mock('./utils/remove-unused-types.js', () => {
   };
 });
 
+import { generateApi as swaggerCodegen } from 'swagger-typescript-api';
+import { defineConfig } from '../cli/utils/define-config.js';
 import { generateApi } from './index.js';
 
 const minimalOpenApi = {
@@ -162,6 +164,59 @@ beforeEach(() => {
     const err = new Error('ENOENT') as NodeJS.ErrnoException;
     err.code = 'ENOENT';
     throw err;
+  });
+});
+
+describe('falsy input', () => {
+  it('generateApi не вызывает swagger-typescript-api', async () => {
+    vi.mocked(swaggerCodegen).mockClear();
+
+    await generateApi({
+      output: './ignored-out',
+      input: '',
+      noBarrelFiles: true,
+      noMetaInfo: true,
+    });
+
+    expect(swaggerCodegen).not.toHaveBeenCalled();
+  });
+
+  it('generateApi обрабатывает только конфиги с truthy input', async () => {
+    vi.mocked(swaggerCodegen).mockClear();
+
+    await generateApi([
+      {
+        output: './only-second',
+        input: '',
+        noBarrelFiles: true,
+        noMetaInfo: true,
+      },
+      {
+        ...minimalCodegenOptions,
+        output: './only-second',
+        input: minimalOpenApi,
+      },
+    ]);
+
+    expect(swaggerCodegen).toHaveBeenCalledTimes(1);
+  });
+
+  it('defineConfig оставляет falsy input в массиве; generateApi их отбрасывает', async () => {
+    const out = defineConfig(
+      { output: 'a', input: '', noBarrelFiles: true },
+      {
+        output: 'b',
+        input: minimalOpenApi,
+        noBarrelFiles: true,
+        noMetaInfo: true,
+      },
+    );
+
+    expect(out).toHaveLength(2);
+
+    vi.mocked(swaggerCodegen).mockClear();
+    await generateApi(out);
+    expect(swaggerCodegen).toHaveBeenCalledTimes(1);
   });
 });
 

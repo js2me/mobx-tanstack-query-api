@@ -23,6 +23,10 @@ export default defineConfig({
 })
 ```
 
+::: tip Falsy arguments to `defineConfig`
+Each rest argument to `defineConfig(...)` is typed as **`MaybeFalsy<GenerateQueryApiParams | GenerateQueryApiParams[]>`**. Falsy values (`undefined`, `null`, `''`, `false`, `0`) are dropped before flattening — they never reach the returned array. You can safely pass conditional fragments such as `defineConfig(shared, flag && extraBlock, maybeArray)` without wrapping them in an `if`.
+:::
+
 ## Multiple configs   
 
 You can pass multiple configs to `defineConfig` function   
@@ -52,14 +56,23 @@ export default defineConfig([
 ])
 ```
 
+::: tip Conditional entries in an array
+If an item uses a **falsy** `input` (see [`input`](#input)), that object is skipped by **`generateApi`** (including when the CLI runs `generateApi(defineConfig(...))`). `defineConfig` itself still returns it in the flattened array; only codegen ignores it.
+:::
+
 
 ## Options   
 
 
 ### `input`   
 
-Required input path or url to OpenAPI/Swagger file or OpenAPI/Swagger object.  
-Sometimes will be helpful to use [`fetchSchemaRequestOptions`](#fetchschemarequestoptions) to fetch OpenAPI/Swagger file with some custom request options (like auth headers).   
+Type: **`MaybeFalsy<string | AnyObject>`** — either a path or URL to an OpenAPI/Swagger file, or an OpenAPI/Swagger object inlined in the config.
+
+**Falsy values** (`undefined`, `null`, `''`, `false`, `0`) mean the **entire configuration object is skipped by `generateApi`** (they are not codegen’d and their `output` is **not** included in the pre-codegen disk cleanup for the batch). `defineConfig` does not remove these entries; filtering happens when you call `generateApi`.
+
+Any other value (non-empty string or object, including `{}`) is treated as active input.
+
+Sometimes it is helpful to use [`fetchSchemaRequestOptions`](#fetchschemarequestoptions) to fetch an OpenAPI/Swagger file with custom request options (for example auth headers).
 
 ```ts
 input: 'https://gitlab.com/api/v4/openapi.json'

@@ -23,8 +23,10 @@ import type {
   BaseTmplParams,
   CodegenDataUtils,
   GenerateQueryApiParams,
+  GenerateQueryApiParamsWithInput,
   MetaInfo,
 } from './types/index.js';
+import { isActiveCodegenConfig } from './types/index.js';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-suffix.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
@@ -44,7 +46,7 @@ const __execdirname = process.cwd();
  * once; skips paths where any config uses `cleanOutput: false`.
  */
 function cleanOutputDirectoriesOnDiskBeforeCodegen(
-  params: GenerateQueryApiParams[],
+  params: GenerateQueryApiParamsWithInput[],
 ): void {
   const absPathMap = new Map<string, GenerateQueryApiParams[]>();
   for (const param of params) {
@@ -79,7 +81,7 @@ function cleanOutputDirectoriesOnDiskBeforeCodegen(
 export const generateApi = async (
   paramOrParams: GenerateQueryApiParams | GenerateQueryApiParams[],
 ): Promise<void> => {
-  const params = toArray(paramOrParams);
+  const params = toArray(paramOrParams).filter(isActiveCodegenConfig);
 
   cleanOutputDirectoriesOnDiskBeforeCodegen(params);
 
@@ -89,7 +91,7 @@ export const generateApi = async (
 };
 
 const generateApiSingle = async (
-  params: GenerateQueryApiParams,
+  params: GenerateQueryApiParamsWithInput,
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: orchestration with many code paths
 ): Promise<void> => {
   const tsconfigPath = params.tsconfigPath
@@ -187,15 +189,6 @@ const generateApiSingle = async (
   };
 
   let codegenProcess!: any;
-
-  if (!params.input) {
-    console.warn(
-      '[mobx-tanstack-query-api/codegen]',
-      'input is not specified',
-      '\nprocess will be skipped',
-    );
-    return;
-  }
 
   const prepareConfig: Defined<Hooks['onPrepareConfig']> = (config) => {
     config.routes.combined?.forEach((routeInfo) => {

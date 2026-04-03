@@ -3,7 +3,7 @@ import type {
   ParsedRoute,
   RawRouteInfo,
 } from 'swagger-typescript-api';
-import type { AnyObject, Maybe, MaybeFn } from 'yummies/types';
+import type { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/types';
 import type { RemoveUnusedTypesParams } from '../utils/remove-unused-types.js';
 import type { FilterOption } from '../utils/unpack-filter-option.js';
 import type { CodegenDataUtils } from './codegen-data-utils.js';
@@ -61,9 +61,11 @@ export interface GenerateQueryApiParams {
    */
   output: string;
   /**
+   * Falsy values (`undefined`, `null`, `''`, `false`, `0`) — вся конфигурация игнорируется в `generateApi` (и при запуске через CLI после `defineConfig`).
+   *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#input)
    */
-  input: string | AnyObject;
+  input: MaybeFalsy<string | AnyObject>;
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#mixininput)
    */
@@ -316,4 +318,15 @@ export interface GenerateQueryApiParams {
         /** Suffix for generated shared Zod schema variables. Default: "". */
         suffix?: string;
       };
+}
+
+/** Config with a truthy {@link GenerateQueryApiParams.input} (actually runs codegen). */
+export type GenerateQueryApiParamsWithInput = GenerateQueryApiParams & {
+  input: string | AnyObject;
+};
+
+export function isActiveCodegenConfig(
+  config: GenerateQueryApiParams,
+): config is GenerateQueryApiParamsWithInput {
+  return Boolean(config.input);
 }
