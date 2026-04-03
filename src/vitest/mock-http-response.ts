@@ -1,6 +1,9 @@
-import type { FullRequestParams } from '../runtime/http-client.js';
-import { HttpClient } from '../runtime/http-client.js';
-import { HttpResponse, type ResponseFormat } from '../runtime/http-response.js';
+import {
+  type FullRequestParams,
+  HttpClient,
+  HttpResponse,
+  type ResponseFormat,
+} from 'mobx-tanstack-query-api';
 
 export type MockHttpResponseParams<
   TData = any,
@@ -34,6 +37,11 @@ const mockParamsHasTruthyError = (
   params: MockHttpResponseParams<any, any, any>,
 ): boolean => 'error' in params && !!params.error;
 
+/**
+ * Test-oriented subclass of runtime `HttpResponse`. Prefer {@link createMockHttpResponse} for an instance whose body is already resolved.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#low-level-mockhttpresponse-and-createmockhttpresponse)
+ */
 export class MockHttpResponse<
   TData = any,
   TError = null,
@@ -105,6 +113,11 @@ export class MockHttpResponse<
   }
 }
 
+/**
+ * Constructs {@link MockHttpResponse} and awaits {@link MockHttpResponse.resolveBody} so `data` / `error` match runtime behaviour.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#low-level-mockhttpresponse-and-createmockhttpresponse)
+ */
 export async function createMockHttpResponse<
   TData = any,
   TError = null,

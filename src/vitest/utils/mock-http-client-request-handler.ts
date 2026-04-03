@@ -1,11 +1,21 @@
+import type { HttpClient } from 'mobx-tanstack-query-api';
 import { sleep } from 'yummies/async';
-import type { HttpClient } from '../../runtime/http-client.js';
 import { createMockHttpResponse } from '../mock-http-response.js';
 
+/**
+ * Success or error payload passed to HTTP mock helpers.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#mockhttpclientoutput)
+ */
 export type MockHttpClientOutput<TData = unknown, TError = unknown> =
   | { success: TData; status?: number; delay?: number }
   | { error: TError; status?: number; delay?: number };
 
+/**
+ * Builds an implementation for `vi.spyOn(httpClient, 'request').mockImplementation(...)`.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#createmockhttpclientrequesthandler)
+ */
 export function createMockHttpClientRequestHandler<
   TData = unknown,
   TError = unknown,

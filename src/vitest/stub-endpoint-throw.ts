@@ -1,6 +1,11 @@
+import type { AnyEndpoint } from 'mobx-tanstack-query-api';
 import { type MockInstance, vi } from 'vitest';
-import type { AnyEndpoint } from '../runtime/endpoint.types.js';
 
+/**
+ * Options for {@link stubEndpointThrow}.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#stubendpointthrow)
+ */
 export type StubEndpointThrowOptions = {
   /** When true, every call throws; otherwise only once (`mockImplementationOnce`). */
   persistent?: boolean;
@@ -8,6 +13,8 @@ export type StubEndpointThrowOptions = {
 
 /**
  * Makes `endpoint.request` reject with an arbitrary error (not necessarily `HttpResponse`).
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#stubendpointthrow)
  */
 export function stubEndpointThrow<TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,

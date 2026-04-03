@@ -107,7 +107,7 @@ export function createThreeEndpointsOnSharedClient() {
 
   const endpointC = new Endpoint<
     ItemResponse,
-    { code: string },
+    { id: number },
     Record<string, never>
   >(
     {

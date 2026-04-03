@@ -1,5 +1,5 @@
+import type { HttpClient } from 'mobx-tanstack-query-api';
 import { type MockInstance, vi } from 'vitest';
-import type { HttpClient } from '../runtime/http-client.js';
 import {
   createMockHttpClientRequestHandler,
   type MockHttpClientOutput,
@@ -14,6 +14,8 @@ import {
  * If several endpoints share one `HttpClient`, `mockImplementationOnce` applies to the
  * next request on that client regardless of endpoint — prefer `mockEndpointRequestOnce`
  * or compose your own `fetch` via `httpClient.updateConfig({ fetch })`.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#mockhttpclientrequest-mockhttpclientrequestonce)
  */
 export function mockHttpClientRequestOnce<TData = unknown, TError = unknown>(
   httpClient: HttpClient,

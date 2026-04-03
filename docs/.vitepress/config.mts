@@ -75,9 +75,19 @@ export default defineDocsVitepressConfig(configs, {
           {
             text: 'HttpClient',
             link: '/http-client/index.html',
-          }
+          },
         ]
-      }
+      },
+      {
+        text: 'Vitest testing 🧪',
+        link: '/vitest/index.html',
+        items: [
+          {
+            text: 'Utilities',
+            link: '/vitest/index.html',
+          },
+        ],
+      },
     ],
   },
 });

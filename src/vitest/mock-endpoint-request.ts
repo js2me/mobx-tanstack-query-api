@@ -1,11 +1,13 @@
+import type { AnyEndpoint, InferEndpointData } from 'mobx-tanstack-query-api';
 import { type MockInstance, vi } from 'vitest';
-import type {
-  AnyEndpoint,
-  InferEndpointData,
-} from '../runtime/endpoint.types.js';
 import { mockHttpClientRequestOnce } from './mock-http-client-request-once.js';
 import type { MockHttpClientOutput } from './utils/mock-http-client-request-handler.js';
 
+/**
+ * Each `endpoint.request` queues a one-time {@link mockHttpClientRequestOnce} on that endpoint’s client with the same `output`.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#mockendpointrequest-mockendpointrequestonce)
+ */
 export const mockEndpointRequest = <TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,
   output: MockHttpClientOutput<

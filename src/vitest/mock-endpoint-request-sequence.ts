@@ -1,14 +1,13 @@
+import type { AnyEndpoint, InferEndpointData } from 'mobx-tanstack-query-api';
 import { type MockInstance, vi } from 'vitest';
-import type {
-  AnyEndpoint,
-  InferEndpointData,
-} from '../runtime/endpoint.types.js';
 import { mockHttpClientRequestOnce } from './mock-http-client-request-once.js';
 import type { MockHttpClientOutput } from './utils/mock-http-client-request-handler.js';
 
 /**
  * Supplies mock responses for each `endpoint.request` call in order.
  * After the list is exhausted, further calls use the real client (e.g. `fetch`).
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#mockendpointrequestsequence)
  */
 export function mockEndpointRequestSequence<TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,

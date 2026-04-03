@@ -1,10 +1,15 @@
-import { type MockInstance, vi } from 'vitest';
 import type {
   AnyEndpoint,
+  FullRequestParams,
   InferEndpointInput,
-} from '../runtime/endpoint.types.js';
-import type { FullRequestParams } from '../runtime/http-client.js';
+} from 'mobx-tanstack-query-api';
+import { type MockInstance, vi } from 'vitest';
 
+/**
+ * Handle returned by {@link captureEndpointRequestParams}.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#captureendpointrequestparams)
+ */
 export type CaptureEndpointRequestParamsHandle<TEndpoint extends AnyEndpoint> =
   {
     /** Resolved full request params from `endpoint.configuration.params`. */
@@ -20,6 +25,8 @@ export type CaptureEndpointRequestParamsHandle<TEndpoint extends AnyEndpoint> =
 /**
  * Intercepts `endpoint.request` and records resolved `FullRequestParams`.
  * Does not touch `HttpClient`; pair with separate client mocks by registering them after `capture`.
+ *
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#captureendpointrequestparams)
  */
 export function captureEndpointRequestParams<TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,
