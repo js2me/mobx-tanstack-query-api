@@ -72,7 +72,7 @@ const createFruitEndpoint = (
       operationId: 'addFruitStar',
       path: ['api', 'v1', 'fruits', '{fruitId}', 'stars'],
       tags: ['TestFruits'],
-      meta: {} as any,
+      meta: {},
     },
     queryClient,
     httpClient as any,

@@ -113,7 +113,7 @@ export const getFruits = new Endpoint<
     operationId: "getFruits",
     path: ["api", "v1", "services"],
     tags: [Tag.Fruits],
-    meta: {} as any,
+    meta: {},
   },
   queryClient,
   httpClient,

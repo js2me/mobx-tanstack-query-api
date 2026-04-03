@@ -162,7 +162,8 @@ export interface GenerateQueryApiParams {
   ) => {
     typeName?: string;
     typeNameImportPath?: string;
-    tmplData: string;
+    /** Plain object is serialized with `JSON.stringify` in generated code; string is inserted as-is. */
+    tmplData: string | AnyObject;
   };
 
   /**
@@ -172,7 +173,8 @@ export interface GenerateQueryApiParams {
     route: AnyObject,
     utils: AnyObject,
   ) => {
-    tmplData: string;
+    /** Plain object is serialized with `JSON.stringify` in generated code; string is inserted as-is. */
+    tmplData: string | AnyObject;
   };
 
   /**

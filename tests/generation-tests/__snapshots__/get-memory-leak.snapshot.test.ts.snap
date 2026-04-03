@@ -47,7 +47,7 @@ export const getMemoryLeak = new Endpoint<
     operationId: "getMemoryLeak",
     path: ["api", "v1", "memory", "leak"],
     tags: [Tag.Neutral],
-    meta: {} as any,
+    meta: {},
   },
   queryClient,
   http,

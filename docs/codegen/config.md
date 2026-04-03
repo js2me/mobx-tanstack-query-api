@@ -145,7 +145,7 @@ export const getMyData = new Endpoint<
     operationId: "getMyData",
     path: ["api", "v1", "get-my-data"],
     tags: [Tag.MyData],
-    meta: {} as any,
+    meta: {},
   },
   queryClient,
   myExportHttpClientName,
@@ -222,7 +222,7 @@ export const getMyData = new Endpoint<
     operationId: "getMyData",
     path: ["api", "v1", "get-my-data"],
     tags: [Tag.MyData],
-    meta: {} as any,
+    meta: {},
   },
   myQueryClient,
   httpClient,
@@ -373,7 +373,7 @@ export const getMyData = new Endpoint<...>(
     operationId: "getMyData",
     path: ["__super_api_prefix", "api", "v1", "get-my-data"],
     tags: [Tag.MyData],
-    meta: {} as any,
+    meta: {},
   },
   myQueryClient,
   httpClient,
@@ -405,7 +405,7 @@ export const getMyData = new Endpoint<...>(
     operationId: "getMyData",
     path: ["api", "v1", "get-my-data", "__super_api_fx"],
     tags: [Tag.MyData],
-    meta: {} as any,
+    meta: {},
   },
   myQueryClient,
   httpClient,
@@ -433,7 +433,7 @@ export const getMyData = new Endpoint<...>(
     operationId: "getMyData",
     path: ["api", "v1", "get-my-data", "async"],
     tags: [Tag.MyData],
-    meta: {} as any,
+    meta: {},
   },
   myQueryClient,
   httpClient,
@@ -708,10 +708,22 @@ Example without groups:
 This option allows to add some meta information for endpoint request.   
 Can be helpful if you need to customize the base URL for http request.  
 
-Example:   
+The `tmplData` field may be either a **string** or a **plain object** (`Record<string, unknown>`-style):
+
+- **String** — inserted into generated code **as-is** (a TypeScript expression fragment). Use this when you need non-JSON syntax (unquoted keys, enums, variables, etc.).
+- **Object** — at codegen time the value is turned into source via **`JSON.stringify`**, so the generated file contains a JSON-shaped object literal (e.g. double-quoted keys and string values).
+
+Example (string — expression pasted into output):   
 ```ts{2}
 getRequestMeta: () => ({
   tmplData: `{ service: 'auth' }`,
+}),
+```
+
+Example (object — serialized with `JSON.stringify` at codegen):   
+```ts{2}
+getRequestMeta: () => ({
+  tmplData: { service: 'auth' },
 }),
 ```
 ```ts{10}
@@ -739,14 +751,21 @@ export const getFruits = new Endpoint<
 #### `getEndpointMeta`   
 This option allows to add some meta information for endpoint.   
 
-
-Example:   
+`tmplData` follows the same rules as in [`getRequestMeta`](#getrequestmeta): **string** is emitted as-is; **object** is written into generated code using **`JSON.stringify`** at codegen time.
 
 Example:   
 ```ts{2}
 getEndpointMeta: () => ({
   typeName: `{ somedata: string }`,
   tmplData: `{ somedata: '123' }`,
+}),
+```
+
+Example with `tmplData` as an object (codegen applies `JSON.stringify`):   
+```ts{2}
+getEndpointMeta: () => ({
+  typeName: `{ somedata: string }`,
+  tmplData: { somedata: '123' },
 }),
 ```
 ```ts{4,17}

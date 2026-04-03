@@ -1,0 +1,23 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "tmplData meta probe",
+    "version": "1.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/probe": {
+      "get": {
+        "operationId": "getTmplDataMetaProbe",
+        "tags": ["probe"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          }
+        }
+      }
+    }
+  }
+}

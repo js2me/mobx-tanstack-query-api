@@ -35,6 +35,10 @@ export type ZodContractsOption = NonNullable<
   GenerateQueryApiParams['zodContracts']
 >;
 
+function tmplDataToSourceExpr(tmplData: string | AnyObject): string {
+  return typeof tmplData === 'string' ? tmplData : JSON.stringify(tmplData);
+}
+
 export interface NewEndpointTmplParams extends BaseTmplParams {
   route: ParsedRoute;
   groupName: Maybe<string>;
@@ -599,7 +603,7 @@ new ${importFileParams.endpoint.exportName}<
 }) => ({
             path: \`${resultPath}\`,
             method: '${_.upperCase(method)}',
-            ${requestMeta?.tmplData ? `meta: ${requestMeta.tmplData},` : ''}
+            ${requestMeta?.tmplData ? `meta: ${tmplDataToSourceExpr(requestMeta.tmplData)},` : ''}
             ${query == null ? '' : `query: ${query.name},`}
             ${payload?.name ? `body: ${payload.name},` : ''}
             ${security ? 'secure: true,' : ''}
@@ -621,7 +625,7 @@ new ${importFileParams.endpoint.exportName}<
         })}],
         ${groupName ? `group: ${metaInfo ? `Group.${formatGroupNameEnumKey(groupName, utils)}` : `"${groupName}"`},` : ''}
         ${metaInfo?.namespace ? `namespace,` : ''}
-        meta: ${requestInfoMeta?.tmplData ?? '{} as any'},
+        meta: ${requestInfoMeta?.tmplData == null ? '{}' : tmplDataToSourceExpr(requestInfoMeta.tmplData)},
         ${contractLine}
         ${validateContractLine}
         ${throwContractsLine}
