@@ -24,7 +24,7 @@ export default defineConfig({
 ```
 
 ::: tip Falsy arguments to `defineConfig`
-Each rest argument to `defineConfig(...)` is typed as **`MaybeFalsy<GenerateQueryApiParams | GenerateQueryApiParams[]>`**. Falsy values (`undefined`, `null`, `''`, `false`, `0`) are dropped before flattening — they never reach the returned array. You can safely pass conditional fragments such as `defineConfig(shared, flag && extraBlock, maybeArray)` without wrapping them in an `if`.
+Each rest argument to `defineConfig(...)` is typed as **`MaybeFalsy<GenerateQueryApiParams | MaybeFalsy<GenerateQueryApiParams>[]>`**. Falsy values (`undefined`, `null`, `''`, `false`, `0`) are dropped before flattening — they never reach the returned array. You can safely pass conditional fragments such as `defineConfig(shared, flag && extraBlock, maybeArray)` without wrapping them in an `if`.
 :::
 
 ## Multiple configs   
