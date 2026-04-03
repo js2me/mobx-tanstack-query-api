@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineConfig } from '../../src/cli/utils/define-config.js';
 import { generateApi } from '../../src/codegen/index.js';
 
@@ -27,10 +27,10 @@ describe('codegen: tmplData string | object → meta в сгенерирован
         removeUnusedTypes: true,
         outputType: 'one-endpoint-per-file',
         filterEndpoints: [/^getTmplDataMetaProbe$/i],
-        getRequestMeta: () => ({
+        requestMeta: () => ({
           tmplData: `{ __requestMetaStr: "from-string" }`,
         }),
-        getEndpointMeta: () => ({
+        endpointMeta: () => ({
           tmplData: `{ __endpointMetaStr: "from-string" }`,
         }),
       }),
@@ -54,10 +54,10 @@ describe('codegen: tmplData string | object → meta в сгенерирован
         removeUnusedTypes: true,
         outputType: 'one-endpoint-per-file',
         filterEndpoints: [/^getTmplDataMetaProbe$/i],
-        getRequestMeta: () => ({
+        requestMeta: () => ({
           tmplData: { 'request-meta-from-object': 'from-object' },
         }),
-        getEndpointMeta: () => ({
+        endpointMeta: () => ({
           tmplData: { 'endpoint-meta-from-object': 'from-object' },
         }),
       }),
@@ -70,5 +70,61 @@ describe('codegen: tmplData string | object → meta в сгенерирован
 
     expect(content).toContain('"request-meta-from-object": "from-object"');
     expect(content).toContain('"endpoint-meta-from-object": "from-object"');
+  });
+
+  it('requestMeta / endpointMeta как статические объекты (не функции)', async () => {
+    await generateApi(
+      defineConfig({
+        input: INPUT_FILE,
+        output: OUTPUT_DIR,
+        noBarrelFiles: true,
+        removeUnusedTypes: true,
+        outputType: 'one-endpoint-per-file',
+        filterEndpoints: [/^getTmplDataMetaProbe$/i],
+        requestMeta: {
+          tmplData: `{ __requestMetaStatic: true }`,
+        },
+        endpointMeta: {
+          tmplData: `{ __endpointMetaStatic: true }`,
+        },
+      }),
+    );
+
+    const content = (await fs.readFile(ENDPOINT_FILE, 'utf-8')).replaceAll(
+      '\r\n',
+      '\n',
+    );
+
+    expect(content).toContain('__requestMetaStatic: true');
+    expect(content).toContain('__endpointMetaStatic: true');
+  });
+
+  it('legacy getRequestMeta / getEndpointMeta log a deprecation warning once', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await generateApi(
+      defineConfig({
+        input: INPUT_FILE,
+        output: OUTPUT_DIR,
+        noBarrelFiles: true,
+        removeUnusedTypes: true,
+        outputType: 'one-endpoint-per-file',
+        filterEndpoints: [/^getTmplDataMetaProbe$/i],
+        getRequestMeta: () => ({ tmplData: '{}' }),
+        getEndpointMeta: () => ({ tmplData: '{}' }),
+      }),
+    );
+
+    expect(warnSpy).toHaveBeenCalledTimes(2);
+    expect(warnSpy.mock.calls[0]?.[0]).toContain('getEndpointMeta');
+    expect(warnSpy.mock.calls[0]?.[0]).toContain('endpointMeta');
+    expect(warnSpy.mock.calls[1]?.[0]).toContain('getRequestMeta');
+    expect(warnSpy.mock.calls[1]?.[0]).toContain('requestMeta');
+
+    warnSpy.mockRestore();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 });

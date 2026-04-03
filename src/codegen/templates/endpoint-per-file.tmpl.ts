@@ -1,6 +1,7 @@
 import type { ParsedRoute } from 'swagger-typescript-api';
 import type { AnyObject, Maybe } from 'yummies/types';
 import type { BaseTmplParams, MetaInfo } from '../types/index.js';
+import { callEndpointMeta } from '../utils/resolve-codegen-meta.js';
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 import { endpointJSDocTmpl } from './endpoint-jsdoc.tmpl.js';
@@ -68,7 +69,7 @@ export const endpointPerFileTmpl = async (
     );
   }
 
-  const requestInfoMeta = codegenParams.getEndpointMeta?.(route, utils);
+  const requestInfoMeta = callEndpointMeta(codegenParams, route, utils);
 
   if (requestInfoMeta?.typeNameImportPath && requestInfoMeta.typeName) {
     extraImportLines.push(

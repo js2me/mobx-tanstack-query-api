@@ -10,6 +10,10 @@ import type {
 import { createShortModelType } from '../utils/create-short-model-type.js';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from '../utils/data-contract-type-suffix.js';
 import {
+  callEndpointMeta,
+  callRequestMeta,
+} from '../utils/resolve-codegen-meta.js';
+import {
   buildEndpointZodContractsCode,
   getResponseSchemaKeyFromOperation,
   typeNameToSchemaKey,
@@ -332,8 +336,8 @@ export const newEndpointTmpl = ({
     lastDynamicStructPos++;
   }
 
-  const requestInfoMeta = codegenParams.getEndpointMeta?.(route, utils);
-  const requestMeta = codegenParams.getRequestMeta?.(route, utils);
+  const requestInfoMeta = callEndpointMeta(codegenParams, route, utils);
+  const requestMeta = callRequestMeta(codegenParams, route, utils);
   const requestPathEndpointCtx: RouteBaseInfo = {
     operationId: raw.operationId ?? '',
     path,

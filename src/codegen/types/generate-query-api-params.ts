@@ -1,5 +1,6 @@
 import type {
   GenerateApiConfiguration,
+  ParsedRoute,
   RawRouteInfo,
 } from 'swagger-typescript-api';
 import type { AnyObject, Maybe, MaybeFn } from 'yummies/types';
@@ -22,6 +23,37 @@ export interface RouteBaseInfo {
   method: string;
   contractName: string;
 }
+
+/** Static `endpointMeta` value or return type of its callback. */
+export interface CodegenEndpointMetaData {
+  /**
+   * TypeScript type for `Endpoint<…, …, Meta>` (third generic). Omitted → `any`.
+   * Does not require {@link CodegenEndpointMetaData.typeNameImportPath}; use that only when the type must be imported from a module.
+   * If `typeNameImportPath` is set, `typeName` must be a single exported name (import specifier), not an inline `{ … }` type.
+   */
+  typeName?: string;
+  /**
+   * Optional. If set (with `typeName`), codegen emits `import { typeName } from typeNameImportPath` in the endpoint file.
+   * Omit when the generic type is written inline and needs no import.
+   */
+  typeNameImportPath?: string;
+  /** Plain object is serialized with `JSON.stringify` in generated code; string is inserted as-is. */
+  tmplData: string | AnyObject;
+}
+
+export type EndpointMetaOption =
+  | CodegenEndpointMetaData
+  | ((route: ParsedRoute, utils: CodegenDataUtils) => CodegenEndpointMetaData);
+
+/** Static `requestMeta` value or return type of its callback. */
+export interface CodegenRequestMetaData {
+  /** Plain object is serialized with `JSON.stringify` in generated code; string is inserted as-is. */
+  tmplData: string | AnyObject;
+}
+
+export type RequestMetaOption =
+  | CodegenRequestMetaData
+  | ((route: ParsedRoute, utils: CodegenDataUtils) => CodegenRequestMetaData);
 
 export interface GenerateQueryApiParams {
   /**
@@ -154,28 +186,32 @@ export interface GenerateQueryApiParams {
   httpClient?: 'builtin' | ImportFileParams;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#getendpointmeta)
+   * Object with `tmplData`, or a function `(route, utils) => { tmplData, ... }` per endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#endpointmeta)
    */
-  getEndpointMeta?: (
-    route: AnyObject,
-    utils: AnyObject,
-  ) => {
-    typeName?: string;
-    typeNameImportPath?: string;
-    /** Plain object is serialized with `JSON.stringify` in generated code; string is inserted as-is. */
-    tmplData: string | AnyObject;
-  };
+  endpointMeta?: EndpointMetaOption;
 
   /**
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#getrequestmeta)
+   * @deprecated Use {@link GenerateQueryApiParams.endpointMeta} instead. This option will be removed in a future release.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#endpointmeta)
    */
-  getRequestMeta?: (
-    route: AnyObject,
-    utils: AnyObject,
-  ) => {
-    /** Plain object is serialized with `JSON.stringify` in generated code; string is inserted as-is. */
-    tmplData: string | AnyObject;
-  };
+  getEndpointMeta?: EndpointMetaOption;
+
+  /**
+   * Object with `tmplData`, or a function `(route, utils) => { tmplData }` per endpoint.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#requestmeta)
+   */
+  requestMeta?: RequestMetaOption;
+
+  /**
+   * @deprecated Use {@link GenerateQueryApiParams.requestMeta} instead. This option will be removed in a future release.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#requestmeta)
+   */
+  getRequestMeta?: RequestMetaOption;
 
   /**
    * Additional parameters used to fetch your OpenAPI schema

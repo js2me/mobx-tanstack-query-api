@@ -56,7 +56,7 @@ export default defineConfig([
 ## Options   
 
 
-#### `input`   
+### `input`   
 
 Required input path or url to OpenAPI/Swagger file or OpenAPI/Swagger object.  
 Sometimes will be helpful to use [`fetchSchemaRequestOptions`](#fetchschemarequestoptions) to fetch OpenAPI/Swagger file with some custom request options (like auth headers).   
@@ -65,17 +65,17 @@ Sometimes will be helpful to use [`fetchSchemaRequestOptions`](#fetchschemareque
 input: 'https://gitlab.com/api/v4/openapi.json'
 ```
 
-#### `mixinInput`   
+### `mixinInput`   
 
 Additional input swagger schema or spec which allows to mix two swagger files.   
 This might be helpful if you need to merge two OpenAPI/Swagger files.  
 
 
-#### `output`   
+### `output`   
 
 Required output directory path.   
 
-#### `fetchSchemaRequestOptions`  
+### `fetchSchemaRequestOptions`  
 
 Optional fetch options to fetch OpenAPI/Swagger file.   
 Using this option you can add auth headers, etc.   
@@ -89,7 +89,7 @@ fetchSchemaRequestOptions: {
 }
 ```
 
-#### `httpClient`   
+### `httpClient`   
 
 This is an important property configuration for all your generated endpoints.   
 Default value: `'builtin'` which means use built-in http client.  
@@ -152,7 +152,7 @@ export const getMyData = new Endpoint<
 );
 ```
 
-#### `queryClient`   
+### `queryClient`   
 
 Same as [`httpClient`](#httpclient) but for `queryClient`.   
 
@@ -229,7 +229,7 @@ export const getMyData = new Endpoint<
 );
 ```
 
-#### `endpoint`  
+### `endpoint`  
 
 Same as [`queryClient`](#queryclient), [`httpClient`](#httpclient) but for `Endpoint`.   
 
@@ -241,7 +241,7 @@ export const getMyData = new MyEndpoint<
 ```
 
 
-#### `filterEndpoints`   
+### `filterEndpoints`   
 
 This option is used to filter endpoints.  
 You can pass string or array of strings or regular expression which will be compared with `Endpoint.operationId`.  
@@ -254,7 +254,7 @@ filterEndpoints: (endpoint) =>
   !endpoint.raw.route.startsWith('/my/another/data')
 ```
 
-#### `addPathSegmentToRouteName`   
+### `addPathSegmentToRouteName`   
 
 This option is used to add path segment to route name.  
 Default: `false`  
@@ -284,12 +284,12 @@ export const v1GetById = new Endpoint<...>
 ::: tip If you need to format route name better to use [`formatEndpointName`](#formatendpointname)
 :::
 
-#### `otherCodegenParams`   
+### `otherCodegenParams`   
 
 Other codegen params for `swagger-typescript-api` codegen.   
 See [swagger-typescript-api](https://github.com/acacode/swagger-typescript-api) for more info.   
 
-#### `filterTypes`   
+### `filterTypes`   
 
 This option is used to filter all generated types from swagger schema.   
 It might be helpful if you need only specific interfaces in output.   
@@ -303,14 +303,14 @@ filterTypes: (type) => type.name !== 'DataDC'
 ```
 
 
-#### `filterGroups`   
+### `filterGroups`   
 
 This option is used to filter endpoint groups.   
 You can pass string or array of strings or regular expression which will be compared with the group name.   
 You can also pass a function to manually filter endpoint groups.   
 
 
-#### `namespace`   
+### `namespace`   
 
 Collect all exports into single namespace.   
 Can be helpful if you work with multiple backends.  
@@ -338,7 +338,7 @@ Example:
 namespace: 'api'
 ```
 
-#### `requestPathPrefix`   
+### `requestPathPrefix`   
 
 This option adds a prefix to each endpoint’s request `path` string (the template literal passed to `params`, not the `path` array segments).
 
@@ -380,7 +380,7 @@ export const getMyData = new Endpoint<...>(
 );
 ```
 
-#### `requestPathSuffix`   
+### `requestPathSuffix`   
 
 This option adds a suffix after each endpoint’s request `path` string (the template literal in `params`).
 
@@ -440,7 +440,7 @@ export const getMyData = new Endpoint<...>(
 );
 ```
 
-#### `removeUnusedTypes`   
+### `removeUnusedTypes`   
 
 This option removes all data contracts which are not used in any endpoint.   
 Default: `false`  
@@ -458,7 +458,7 @@ removeUnusedTypes: {
 ```
 
 
-#### `zodContracts`  
+### `zodContracts`  
 
 Enables generation of Zod contracts (`contract`) for each endpoint and (optionally) validation of input parameters and response data via `validateContract` at runtime.
 
@@ -603,7 +603,7 @@ Runtime logic:
 
 
 
-#### `formatEndpointName`   
+### `formatEndpointName`   
 
 This option allows to format endpoint name.
 
@@ -616,7 +616,7 @@ formatEndpointName: (endpointName, endpointData) => {
 ```
 
 
-#### `groupBy`   
+### `groupBy`   
 
 This option allows to group endpoints into object.    
 Default: `false`  
@@ -647,7 +647,7 @@ groupBy: endpoint => {
 ```
 
 
-#### `formatExportGroupName`   
+### `formatExportGroupName`   
 
 This option allows to format endpoints group export name.  
 
@@ -659,7 +659,7 @@ formatExportGroupName: (groupName) => {
 ```
 
 
-#### `outputType`   
+### `outputType`   
 
 This option allows to choose output type.   
 Default: `one-endpoint-per-file`   
@@ -704,7 +704,7 @@ Example without groups:
 ```
 
 
-#### `getRequestMeta`   
+### `requestMeta`   
 This option allows to add some meta information for endpoint request.   
 Can be helpful if you need to customize the base URL for http request.  
 
@@ -713,16 +713,27 @@ The `tmplData` field may be either a **string** or a **plain object** (`Record<s
 - **String** — inserted into generated code **as-is** (a TypeScript expression fragment). Use this when you need non-JSON syntax (unquoted keys, enums, variables, etc.).
 - **Object** — at codegen time the value is turned into source via **`JSON.stringify`**, so the generated file contains a JSON-shaped object literal (e.g. double-quoted keys and string values).
 
+You may pass either a **function** `(route, utils) => { tmplData }` (per-endpoint) or a **static object** `{ tmplData }` shared by all endpoints.
+
+The legacy name `getRequestMeta` still works but is **deprecated**: codegen prints a warning and it will be removed in a future release.
+
 Example (string — expression pasted into output):   
 ```ts{2}
-getRequestMeta: () => ({
+requestMeta: () => ({
   tmplData: `{ service: 'auth' }`,
 }),
 ```
 
+Example (static object — same `tmplData` for every endpoint):   
+```ts{2}
+requestMeta: {
+  tmplData: `{ service: 'auth' }`,
+},
+```
+
 Example (object — serialized with `JSON.stringify` at codegen):   
 ```ts{2}
-getRequestMeta: () => ({
+requestMeta: () => ({
   tmplData: { service: 'auth' },
 }),
 ```
@@ -748,22 +759,38 @@ export const getFruits = new Endpoint<
 );
 ```
 
-#### `getEndpointMeta`   
+### `endpointMeta`   
 This option allows to add some meta information for endpoint.   
 
-`tmplData` follows the same rules as in [`getRequestMeta`](#getrequestmeta): **string** is emitted as-is; **object** is written into generated code using **`JSON.stringify`** at codegen time.
+Fields:
+
+- **`tmplData`** (required) — value for the endpoint’s `meta` field in generated code. Same rules as in [`requestMeta`](#requestmeta): **string** is emitted as-is; **plain object** is serialized with **`JSON.stringify`** at codegen time.
+- **`typeName`** (optional) — TypeScript type for the **third generic** of `Endpoint<Response, Params, Meta>`. You only need this field: write any valid type text (inline object, union, `Pick<…>`, etc.). **`typeNameImportPath` is not required** to get a typed `Meta`. If `typeName` is omitted, codegen uses `any` for that generic.
+- **`typeNameImportPath`** (optional) — use **only** when the meta type must be **imported** from another file. If you set it, codegen adds `import { <typeName> } from "<typeNameImportPath>"` to the endpoint file, so **`typeName` must then be the exported identifier** (e.g. `MyEndpointMeta`), not an inline `{ ... }` type. If you omit `typeNameImportPath`, **no import is emitted** — typical for inline types in the generic.
+
+You may pass either a **function** `(route, utils) => { tmplData, ... }` or a **static object** with the same shape (shared by all endpoints).
+
+The legacy name `getEndpointMeta` still works but is **deprecated**: codegen prints a warning and it will be removed in a future release.
 
 Example:   
 ```ts{2}
-getEndpointMeta: () => ({
+endpointMeta: () => ({
   typeName: `{ somedata: string }`,
   tmplData: `{ somedata: '123' }`,
 }),
 ```
 
+Example (static object):   
+```ts{2}
+endpointMeta: {
+  typeName: `{ somedata: string }`,
+  tmplData: `{ somedata: '123' }`,
+},
+```
+
 Example with `tmplData` as an object (codegen applies `JSON.stringify`):   
 ```ts{2}
-getEndpointMeta: () => ({
+endpointMeta: () => ({
   typeName: `{ somedata: string }`,
   tmplData: { somedata: '123' },
 }),
@@ -796,11 +823,11 @@ export const getFruits = new Endpoint<
 getFruits.meta.somedata; // '123'
 ```
 
-#### `noMetaInfo`  
+### `noMetaInfo`  
 
 Allows to disable generation `meta-info.ts` file   
 
-#### `noBarrelFiles`
+### `noBarrelFiles`
 
 Disables generation of all `index.ts` barrel files in output.  
 Default: `false`
