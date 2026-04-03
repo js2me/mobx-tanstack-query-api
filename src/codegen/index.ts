@@ -1,5 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+// biome-ignore lint/style/useNodejsImportProtocol: `fs` without `node:` — wider tooling/Node compatibility than `node:fs/promises`
+import { rmSync, statSync } from 'fs';
 import { cloneDeep } from 'lodash-es';
 import {
   type GenerateApiConfiguration,
@@ -7,6 +9,7 @@ import {
   type Hooks,
   type ParsedRoute,
 } from 'swagger-typescript-api';
+import { toArray } from 'yummies/data';
 import type { AnyObject, Defined, Maybe } from 'yummies/types';
 import { allEndpointPerFileTmpl } from './templates/all-endpoints-per-file.tmpl.js';
 import { allExportsTmpl } from './templates/all-exports.tmpl.js';
@@ -35,17 +38,60 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const __execdirname = process.cwd();
 
-export const generateApi = async (
-  params: GenerateQueryApiParams | GenerateQueryApiParams[],
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: orchestration with many code paths
-): Promise<void> => {
-  if (Array.isArray(params)) {
-    for await (const param of params) {
-      await generateApi(param);
+/**
+ * Clears each distinct `output` directory on disk once before any `generateApiSingle`
+ * run. Grouped by resolved path so multiple configs sharing one output only delete
+ * once; skips paths where any config uses `cleanOutput: false`.
+ */
+function cleanOutputDirectoriesOnDiskBeforeCodegen(
+  params: GenerateQueryApiParams[],
+): void {
+  const absPathMap = new Map<string, GenerateQueryApiParams[]>();
+  for (const param of params) {
+    if (!param.output || typeof param.output !== 'string') {
+      continue;
     }
-    return;
+    const absPath = path.resolve(__execdirname, param.output);
+    const apiGenerateParams = absPathMap.get(absPath) ?? [];
+    apiGenerateParams.push(param);
+    absPathMap.set(absPath, apiGenerateParams);
   }
 
+  for (const [absPath, apiGenerateParams] of absPathMap) {
+    if (!apiGenerateParams.every((c) => c.cleanOutput !== false)) {
+      continue;
+    }
+    try {
+      const statInfo = statSync(absPath);
+      if (!statInfo.isDirectory()) {
+        continue;
+      }
+      rmSync(absPath, { recursive: true, force: true });
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code !== 'ENOENT') {
+        throw err;
+      }
+    }
+  }
+}
+
+export const generateApi = async (
+  paramOrParams: GenerateQueryApiParams | GenerateQueryApiParams[],
+): Promise<void> => {
+  const params = toArray(paramOrParams);
+
+  cleanOutputDirectoriesOnDiskBeforeCodegen(params);
+
+  for await (const param of params) {
+    await generateApiSingle(param);
+  }
+};
+
+const generateApiSingle = async (
+  params: GenerateQueryApiParams,
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: orchestration with many code paths
+): Promise<void> => {
   const tsconfigPath = params.tsconfigPath
     ? path.resolve(__execdirname, params.tsconfigPath)
     : path.resolve(__execdirname, './tsconfig.json');
@@ -93,7 +139,8 @@ export const generateApi = async (
   //#region swagger-typescript-api
   const swaggerTypescriptApiCodegenBaseParams = {
     httpClientType: 'fetch',
-    cleanOutput: params.cleanOutput ?? true,
+    // Output cleanup is handled here (batch rm + codegenFs.cleanDir); avoid swagger doing it too.
+    cleanOutput: false,
     modular: true,
     patch: true,
     typeSuffix: DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
@@ -284,7 +331,6 @@ export const generateApi = async (
 
   const codegenFs = codegenProcess.fileSystem as any;
 
-  await Promise.resolve(codegenFs.cleanDir(paths.outputDir));
   await Promise.resolve(codegenFs.createDir(paths.outputDir));
 
   const filterTypes = unpackFilterOption(

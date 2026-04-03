@@ -18,7 +18,7 @@ if (!parsed.options.help) {
   );
 
   // biome-ignore lint/nursery/noFloatingPromises: fire-and-forget CLI entry
-  execConfigPath(configPath).then((generateApiParams) => {
-    defineConfig(generateApiParams as any).forEach(generateApi);
+  execConfigPath(configPath).then(async (generateApiParams) => {
+    await generateApi(defineConfig(generateApiParams as any));
   });
 }

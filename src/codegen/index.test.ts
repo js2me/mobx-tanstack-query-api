@@ -1,5 +1,31 @@
+/** @vitest-environment node */
+
+import type { Stats } from 'node:fs';
 import path from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+const fsMocks = vi.hoisted(() => {
+  const enoent = (): never => {
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    throw err;
+  };
+  return {
+    rmSync: vi.fn(),
+    statSync: vi.fn(enoent),
+  };
+});
+
+vi.mock('fs', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('fs')>();
+  return {
+    ...actual,
+    rmSync: (...args: Parameters<typeof actual.rmSync>) =>
+      fsMocks.rmSync(...args),
+    statSync: (...args: Parameters<typeof actual.statSync>) =>
+      fsMocks.statSync(...args),
+  };
+});
 
 const mocks = vi.hoisted(() => {
   return {
@@ -117,6 +143,28 @@ vi.mock('./utils/remove-unused-types.js', () => {
 
 import { generateApi } from './index.js';
 
+const minimalOpenApi = {
+  openapi: '3.0.0',
+  info: { title: 't', version: '1.0.0' },
+  paths: {},
+} as const;
+
+const minimalCodegenOptions = {
+  noBarrelFiles: true,
+  noMetaInfo: true,
+  removeUnusedTypes: true,
+} as const;
+
+beforeEach(() => {
+  fsMocks.rmSync.mockClear();
+  fsMocks.statSync.mockReset();
+  fsMocks.statSync.mockImplementation(() => {
+    const err = new Error('ENOENT') as NodeJS.ErrnoException;
+    err.code = 'ENOENT';
+    throw err;
+  });
+});
+
 describe('generateApi output path handling', () => {
   it('использует абсолютные пути при относительном output без outputType', async () => {
     const relativeOutput = './src/shared/api/__generated__';
@@ -136,7 +184,7 @@ describe('generateApi output path handling', () => {
       }),
     ).resolves.toBeUndefined();
 
-    expect(mocks.cleanDir).toHaveBeenCalledWith(absoluteOutput);
+    expect(mocks.cleanDir).not.toHaveBeenCalled();
     expect(mocks.createDir).toHaveBeenCalledWith(absoluteOutput);
     expect(mocks.removeUnusedTypes).toHaveBeenCalledWith({
       directory: absoluteOutput,
@@ -164,5 +212,116 @@ describe('generateApi output path handling', () => {
         path: relativeOutput,
       }),
     );
+  });
+});
+
+describe('cleanOutputDirectoriesOnDiskBeforeCodegen (через generateApi)', () => {
+  it('вызывает rmSync для существующего каталога output перед кодгеном', async () => {
+    const relativeOutput = './api-out-rm-test';
+    const absoluteOutput = path.resolve(process.cwd(), relativeOutput);
+
+    fsMocks.statSync.mockImplementation(
+      () => ({ isDirectory: () => true }) as Stats,
+    );
+
+    await expect(
+      generateApi({
+        ...minimalCodegenOptions,
+        input: minimalOpenApi,
+        output: relativeOutput,
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(fsMocks.statSync).toHaveBeenCalled();
+    expect(
+      fsMocks.statSync.mock.calls.some((c) => c[0] === absoluteOutput),
+    ).toBe(true);
+    expect(fsMocks.rmSync).toHaveBeenCalledTimes(1);
+    expect(fsMocks.rmSync).toHaveBeenCalledWith(absoluteOutput, {
+      recursive: true,
+      force: true,
+    });
+  });
+
+  it('не вызывает rmSync если путь не существует (ENOENT)', async () => {
+    await expect(
+      generateApi({
+        ...minimalCodegenOptions,
+        input: minimalOpenApi,
+        output: './нет-такой-папки',
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(fsMocks.rmSync).not.toHaveBeenCalled();
+  });
+
+  it('не вызывает rmSync если по пути не каталог', async () => {
+    fsMocks.statSync.mockImplementation(
+      () => ({ isDirectory: () => false }) as Stats,
+    );
+
+    await expect(
+      generateApi({
+        ...minimalCodegenOptions,
+        input: minimalOpenApi,
+        output: './some-file-path',
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(fsMocks.rmSync).not.toHaveBeenCalled();
+  });
+
+  it('при двух конфигах с одним output вызывает rmSync ровно один раз', async () => {
+    const relativeOutput = './shared-batch-out';
+    const absoluteOutput = path.resolve(process.cwd(), relativeOutput);
+
+    fsMocks.statSync.mockImplementation(
+      () => ({ isDirectory: () => true }) as Stats,
+    );
+
+    await expect(
+      generateApi([
+        {
+          ...minimalCodegenOptions,
+          input: minimalOpenApi,
+          output: relativeOutput,
+        },
+        {
+          ...minimalCodegenOptions,
+          input: minimalOpenApi,
+          output: relativeOutput,
+        },
+      ]),
+    ).resolves.toBeUndefined();
+
+    expect(fsMocks.rmSync).toHaveBeenCalledTimes(1);
+    expect(fsMocks.rmSync).toHaveBeenCalledWith(absoluteOutput, {
+      recursive: true,
+      force: true,
+    });
+  });
+
+  it('не удаляет output если у любого конфига с этим путём cleanOutput: false', async () => {
+    fsMocks.statSync.mockImplementation(
+      () => ({ isDirectory: () => true }) as Stats,
+    );
+
+    await expect(
+      generateApi([
+        {
+          ...minimalCodegenOptions,
+          input: minimalOpenApi,
+          output: './preserve-out',
+          cleanOutput: false,
+        },
+        {
+          ...minimalCodegenOptions,
+          input: minimalOpenApi,
+          output: './preserve-out',
+        },
+      ]),
+    ).resolves.toBeUndefined();
+
+    expect(fsMocks.rmSync).not.toHaveBeenCalled();
   });
 });
