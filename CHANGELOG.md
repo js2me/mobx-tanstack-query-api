@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.45.0
+
+### Minor Changes
+
+- [`1f26711`](https://github.com/js2me/mobx-tanstack-query-api/commit/1f26711b38b0632fbb803cca18ee614ef11e7957) Thanks [@js2me](https://github.com/js2me)! - added vitest utils for endpoints
+
 ## 0.44.0
 
 ### Minor Changes
