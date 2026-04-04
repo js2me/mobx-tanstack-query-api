@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.48.0
+
+### Minor Changes
+
+- [`3aa57c3`](https://github.com/js2me/mobx-tanstack-query-api/commit/3aa57c33c174ee8b2d2eeaf2635d5ee3ce49da29) Thanks [@js2me](https://github.com/js2me)! - improved mswEndpointHandler fn
+
 ## 0.47.0
 
 ### Minor Changes
