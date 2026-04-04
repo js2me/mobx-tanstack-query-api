@@ -30,4 +30,4 @@ Per-request overrides are unchanged: pass **`status`** on **`MockHttpResponse`**
 ## See also
 
 - [Testing overview](./index.html) — how the **`testing`** entry point fits together.
-- [MSW recipe](./recipes/msw.html) — handlers often return [`mswEndpointResponse`](./msw-endpoint-response.html), which uses these defaults.
+- [MSW recipe](./recipes/msw.html) — [`mswEndpointHandler`](./msw-endpoint-handler.html) shorthand bodies and [`mswEndpointResponse`](./msw-endpoint-response.html) both use **`successStatus`** by default.

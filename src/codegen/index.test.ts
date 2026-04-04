@@ -1,5 +1,6 @@
 /** @vitest-environment node */
 
+import type * as Fs from 'node:fs';
 import type { Stats } from 'node:fs';
 import path from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -11,8 +12,10 @@ const fsMocks = vi.hoisted(() => {
     throw err;
   };
   return {
-    rmSync: vi.fn(),
-    statSync: vi.fn(enoent),
+    rmSync: vi.fn((..._args: unknown[]) => undefined),
+    statSync: vi.fn(() => {
+      enoent();
+    }) as any,
   };
 });
 
@@ -289,7 +292,9 @@ describe('cleanOutputDirectoriesOnDiskBeforeCodegen (via generateApi)', () => {
 
     expect(fsMocks.statSync).toHaveBeenCalled();
     expect(
-      fsMocks.statSync.mock.calls.some((c) => c[0] === absoluteOutput),
+      fsMocks.statSync.mock.calls.some(
+        (c: Parameters<typeof Fs.statSync>) => c[0] === absoluteOutput,
+      ),
     ).toBe(true);
     expect(fsMocks.rmSync).toHaveBeenCalledTimes(1);
     expect(fsMocks.rmSync).toHaveBeenCalledWith(absoluteOutput, {

@@ -1,13 +1,13 @@
 # `mswEndpointResponse` / `mswEndpointErrorResponse`
 
 ```ts
-function mswEndpointResponse<TEndpoint extends AnyEndpoint>(
+export function mswEndpointResponse<TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,
   data: InferEndpointMswSuccessBody<TEndpoint>,
   init?: ResponseInit,
 ): Response;
 
-function mswEndpointErrorResponse<TEndpoint extends AnyEndpoint>(
+export function mswEndpointErrorResponse<TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,
   error: InferEndpointMswErrorBody<TEndpoint>,
   init?: ResponseInit,
@@ -20,6 +20,8 @@ The **`endpoint`** argument is only used for **TypeScript inference**; at runtim
 
 When **`init.status`** is omitted, status comes from **`testingDefaults.successStatus`** / **`testingDefaults.errorStatus`** ([**`testingDefaults`**](./testing-defaults.html); initially **200** / **500**, same object as **`MockHttpResponse`**, fields are assignable for global overrides). Per response, override with **`init.status`** (e.g. **201** or **400**).
 
+For success payloads you can often return **data directly** from [`mswEndpointHandler`](./msw-endpoint-handler.html) (see that page); **`mswEndpointResponse`** stays useful when you need **`ResponseInit`** (status, headers) or want an explicit **`Response`** in the resolver.
+
 **Example**
 
 ```ts
@@ -29,8 +31,16 @@ import {
 } from "mobx-tanstack-query-api/testing";
 
 export const handlers = [
-  mswEndpointHandler(listFruitsEndpoint, () =>
-    mswEndpointResponse(listFruitsEndpoint, { items: ["apple", "banana"] }),
-  ),
+  mswEndpointHandler(listFruitsEndpoint, () => ({
+    items: ["apple", "banana"],
+  })),
+  mswEndpointHandler(createFruitEndpoint, async ({ request }) => {
+    const body = (await request.json()) as { name: string };
+    return mswEndpointResponse(
+      createFruitEndpoint,
+      { id: 1, name: body.name },
+      { status: 201 },
+    );
+  }),
 ];
 ```

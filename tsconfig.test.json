@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["vitest"],
+    "types": ["vitest", "node"],
     "target": "ESNext",
     "outDir": "dist",
     "declaration": true,
@@ -31,10 +31,8 @@
     }
   },
   "include": [
-    "src/**/*.test.ts",
     "tests",
-    "src/lib",
-    "src/**/*.test.tsx"
+    "src/lib"
   ],
   "exclude": []
 }

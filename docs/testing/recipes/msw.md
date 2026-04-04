@@ -26,7 +26,7 @@ Use [`setupServer`](https://mswjs.io/docs/api/setup-server) from `msw/node` so *
 
 1. **Handlers** — match the **full URL** the client will request (`baseUrl` + `path` from your endpoint params, including query string if you rely on it).
 
-Use **`mswEndpointHandler`** to register a handler from a generated **endpoint** (it uses **`mswPathPattern`** under the hood). Typed JSON responses: **`mswEndpointResponse`** / **`mswEndpointErrorResponse`**. If you only need the URL string, use **`mswPathPattern`** — see [`mswEndpointHandler`](../msw-endpoint-handler.html), [`mswEndpointResponse`](../msw-endpoint-response.html), and [`mswPathPattern`](../msw-path-pattern.html).
+Use **`mswEndpointHandler`** to register a handler from a generated **endpoint** (it uses **`mswPathPattern`** under the hood). The resolver may return **typed data** directly or a **`Response`**; use **`mswEndpointResponse`** / **`mswEndpointErrorResponse`** when you need a **custom status** or headers. If you only need the URL string, use **`mswPathPattern`** — see [`mswEndpointHandler`](../msw-endpoint-handler.html), [`mswEndpointResponse`](../msw-endpoint-response.html), and [`mswPathPattern`](../msw-path-pattern.html).
 
 ```ts
 import {
@@ -36,12 +36,16 @@ import {
 
 // `listFruits`, `createFruit`: your generated endpoints (GET/POST come from `params().method`).
 export const handlers = [
-  mswEndpointHandler(listFruits, () =>
-    mswEndpointResponse(listFruits, { items: ["apple", "banana"] }),
-  ),
+  mswEndpointHandler(listFruits, () => ({
+    items: ["apple", "banana"],
+  })),
   mswEndpointHandler(createFruit, async ({ request }) => {
-    const body = await request.json();
-    return mswEndpointResponse(createFruit, { id: 1, ...body }, { status: 201 });
+    const body = (await request.json()) as { name: string };
+    return mswEndpointResponse(
+      createFruit,
+      { id: 1, name: body.name },
+      { status: 201 },
+    );
   }),
 ];
 ```
@@ -86,7 +90,7 @@ Generated **endpoints** call the same `HttpClient.request` path, so `endpoint.re
 
 ### Tips
 
-- **Default response status** — those helpers use **`testingDefaults.successStatus`** / **`errorStatus`** ([**`testingDefaults`**](../testing-defaults.html), initially **200** / **500**; reassign globally if needed) unless you pass **`init.status`** (e.g. **400** for validation errors).
+- **Default response status** — **`mswEndpointResponse`**, **`mswEndpointErrorResponse`**, and **success** data returned directly from **`mswEndpointHandler`** use **`testingDefaults.successStatus`** / **`errorStatus`** ([**`testingDefaults`**](../testing-defaults.html), initially **200** / **500**; reassign globally if needed) unless you pass **`init.status`** on the **`Response`** helpers (e.g. **400** for validation errors).
 - **Absolute URLs** — MSW matches the URL `fetch` receives. If `baseUrl` is `https://api.example.com` and the path is `/users/1`, the handler pattern should be `https://api.example.com/users/1` (or use a [path predicate](https://mswjs.io/docs/http/intercepting-requests#path-parameters) / `new URL(request.url)` inside the resolver for flexibility).
 - **Unhandled requests** — `onUnhandledRequest: "error"` catches typos in `baseUrl` or paths early; relax to `"warn"` while migrating.
 - **Per-test overrides** — `server.use(http.get(...))` after `setupServer` adds or replaces handlers for a single test; `resetHandlers()` clears them in `afterEach`.
