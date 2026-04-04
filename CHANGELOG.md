@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.45.1
+
+### Patch Changes
+
+- [`73d2be1`](https://github.com/js2me/mobx-tanstack-query-api/commit/73d2be1dad8fe864448265758cf9d98e6a0f4d57) Thanks [@js2me](https://github.com/js2me)! - fixed `MockHttpResponse` handling dut to create .error .data
+
 ## 0.45.0
 
 ### Minor Changes
