@@ -29,13 +29,13 @@ export type MockHttpResponseSetOptions = {
 const DEFAULT_SUCCESS_STATUS = 200;
 const DEFAULT_ERROR_STATUS = 500;
 
-const mockParamsHasTruthyData = (
+const mockParamsHasData = (
   params: MockHttpResponseParams<any, any, any>,
-): boolean => 'data' in params && !!params.data;
+): boolean => 'data' in params && params.data !== undefined;
 
-const mockParamsHasTruthyError = (
+const mockParamsHasError = (
   params: MockHttpResponseParams<any, any, any>,
-): boolean => 'error' in params && !!params.error;
+): boolean => 'error' in params && params.error !== undefined;
 
 /**
  * Test-oriented subclass of runtime `HttpResponse`. Prefer {@link createMockHttpResponse} for an instance whose body is already resolved.
@@ -67,10 +67,10 @@ export class MockHttpResponse<
   }
 
   async resolveBody(_responseFormat: ResponseFormat): Promise<void> {
-    if (mockParamsHasTruthyData(this.params)) {
+    if (mockParamsHasData(this.params)) {
       this.data = this.params.data as TData;
     }
-    if (mockParamsHasTruthyError(this.params)) {
+    if (mockParamsHasError(this.params)) {
       this.error = this.params.error as TError;
     }
   }
@@ -106,7 +106,7 @@ export class MockHttpResponse<
   ): number {
     return (
       params.status ??
-      (mockParamsHasTruthyData(params)
+      (mockParamsHasData(params)
         ? DEFAULT_SUCCESS_STATUS
         : DEFAULT_ERROR_STATUS)
     );
