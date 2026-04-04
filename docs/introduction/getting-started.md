@@ -10,7 +10,7 @@ The `mobx-tanstack-query-api` source code is written in TypeScript and compiled 
 
 ## Installation   
 
-This package is using `mobx-tanstack-query`, `@tanstack/query-core` under the hood. So read documentation of [`mobx-tanstack-query`](https://github.com/js2me/mobx-tanstack-query) first.  
+This package is using `mobx-tanstack-query`, `@tanstack/query-core` under the hood. So read documentation of [`mobx-tanstack-query`](https://js2me.github.io/mobx-tanstack-query/) first.  
 
 ::: code-group
 
