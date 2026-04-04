@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.46.0
+
+### Minor Changes
+
+- [`6f9d707`](https://github.com/js2me/mobx-tanstack-query-api/commit/6f9d7075b69b93b4cae3e3b77e805b80606f8ecc) Thanks [@js2me](https://github.com/js2me)! - change exports /vitest -> /testing
+
 ## 0.45.1
 
 ### Patch Changes
