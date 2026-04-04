@@ -1,15 +1,6 @@
 # `mockHttpClientRequest`
 
-```ts
-function mockHttpClientRequest<TData, TError>(
-  httpClient: HttpClient,
-  output: MockHttpClientOutput<TData, TError>,
-): MockInstance<HttpClient['request']>;
-```
-
-Every **`httpClient.request`** uses the same mock until you **`mockRestore()`** the returned spy.
-
-Restore spies in **`afterEach`** (e.g. **`spy.mockRestore()`** or **`vi.restoreAllMocks()`**).
+Stubs **`httpClient.request`** with the same **`output`** on every call until you **`mockRestore()`** the returned spy (often in **`afterEach`**).
 
 **Example — stub every call until restore:**
 

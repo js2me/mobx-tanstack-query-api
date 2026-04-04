@@ -4,7 +4,7 @@ For advanced cases where you construct or inspect **`HttpResponse`** yourself.
 
 ## Default status values
 
-Status fallbacks use the exported object [**`testingDefaults`**](../testing-defaults.html) (**`successStatus`**, **`errorStatus`**; initially **200** / **500**, mutable). **`MockHttpResponse`** (constructor / **`setData`** / **`setError`**) and [`mswEndpointResponse` / `mswEndpointErrorResponse`](../msw-endpoint-response.html) read the **current** property values.
+Statuses fall back to [**`testingDefaults`**](../testing-defaults.html) unless you set **`status`** explicitly.
 
 ## `MockHttpResponse`
 

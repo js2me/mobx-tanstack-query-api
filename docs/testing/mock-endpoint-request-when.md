@@ -1,18 +1,8 @@
 # `mockEndpointRequestWhen`
 
-```ts
-function mockEndpointRequestWhen<TEndpoint extends AnyEndpoint>(
-  endpoint: TEndpoint,
-  match: (params: InferEndpointInput<TEndpoint>) => boolean,
-  output: MockHttpClientOutput<InferEndpointData<TEndpoint>['data'], InferEndpointData<TEndpoint>['error']>,
-): MockInstance<TEndpoint['request']>;
-```
+When **`match(params)`** returns true, that **`endpoint.request`** call gets a one-time stub with **`output`**; otherwise the request is unchanged. Use this for branching (e.g. different users or ids).
 
-If **`match(params)`** is true for a given call, that call queues a one-time client stub with **`output`**; otherwise the request runs without an extra stub. Use this for branching (for example, different behavior by id).
-
-**Example:**
-
-`getUser` here is any endpoint whose success `data` type includes **`tier`** (adjust the mock payload to match your generated types).
+**Example** — `getUser` should expose a **`tier`** field in its success type if you mock `{ tier: 'vip' }`.
 
 ```ts
 const spy = mockEndpointRequestWhen(

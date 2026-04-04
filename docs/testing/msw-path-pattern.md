@@ -1,14 +1,8 @@
 # `mswPathPattern`
 
-```ts
-function mswPathPattern(endpoint: AnyEndpoint): string;
-```
+Returns a **full URL string** for [MSW](./recipes/msw.html): **`baseUrl`** + path, with **`{segment}`** turned into MSW **`:segment`**. No query string. If your real path has extra bits not in **`configuration.path`**, adjust the string yourself.
 
-Builds a **full URL pattern** for [MSW](./recipes/msw.html) from the endpoint’s **`httpClient.baseUrl`** and **`configuration.path`**, converting OpenAPI-style **`{segment}`** into MSW **`:segment`** path params.
-
-To register a handler in one step, prefer [`mswEndpointHandler`](./msw-endpoint-handler.html).
-
-Does **not** add query strings. If the real `params().path` includes a prefix that is not represented in `configuration.path`, extend or replace the string manually.
+Prefer [`mswEndpointHandler`](./msw-endpoint-handler.html) when you want method + URL + resolver in one helper.
 
 **Example**
 

@@ -1,27 +1,12 @@
 # `captureInvalidations`
 
-```ts
-import type { EndpointQueryClient } from "mobx-tanstack-query-api";
+Spies on **`queryClient.invalidateQueries`**, records each **`(filters, options)`**, then forwards to the real method so invalidation still runs. Use the **same** **`queryClient`** instance as in your app / codegen setup.
 
-function captureInvalidations(
-  queryClient: EndpointQueryClient,
-  abortSignal?: AbortSignal,
-): CaptureInvalidationsHandle;
-```
+The returned handle has **`calls`**, **`last`**, **`waitNext()`**, **`restore()`**, and access to the underlying Vitest mock. Optional **`abortSignal`** cleans up when the test is cancelled.
 
-Installs a Vitest **spy** on **`queryClient.invalidateQueries`**: every **`(filters, options)`** is recorded, then the call is forwarded to the real implementation (cache invalidation runs as usual).
-
-Use the **same** **`queryClient`** when wiring **codegen-generated** endpoints (see [Getting started](/introduction/getting-started.html)), so **`getItem.invalidateQuery(...)`** goes through this client.
-
-Optional **`abortSignal`**: pass Vitest’s test **`signal`** so **`restore()`** runs when the test is **cancelled**. **`restore()`** remains safe to call explicitly afterward (idempotent).
-
-The handle exposes **`calls`**, **`last`**, **`waitNext()`**, **`queryClient`** (the instance you passed), the Vitest **`mock`** (the spy), and **`restore()`** (**`mock.mockRestore()`**, safe to call multiple times, including after **`abortSignal`**).
-
-**`filters.queryKey`** is the full TanStack **`queryKey`** array (path segments, **`operationId`**, params object, etc.). Assert specific parts with **`toContainEqual`**, not **`toEqual([{ id }])`**.
+**`filters.queryKey`** is the full TanStack **`queryKey`** — assert with **`toContainEqual`** on the pieces you care about, not a full deep **`toEqual`** on the whole array.
 
 **Example — assert `invalidateQuery` filters:**
-
-Below, **`getItem`** stands for a generated endpoint export; **`queryClient`** must be the same instance passed to **`captureInvalidations`**.
 
 ```ts
 import { EndpointQueryClient } from "mobx-tanstack-query-api";

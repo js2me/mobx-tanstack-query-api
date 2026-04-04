@@ -1,36 +1,18 @@
 # `captureEndpointRequestParams`
 
-```ts
-function captureEndpointRequestParams<TEndpoint extends AnyEndpoint>(
-  endpoint: TEndpoint,
-  abortSignal?: AbortSignal,
-): CaptureEndpointRequestParamsHandle<TEndpoint>;
-```
+Records **`FullRequestParams`** from **`endpoint.configuration.params`** on each **`endpoint.request`**. It does **not** stub HTTP — pair with **`mockHttpClientRequestOnce`** (or similar) if the request should still resolve.
 
-Records the **`FullRequestParams`** produced by **`endpoint.configuration.params`** for each **`endpoint.request`**. It does **not** mock **`HttpClient`**; pair it with **`mockHttpClientRequestOnce`** (or your own **`fetch`** stub) if the call should still complete.
-
-Optional **`abortSignal`**: pass Vitest’s test **`signal`** (from **`it(..., ({ signal }) => { ... })`**) so **`restore()`** runs automatically when the test is **cancelled** (aborted signal). **`restore()`** is idempotent if you still call it at the end of a normal run.
-
-The handle exposes **`calls`**, **`last`**, **`waitNext()`**, **`withNextRequest(run)`**, **`spy`**, and **`restore()`** (**`spy.mockRestore()`**, safe to call multiple times).
+Returned handle: **`calls`**, **`last`**, **`waitNext()`**, **`withNextRequest(run)`**, **`restore()`**. Optional Vitest **`abortSignal`** for automatic cleanup on cancellation.
 
 ## `withNextRequest`
 
-```ts
-withNextRequest(
-  run: () => ReturnType<TEndpoint["request"]>,
-): Promise<{
-  params: FullRequestParams;
-  result: Awaited<ReturnType<TEndpoint["request"]>>;
-}>;
-```
+Calls **`run()`** (usually **`endpoint.request(...)`**), waits until params for that call are captured, then gives you **`{ params, result }`** when the request promise settles — so you can assert path/method/body and the **`HttpResponse`** without juggling **`Promise.all`**.
 
-Registers a **`waitNext`** waiter, then calls **`run()`** (typically **`endpoint.request(...)`**). Waits until **`params`** for that call are recorded, then awaits the promise **`run()`** returned. You get **`params`** (path, method, body, …) and **`result`** (the fulfilled value of that promise — for generated endpoints usually **`HttpResponse`**) without **`Promise.all`** / **`queueMicrotask`**.
-
-Use **`waitNext()`** when you want the raw **`request`** promise (e.g. **`expect(p).rejects`**). If **`withNextRequest`** rejects because **`request`** failed, you do not get a return value — **`params`** are still on **`cap.calls`** / **`cap.last`**; use **`await expect(cap.withNextRequest(…)).rejects…`** or **`waitNext()`** + a separate **`request`** promise.
+If **`request`** rejects, **`withNextRequest`** rejects too; **`params`** are still on **`calls`** / **`last`**. Use **`waitNext()`** + a separate promise, or **`expect(...).rejects`**, when you need that case.
 
 **Example — assert built path and complete the request:**
 
-`httpClient` here must be the same instance passed into your endpoint constructor.
+`httpClient` must be the same instance your endpoint uses.
 
 ```ts
 const cap = captureEndpointRequestParams(updateItem);
@@ -56,5 +38,3 @@ expect(params.path).toContain('/items');
 expect(result.data).toEqual({ id: 1 });
 cap.restore();
 ```
-
-If **`request`** rejects, **`withNextRequest`** rejects too (after **`params`** are already on **`cap.calls`** / **`cap.last`**). Use **`await expect(cap.withNextRequest(() => endpoint.request(…))).rejects…`** or fall back to **`waitNext()`**.

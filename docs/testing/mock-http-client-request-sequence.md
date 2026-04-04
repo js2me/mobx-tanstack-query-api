@@ -1,15 +1,8 @@
 # `mockHttpClientRequestSequence`
 
-```ts
-function mockHttpClientRequestSequence<TData, TError>(
-  httpClient: HttpClient,
-  outputs: MockHttpClientOutput<TData, TError>[],
-): MockInstance<HttpClient['request']>;
-```
+Each **`httpClient.request`** takes the **next** mock from **`outputs`**; when the list is done, the real client runs.
 
-Each **`httpClient.request`** consumes the **next** item in **`outputs`**. If **`outputs`** is empty, or after the last item has been used, the real client runs (e.g. **`fetch`**).
-
-Unlike **`mockEndpointRequestSequence`**, ordering is global for that client: whichever code path calls **`request`** first gets the first mock, even if another endpoint triggers it.
+Order is **per client**, not per endpoint: any code that calls **`request`** on that client advances the queue. For per-endpoint sequences use **`mockEndpointRequestSequence`**.
 
 **Example — same endpoint, fail then succeed:**
 

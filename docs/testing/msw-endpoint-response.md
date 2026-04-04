@@ -1,26 +1,10 @@
 # `mswEndpointResponse` / `mswEndpointErrorResponse`
 
-```ts
-export function mswEndpointResponse<TEndpoint extends AnyEndpoint>(
-  endpoint: TEndpoint,
-  data: InferEndpointMswSuccessBody<TEndpoint>,
-  init?: ResponseInit,
-): Response;
+Build a **`Response`** for an MSW resolver with **`data`** / **`error`** typed from the endpoint (same idea as `response.data` / `response.error` from `HttpClient.request`). The **`endpoint`** argument is only for TypeScript; at runtime it is not used.
 
-export function mswEndpointErrorResponse<TEndpoint extends AnyEndpoint>(
-  endpoint: TEndpoint,
-  error: InferEndpointMswErrorBody<TEndpoint>,
-  init?: ResponseInit,
-): Response;
-```
+Omit **`init.status`** to use defaults from [**`testingDefaults`**](./testing-defaults.html); pass **`init`** when you need a specific status or headers.
 
-Typed helpers for MSW resolvers: **`data`** / **`error`** are inferred from the endpoint’s **`HttpResponse<…>`** generic (same shapes as `response.data` / `response.error` after `HttpClient.request`).
-
-The **`endpoint`** argument is only used for **TypeScript inference**; at runtime it is ignored. Pass the same instance you use with [`mswEndpointHandler`](./msw-endpoint-handler.html).
-
-When **`init.status`** is omitted, status comes from **`testingDefaults.successStatus`** / **`testingDefaults.errorStatus`** ([**`testingDefaults`**](./testing-defaults.html); initially **200** / **500**, same object as **`MockHttpResponse`**, fields are assignable for global overrides). Per response, override with **`init.status`** (e.g. **201** or **400**).
-
-For success payloads you can often return **data directly** from [`mswEndpointHandler`](./msw-endpoint-handler.html) (see that page); **`mswEndpointResponse`** stays useful when you need **`ResponseInit`** (status, headers) or want an explicit **`Response`** in the resolver.
+Often you can return success **data directly** from [`mswEndpointHandler`](./msw-endpoint-handler.html); these helpers matter when you want an explicit **`Response`** or **`ResponseInit`**.
 
 **Example**
 

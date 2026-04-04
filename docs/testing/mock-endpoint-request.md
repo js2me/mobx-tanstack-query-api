@@ -1,17 +1,8 @@
 # `mockEndpointRequest`
 
-```ts
-function mockEndpointRequest<TEndpoint extends AnyEndpoint>(
-  endpoint: TEndpoint,
-  output: MockHttpClientOutput<InferEndpointData<TEndpoint>['data'], InferEndpointData<TEndpoint>['error']>,
-): MockInstance<TEndpoint['request']>;
-```
+Spies on **`endpoint.request`**. Each call queues a one-time stub on that endpoint’s **`httpClient`**, then runs the real **`endpoint.request`** so endpoint code still executes against mocked HTTP.
 
-This helper spies on **`endpoint.request`**. On each matching call it registers **`mockHttpClientRequestOnce`** on that endpoint’s **`httpClient`**, then invokes the real **`endpoint.request`** so your endpoint logic runs against the stubbed HTTP layer.
-
-**`mockEndpointRequest`** — every **`endpoint.request`** queues another one-time client stub with the same **`output`**.
-
-Returns a Vitest **`MockInstance`** for **`mockRestore()`** and assertions.
+Every call reuses the same **`output`** until you **`mockRestore()`** the returned Vitest spy.
 
 **Example — same response on every call:**
 

@@ -1,29 +1,12 @@
 # `mswEndpointHandler`
 
-```ts
-import type { AnyEndpoint } from "mobx-tanstack-query-api";
-import type { MswEndpointBodyResolver } from "mobx-tanstack-query-api/testing";
-import type { HttpHandler } from "msw";
+Registers an MSW handler for a generated **endpoint**: **method** and **URL pattern** come from the endpoint (path params follow MSW’s `:name` form via [`mswPathPattern`](./msw-path-pattern.html)).
 
-export interface MswEndpointHttpHandler extends HttpHandler {
-  endpoint: AnyEndpoint;
-}
+The return value is a normal MSW **`HttpHandler`** with the same **`endpoint`** attached, so tests can reuse the instance you passed in.
 
-export function mswEndpointHandler<TEndpoint extends AnyEndpoint>(
-  endpoint: TEndpoint,
-  resolver: MswEndpointBodyResolver<TEndpoint>,
-): MswEndpointHttpHandler;
-```
+The **resolver** is the same function MSW expects for **`http.*`** handlers. You can return plain **success body** values (TypeScript types them from the endpoint) or a **`Response`** / **`Promise<Response>`**. Use [`mswEndpointResponse`](./msw-endpoint-response.html) / [`mswEndpointErrorResponse`](./msw-endpoint-response.html) when you care about status or headers; otherwise returning data directly is enough. Defaults for status codes come from [`testingDefaults`](./testing-defaults.html).
 
-Wraps MSW’s **`http.get` / `http.post` / …** so the URL comes from the **endpoint** via [`mswPathPattern`](./msw-path-pattern.html). The HTTP verb is taken from **`endpoint.configuration.params({}).method`** (the same object codegen produces for `request`).
-
-The returned value is MSW’s **`HttpHandler`** plus **`endpoint`**: the same **endpoint** instance you passed in (for introspection in tests, logging, or utilities).
-
-The **resolver** matches MSW’s `(info) => …` shape (same **`info`** as `http.*(path, resolver)`). Its return type is **`MswEndpointBodyResolver`** in the package typings: **`Response`** / **`Promise<Response>`**, or **data** inferred from the endpoint’s success **`HttpResponse`** (with **`NoInfer`**, so the endpoint type is fixed by the **first** argument, not by the resolver).
-
-Requires **`msw`** in your project (optional peer dependency). See the [MSW recipe](./recipes/msw.html).
-
-**Shorthand data** — return JSON-serialisable values (objects, arrays, primitives, strings) and they are sent with **`Response.json`** and the same default status as [`mswEndpointResponse`](./msw-endpoint-response.html). **`Blob`**, **`ArrayBuffer`**, typed arrays, **`ReadableStream`**, **`FormData`**, and **`URLSearchParams`** use **`new Response`** with the same default status. When **`TData`** is **`ArrayBuffer`**, typed array views are also allowed (same as **`fetch`**). For **success** with a **custom status** or headers, return [`mswEndpointResponse`](./msw-endpoint-response.html) or any **`Response`** / MSW **`HttpResponse`**. For **non-OK** responses with a typed **`error`** payload, use [`mswEndpointErrorResponse`](./msw-endpoint-response.html). Success and error defaults come from [`testingDefaults`](./testing-defaults.html).
+Requires the **`msw`** peer dependency. Setup and lifecycle are in the [MSW recipe](./recipes/msw.html).
 
 **Example**
 

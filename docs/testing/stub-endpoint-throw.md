@@ -1,16 +1,11 @@
 # `stubEndpointThrow`
 
-```ts
-function stubEndpointThrow<TEndpoint extends AnyEndpoint>(
-  endpoint: TEndpoint,
-  error: unknown | (() => unknown) | (() => Promise<unknown>),
-  options?: { persistent?: boolean; abortSignal?: AbortSignal },
-): MockInstance<TEndpoint['request']>;
-```
+Forces **`endpoint.request`** to **reject** with a value you provide (not necessarily an **`HttpResponse`**). **`error`** can be a value or a function (sync/async) that returns the rejection.
 
-Makes **`endpoint.request`** reject with an arbitrary value (not necessarily an **`HttpResponse`**). **`error`** may be a plain value or a function (sync or async) that produces the thrown value. With **`persistent: true`**, every call uses **`mockImplementation`** and always throws; otherwise **`mockImplementationOnce`** applies, so only the first call throws and later calls use the real implementation again.
+- Default: **`mockImplementationOnce`** — only the first call throws, then the real **`request`** runs again.
+- **`persistent: true`**: every call throws.
 
-Optional **`abortSignal`** (e.g. Vitest **`it(..., ({ signal }) => …)`**): **`spy.mockRestore()`** runs when the test is **cancelled**. Calling **`spy.mockRestore()`** yourself at the end of a normal run is still fine (cleanup is idempotent).
+Optional **`abortSignal`** (e.g. Vitest’s test **`signal`**) ties **`mockRestore()`** to test cancellation; calling **`restore()`** yourself is still fine.
 
 **Example — one failure, then real behavior:**
 
