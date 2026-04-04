@@ -6,8 +6,8 @@ It provides a simple and easy way to generate queries and mutations from your Op
 ## Features   
 
 - Generate queries and mutations from OpenAPI/Swagger definitions
-- Generates endpoint request call functions.  
-- Provides configured `QueryClient` instance     
-- Provides configured `HttpClient` instance  
-- Provides fully customize fetch api behavior.  
-- MobX reactivity support for data and other statements.   
+- Generates endpoint request call functions
+- Provides a preconfigured `EndpointQueryClient` instance
+- Provides a preconfigured `HttpClient` instance
+- Fully customizable Fetch API behavior (interceptors, URL building, and so on)
+- MobX reactivity for query and mutation state

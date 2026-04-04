@@ -1,10 +1,10 @@
-# Endpoint queries     
+# Endpoint queries
 
 ```ts
 class EndpointQuery<> {}
 ```
 
-This is `mobx-tanstack-query` [`Query`](https://js2me.github.io/mobx-tanstack-query/api/Query) wrapper for `Endpoint` object.  
+This is the [`Query`](https://js2me.github.io/mobx-tanstack-query/api/Query) class from `mobx-tanstack-query`, wrapped around an `Endpoint` instance.
 
 Example:  
 ```ts
@@ -90,7 +90,8 @@ const query = getFruits.toQuery({
 ```
 
 
-:::tip If you will not write this property in options then query will be enabled only if query do not have any **required** params
+:::tip Omitting `params`
+If you omit `params`, it defaults to `{}`. The query is **enabled** when the endpoint has no entries in `requiredParams`, or when `params` is truthy and **every** key listed in `requiredParams` is present on the `params` object. Otherwise the query stays disabled until you pass suitable `params`.
 :::
 
 ```ts{1,16}
@@ -111,7 +112,7 @@ export const getFruits = new Endpoint<
     }),
     requiredParams: [],
     operationId: "getFruits",
-    path: ["api", "v1", "services"],
+    path: ["api", "v1", "fruits"],
     tags: [Tag.Fruits],
     meta: {},
   },
@@ -121,9 +122,9 @@ export const getFruits = new Endpoint<
 ```
 
 
-#### `update()`   
+#### `update()`
 
-This method is also has `params` property which is needed to enable or disable query.  
+This method accepts a `params` field as well: a falsy value disables the query, a valid params object enables it (subject to `requiredParams` as above).
 
 ```ts
 const query = getFruits.toQuery({});

@@ -1,10 +1,12 @@
 # Getting started  
 
-The `mobx-tanstack-query-api` source code is written on TypeScript and compiled into NodeNext target.   
+The `mobx-tanstack-query-api` source code is written in TypeScript and compiled to the `NodeNext` module target.
 
 ## Requirements  
 
-- [`MobX`](https://mobx.js.org) **^6**  
+- [`MobX`](https://mobx.js.org) **^6**
+- [`zod`](https://zod.dev) **≥4** (optional; used when you generate or enable Zod contracts)
+- [`vitest`](https://vitest.dev) **≥4** (optional; for helpers imported from `mobx-tanstack-query-api/vitest`)
 
 ## Installation   
 
@@ -144,7 +146,7 @@ export class Fruits {
 
   constructor(abortSignal?: AbortSignal) {
     // or you can use linked-abort-controller package
-    abortSignal.addEventListener("abort", () => {
+    abortSignal?.addEventListener("abort", () => {
       this.abortController.abort();
     });
   }
@@ -164,7 +166,7 @@ export class Fruits {
   }
 }
 
-const fruits = new FruitsModel();
+const fruits = new Fruits();
 
 console.log(fruits.data); // enable query
 ```

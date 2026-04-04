@@ -1,6 +1,6 @@
-# EndpointQueryClient   
+# EndpointQueryClient
 
-Class that extends `QueryClient` and gives a bit more control over endpoint queries and mutations.  
+Extends `QueryClient` from `mobx-tanstack-query` and adds helpers for invalidating queries by endpoint metadata. By default it uses TanStack’s `hashKey` as `queryKeyHashFn` so query keys behave like the core library.
 
 ```ts
 import { EndpointQueryClient } from "mobx-tanstack-query-api";

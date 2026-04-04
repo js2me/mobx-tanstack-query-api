@@ -1,6 +1,6 @@
-# HttpClient   
+# HttpClient
 
-This is http requests client wrapper based on [`Fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).   
+HTTP client built on the [`Fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
 
 
 ## Usage  

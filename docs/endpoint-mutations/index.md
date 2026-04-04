@@ -1,10 +1,10 @@
-# Endpoint mutations     
+# Endpoint mutations
 
 ```ts
 class EndpointMutation<> {}
 ```
 
-This is `mobx-tanstack-query` Mutation wrapper for `Endpoint` object.  
+This is the [`Mutation`](https://js2me.github.io/mobx-tanstack-query/api/Mutation) class from `mobx-tanstack-query`, wrapped around an `Endpoint` instance.
 
 ## API
 
@@ -14,30 +14,36 @@ Creates `EndpointMutation` from endpoint and mutation options.
 
 ### options.invalidateEndpoints
 
-Configures automatic endpoint query invalidation on successful mutation.
+After a successful mutation, `EndpointQueryClient.invalidateEndpoints` runs when this option is set:
+
+- `true` — if the endpoint has a `group`, invalidates by group; otherwise invalidates by its `tags`
+- `'by-group'` — invalidates endpoints in the same `group`
+- `'by-tag'` — invalidates endpoints that share any of this endpoint’s tags
+- an object — same shape as [`invalidateEndpoints`](/endpoint-query-client/index.html#invalidateendpoints) on `EndpointQueryClient` (filters such as `namespace`, `operationId`, `predicate`, and so on)
 
 ### options.transform
 
 Transforms raw endpoint response to the final mutation data.
 
 
-Example:  
+Example:
+
 ```ts
 import { yourEndpoint } from "@/shared/api/__generated__";
 
-export const youEndpointMutation = yourEndpoint.toMutation({})
+export const yourEndpointMutation = yourEndpoint.toMutation({});
 
-console.log(youEndpointMutation.isPending, youEndpointMutation.data);
-``` 
+console.log(yourEndpointMutation.isPending, yourEndpointMutation.data);
+```
 
-## Extras  
+## Extras
 
-#### `ToEndpointMutation` type  
+#### `ToEndpointMutation` type
 
-This type allows you to convert `Endpoint` to `EndpointMutation` type.   
-It might be helpful if you are using some factory method to create endpoint mutation.  
+Maps an `Endpoint` type to the corresponding `EndpointMutation` type (useful for factories and shared helpers).
 
-Example:  
+Example:
+
 ```ts
 import { ToEndpointMutation } from 'mobx-tanstack-query-api';
 import { addFruit } from "@/shared/api/__generated__";
