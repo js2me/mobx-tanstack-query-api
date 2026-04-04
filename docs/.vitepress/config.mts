@@ -82,9 +82,23 @@ export default defineDocsVitepressConfig(configs, {
         text: 'Vitest testing 🧪',
         link: '/vitest/index.html',
         items: [
+          { text: 'mockHttpClientRequest', link: '/vitest/mock-http-client-request.html' },
+          { text: 'mockHttpClientRequestOnce', link: '/vitest/mock-http-client-request-once.html' },
+          { text: 'mockEndpointRequest', link: '/vitest/mock-endpoint-request.html' },
+          { text: 'mockEndpointRequestOnce', link: '/vitest/mock-endpoint-request-once.html' },
+          { text: 'mockEndpointRequestSequence', link: '/vitest/mock-endpoint-request-sequence.html' },
+          { text: 'mockEndpointRequestWhen', link: '/vitest/mock-endpoint-request-when.html' },
+          { text: 'captureEndpointRequestParams', link: '/vitest/capture-endpoint-request-params.html' },
+          { text: 'stubEndpointThrow', link: '/vitest/stub-endpoint-throw.html' },
           {
-            text: 'Utilities',
-            link: '/vitest/index.html',
+            text: 'Low-level API',
+            items: [
+              { text: 'MockHttpResponse', link: '/vitest/low-level/mock-http-response.html' },
+              {
+                text: 'createMockHttpClientRequestHandler',
+                link: '/vitest/low-level/create-mock-http-client-request-handler.html',
+              },
+            ],
           },
         ],
       },

@@ -7,7 +7,7 @@ import type { MockHttpClientOutput } from './utils/mock-http-client-request-hand
  * Supplies mock responses for each `endpoint.request` call in order.
  * After the list is exhausted, further calls use the real client (e.g. `fetch`).
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#mockendpointrequestsequence)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/mock-endpoint-request-sequence.html)
  */
 export function mockEndpointRequestSequence<TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,

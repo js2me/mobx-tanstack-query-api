@@ -6,7 +6,7 @@ import type { MockHttpClientOutput } from './utils/mock-http-client-request-hand
 /**
  * Only the first `endpoint.request` is paired with {@link mockHttpClientRequestOnce}; later calls use the real client.
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#mockendpointrequest-mockendpointrequestonce)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/mock-endpoint-request-once.html)
  */
 export const mockEndpointRequestOnce = <TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,

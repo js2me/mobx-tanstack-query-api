@@ -1,5 +1,5 @@
 /**
- * Mirrors the code examples in docs/vitest/index.md — keep in sync when editing the doc.
+ * Mirrors the code examples under docs/vitest/ — keep in sync when editing those pages.
  */
 import './vitest-test-helpers.js';
 import { describe, expect, it, vi } from 'vitest';
@@ -164,7 +164,7 @@ function createDeleteItemLike(httpClient: HttpClient) {
   );
 }
 
-describe('docs/vitest/index.md examples', () => {
+describe('docs/vitest examples', () => {
   it('Shared concepts: success then error (two mockHttpClientRequestOnce)', async () => {
     const { httpClient } = createHttpClientWithGuardFetch();
     mockHttpClientRequestOnce(httpClient, { success: { id: 1 } });

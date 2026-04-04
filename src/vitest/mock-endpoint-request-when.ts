@@ -11,7 +11,7 @@ import type { MockHttpClientOutput } from './utils/mock-http-client-request-hand
  * Stubs `HttpClient.request` only when `match` returns true for the `endpoint.request` input.
  * Otherwise the real request path runs.
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/#mockendpointrequestwhen)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/mock-endpoint-request-when.html)
  */
 export function mockEndpointRequestWhen<TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,
