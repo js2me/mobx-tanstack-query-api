@@ -21,14 +21,20 @@
       "./node_modules/@types/", "./types", "./node_modules"
     ],
     "noEmit": false,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "mobx-tanstack-query-api": ["./src/index.ts"],
+      "mobx-tanstack-query-api/builtin": ["./src/builtin/index.ts"],
+      "mobx-tanstack-query-api/cli": ["./src/cli/index.ts"],
+      "mobx-tanstack-query-api/bin": ["./src/bin/index.ts"],
+      "mobx-tanstack-query-api/testing": ["./src/testing/index.ts"]
+    }
   },
   "include": [
     "src/**/*.test.ts",
     "tests",
     "src/lib",
-    "src/**/*.test.tsx",
-    "node_modules"
+    "src/**/*.test.tsx"
   ],
   "exclude": []
 }

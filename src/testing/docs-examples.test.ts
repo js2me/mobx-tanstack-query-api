@@ -1,5 +1,5 @@
 /**
- * Mirrors the code examples under docs/vitest/ — keep in sync when editing those pages.
+ * Mirrors the code examples under docs/testing/ — keep in sync when editing those pages.
  */
 import './vitest-test-helpers.js';
 import { describe, expect, it, vi } from 'vitest';
@@ -9,16 +9,22 @@ import type { HttpClient } from '../runtime/http-client.js';
 import type { HttpResponse } from '../runtime/http-response.js';
 import { isHttpResponse } from '../runtime/http-response.js';
 import { captureEndpointRequestParams } from './capture-endpoint-request-params.js';
+import { captureInvalidations } from './capture-invalidations.js';
 import { mockEndpointRequest } from './mock-endpoint-request.js';
 import { mockEndpointRequestOnce } from './mock-endpoint-request-once.js';
 import { mockEndpointRequestSequence } from './mock-endpoint-request-sequence.js';
 import { mockEndpointRequestWhen } from './mock-endpoint-request-when.js';
 import { mockHttpClientRequest } from './mock-http-client-request.js';
 import { mockHttpClientRequestOnce } from './mock-http-client-request-once.js';
+import { mockHttpClientRequestSequence } from './mock-http-client-request-sequence.js';
 import { createMockHttpResponse } from './mock-http-response.js';
+import { mswPathPattern } from './msw-path-pattern.js';
 import { stubEndpointThrow } from './stub-endpoint-throw.js';
 import { createMockHttpClientRequestHandler } from './utils/mock-http-client-request-handler.js';
-import { createHttpClientWithGuardFetch } from './vitest-test-helpers.js';
+import {
+  createHttpClientWithGuardFetch,
+  createTestEndpoint,
+} from './vitest-test-helpers.js';
 
 function createQueryClientStub(): EndpointQueryClient {
   return { invalidateQueries: vi.fn() } as unknown as EndpointQueryClient;
@@ -78,7 +84,7 @@ function createSearchUsersLike(httpClient: HttpClient) {
   >(
     {
       params: ({ q }) => ({
-        path: `/search/${encodeURIComponent(q)}`,
+        path: `/search/${encodeURIComponent(q as string)}`,
         method: 'GET',
         format: 'json',
       }),
@@ -164,7 +170,7 @@ function createDeleteItemLike(httpClient: HttpClient) {
   );
 }
 
-describe('docs/vitest examples', () => {
+describe('docs/testing examples', () => {
   it('Shared concepts: success then error (two mockHttpClientRequestOnce)', async () => {
     const { httpClient } = createHttpClientWithGuardFetch();
     mockHttpClientRequestOnce(httpClient, { success: { id: 1 } });
@@ -193,6 +199,12 @@ describe('docs/vitest examples', () => {
       data: { name: 'Ada' },
     });
     expect(response.data).toEqual({ name: 'Ada' });
+  });
+
+  it('mswPathPattern example (getUser)', () => {
+    const { httpClient } = createHttpClientWithGuardFetch();
+    const getUser = createGetUserLike(httpClient);
+    expect(mswPathPattern(getUser)).toBe('https://api.test/users/:id');
   });
 
   it('createMockHttpClientRequestHandler example', async () => {
@@ -272,6 +284,26 @@ describe('docs/vitest examples', () => {
     spy.mockRestore();
   });
 
+  it('mockHttpClientRequestSequence example (searchUsers)', async () => {
+    const { httpClient, fetchMock } = createHttpClientWithGuardFetch();
+    const searchUsers = createSearchUsersLike(httpClient);
+    const spy = mockHttpClientRequestSequence(httpClient, [
+      { error: { code: 'TIMEOUT' }, status: 504 },
+      { success: { users: [] } },
+    ]);
+    await expect(searchUsers.request({ q: 'a' })).rejects.toSatisfy((e) =>
+      isHttpResponse(e, 504),
+    );
+    await expect(searchUsers.request({ q: 'a' })).resolves.toMatchObject({
+      data: { users: [] },
+    });
+    await expect(searchUsers.request({ q: 'b' })).rejects.toThrow(
+      'fetch must not be called',
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
+  });
+
   it('mockEndpointRequestWhen example (getUser + tier)', async () => {
     const { httpClient, fetchMock } = createHttpClientWithGuardFetch();
     const getUser = createGetUserTierLike(httpClient);
@@ -308,9 +340,33 @@ describe('docs/vitest examples', () => {
     const cap = captureEndpointRequestParams(createItem);
     mockHttpClientRequestOnce(httpClient, { success: { id: 1 } });
     const nextParams = cap.waitNext();
-    void createItem.request({ body: { name: 'a' } });
+    const requestPromise = createItem.request({ body: { name: 'a' } });
     const params = await nextParams;
+    await requestPromise;
     expect(params.path).toContain('/items');
+    cap.restore();
+  });
+
+  it('captureInvalidations (invalidateQuery filters)', () => {
+    const cap = captureInvalidations();
+    const { endpoint } = createTestEndpoint({ queryClient: cap.queryClient });
+
+    endpoint.invalidateQuery({ id: 7 });
+
+    expect(cap.last?.filters.exact).toBe(true);
+    expect(cap.last?.filters.queryKey).toContainEqual('getItem');
+    expect(cap.last?.filters.queryKey).toContainEqual({ id: 7 });
+    cap.restore();
+  });
+
+  it('captureInvalidations waitNext', async () => {
+    const cap = captureInvalidations();
+    const { endpoint } = createTestEndpoint({ queryClient: cap.queryClient });
+    const next = cap.waitNext();
+    endpoint.invalidateQuery({ id: 3 });
+    const recorded = await next;
+    expect(recorded.filters.queryKey).toContainEqual('getItem');
+    expect(recorded.filters.queryKey).toContainEqual({ id: 3 });
     cap.restore();
   });
 

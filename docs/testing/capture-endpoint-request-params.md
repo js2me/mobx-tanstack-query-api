@@ -31,7 +31,7 @@ cap.restore();
 const cap = captureEndpointRequestParams(createItem);
 mockHttpClientRequestOnce(httpClient, { success: { id: 1 } });
 const nextParams = cap.waitNext();
-void createItem.request({ body: { name: 'a' } });
+createItem.request({ body: { name: 'a' } });
 const params = await nextParams;
 expect(params.path).toContain('/items');
 cap.restore();

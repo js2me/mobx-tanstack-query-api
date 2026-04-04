@@ -6,7 +6,8 @@ The `mobx-tanstack-query-api` source code is written in TypeScript and compiled 
 
 - [`MobX`](https://mobx.js.org) **^6**
 - [`zod`](https://zod.dev) **≥4** (optional; used when you generate or enable Zod contracts)
-- [`vitest`](https://vitest.dev) **≥4** (optional; for helpers imported from `mobx-tanstack-query-api/vitest`)
+- [`vitest`](https://vitest.dev) **≥4** (optional; for helpers imported from `mobx-tanstack-query-api/testing`)
+- [`msw`](https://mswjs.io/) **≥2** (optional; only for `mswPathPattern` / `mswEndpointHandler` from that subpath)
 
 ## Installation   
 

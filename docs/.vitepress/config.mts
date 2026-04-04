@@ -79,25 +79,36 @@ export default defineDocsVitepressConfig(configs, {
         ]
       },
       {
-        text: 'Vitest testing 🧪',
-        link: '/vitest/index.html',
+        text: 'Testing 🧪',
+        link: '/testing/index.html',
         items: [
-          { text: 'mockHttpClientRequest', link: '/vitest/mock-http-client-request.html' },
-          { text: 'mockHttpClientRequestOnce', link: '/vitest/mock-http-client-request-once.html' },
-          { text: 'mockEndpointRequest', link: '/vitest/mock-endpoint-request.html' },
-          { text: 'mockEndpointRequestOnce', link: '/vitest/mock-endpoint-request-once.html' },
-          { text: 'mockEndpointRequestSequence', link: '/vitest/mock-endpoint-request-sequence.html' },
-          { text: 'mockEndpointRequestWhen', link: '/vitest/mock-endpoint-request-when.html' },
-          { text: 'captureEndpointRequestParams', link: '/vitest/capture-endpoint-request-params.html' },
-          { text: 'stubEndpointThrow', link: '/vitest/stub-endpoint-throw.html' },
+          { text: 'mockHttpClientRequest', link: '/testing/mock-http-client-request.html' },
+          { text: 'mockHttpClientRequestOnce', link: '/testing/mock-http-client-request-once.html' },
+          { text: 'mockHttpClientRequestSequence', link: '/testing/mock-http-client-request-sequence.html' },
+          { text: 'mockEndpointRequest', link: '/testing/mock-endpoint-request.html' },
+          { text: 'mockEndpointRequestOnce', link: '/testing/mock-endpoint-request-once.html' },
+          { text: 'mockEndpointRequestSequence', link: '/testing/mock-endpoint-request-sequence.html' },
+          { text: 'mockEndpointRequestWhen', link: '/testing/mock-endpoint-request-when.html' },
+          { text: 'mswEndpointHandler', link: '/testing/msw-endpoint-handler.html' },
+          { text: 'mswEndpointResponse', link: '/testing/msw-endpoint-response.html' },
+          { text: 'mswPathPattern', link: '/testing/msw-path-pattern.html' },
+          { text: 'captureEndpointRequestParams', link: '/testing/capture-endpoint-request-params.html' },
+          { text: 'captureInvalidations', link: '/testing/capture-invalidations.html' },
+          { text: 'stubEndpointThrow', link: '/testing/stub-endpoint-throw.html' },
           {
             text: 'Low-level API',
             items: [
-              { text: 'MockHttpResponse', link: '/vitest/low-level/mock-http-response.html' },
+              { text: 'MockHttpResponse', link: '/testing/low-level/mock-http-response.html' },
               {
                 text: 'createMockHttpClientRequestHandler',
-                link: '/vitest/low-level/create-mock-http-client-request-handler.html',
+                link: '/testing/low-level/create-mock-http-client-request-handler.html',
               },
+            ],
+          },
+          {
+            text: 'Recipes 📜',
+            items: [
+              { text: 'MSW', link: '/testing/recipes/msw.html' },
             ],
           },
         ],

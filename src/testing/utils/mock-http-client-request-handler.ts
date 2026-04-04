@@ -5,7 +5,7 @@ import { createMockHttpResponse } from '../mock-http-response.js';
 /**
  * Success or error payload passed to HTTP mock helpers.
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/mock-http-client-request.html)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/mock-http-client-request.html)
  */
 export type MockHttpClientOutput<TData = unknown, TError = unknown> =
   | { success: TData; status?: number; delay?: number }
@@ -14,7 +14,7 @@ export type MockHttpClientOutput<TData = unknown, TError = unknown> =
 /**
  * Builds an implementation for `vi.spyOn(httpClient, 'request').mockImplementation(...)`.
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/low-level/create-mock-http-client-request-handler.html)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/low-level/create-mock-http-client-request-handler.html)
  */
 export function createMockHttpClientRequestHandler<
   TData = unknown,

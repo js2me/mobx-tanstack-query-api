@@ -5,7 +5,7 @@ Builds the implementation function for **`vi.spyOn(httpClient, 'request').mockIm
 **Example:**
 
 ```ts
-import { createMockHttpClientRequestHandler } from 'mobx-tanstack-query-api/vitest';
+import { createMockHttpClientRequestHandler } from 'mobx-tanstack-query-api/testing';
 import { vi } from 'vitest';
 
 const handler = createMockHttpClientRequestHandler(httpClient, {

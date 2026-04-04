@@ -4,11 +4,11 @@ import { mockHttpClientRequestOnce } from './mock-http-client-request-once.js';
 import type { MockHttpClientOutput } from './utils/mock-http-client-request-handler.js';
 
 /**
- * Only the first `endpoint.request` is paired with {@link mockHttpClientRequestOnce}; later calls use the real client.
+ * Each `endpoint.request` queues a one-time {@link mockHttpClientRequestOnce} on that endpoint’s client with the same `output`.
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/mock-endpoint-request-once.html)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/mock-endpoint-request.html)
  */
-export const mockEndpointRequestOnce = <TEndpoint extends AnyEndpoint>(
+export const mockEndpointRequest = <TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,
   output: MockHttpClientOutput<
     InferEndpointData<TEndpoint>['data'],
@@ -19,7 +19,7 @@ export const mockEndpointRequestOnce = <TEndpoint extends AnyEndpoint>(
 
   const spy = vi.spyOn(endpoint, 'request' as any);
   // Endpoint is callable + methods; Vitest's spy typing does not model that intersection.
-  (spy as any).mockImplementationOnce((...args: any[]) => {
+  (spy as any).mockImplementation((...args: any[]) => {
     mockHttpClientRequestOnce(endpoint.httpClient, output);
     return invokeRealRequest(...args);
   });

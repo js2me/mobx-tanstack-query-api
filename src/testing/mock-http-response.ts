@@ -40,7 +40,7 @@ const mockParamsHasError = (
 /**
  * Test-oriented subclass of runtime `HttpResponse`. Prefer {@link createMockHttpResponse} for an instance whose body is already resolved.
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/low-level/mock-http-response.html)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/low-level/mock-http-response.html)
  */
 export class MockHttpResponse<
   TData = any,
@@ -116,7 +116,7 @@ export class MockHttpResponse<
 /**
  * Constructs {@link MockHttpResponse} and awaits {@link MockHttpResponse.resolveBody} so `data` / `error` match runtime behaviour.
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/low-level/mock-http-response.html)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/low-level/mock-http-response.html)
  */
 export async function createMockHttpResponse<
   TData = any,

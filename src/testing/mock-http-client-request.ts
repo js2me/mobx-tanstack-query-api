@@ -10,7 +10,7 @@ import {
  *
  * For `error`, throws the `HttpResponse`, matching the real client when `!ok` / `error`.
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/mock-http-client-request.html)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/mock-http-client-request.html)
  */
 export function mockHttpClientRequest<TData = unknown, TError = unknown>(
   httpClient: HttpClient,

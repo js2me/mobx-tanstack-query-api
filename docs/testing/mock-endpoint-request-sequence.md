@@ -12,6 +12,8 @@ function mockEndpointRequestSequence<TEndpoint extends AnyEndpoint>(
 
 Each **`endpoint.request`** consumes the **next** item in **`outputs`** via a one-time client stub. If **`outputs`** is empty, or after the last item has been used, no stub is queued and the real client runs. Useful for flows such as “first call fails, second succeeds.”
 
+To consume mocks in **HTTP client call order** when several endpoints share one **`HttpClient`**, use **`mockHttpClientRequestSequence`** instead.
+
 **Example:**
 
 ```ts

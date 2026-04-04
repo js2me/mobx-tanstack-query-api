@@ -15,7 +15,7 @@ import {
  * next request on that client regardless of endpoint — prefer `mockEndpointRequestOnce`
  * or compose your own `fetch` via `httpClient.updateConfig({ fetch })`.
  *
- * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/vitest/mock-http-client-request-once.html)
+ * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/mock-http-client-request-once.html)
  */
 export function mockHttpClientRequestOnce<TData = unknown, TError = unknown>(
   httpClient: HttpClient,

@@ -21,11 +21,15 @@ export function createHttpClientWithGuardFetch() {
   return { httpClient, fetchMock };
 }
 
-export function createTestEndpoint() {
+export function createTestEndpoint(options?: {
+  queryClient?: EndpointQueryClient;
+}) {
   const { httpClient, fetchMock } = createHttpClientWithGuardFetch();
-  const queryClient = {
-    invalidateQueries: vi.fn(),
-  } as unknown as EndpointQueryClient;
+  const queryClient =
+    options?.queryClient ??
+    ({
+      invalidateQueries: vi.fn(),
+    } as unknown as EndpointQueryClient);
 
   const endpoint = new Endpoint<
     HttpResponse<{ value: string }, { code: string }, number>,

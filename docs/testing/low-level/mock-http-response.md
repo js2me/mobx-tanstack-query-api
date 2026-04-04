@@ -12,7 +12,7 @@ A test-oriented subclass of runtime `HttpResponse`. Constructor options include 
 **Example:**
 
 ```ts
-import { createMockHttpResponse } from 'mobx-tanstack-query-api/vitest';
+import { createMockHttpResponse } from 'mobx-tanstack-query-api/testing';
 
 const response = await createMockHttpResponse({
   requestParams: { path: '/users', method: 'GET', format: 'json' },

@@ -15,9 +15,9 @@ export default defineConfig({
       ),
       'mobx-tanstack-query-api/cli': path.resolve(rootDir, 'src/cli/index.ts'),
       'mobx-tanstack-query-api/bin': path.resolve(rootDir, 'src/bin/index.ts'),
-      'mobx-tanstack-query-api/vitest': path.resolve(
+      'mobx-tanstack-query-api/testing': path.resolve(
         rootDir,
-        'src/vitest/index.ts',
+        'src/testing/index.ts',
       ),
     },
   },
