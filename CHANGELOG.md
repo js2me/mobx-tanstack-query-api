@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.47.0
+
+### Minor Changes
+
+- [`f9186b6`](https://github.com/js2me/mobx-tanstack-query-api/commit/f9186b61e94b17a4c4a218c0113e722bec970e4c) Thanks [@js2me](https://github.com/js2me)! - passing `abortSignal` to restorable testing utils
+
+### Patch Changes
+
+- [`f9186b6`](https://github.com/js2me/mobx-tanstack-query-api/commit/f9186b61e94b17a4c4a218c0113e722bec970e4c) Thanks [@js2me](https://github.com/js2me)! - fixed bug with incorrect work of `captureInvalidations` testing helper
+
 ## 0.46.0
 
 ### Minor Changes
