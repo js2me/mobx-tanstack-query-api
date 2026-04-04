@@ -17,4 +17,5 @@ export * from './msw-endpoint-handler.js';
 export * from './msw-endpoint-response.js';
 export * from './msw-path-pattern.js';
 export * from './stub-endpoint-throw.js';
+export * from './testing-defaults.js';
 export * from './utils/mock-http-client-request-handler.js';

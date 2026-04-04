@@ -1,11 +1,13 @@
 import './vitest-test-helpers.js';
 import { describe, expect, it } from 'vitest';
+import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
 import { mockEndpointRequestSequence } from './mock-endpoint-request-sequence.js';
 import { createTestEndpoint } from './vitest-test-helpers.js';
 
 describe('mockEndpointRequestSequence', () => {
   it('three mocked responses in order, fourth hits fetch', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     const spy = mockEndpointRequestSequence(endpoint, [
       { success: { value: 's1' } },
       { success: { value: 's2' } },
@@ -28,7 +30,8 @@ describe('mockEndpointRequestSequence', () => {
   });
 
   it('empty outputs array — no HttpClient mocks', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     const spy = mockEndpointRequestSequence(endpoint, []);
     await expect(endpoint.request({ id: 1 })).rejects.toThrow(
       'fetch must not be called',

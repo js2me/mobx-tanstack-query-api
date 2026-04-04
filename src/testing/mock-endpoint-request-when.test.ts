@@ -1,11 +1,13 @@
 import './vitest-test-helpers.js';
 import { describe, expect, it } from 'vitest';
+import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
 import { mockEndpointRequestWhen } from './mock-endpoint-request-when.js';
 import { createTestEndpoint } from './vitest-test-helpers.js';
 
 describe('mockEndpointRequestWhen', () => {
   it('when match is true, mocks response; otherwise uses fetch', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     const spy = mockEndpointRequestWhen(endpoint, (p) => p.id >= 100, {
       success: { value: 'vip' },
     });

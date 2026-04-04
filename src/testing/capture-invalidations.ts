@@ -4,6 +4,7 @@ import type {
 } from '@tanstack/query-core';
 import { type MockInstance, vi } from 'vitest';
 import type { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
+import { bindRestoreOnAbortSignal } from './utils/bind-restore-on-abort-signal.js';
 
 /**
  * One recorded call to {@link EndpointQueryClient.invalidateQueries}.
@@ -27,12 +28,9 @@ export type CaptureInvalidationsHandle = {
   get last(): CaptureInvalidationsCall | undefined;
   /** Resolves on the next `invalidateQueries` with the same payload recorded in {@link calls}. */
   waitNext(): Promise<CaptureInvalidationsCall>;
-  /**
-   * Minimal stub: use as the `queryClient` wired to codegen-generated endpoints in tests
-   * so `invalidateQuery` is recorded. Not a full {@link EndpointQueryClient}.
-   */
+  /** The same {@link EndpointQueryClient} you passed to {@link captureInvalidations}. */
   queryClient: EndpointQueryClient;
-  /** The underlying `vi.fn` used as `invalidateQueries`. */
+  /** Vitest spy installed on **`queryClient.invalidateQueries`**. */
   mock: MockInstance<
     (
       filters?: InvalidateQueryFilters,
@@ -43,34 +41,45 @@ export type CaptureInvalidationsHandle = {
 };
 
 /**
- * Returns a minimal `EndpointQueryClient`-shaped stub whose `invalidateQueries` records
- * each call. In tests, pass **`queryClient`** as **`cap.queryClient`** when wiring **codegen-generated**
- * endpoints so `invalidateQuery` hits the recorder (see package docs).
+ * Spies on **`queryClient.invalidateQueries`**, records each **`(filters, options)`**, then
+ * delegates to the real implementation so the cache behaves normally.
  *
- * For integration tests that need a real cache, prefer `vi.spyOn(realClient, 'invalidateQueries')`
- * or assert on `QueryClient` state instead.
+ * Wire the **same** **`queryClient`** into codegen-generated endpoints (see package docs) so
+ * **`endpoint.invalidateQuery`** hits this spy.
+ *
+ * Pass **`abortSignal`** (e.g. Vitest test context **`signal`**) to call **`restore()`** automatically
+ * when the signal aborts (test cancellation).
  *
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/capture-invalidations.html)
  */
-export function captureInvalidations(): CaptureInvalidationsHandle {
+export function captureInvalidations(
+  queryClient: EndpointQueryClient,
+  abortSignal?: AbortSignal,
+): CaptureInvalidationsHandle {
   const calls: CaptureInvalidationsCall[] = [];
   const waitQueue: Array<(c: CaptureInvalidationsCall) => void> = [];
 
-  const mock = vi.fn(
-    (filters?: InvalidateQueryFilters, options?: InvalidateOptions) => {
+  const runInvalidateQueries = queryClient.invalidateQueries.bind(queryClient);
+
+  const mock = vi
+    .spyOn(queryClient, 'invalidateQueries')
+    .mockImplementation(async (filters, options) => {
       const call: CaptureInvalidationsCall = {
         filters: filters ?? {},
         options,
       };
       calls.push(call);
       waitQueue.shift()?.(call);
-      return Promise.resolve();
-    },
-  );
+      return runInvalidateQueries(filters, options);
+    });
 
-  const queryClient = {
-    invalidateQueries: mock,
-  } as unknown as EndpointQueryClient;
+  let restored = false;
+  const restore = () => {
+    if (restored) return;
+    restored = true;
+    mock.mockRestore();
+  };
+  bindRestoreOnAbortSignal(abortSignal, restore);
 
   return {
     calls,
@@ -83,6 +92,6 @@ export function captureInvalidations(): CaptureInvalidationsHandle {
       }),
     queryClient,
     mock,
-    restore: () => mock.mockRestore(),
+    restore,
   };
 }

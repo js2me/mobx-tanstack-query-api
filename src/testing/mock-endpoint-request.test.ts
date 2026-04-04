@@ -1,12 +1,14 @@
 import './vitest-test-helpers.js';
 import { describe, expect, it, vi } from 'vitest';
+import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
 import { isHttpResponse } from '../runtime/http-response.js';
 import { mockEndpointRequest } from './mock-endpoint-request.js';
 import { createTestEndpoint } from './vitest-test-helpers.js';
 
 describe('mockEndpointRequest', () => {
   it('multiple endpoint.request calls with one mock', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     const spy = mockEndpointRequest(endpoint, { success: { value: 'multi' } });
     await expect(endpoint.request({ id: 1 })).resolves.toMatchObject({
       data: { value: 'multi' },
@@ -19,7 +21,8 @@ describe('mockEndpointRequest', () => {
   });
 
   it('repeated error on each call', async () => {
-    const { endpoint } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint } = createTestEndpoint({ queryClient });
     const spy = mockEndpointRequest(endpoint, {
       error: { code: 'n' },
       status: 418,
@@ -34,7 +37,8 @@ describe('mockEndpointRequest', () => {
   });
 
   it('after vi.restoreAllMocks fetch is invoked again', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     mockEndpointRequest(endpoint, { success: { value: 'x' } });
     await endpoint.request({ id: 1 });
     vi.restoreAllMocks();
@@ -45,7 +49,8 @@ describe('mockEndpointRequest', () => {
   });
 
   it('custom status on success', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     const spy = mockEndpointRequest(endpoint, {
       success: { value: 'created' },
       status: 201,

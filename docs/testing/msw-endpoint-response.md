@@ -18,7 +18,7 @@ Typed helpers for MSW resolvers: **`data`** / **`error`** are inferred from the 
 
 The **`endpoint`** argument is only used for **TypeScript inference**; at runtime it is ignored. Pass the same instance you use with [`mswEndpointHandler`](./msw-endpoint-handler.html).
 
-Default status: **200** for success, **400** for error (override with **`init.status`**, e.g. **201** for created).
+When **`init.status`** is omitted, status comes from **`testingDefaults.successStatus`** / **`testingDefaults.errorStatus`** ([**`testingDefaults`**](./testing-defaults.html); initially **200** / **500**, same object as **`MockHttpResponse`**, fields are assignable for global overrides). Per response, override with **`init.status`** (e.g. **201** or **400**).
 
 **Example**
 

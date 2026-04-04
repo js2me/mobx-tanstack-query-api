@@ -3,6 +3,14 @@ import { type HttpHandler, http } from 'msw';
 import { mswPathPattern } from './msw-path-pattern.js';
 
 /**
+ * MSW HTTP handler created by {@link mswEndpointHandler}, with the source **endpoint**
+ * attached for introspection (e.g. test utilities, logging).
+ */
+export interface MswEndpointHttpHandler extends HttpHandler {
+  endpoint: AnyEndpoint;
+}
+
+/**
  * MSW `http` method names supported by {@link mswEndpointHandler}.
  */
 export type MswEndpointHandlerMethod =
@@ -60,27 +68,9 @@ export function mswEndpointHandler(
   endpoint: AnyEndpoint,
   resolver: Parameters<typeof http.get>[1],
   methodOverride?: MswEndpointHandlerMethod,
-): HttpHandler {
+): MswEndpointHttpHandler {
   const method = methodOverride ?? inferMswMethodFromEndpoint(endpoint);
   const path = mswPathPattern(endpoint);
-  switch (method) {
-    case 'get':
-      return http.get(path, resolver as Parameters<typeof http.get>[1]);
-    case 'post':
-      return http.post(path, resolver as Parameters<typeof http.post>[1]);
-    case 'put':
-      return http.put(path, resolver as Parameters<typeof http.put>[1]);
-    case 'patch':
-      return http.patch(path, resolver as Parameters<typeof http.patch>[1]);
-    case 'delete':
-      return http.delete(path, resolver as Parameters<typeof http.delete>[1]);
-    case 'options':
-      return http.options(path, resolver as Parameters<typeof http.options>[1]);
-    case 'head':
-      return http.head(path, resolver as Parameters<typeof http.head>[1]);
-    default: {
-      const _exhaustive: never = method;
-      return _exhaustive;
-    }
-  }
+  const base = (http as any)[method as any](path, resolver) as HttpHandler;
+  return Object.assign(base, { endpoint });
 }

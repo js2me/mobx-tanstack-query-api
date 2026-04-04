@@ -86,6 +86,7 @@ Generated **endpoints** call the same `HttpClient.request` path, so `endpoint.re
 
 ### Tips
 
+- **Default response status** — those helpers use **`testingDefaults.successStatus`** / **`errorStatus`** ([**`testingDefaults`**](../testing-defaults.html), initially **200** / **500**; reassign globally if needed) unless you pass **`init.status`** (e.g. **400** for validation errors).
 - **Absolute URLs** — MSW matches the URL `fetch` receives. If `baseUrl` is `https://api.example.com` and the path is `/users/1`, the handler pattern should be `https://api.example.com/users/1` (or use a [path predicate](https://mswjs.io/docs/http/intercepting-requests#path-parameters) / `new URL(request.url)` inside the resolver for flexibility).
 - **Unhandled requests** — `onUnhandledRequest: "error"` catches typos in `baseUrl` or paths early; relax to `"warn"` while migrating.
 - **Per-test overrides** — `server.use(http.get(...))` after `setupServer` adds or replaces handlers for a single test; `resetHandlers()` clears them in `afterEach`.

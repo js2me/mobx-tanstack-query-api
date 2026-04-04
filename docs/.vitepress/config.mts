@@ -92,6 +92,7 @@ export default defineDocsVitepressConfig(configs, {
           { text: 'mswEndpointHandler', link: '/testing/msw-endpoint-handler.html' },
           { text: 'mswEndpointResponse', link: '/testing/msw-endpoint-response.html' },
           { text: 'mswPathPattern', link: '/testing/msw-path-pattern.html' },
+          { text: 'testingDefaults', link: '/testing/testing-defaults.html' },
           { text: 'captureEndpointRequestParams', link: '/testing/capture-endpoint-request-params.html' },
           { text: 'captureInvalidations', link: '/testing/capture-invalidations.html' },
           { text: 'stubEndpointThrow', link: '/testing/stub-endpoint-throw.html' },

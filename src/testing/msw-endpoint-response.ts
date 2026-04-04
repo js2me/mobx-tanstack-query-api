@@ -3,6 +3,7 @@ import type {
   HttpResponse,
   InferEndpointData,
 } from 'mobx-tanstack-query-api';
+import { testingDefaults } from './testing-defaults.js';
 
 /**
  * Success JSON body type for {@link mswEndpointResponse}: what the runtime client assigns to
@@ -38,13 +39,14 @@ export function mswEndpointResponse<TEndpoint extends AnyEndpoint>(
 ): Response {
   return Response.json(data, {
     ...init,
-    status: init?.status ?? 200,
+    status: init?.status ?? testingDefaults.successStatus,
   });
 }
 
 /**
- * Same as {@link mswEndpointResponse} but for **error** payloads; default **`status`** is **400**
- * (override with **`init.status`**).
+ * Same as {@link mswEndpointResponse} but for **error** payloads; default **`status`** is
+ * **`testingDefaults.errorStatus`** (see {@link testingDefaults}; same as {@link MockHttpResponse};
+ * override with **`init.status`**).
  *
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/msw-endpoint-response.html)
  */
@@ -55,6 +57,6 @@ export function mswEndpointErrorResponse<TEndpoint extends AnyEndpoint>(
 ): Response {
   return Response.json(error, {
     ...init,
-    status: init?.status ?? 400,
+    status: init?.status ?? testingDefaults.errorStatus,
   });
 }

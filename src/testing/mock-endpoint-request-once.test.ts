@@ -1,5 +1,6 @@
 import './vitest-test-helpers.js';
 import { describe, expect, it, vi } from 'vitest';
+import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
 import { isHttpResponse } from '../runtime/http-response.js';
 import { mockEndpointRequestOnce } from './mock-endpoint-request-once.js';
 import {
@@ -9,7 +10,8 @@ import {
 
 describe('mockEndpointRequestOnce', () => {
   it('success: endpoint.request returns data', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     mockEndpointRequestOnce(endpoint, { success: { value: 'ok' } });
     const r = await endpoint.request({ id: 1 });
     expect(r.data).toEqual({ value: 'ok' });
@@ -17,7 +19,8 @@ describe('mockEndpointRequestOnce', () => {
   });
 
   it('error: endpoint.request throws HttpResponse', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     mockEndpointRequestOnce(endpoint, {
       error: { code: 'e' },
       status: 409,
@@ -29,7 +32,8 @@ describe('mockEndpointRequestOnce', () => {
   });
 
   it('second endpoint.request does not use the client mock', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     mockEndpointRequestOnce(endpoint, { success: { value: 'one' } });
     await endpoint.request({ id: 1 });
     await expect(endpoint.request({ id: 2 })).rejects.toThrow(
@@ -40,7 +44,8 @@ describe('mockEndpointRequestOnce', () => {
 
   it('delay is applied before the response', async () => {
     vi.useFakeTimers();
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     mockEndpointRequestOnce(endpoint, { success: { value: 't' }, delay: 300 });
     const p = endpoint.request({ id: 1 });
     await vi.advanceTimersByTimeAsync(299);

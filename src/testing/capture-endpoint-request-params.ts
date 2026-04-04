@@ -4,6 +4,7 @@ import type {
   InferEndpointInput,
 } from 'mobx-tanstack-query-api';
 import { type MockInstance, vi } from 'vitest';
+import { bindRestoreOnAbortSignal } from './utils/bind-restore-on-abort-signal.js';
 
 /**
  * Handle returned by {@link captureEndpointRequestParams}.
@@ -18,6 +19,14 @@ export type CaptureEndpointRequestParamsHandle<TEndpoint extends AnyEndpoint> =
     get last(): FullRequestParams | undefined;
     /** Resolves on the next `endpoint.request` with the same `FullRequestParams` recorded in `calls`. */
     waitNext(): Promise<FullRequestParams>;
+    /**
+     * Registers **`waitNext`**, calls **`run()`** (usually **`endpoint.request(...)`**), awaits the returned
+     * promise, and resolves with **`params`** plus the settled **`result`**.
+     */
+    withNextRequest(run: () => ReturnType<TEndpoint['request']>): Promise<{
+      params: FullRequestParams;
+      result: Awaited<ReturnType<TEndpoint['request']>>;
+    }>;
     spy: MockInstance<TEndpoint['request']>;
     restore: () => void;
   };
@@ -26,10 +35,14 @@ export type CaptureEndpointRequestParamsHandle<TEndpoint extends AnyEndpoint> =
  * Intercepts `endpoint.request` and records resolved `FullRequestParams`.
  * Does not touch `HttpClient`; pair with separate client mocks by registering them after `capture`.
  *
+ * Pass **`abortSignal`** (e.g. Vitest test context **`signal`**) to call **`restore()`** automatically
+ * when the signal aborts (test cancellation).
+ *
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/capture-endpoint-request-params.html)
  */
 export function captureEndpointRequestParams<TEndpoint extends AnyEndpoint>(
   endpoint: TEndpoint,
+  abortSignal?: AbortSignal,
 ): CaptureEndpointRequestParamsHandle<TEndpoint> {
   const calls: FullRequestParams[] = [];
   const waitQueue: Array<(p: FullRequestParams) => void> = [];
@@ -46,16 +59,33 @@ export function captureEndpointRequestParams<TEndpoint extends AnyEndpoint>(
     return invokeRealRequest(...args);
   });
 
+  let restored = false;
+  const restore = () => {
+    if (restored) return;
+    restored = true;
+    spy.mockRestore();
+  };
+  bindRestoreOnAbortSignal(abortSignal, restore);
+
+  const waitNext = () =>
+    new Promise<FullRequestParams>((resolve) => {
+      waitQueue.push(resolve);
+    });
+
   return {
     calls,
     get last() {
       return calls.at(-1);
     },
-    waitNext: () =>
-      new Promise<FullRequestParams>((resolve) => {
-        waitQueue.push(resolve);
-      }),
+    waitNext,
+    withNextRequest: async (run) => {
+      const paramsPromise = waitNext();
+      const responsePromise = run();
+      const params = await paramsPromise;
+      const result = await responsePromise;
+      return { params, result };
+    },
     spy: spy as MockInstance<TEndpoint['request']>,
-    restore: () => spy.mockRestore(),
+    restore,
   };
 }

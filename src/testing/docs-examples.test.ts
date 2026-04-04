@@ -4,7 +4,7 @@
 import './vitest-test-helpers.js';
 import { describe, expect, it, vi } from 'vitest';
 import { Endpoint } from '../runtime/endpoint.js';
-import type { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
+import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
 import type { HttpClient } from '../runtime/http-client.js';
 import type { HttpResponse } from '../runtime/http-response.js';
 import { isHttpResponse } from '../runtime/http-response.js';
@@ -26,11 +26,8 @@ import {
   createTestEndpoint,
 } from './vitest-test-helpers.js';
 
-function createQueryClientStub(): EndpointQueryClient {
-  return { invalidateQueries: vi.fn() } as unknown as EndpointQueryClient;
-}
-
 function createGetUserLike(httpClient: HttpClient) {
+  const queryClient = new EndpointQueryClient();
   return new Endpoint<
     HttpResponse<{ name: string }, { code: string }, number>,
     { id: number },
@@ -48,12 +45,13 @@ function createGetUserLike(httpClient: HttpClient) {
       tags: [],
       meta: {},
     },
-    createQueryClientStub(),
+    queryClient,
     httpClient,
   );
 }
 
 function createGetUserTierLike(httpClient: HttpClient) {
+  const queryClient = new EndpointQueryClient();
   return new Endpoint<
     HttpResponse<{ tier: string }, { code: string }, number>,
     { id: number },
@@ -71,12 +69,13 @@ function createGetUserTierLike(httpClient: HttpClient) {
       tags: [],
       meta: {},
     },
-    createQueryClientStub(),
+    queryClient,
     httpClient,
   );
 }
 
 function createSearchUsersLike(httpClient: HttpClient) {
+  const queryClient = new EndpointQueryClient();
   return new Endpoint<
     HttpResponse<{ users: unknown[] }, { code: string }, number>,
     { q: string },
@@ -94,12 +93,13 @@ function createSearchUsersLike(httpClient: HttpClient) {
       tags: [],
       meta: {},
     },
-    createQueryClientStub(),
+    queryClient,
     httpClient,
   );
 }
 
 function createUpdateItemLike(httpClient: HttpClient) {
+  const queryClient = new EndpointQueryClient();
   return new Endpoint<
     HttpResponse<{ ok: boolean }, { code: string }, number>,
     { id: number; body: { title: string } },
@@ -118,12 +118,13 @@ function createUpdateItemLike(httpClient: HttpClient) {
       tags: [],
       meta: {},
     },
-    createQueryClientStub(),
+    queryClient,
     httpClient,
   );
 }
 
 function createCreateItemLike(httpClient: HttpClient) {
+  const queryClient = new EndpointQueryClient();
   return new Endpoint<
     HttpResponse<{ id: number }, { code: string }, number>,
     { body: { name: string } },
@@ -142,12 +143,13 @@ function createCreateItemLike(httpClient: HttpClient) {
       tags: [],
       meta: {},
     },
-    createQueryClientStub(),
+    queryClient,
     httpClient,
   );
 }
 
 function createDeleteItemLike(httpClient: HttpClient) {
+  const queryClient = new EndpointQueryClient();
   return new Endpoint<
     HttpResponse<{ deleted: boolean }, { code: string }, number>,
     { id: number },
@@ -165,7 +167,7 @@ function createDeleteItemLike(httpClient: HttpClient) {
       tags: [],
       meta: {},
     },
-    createQueryClientStub(),
+    queryClient,
     httpClient,
   );
 }
@@ -339,17 +341,18 @@ describe('docs/testing examples', () => {
     const createItem = createCreateItemLike(httpClient);
     const cap = captureEndpointRequestParams(createItem);
     mockHttpClientRequestOnce(httpClient, { success: { id: 1 } });
-    const nextParams = cap.waitNext();
-    const requestPromise = createItem.request({ body: { name: 'a' } });
-    const params = await nextParams;
-    await requestPromise;
+    const { params, result } = await cap.withNextRequest(() =>
+      createItem.request({ body: { name: 'a' } }),
+    );
     expect(params.path).toContain('/items');
+    expect(result.data).toEqual({ id: 1 });
     cap.restore();
   });
 
-  it('captureInvalidations (invalidateQuery filters)', () => {
-    const cap = captureInvalidations();
-    const { endpoint } = createTestEndpoint({ queryClient: cap.queryClient });
+  it('captureInvalidations (invalidateQuery filters)', ({ signal }) => {
+    const queryClient = new EndpointQueryClient();
+    const cap = captureInvalidations(queryClient, signal);
+    const { endpoint } = createTestEndpoint({ queryClient });
 
     endpoint.invalidateQuery({ id: 7 });
 
@@ -360,8 +363,9 @@ describe('docs/testing examples', () => {
   });
 
   it('captureInvalidations waitNext', async () => {
-    const cap = captureInvalidations();
-    const { endpoint } = createTestEndpoint({ queryClient: cap.queryClient });
+    const queryClient = new EndpointQueryClient();
+    const cap = captureInvalidations(queryClient);
+    const { endpoint } = createTestEndpoint({ queryClient });
     const next = cap.waitNext();
     endpoint.invalidateQuery({ id: 3 });
     const recorded = await next;

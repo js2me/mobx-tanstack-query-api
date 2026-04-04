@@ -1,11 +1,13 @@
 import './vitest-test-helpers.js';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
 import { captureEndpointRequestParams } from './capture-endpoint-request-params.js';
 import { createTestEndpoint } from './vitest-test-helpers.js';
 
 describe('captureEndpointRequestParams', () => {
   it('calls and last reflect FullRequestParams', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     const cap = captureEndpointRequestParams(endpoint);
     await expect(endpoint.request({ id: 7 })).rejects.toThrow(
       'fetch must not be called',
@@ -17,13 +19,24 @@ describe('captureEndpointRequestParams', () => {
   });
 
   it('waitNext resolves on the next call', async () => {
-    const { endpoint, fetchMock } = createTestEndpoint();
+    const queryClient = new EndpointQueryClient();
+    const { endpoint, fetchMock } = createTestEndpoint({ queryClient });
     const cap = captureEndpointRequestParams(endpoint);
-    const next = cap.waitNext();
-    const p = endpoint.request({ id: 3 });
-    await expect(next).resolves.toMatchObject({ path: '/items/3' });
-    await expect(p).rejects.toThrow('fetch must not be called');
+    await expect(
+      cap.withNextRequest(() => endpoint.request({ id: 3 })),
+    ).rejects.toThrow('fetch must not be called');
+    expect(cap.last?.path).toBe('/items/3');
     expect(fetchMock).toHaveBeenCalledTimes(1);
     cap.restore();
+  });
+
+  it('abortSignal restores the spy when aborted', () => {
+    const queryClient = new EndpointQueryClient();
+    const { endpoint } = createTestEndpoint({ queryClient });
+    const ac = new AbortController();
+    captureEndpointRequestParams(endpoint, ac.signal);
+    expect(vi.isMockFunction(endpoint.request)).toBe(true);
+    ac.abort();
+    expect(vi.isMockFunction(endpoint.request)).toBe(false);
   });
 });

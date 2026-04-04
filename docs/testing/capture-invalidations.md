@@ -1,27 +1,34 @@
 # `captureInvalidations`
 
 ```ts
-function captureInvalidations(): CaptureInvalidationsHandle;
+import type { EndpointQueryClient } from "mobx-tanstack-query-api";
+
+function captureInvalidations(
+  queryClient: EndpointQueryClient,
+  abortSignal?: AbortSignal,
+): CaptureInvalidationsHandle;
 ```
 
-Returns a minimal **`EndpointQueryClient`** stub whose **`invalidateQueries`** records every **`(filters, options)`** tuple.
+Installs a Vitest **spy** on **`queryClient.invalidateQueries`**: every **`(filters, options)`** is recorded, then the call is forwarded to the real implementation (cache invalidation runs as usual).
 
-Pass **`cap.queryClient`** into your **test wiring** as the same **`queryClient`** your **codegen-generated** endpoints use (see [Getting started](/introduction/getting-started.html)), so calls like **`getItem.invalidateQuery(...)`** go through this stub.
+Use the **same** **`queryClient`** when wiring **codegen-generated** endpoints (see [Getting started](/introduction/getting-started.html)), so **`getItem.invalidateQuery(...)`** goes through this client.
 
-The handle exposes **`calls`**, **`last`**, **`waitNext()`**, the underlying Vitest **`mock`**, and **`restore()`** (calls **`mock.mockRestore()`**).
+Optional **`abortSignal`**: pass Vitest’s test **`signal`** so **`restore()`** runs when the test is **cancelled**. **`restore()`** remains safe to call explicitly afterward (idempotent).
 
-This stub implements only **`invalidateQueries`**. For tests that need a real cache or **`invalidateEndpoints`**, use a real **`EndpointQueryClient`** and **`vi.spyOn(client, 'invalidateQueries')`** instead.
+The handle exposes **`calls`**, **`last`**, **`waitNext()`**, **`queryClient`** (the instance you passed), the Vitest **`mock`** (the spy), and **`restore()`** (**`mock.mockRestore()`**, safe to call multiple times, including after **`abortSignal`**).
 
 **`filters.queryKey`** is the full TanStack **`queryKey`** array (path segments, **`operationId`**, params object, etc.). Assert specific parts with **`toContainEqual`**, not **`toEqual([{ id }])`**.
 
 **Example — assert `invalidateQuery` filters:**
 
-Below, **`getItem`** stands for a generated endpoint export. It must use **`cap.queryClient`**.
+Below, **`getItem`** stands for a generated endpoint export; **`queryClient`** must be the same instance passed to **`captureInvalidations`**.
 
 ```ts
+import { EndpointQueryClient } from "mobx-tanstack-query-api";
 import { captureInvalidations } from "mobx-tanstack-query-api/testing";
 
-const cap = captureInvalidations();
+const queryClient = new EndpointQueryClient();
+const cap = captureInvalidations(queryClient);
 
 getItem.invalidateQuery({ id: 7 });
 
@@ -34,9 +41,11 @@ cap.restore();
 **Example — wait for the next invalidation:**
 
 ```ts
+import { EndpointQueryClient } from "mobx-tanstack-query-api";
 import { captureInvalidations } from "mobx-tanstack-query-api/testing";
 
-const cap = captureInvalidations();
+const queryClient = new EndpointQueryClient();
+const cap = captureInvalidations(queryClient);
 const next = cap.waitNext();
 getItem.invalidateQuery({ id: 3 });
 const recorded = await next;

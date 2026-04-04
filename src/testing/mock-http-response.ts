@@ -5,6 +5,8 @@ import {
   type ResponseFormat,
 } from 'mobx-tanstack-query-api';
 
+import { testingDefaults } from './testing-defaults.js';
+
 export type MockHttpResponseParams<
   TData = any,
   TError = null,
@@ -25,9 +27,6 @@ export type MockHttpResponseSetOptions = {
   status?: number;
   statusText?: string;
 };
-
-const DEFAULT_SUCCESS_STATUS = 200;
-const DEFAULT_ERROR_STATUS = 500;
 
 const mockParamsHasData = (
   params: MockHttpResponseParams<any, any, any>,
@@ -79,7 +78,7 @@ export class MockHttpResponse<
     this.data = data;
     this.error = null as any;
     this.syncStatusFields(
-      options?.status ?? DEFAULT_SUCCESS_STATUS,
+      options?.status ?? testingDefaults.successStatus,
       options?.statusText,
     );
   }
@@ -88,7 +87,7 @@ export class MockHttpResponse<
     this.error = error;
     this.data = null as any;
     this.syncStatusFields(
-      options?.status ?? DEFAULT_ERROR_STATUS,
+      options?.status ?? testingDefaults.errorStatus,
       options?.statusText,
     );
   }
@@ -107,8 +106,8 @@ export class MockHttpResponse<
     return (
       params.status ??
       (mockParamsHasData(params)
-        ? DEFAULT_SUCCESS_STATUS
-        : DEFAULT_ERROR_STATUS)
+        ? testingDefaults.successStatus
+        : testingDefaults.errorStatus)
     );
   }
 }

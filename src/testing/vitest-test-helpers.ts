@@ -1,6 +1,6 @@
 import { afterEach, vi } from 'vitest';
 import { Endpoint } from '../runtime/endpoint.js';
-import type { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
+import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
 import { HttpClient } from '../runtime/http-client.js';
 import type { HttpResponse } from '../runtime/http-response.js';
 
@@ -21,15 +21,12 @@ export function createHttpClientWithGuardFetch() {
   return { httpClient, fetchMock };
 }
 
-export function createTestEndpoint(options?: {
-  queryClient?: EndpointQueryClient;
+/** Test **`Endpoint`**: pass a **`queryClient`** you created first (e.g. **`new EndpointQueryClient()`**). */
+export function createTestEndpoint(options: {
+  queryClient: EndpointQueryClient;
 }) {
   const { httpClient, fetchMock } = createHttpClientWithGuardFetch();
-  const queryClient =
-    options?.queryClient ??
-    ({
-      invalidateQueries: vi.fn(),
-    } as unknown as EndpointQueryClient);
+  const { queryClient } = options;
 
   const endpoint = new Endpoint<
     HttpResponse<{ value: string }, { code: string }, number>,
@@ -63,9 +60,7 @@ export type ItemResponse = HttpResponse<
 
 export function createThreeEndpointsOnSharedClient() {
   const { httpClient, fetchMock } = createHttpClientWithGuardFetch();
-  const queryClient = {
-    invalidateQueries: vi.fn(),
-  } as unknown as EndpointQueryClient;
+  const queryClient = new EndpointQueryClient();
 
   const endpointA = new Endpoint<
     ItemResponse,

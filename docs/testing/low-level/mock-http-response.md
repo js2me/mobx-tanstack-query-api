@@ -2,6 +2,10 @@
 
 For advanced cases where you construct or inspect **`HttpResponse`** yourself.
 
+## Default status values
+
+Status fallbacks use the exported object [**`testingDefaults`**](../testing-defaults.html) (**`successStatus`**, **`errorStatus`**; initially **200** / **500**, mutable). **`MockHttpResponse`** (constructor / **`setData`** / **`setError`**) and [`mswEndpointResponse` / `mswEndpointErrorResponse`](../msw-endpoint-response.html) read the **current** property values.
+
 ## `MockHttpResponse`
 
 A test-oriented subclass of runtime `HttpResponse`. Constructor options include request info (`requestParams`, etc.), optional `data` / `error` / `status`, and optional `httpClient` for URL building.
