@@ -11,7 +11,7 @@ For **integration-style** tests that keep the real `fetch` path and mock at the 
 Shared HTTP status defaults live in the exported object [**`testingDefaults`**](./testing-defaults.html): **`successStatus`** and **`errorStatus`** (initially **200** and **500**). Helpers read the **current** numbers, so you can reassign them globally; [`MockHttpResponse`](./low-level/mock-http-response.html) and [`mswEndpointResponse` / `mswEndpointErrorResponse`](./msw-endpoint-response.html) all use this object.
 
 ::: tip Peer dependencies
-**`vitest`** (`>=4`) is optional: install it when you use the `vi`-based helpers from **`mobx-tanstack-query-api/testing`**. **`msw`** (`>=2`) is optional and only needed for **`mswPathPattern`** / **`mswEndpointHandler`**. This repository maps the `testing` subpath in `tsconfig` for local development.
+**`vitest`** (`>=4`) is optional: install it when you use the `vi`-based helpers from **`mobx-tanstack-query-api/testing`**. **`msw`** (`>=2`) is optional and only needed when you call MSW’s **`http.*`** APIs (e.g. **`mswEndpoint`**, **`mswEndpointHandler`**). This repository maps the `testing` subpath in `tsconfig` for local development.
 :::
 
 ```ts
