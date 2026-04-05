@@ -2,7 +2,7 @@
 
 Spies on **`queryClient.invalidateQueries`**, records each **`(filters, options)`**, then forwards to the real method so invalidation still runs. Use the **same** **`queryClient`** instance as in your app / codegen setup.
 
-The returned handle has **`calls`**, **`last`**, **`waitNext()`**, **`restore()`**, and access to the underlying Vitest mock. Optional **`abortSignal`** cleans up when the test is cancelled.
+The returned handle has **`calls`**, **`last`**, **`waitNext()`**, **`restore()`**, **`queryClient`** (the instance you passed in), and **`mock`** (the Vitest spy on **`invalidateQueries`**). Optional **`abortSignal`** as the second argument cleans up when the test is cancelled.
 
 **`filters.queryKey`** is the full TanStack **`queryKey`** — assert with **`toContainEqual`** on the pieces you care about, not a full deep **`toEqual`** on the whole array.
 

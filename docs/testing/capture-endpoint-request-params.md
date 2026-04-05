@@ -1,8 +1,8 @@
 # `captureEndpointRequestParams`
 
 Records **`FullRequestParams`** from **`endpoint.configuration.params`** on each **`endpoint.request`**. It does **not** stub HTTP — pair with **`mockHttpClientRequestOnce`** (or similar) if the request should still resolve.
-
-Returned handle: **`calls`**, **`last`**, **`waitNext()`**, **`withNextRequest(run)`**, **`restore()`**. Optional Vitest **`abortSignal`** for automatic cleanup on cancellation.
+ 
+Returned handle: **`calls`**, **`last`**, **`waitNext()`**, **`withNextRequest(run)`**, **`spy`**, **`restore()`**.Optional Vitest **`abortSignal`** as the second argument for automatic cleanup on cancellation.
 
 ## `withNextRequest`
 

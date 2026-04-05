@@ -4,7 +4,7 @@ Registers an MSW handler for a generated **endpoint**: **method** and **URL patt
 
 The return value is a normal MSW **`HttpHandler`** with the same **`endpoint`** attached, so tests can reuse the instance you passed in.
 
-The **resolver** is the same function MSW expects for **`http.*`** handlers. You can return plain **success body** values (TypeScript types them from the endpoint) or a **`Response`** / **`Promise<Response>`**. Use [`mswEndpointResponse`](./msw-endpoint-response.html) / [`mswEndpointErrorResponse`](./msw-endpoint-response.html) when you care about status or headers; otherwise returning data directly is enough. Defaults for status codes come from [`testingDefaults`](./testing-defaults.html).
+The **resolver** is the same function MSW expects for **`http.*`** handlers. Returning a **plain value** (not a **`Response`**) always builds a **successful** reply (typed like the endpoint’s success **`data`**). For **errors**, non-OK statuses, or extra headers, return a **`Response`** — typically [`mswEndpointErrorResponse`](./msw-endpoint-response.html) / [`mswEndpointResponse`](./msw-endpoint-response.html) or MSW’s helpers. Default status codes for the package-built responses come from [`testingDefaults`](./testing-defaults.html).
 
 Requires the **`msw`** peer dependency. Setup and lifecycle are in the [MSW recipe](./recipes/msw.html).
 
