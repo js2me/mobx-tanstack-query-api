@@ -1,5 +1,6 @@
 import type { ParsedRoute } from 'swagger-typescript-api';
 import { callFunction } from 'yummies/common';
+import { typeGuard } from 'yummies/type-guard';
 import type { AnyObject, Maybe, MaybeFn } from 'yummies/types';
 import type { BaseTmplParams } from '../types/base-tmpl-params.js';
 import type {
@@ -41,6 +42,13 @@ export type ZodContractsOption = NonNullable<
 
 function tmplDataToSourceExpr(tmplData: string | AnyObject): string {
   return typeof tmplData === 'string' ? tmplData : JSON.stringify(tmplData);
+}
+
+function overrideRequestParamsToSpreadLine(value: unknown): string | null {
+  if (!typeGuard.isObject(value) || Object.keys(value).length === 0) {
+    return null;
+  }
+  return `...(${JSON.stringify(value)}),`;
 }
 
 export interface NewEndpointTmplParams extends BaseTmplParams {
@@ -345,6 +353,10 @@ export const newEndpointTmpl = ({
     contractName: `${_.camelCase(route.routeName.usage)}${endpointContractSuffix}`,
   };
 
+  const overrideRequestParamsSpreadLine = overrideRequestParamsToSpreadLine(
+    callFunction(codegenParams.overrideRequestParams, requestPathEndpointCtx),
+  );
+
   const resultPath =
     (callFunction(codegenParams.requestPathPrefix, requestPathEndpointCtx) ||
       '') +
@@ -613,6 +625,7 @@ new ${importFileParams.endpoint.exportName}<
             ${security ? 'secure: true,' : ''}
             ${bodyContentType ? `contentType: ${bodyContentType},` : ''}
             ${responseFormat ? `format: ${responseFormat},` : ''}
+            ${overrideRequestParamsSpreadLine ?? ''}
             ...${requestConfigParam.name},
         }),
         requiredParams: [${inputParams.filter((it) => !it.optional).map((it) => `"${it.name}"`)}],

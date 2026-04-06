@@ -4,6 +4,7 @@ import type {
   RawRouteInfo,
 } from 'swagger-typescript-api';
 import type { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/types';
+import type { FullRequestParams } from '../../runtime/http-client.js';
 import type { RemoveUnusedTypesParams } from '../utils/remove-unused-types.js';
 import type { FilterOption } from '../utils/unpack-filter-option.js';
 import type { CodegenDataUtils } from './codegen-data-utils.js';
@@ -107,6 +108,17 @@ export interface GenerateQueryApiParams {
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#requestpathsuffix)
    */
   requestPathSuffix?: string | ((endpoint: RouteBaseInfo) => string);
+
+  /**
+   * Static partial {@link FullRequestParams} or a function evaluated at **codegen** time per endpoint
+   * with {@link RouteBaseInfo}. The result is spread into each generated `configuration.params` return
+   * **before** `...requestParams`, so callers can still override those keys at runtime.
+   * Falsy values are ignored (nothing is emitted).
+   */
+  overrideRequestParams?: MaybeFn<
+    MaybeFalsy<Partial<FullRequestParams>>,
+    [routeInfo: RouteBaseInfo]
+  >;
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#removeunusedtypes)
