@@ -81,6 +81,45 @@ describe('overrideRequestParams', () => {
     expect(content).not.toContain('svc: "other"');
   });
 
+  it('non-empty string is emitted as raw spread expression ...(<expr>),', async () => {
+    await generateApi(
+      defineConfig({
+        ...baseConfig,
+        overrideRequestParams: '{ secure: true }',
+        filterEndpoints: (ep) => ep.raw.operationId === 'listWidgets',
+      }),
+    );
+
+    const content = await fs.readFile(
+      path.resolve(OUTPUT_DIR, 'endpoints', 'list-widgets.ts'),
+      'utf-8',
+    );
+
+    expect(content).toMatch(/\.\.\.\s*\{\s*secure:\s*true\s*\}\s*,/);
+    const spreadIdx = content.search(/\.\.\.\s*\{\s*secure:\s*true\s*\}\s*,/);
+    const requestParamsIdx = content.indexOf('...requestParams');
+    expect(spreadIdx).toBeGreaterThan(-1);
+    expect(requestParamsIdx).toBeGreaterThan(-1);
+    expect(spreadIdx).toBeLessThan(requestParamsIdx);
+  });
+
+  it('whitespace-only string emits no override spread', async () => {
+    await generateApi(
+      defineConfig({
+        ...baseConfig,
+        overrideRequestParams: '   \n\t  ',
+        filterEndpoints: (ep) => ep.raw.operationId === 'listWidgets',
+      }),
+    );
+
+    const content = await fs.readFile(
+      path.resolve(OUTPUT_DIR, 'endpoints', 'list-widgets.ts'),
+      'utf-8',
+    );
+
+    expect(content).not.toContain('...({ secure:');
+  });
+
   it('falsy resolved value emits no extra spread', async () => {
     await generateApi(
       defineConfig({
