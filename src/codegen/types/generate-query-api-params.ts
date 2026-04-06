@@ -292,28 +292,9 @@ export interface GenerateQueryApiParams {
   noBarrelFiles?: boolean;
 
   /**
-   * Generate Zod contracts (params + data schemas) for each endpoint and add `contract` to the endpoint config.
-   * When truthy, can also enable validation via `validateContract` in the endpoint config.
-   * Requires `zod` to be installed.
+   * Generate Zod contracts for each endpoint (`contract`, optional `validateContract` / `throwContracts`). Requires `zod`. Option shapes are documented at the link above.
    *
-   * - `true`: generate contracts and set `validateContract: true` (validate params + data).
-   * - `false`: no contracts, no validation.
-   * - `{ validate: boolean }`: set `validateContract` to that boolean.
-   * - `{ validate: string }`: set `validateContract` to the expression (inserted as-is). E.g. `"process.env.NODE_ENV === 'development'"`.
-   * - `{ validate: { params?: boolean | string; data?: boolean | string } }`: set `validateContract` to an object; each value is literal or expression (string inserted as-is).
-   *
-   * When using an object form, optional `throw` controls `throwContracts` (throw on validation errors vs warn):
-   * - `{ throw: boolean }`: set `throwContracts` to that boolean.
-   * - `{ throw: string }`: set `throwContracts` to the expression (inserted as-is).
-   * - `{ throw: { params?: boolean | string; data?: boolean | string } }`: set `throwContracts` to an object; each value is literal or expression (string inserted as-is).
-   *
-   * Optional `appendRule`: either a string (runtime) or a function (codegen-time).
-   * - **string**: expression inserted as-is → `contract: <expr> ? <contractVar> : undefined`. E.g. `"process.env.NODE_ENV === \"development\""`.
-   * - **function** (contractName, routeInfo) => boolean: at codegen time, if true → `contract: <contractVar>`, if false → `contract: undefined`.
-   *
-   * Optional `suffix`: suffix for generated shared Zod schema variables.
-   * Shared schema names are based on data contract names in camelCase, e.g. `DispatchReceiptDC` -> `dispatchReceiptDc`.
-   * Default: `""`.
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#zodcontracts)
    */
   zodContracts?:
     | boolean
