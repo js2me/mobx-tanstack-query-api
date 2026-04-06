@@ -14,6 +14,22 @@ import type { TypeInfo } from './type-info.js';
 type RuntimeExpressionOrBoolean = string | boolean;
 
 /**
+ * Same string values as TypeScript [`compilerOptions.moduleResolution`](https://www.typescriptlang.org/tsconfig/#moduleResolution)
+ * that you want codegen to mirror.
+ *
+ * **Emit:** only `node16` and `nodenext` add a `.js` suffix to relative specifiers in generated
+ * files (NodeNext-style). `bundler`, `classic`, `node` / `node10`, or omitting the option omit the
+ * suffix (bundler / legacy Node resolution). `node` is the legacy tsconfig spelling for Node10-style.
+ */
+export type CodegenModuleResolution =
+  | 'bundler'
+  | 'classic'
+  | 'node'
+  | 'node10'
+  | 'node16'
+  | 'nodenext';
+
+/**
  * Identity of an endpoint at codegen time (operation, path, generated contract variable base name).
  * Used by `zodContracts` callbacks and by `requestPathPrefix` / `requestPathSuffix` when they are functions.
  */
@@ -70,6 +86,14 @@ export interface GenerateQueryApiParams {
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#mixininput)
    */
   mixinInput?: string | AnyObject;
+
+  /**
+   * Mirror your `tsconfig` `moduleResolution` (`bundler`, `node16`, `nodenext`, `node10`, `classic`, …).
+   * Only `node16` / `nodenext` make codegen append `.js` to relative specifiers.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#moduleresolution)
+   */
+  moduleResolution?: CodegenModuleResolution;
 
   /**
    * String: inserted as-is before the route path. Function: receives endpoint info and returns the prefix string.
@@ -324,9 +348,3 @@ export interface GenerateQueryApiParams {
 export type GenerateQueryApiParamsWithInput = GenerateQueryApiParams & {
   input: string | AnyObject;
 };
-
-export function isActiveCodegenConfig(
-  config: GenerateQueryApiParams,
-): config is GenerateQueryApiParamsWithInput {
-  return Boolean(config.input);
-}

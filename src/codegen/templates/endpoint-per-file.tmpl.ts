@@ -1,6 +1,7 @@
 import type { ParsedRoute } from 'swagger-typescript-api';
 import type { AnyObject, Maybe } from 'yummies/types';
 import type { BaseTmplParams, MetaInfo } from '../types/index.js';
+import { generateImport } from '../utils/generate-import.js';
 import { callEndpointMeta } from '../utils/resolve-codegen-meta.js';
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
@@ -64,8 +65,13 @@ export const endpointPerFileTmpl = async (
   const extraImportLines: string[] = [];
 
   if (metaInfo) {
+    const metaFrom = `../${groupName ? '../' : ''}meta-info`;
     extraImportLines.push(
-      `import { ${[groupName && 'Group', metaInfo?.namespace && 'namespace', 'Tag'].filter(Boolean).join(',')} } from "../${groupName ? '../' : ''}meta-info";`,
+      generateImport(
+        [groupName && 'Group', metaInfo.namespace && 'namespace', 'Tag'],
+        metaFrom,
+        codegenParams,
+      ),
     );
   }
 
@@ -73,7 +79,11 @@ export const endpointPerFileTmpl = async (
 
   if (requestInfoMeta?.typeNameImportPath && requestInfoMeta.typeName) {
     extraImportLines.push(
-      `import { ${requestInfoMeta.typeName} } from "${requestInfoMeta.typeNameImportPath}";`,
+      generateImport(
+        [requestInfoMeta.typeName],
+        requestInfoMeta.typeNameImportPath,
+        codegenParams,
+      ),
     );
   }
 
@@ -86,7 +96,11 @@ export const endpointPerFileTmpl = async (
     contractsResult != null ? 'import * as z from "zod";' : '';
   const zodSchemasImportLine =
     contractsResult?.zodContractImportNames?.length && relativePathZodSchemas
-      ? `import { ${contractsResult.zodContractImportNames.join(', ')} } from "${relativePathZodSchemas}";`
+      ? generateImport(
+          contractsResult.zodContractImportNames,
+          relativePathZodSchemas,
+          codegenParams,
+        )
       : '';
   const contractsBlock =
     contractsResult != null ? `\n\n${contractsResult.content}\n\n` : '';
@@ -169,7 +183,11 @@ export const endpointPerFileTmpl = async (
 
   const dataContractImportLine =
     usedDataContractNames.length > 0
-      ? `import { ${usedDataContractNames.join(', ')} } from "${relativePathDataContracts}";`
+      ? generateImport(
+          usedDataContractNames,
+          relativePathDataContracts,
+          codegenParams,
+        )
       : '';
 
   return {

@@ -25,8 +25,8 @@ import type {
   GenerateQueryApiParamsWithInput,
   MetaInfo,
 } from './types/index.js';
-import { isActiveCodegenConfig } from './types/index.js';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-suffix.js';
+import { generateExport } from './utils/generate-export.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
 import { buildCentralZodContractsFile } from './utils/zod/build-endpoint-zod-contracts-code.js';
@@ -80,7 +80,21 @@ function cleanOutputDirectoriesOnDiskBeforeCodegen(
 export const generateApi = async (
   paramOrParams: GenerateQueryApiParams | GenerateQueryApiParams[],
 ): Promise<void> => {
-  const params = toArray(paramOrParams).filter(isActiveCodegenConfig);
+  const params = toArray(paramOrParams).filter(
+    (config): config is GenerateQueryApiParamsWithInput => {
+      if (!config.input) {
+        const outputHint =
+          typeof config.output === 'string' && config.output
+            ? ` (output: ${config.output})`
+            : '';
+        console.warn(
+          `[mobx-tanstack-query-api/codegen] Skipping codegen config${outputHint}: "input" is missing or empty.`,
+        );
+        return false;
+      }
+      return true;
+    },
+  );
 
   cleanOutputDirectoriesOnDiskBeforeCodegen(params);
 
@@ -783,7 +797,7 @@ export * as ${exportGroupName} from './endpoints';
         fileName: 'index.ts',
         withPrefix: false,
         content: `${LINTERS_IGNORE}
-export * as ${namespace} from './__exports';
+${generateExport({ asteriksAt: namespace }, './__exports', params)}
 `,
       });
     }

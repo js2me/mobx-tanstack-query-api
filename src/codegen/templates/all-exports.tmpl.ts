@@ -1,10 +1,10 @@
 import type { Maybe } from 'yummies/types';
-
 import type {
   BaseTmplParams,
   CodegenDataUtils,
   MetaInfo,
 } from '../types/index.js';
+import { generateExport } from '../utils/generate-export.js';
 
 import { LINTERS_IGNORE } from './constants.js';
 
@@ -25,10 +25,27 @@ export const allExportsTmpl = async ({
   metaInfo,
   formatTSContent,
   exportSchemas,
+  codegenParams,
 }: AllExportsTmplParams) => {
+  const lines: string[] = [
+    generateExport({ asteriks: true }, './data-contracts', codegenParams),
+  ];
+  if (exportSchemas) {
+    lines.push(
+      generateExport({ asteriks: true }, './contracts', codegenParams),
+    );
+  }
+  for (const fileName of collectedExportFiles) {
+    lines.push(
+      generateExport({ asteriks: true }, `./${fileName}`, codegenParams),
+    );
+  }
+  if (metaInfo) {
+    lines.push(
+      generateExport({ asteriks: true }, './meta-info', codegenParams),
+    );
+  }
   return await formatTSContent(`${LINTERS_IGNORE}
-  export * from './data-contracts';
-  ${exportSchemas ? "  export * from './contracts';\n  " : ''}${collectedExportFiles.map((fileName) => `export * from './${fileName}';`).join('\n')}
-  ${metaInfo ? 'export * from "./meta-info";' : ''}
+${lines.join('\n')}
     `);
 };
