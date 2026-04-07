@@ -1,5 +1,21 @@
 # mobx-tanstack-query-api
 
+## 0.49.0
+
+### Minor Changes
+
+- [`0462f4d`](https://github.com/js2me/mobx-tanstack-query-api/commit/0462f4d0baf807691a218f343886de73ccfd3281) Thanks [@js2me](https://github.com/js2me)! - add warning about skipping codegen due to input missing
+
+- [`0462f4d`](https://github.com/js2me/mobx-tanstack-query-api/commit/0462f4d0baf807691a218f343886de73ccfd3281) Thanks [@js2me](https://github.com/js2me)! - add moduleResolution for codegen
+
+- [`03b9cd0`](https://github.com/js2me/mobx-tanstack-query-api/commit/03b9cd066bad441655971f942157c44a5e767433) Thanks [@js2me](https://github.com/js2me)! - Add `overrideRequestParams` codegen option: a static `Partial<FullRequestParams>`, a non-empty string (inserted as a TypeScript expression in `...(<expr>),`), or a `(routeInfo: RouteBaseInfo) => …` factory evaluated at codegen time. The result is spread into each generated endpoint `params` return value before `...requestParams`, so runtime `requestParams` can still override those keys. Falsy values and whitespace-only strings emit nothing.
+
+### Patch Changes
+
+- [`050927b`](https://github.com/js2me/mobx-tanstack-query-api/commit/050927bef7d2db2a56bd47dff771c6fe5ea9079e) Thanks [@js2me](https://github.com/js2me)! - fix yummies usage
+
+- [`118f36b`](https://github.com/js2me/mobx-tanstack-query-api/commit/118f36b987574622f309eef3b6f1c30167890a65) Thanks [@js2me](https://github.com/js2me)! - Add documentation link for `zodContracts` in `GenerateQueryApiParams` JSDoc (points to the codegen config guide).
+
 ## 0.48.1
 
 ### Patch Changes
