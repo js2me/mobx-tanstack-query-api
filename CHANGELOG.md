@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.49.2
+
+### Patch Changes
+
+- [`c0687ca`](https://github.com/js2me/mobx-tanstack-query-api/commit/c0687ca3460c99a54845eb3d2d8bf9e40a6d7624) Thanks [@js2me](https://github.com/js2me)! - fixed removed endpoint only data contracts in files
+
 ## 0.49.1
 
 ### Patch Changes
