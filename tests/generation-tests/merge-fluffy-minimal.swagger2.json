@@ -1,0 +1,141 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Minimal codegen fixture",
+    "version": "0.1"
+  },
+  "basePath": "/",
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "schemes": ["https", "http"],
+  "paths": {
+    "/api/v1/resources/{id}/actions/combine": {
+      "get": {
+        "operationId": "getFluffiesToMerge",
+        "summary": "Возвращает данные по параметрам запроса",
+        "tags": ["Acme", "Fluffy"],
+        "parameters": [
+          {
+            "format": "int32",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешное завершение запроса.",
+            "schema": {
+              "$ref": "#/definitions/GetFluffiesToMergeResponse"
+            }
+          },
+          "default": {
+            "description": "Ошибка при обработке запроса.",
+            "schema": { "$ref": "#/definitions/ErrorPayload" }
+          }
+        }
+      },
+      "post": {
+        "operationId": "mergeFluffy",
+        "summary": "Принимает тело запроса и возвращает результат обработки",
+        "tags": ["Acme", "Fluffy"],
+        "parameters": [
+          {
+            "format": "int32",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/MergeFluffyBody" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешное завершение запроса.",
+            "schema": { "$ref": "#/definitions/MergeFluffyResponse" }
+          },
+          "default": {
+            "description": "Ошибка при обработке запроса.",
+            "schema": { "$ref": "#/definitions/ErrorPayload" }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "GetFluffiesToMergeData": {
+      "type": "object",
+      "required": ["id", "widgetDisplayName", "fluffies"],
+      "properties": {
+        "fluffies": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "widgetDisplayName": { "type": "string" },
+        "id": { "type": "integer", "format": "int32" }
+      }
+    },
+    "GetFluffiesToMergeResponse": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/GetFluffiesToMergeData" }
+        }
+      }
+    },
+    "MergeFluffyBody": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/MergeFluffyData"
+          }
+        }
+      }
+    },
+    "MergeFluffyData": {
+      "type": "object",
+      "required": ["fluffies"],
+      "properties": {
+        "fluffies": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/MergeFluffyMapping" }
+        }
+      }
+    },
+    "MergeFluffyMapping": {
+      "type": "object",
+      "required": ["currentFluffy", "newFluffy"],
+      "properties": {
+        "currentFluffy": { "type": "string" },
+        "newFluffy": { "type": "string" }
+      }
+    },
+    "MergeFluffyResponse": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "ErrorPayload": {
+      "type": "object",
+      "properties": {
+        "code": { "type": "integer", "format": "int32" },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

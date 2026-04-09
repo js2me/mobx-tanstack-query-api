@@ -39,6 +39,18 @@ const mocks = vi.hoisted(() => {
     removeUnusedTypes: vi.fn(),
     endpointPerFileTmpl: vi.fn(),
     dataContractsFileTmpl: vi.fn(),
+    newEndpointTmpl: vi.fn(() => ({
+      reservedDataContractNames: [] as string[],
+      localModelTypes: [] as unknown[],
+      contractsCode: undefined,
+      contractVarName: undefined,
+      forceSharedDataContractNames: new Set<string>(),
+      endpointOnlyDataContractNames: new Set<string>(),
+      staOperationResponseAliasLine: undefined,
+      staResponseAliasReplacesContractName: undefined,
+      operationSuccessResponseDisplayType: undefined,
+      content: '\nnew MockEndpoint()\n',
+    })),
   };
 });
 
@@ -96,6 +108,10 @@ vi.mock('swagger-typescript-api', () => {
     }),
   };
 });
+
+vi.mock('./templates/new-endpoint.tmpl.js', () => ({
+  newEndpointTmpl: mocks.newEndpointTmpl,
+}));
 
 vi.mock('./templates/endpoint-per-file.tmpl.js', () => {
   return {

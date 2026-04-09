@@ -1,0 +1,117 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi merge-fluffy minimal > generates GET getFluffiesToMerge and POST mergeFluffy 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Tag } from "../meta-info";
+
+import { ErrorPayloadDC, GetFluffiesToMergeResponseDC } from "../data-contracts";
+
+export type GetFluffiesToMergeDataDC = GetFluffiesToMergeResponseDC;
+
+export type GetFluffiesToMergeErrorDC = ErrorPayloadDC;
+
+export type GetFluffiesToMergeParams = {
+  id: number;
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Возвращает данные по параметрам запроса**
+ *
+ * @operationId getFluffiesToMerge
+ * @tags Acme, Fluffy
+ * @request **GET:/api/v1/resources/{id}/actions/combine**
+ * @produces application/json
+ * @responses
+ * @**200** GetFluffiesToMergeDataDC Успешное завершение запроса.
+ * @**default** ErrorPayloadDC Ошибка при обработке запроса.
+ */
+export const getFluffiesToMerge = new Endpoint<
+  HttpResponse<GetFluffiesToMergeResponseDC, GetFluffiesToMergeErrorDC>,
+  GetFluffiesToMergeParams,
+  any
+>(
+  {
+    params: ({ id, requestParams }) => ({
+      path: \`/api/v1/resources/\${id}/actions/combine\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["id"],
+    operationId: "getFluffiesToMerge",
+    path: ["api", "v1", "resources", "{id}", "actions", "combine"],
+    tags: [Tag.Acme, Tag.Fluffy],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;
+
+exports[`generateApi merge-fluffy minimal > generates GET getFluffiesToMerge and POST mergeFluffy 2`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Tag } from "../meta-info";
+
+import { ErrorPayloadDC, MergeFluffyDataDC } from "../data-contracts";
+
+export interface MergeFluffyResponseDC {
+  errors?: string[];
+}
+
+export type MergeFluffyErrorDC = ErrorPayloadDC;
+
+export interface MergeFluffyBodyDC {
+  data: Record<string, MergeFluffyDataDC>;
+}
+
+export type MergeFluffyParams = {
+  id: number;
+  body: MergeFluffyBodyDC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Принимает тело запроса и возвращает результат обработки**
+ *
+ * @operationId mergeFluffy
+ * @tags Acme, Fluffy
+ * @request **POST:/api/v1/resources/{id}/actions/combine**
+ * @produces application/json
+ * @consumes application/json
+ * @responses
+ * @**200** MergeFluffyResultDC Успешное завершение запроса.
+ * @**default** ErrorPayloadDC Ошибка при обработке запроса.
+ */
+export const mergeFluffy = new Endpoint<
+  HttpResponse<MergeFluffyResponseDC, MergeFluffyErrorDC>,
+  MergeFluffyParams,
+  any
+>(
+  {
+    params: ({ id, body, requestParams }) => ({
+      path: \`/api/v1/resources/\${id}/actions/combine\`,
+      method: "POST",
+      body: body,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["id", "body"],
+    operationId: "mergeFluffy",
+    path: ["api", "v1", "resources", "{id}", "actions", "combine"],
+    tags: [Tag.Acme, Tag.Fluffy],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;

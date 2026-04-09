@@ -95,6 +95,7 @@ export const allEndpointPerFileTmpl = async (
         localModelTypes,
         route,
         contractsCode,
+        operationSuccessResponseDisplayType,
       }) => {
         const requestInfoMeta = callEndpointMeta(codegenParams, route, utils);
 
@@ -135,6 +136,7 @@ export const allEndpointPerFileTmpl = async (
       ${endpointJSDocTmpl({
         ...params,
         route,
+        operationSuccessResponseDisplayType,
       })}
       export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}               
 `;

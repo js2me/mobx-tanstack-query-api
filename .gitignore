@@ -6,3 +6,4 @@ unit-tests-coverage
 docs/.vitepress/cache
 tmp
 **/__generated__/
+.pnpm-store/

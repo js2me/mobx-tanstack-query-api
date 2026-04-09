@@ -1,0 +1,62 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi getFooBar OpenAPI 3 (components.schemas.GetFooBarData) > generates endpoint getFooBar and model from schema GetFooBarData 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Tag } from "../meta-info";
+
+
+
+export interface GetFooBarDataDC {
+  name: string;
+}
+
+export type GetFooBarParams = {
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Returns foo bar payload**
+ *
+ * @operationId getFooBar
+ * @tags Foo
+ * @request **GET:/foo/bar**
+ * @produces application/json
+ * @responses
+ * @**200** GetFooBarDataDC OK
+ */
+export const getFooBar = new Endpoint<
+  HttpResponse<GetFooBarDataDC, any>,
+  GetFooBarParams,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      path: \`/foo/bar\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "getFooBar",
+    path: ["foo", "bar"],
+    tags: [Tag.Foo],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;
+
+exports[`generateApi getFooBar OpenAPI 3 (components.schemas.GetFooBarData) > generates endpoint getFooBar and model from schema GetFooBarData 2`] = `
+"/* eslint-disable */
+/* tslint:disable */
+
+export interface GetFooBarBazDataDC {
+  name: string;
+}
+"
+`;

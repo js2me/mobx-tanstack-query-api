@@ -1,0 +1,70 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "GetFooBar fixture",
+    "version": "0.1"
+  },
+  "paths": {
+    "/foo/bar": {
+      "get": {
+        "operationId": "getFooBar",
+        "summary": "Returns foo bar payload",
+        "tags": ["Foo"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFooBarData"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/foo/bar/baz": {
+      "get": {
+        "operationId": "getFooBarBaz",
+        "summary": "Returns foo bar baz payload",
+        "tags": ["Foo"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "baz": {
+                      "$ref": "#/components/schemas/GetFooBarBazData"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GetFooBarData": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" }
+        }
+      },
+      "GetFooBarBazData": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" }
+        }
+      }
+    }
+  }
+}

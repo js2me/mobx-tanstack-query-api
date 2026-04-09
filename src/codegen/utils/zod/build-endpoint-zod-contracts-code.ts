@@ -16,6 +16,18 @@ function parseRef(ref: string): string | null {
   return ref.slice(REF_PREFIX.length);
 }
 
+const DEFINITIONS_REF_PREFIX = '#/definitions/';
+
+/** Resolve schema name from JSON Schema `$ref` (OpenAPI 3 components or Swagger 2 definitions). */
+function parseJsonSchemaRef(ref: string): string | null {
+  if (typeof ref !== 'string') return null;
+  const fromComponents = parseRef(ref);
+  if (fromComponents != null) return fromComponents;
+  if (ref.startsWith(DEFINITIONS_REF_PREFIX))
+    return ref.slice(DEFINITIONS_REF_PREFIX.length);
+  return null;
+}
+
 function parseParamRef(ref: string): string | null {
   if (typeof ref !== 'string' || !ref.startsWith(REF_PREFIX_PARAMS))
     return null;
@@ -40,14 +52,25 @@ export function getResponseSchemaKeyFromOperation(
   const successResponse = responses[successStatus] as
     | {
         content?: Record<string, { schema?: { $ref?: string } }>;
+        schema?: { $ref?: string };
       }
     | undefined;
   const content = successResponse?.content;
-  if (!content || typeof content !== 'object') return null;
-  const jsonContent = content['application/json'] ?? Object.values(content)[0];
-  const ref = jsonContent?.schema?.$ref;
-  if (typeof ref !== 'string') return null;
-  return parseRef(ref);
+  if (content && typeof content === 'object') {
+    const jsonContent =
+      content['application/json'] ?? Object.values(content)[0];
+    const ref = jsonContent?.schema?.$ref;
+    if (typeof ref === 'string') {
+      const key = parseJsonSchemaRef(ref);
+      if (key != null) return key;
+    }
+  }
+  const swagger2Ref = successResponse?.schema?.$ref;
+  if (typeof swagger2Ref === 'string') {
+    const key = parseJsonSchemaRef(swagger2Ref);
+    if (key != null) return key;
+  }
+  return null;
 }
 
 /**
