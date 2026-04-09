@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.49.1
+
+### Patch Changes
+
+- [`dd1fc10`](https://github.com/js2me/mobx-tanstack-query-api/commit/dd1fc10d10e7820592ec2bf4e3a4c3b69a537773) Thanks [@js2me](https://github.com/js2me)! - fixed resolving duplicate output data contracts
+
 ## 0.49.0
 
 ### Minor Changes
