@@ -157,42 +157,6 @@ function getResponseFormat(
   return inferResponseFormatFromRaw(rawWithProduces);
 }
 
-function collectMergedProduces(
-  op: AnyObject | null | undefined,
-  rawOp: AnyObject,
-  rootSchema: AnyObject | undefined,
-): string[] {
-  const sources: readonly { value: unknown; nonEmptyOnly: boolean }[] = [
-    { value: op?.produces, nonEmptyOnly: true },
-    { value: rawOp?.produces, nonEmptyOnly: true },
-    { value: rootSchema?.produces, nonEmptyOnly: false },
-  ];
-  for (const { value, nonEmptyOnly } of sources) {
-    if (!Array.isArray(value)) continue;
-    if (nonEmptyOnly && value.length === 0) continue;
-    return [...value];
-  }
-  return [];
-}
-
-/**
- * When false, keep swagger-typescript-api success types for TS (e.g. spreadsheet → Blob).
- * OpenAPI $ref is still resolved for Zod via `responseSchemaKey`.
- */
-function successResponseUsesJsonMedia(
-  op: AnyObject | null | undefined,
-  rawOp: AnyObject,
-  rootSchema: AnyObject | undefined,
-): boolean {
-  const merged = collectMergedProduces(op, rawOp, rootSchema);
-  if (merged.length === 0) {
-    return true;
-  }
-  return merged.some(
-    (p) => typeof p === 'string' && (p.includes('json') || p.includes('+json')),
-  );
-}
-
 /** Infer request body contentType from raw OpenAPI operation (consumes or requestBody.content) */
 function inferRequestBodyContentTypeFromRaw(raw: AnyObject): string | null {
   const contentTypes: string[] = [];
@@ -351,142 +315,8 @@ export const newEndpointTmpl = ({
     );
   };
 
-  const swaggerSchema =
-    (configuration.config as AnyObject)?.swaggerSchema ??
-    (configuration as AnyObject)?.swaggerSchema;
-  const componentsSchemas = swaggerSchema?.components?.schemas as Record<
-    string,
-    AnyObject
-  > | null;
-  let operationFromSpec: AnyObject | null = null;
-  const pathKeyForSpec = path?.startsWith('/') ? path : `/${path || ''}`;
-  const methodKey = method?.toLowerCase?.() ?? method;
-  if (pathKeyForSpec && methodKey && swaggerSchema?.paths?.[pathKeyForSpec]) {
-    operationFromSpec = swaggerSchema.paths[pathKeyForSpec][methodKey] ?? null;
-  }
-  if (!operationFromSpec && swaggerSchema?.paths && raw?.operationId) {
-    for (const pathItem of Object.values(swaggerSchema.paths) as AnyObject[]) {
-      const op = pathItem?.[methodKey];
-      if (op?.operationId === raw.operationId) {
-        operationFromSpec = op;
-        break;
-      }
-    }
-  }
-
-  let responseSchemaKey = getResponseSchemaKeyFromOperation(
-    operationFromSpec ?? raw,
-  );
-
-  const staSuccessTypes = positiveResponseTypes.map((it) => it.type);
-  const staDefaultOkType = staSuccessTypes[0] ?? 'unknown';
-
-  if (!responseSchemaKey && componentsSchemas && configuration.modelTypes) {
-    const aliasType = configuration.modelTypes.find(
-      (m: AnyObject) => m.name === staDefaultOkType,
-    );
-    if (
-      aliasType?.typeIdentifier === 'type' &&
-      typeof aliasType.content === 'string' &&
-      /^[A-Za-z0-9_]+$/.test(aliasType.content.trim())
-    ) {
-      const resolved = typeNameToSchemaKey(
-        aliasType.content.trim(),
-        DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
-      );
-      if (resolved in componentsSchemas) responseSchemaKey = resolved;
-    }
-  }
-  if (!responseSchemaKey && componentsSchemas) {
-    const match = staDefaultOkType.match(/^Get(.+)DataDC$/);
-    if (match) {
-      const candidate = match[1];
-      if (candidate in componentsSchemas) responseSchemaKey = candidate;
-    }
-  }
-
-  const jsonMediaOk = successResponseUsesJsonMedia(
-    operationFromSpec,
-    raw,
-    swaggerSchema,
-  );
-  const tsOkSchemaKey = jsonMediaOk ? responseSchemaKey : null;
-
-  const schemaWrapperTypeName =
-    tsOkSchemaKey != null ? utils.formatModelName(tsOkSchemaKey) : null;
-
-  const operationIdDataContractName = `${_.upperFirst(
-    _.camelCase(route.routeName.usage),
-  )}DataDC`;
-
-  const staVsSchemaOkMismatch =
-    schemaWrapperTypeName != null && staDefaultOkType !== schemaWrapperTypeName;
-  /** Skip when 200 `$ref` is already `…Data` and matches `operationId…DataDC` (would be a self-alias). */
-  const staWrapperAliasDistinctFromSchema =
-    schemaWrapperTypeName != null &&
-    operationIdDataContractName !== schemaWrapperTypeName;
-  const emitStaWrapperResponseAlias =
-    staVsSchemaOkMismatch &&
-    staWrapperAliasDistinctFromSchema &&
-    String(method).toLowerCase() === 'get';
-
-  let defaultOkResponseType = schemaWrapperTypeName ?? staDefaultOkType;
-
-  let requestOutputDataTypes =
-    schemaWrapperTypeName != null
-      ? staSuccessTypes.map((t, i) => (i === 0 ? defaultOkResponseType : t))
-      : staSuccessTypes;
-
-  let nonJsonBinaryAliasLine: string | undefined;
-  if (
-    !jsonMediaOk &&
-    positiveResponseTypes?.length === 1 &&
-    staDefaultOkType !== operationIdDataContractName
-  ) {
-    nonJsonBinaryAliasLine = `export type ${operationIdDataContractName} = ${staDefaultOkType};`;
-    defaultOkResponseType = operationIdDataContractName;
-    requestOutputDataTypes = staSuccessTypes.map((t, i) =>
-      i === 0 ? operationIdDataContractName : t,
-    );
-  }
-
-  const staOperationResponseAliasLine =
-    nonJsonBinaryAliasLine ??
-    (emitStaWrapperResponseAlias
-      ? `export type ${operationIdDataContractName} = ${schemaWrapperTypeName!};`
-      : undefined);
-
-  const staResponseAliasReplacesContractName =
-    nonJsonBinaryAliasLine != null
-      ? operationIdDataContractName
-      : emitStaWrapperResponseAlias
-        ? operationIdDataContractName
-        : undefined;
-
-  const forceSharedDataContractNames =
-    emitStaWrapperResponseAlias && schemaWrapperTypeName != null
-      ? new Set<string>([schemaWrapperTypeName])
-      : new Set<string>();
-
-  const endpointOnlyDataContractNames = new Set<string>();
-  if (nonJsonBinaryAliasLine != null) {
-    endpointOnlyDataContractNames.add(operationIdDataContractName);
-  }
-  if (emitStaWrapperResponseAlias) {
-    endpointOnlyDataContractNames.add(operationIdDataContractName);
-  }
-
-  const operationSuccessResponseDisplayType =
-    positiveResponseTypes?.length === 1
-      ? nonJsonBinaryAliasLine != null ||
-        emitStaWrapperResponseAlias ||
-        (schemaWrapperTypeName != null &&
-          schemaWrapperTypeName === operationIdDataContractName)
-        ? operationIdDataContractName
-        : staSuccessTypes[0]
-      : undefined;
-
   const tags = (raw.tags || []).filter(Boolean);
+  const requestOutputDataTypes = positiveResponseTypes.map((it) => it.type);
 
   const foundErrorModelType =
     (routeResponse.errorType &&
@@ -565,6 +395,7 @@ export const newEndpointTmpl = ({
   const pathDeclaration = resultPath.replaceAll('$', '');
 
   const getHttpRequestGenerics = () => {
+    const defaultOkResponse = positiveResponseTypes?.[0]?.type || 'unknown';
     const defaultBadResponse = requestOutputErrorType;
     const responses =
       raw.responsesTypes?.filter(
@@ -579,7 +410,7 @@ export const newEndpointTmpl = ({
     }
 
     if (responses.length === 1 && responses[0].isSuccess) {
-      return `HttpResponse<${defaultOkResponseType}, ${requestOutputErrorType}>`;
+      return `HttpResponse<${responses[0].type}, ${requestOutputErrorType}>`;
     }
 
     return `HttpMultistatusResponse<{
@@ -594,7 +425,7 @@ export const newEndpointTmpl = ({
     })
     .join('\n')}
   },
-  ${defaultOkResponseType},
+  ${defaultOkResponse},
   ${defaultBadResponse}
   >`;
   };
@@ -614,6 +445,7 @@ export const newEndpointTmpl = ({
 
   const isAllowedInputType = filterTypes(requestInputTypeDc);
 
+  const defaultOkResponseType = positiveResponseTypes?.[0]?.type ?? 'unknown';
   const contractVarName = hasZodContracts
     ? `${_.camelCase(route.routeName.usage)}${endpointContractSuffix}`
     : null;
@@ -656,6 +488,54 @@ export const newEndpointTmpl = ({
     ? validateOpt
     : null;
   const throwOptObj = isRuntimeContractsRuleObject(throwOpt) ? throwOpt : null;
+  const swaggerSchema =
+    (configuration.config as AnyObject)?.swaggerSchema ??
+    (configuration as AnyObject)?.swaggerSchema;
+  const componentsSchemas = swaggerSchema?.components?.schemas as Record<
+    string,
+    AnyObject
+  > | null;
+  let operationFromSpec: AnyObject | null = null;
+  const pathKeyForSpec = path?.startsWith('/') ? path : `/${path || ''}`;
+  const methodKey = method?.toLowerCase?.() ?? method;
+  if (pathKeyForSpec && methodKey && swaggerSchema?.paths?.[pathKeyForSpec]) {
+    operationFromSpec = swaggerSchema.paths[pathKeyForSpec][methodKey] ?? null;
+  }
+  if (!operationFromSpec && swaggerSchema?.paths && raw?.operationId) {
+    for (const pathItem of Object.values(swaggerSchema.paths) as AnyObject[]) {
+      const op = pathItem?.[methodKey];
+      if (op?.operationId === raw.operationId) {
+        operationFromSpec = op;
+        break;
+      }
+    }
+  }
+  let responseSchemaKey = getResponseSchemaKeyFromOperation(
+    operationFromSpec ?? raw,
+  );
+  if (!responseSchemaKey && componentsSchemas && configuration.modelTypes) {
+    const aliasType = configuration.modelTypes.find(
+      (m: AnyObject) => m.name === defaultOkResponseType,
+    );
+    if (
+      aliasType?.typeIdentifier === 'type' &&
+      typeof aliasType.content === 'string' &&
+      /^[A-Za-z0-9_]+$/.test(aliasType.content.trim())
+    ) {
+      const resolved = typeNameToSchemaKey(
+        aliasType.content.trim(),
+        DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
+      );
+      if (resolved in componentsSchemas) responseSchemaKey = resolved;
+    }
+  }
+  if (!responseSchemaKey && componentsSchemas) {
+    const match = defaultOkResponseType.match(/^Get(.+)DataDC$/);
+    if (match) {
+      const candidate = match[1];
+      if (candidate in componentsSchemas) responseSchemaKey = candidate;
+    }
+  }
   const contractsCode =
     hasZodContracts && contractVarName
       ? buildEndpointZodContractsCode({
@@ -730,11 +610,6 @@ export const newEndpointTmpl = ({
     localModelTypes: isAllowedInputType ? [requestInputTypeDc] : [],
     contractsCode: contractsCode ?? undefined,
     contractVarName: contractVarName ?? undefined,
-    forceSharedDataContractNames,
-    endpointOnlyDataContractNames,
-    staOperationResponseAliasLine,
-    staResponseAliasReplacesContractName,
-    operationSuccessResponseDisplayType,
     content: `
 new ${importFileParams.endpoint.exportName}<
   ${getHttpRequestGenerics()},

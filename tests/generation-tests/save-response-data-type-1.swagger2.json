@@ -1,0 +1,56 @@
+{
+  "swagger": "2.0",
+  "info": { "title": "Fixture", "version": "1" },
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/test/save-response-data-type-1": {
+      "post": {
+        "summary": "Fixture",
+        "operationId": "saveResponseDataType1",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SaveResponseDataType1Request"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "schema": {
+              "$ref": "#/definitions/SaveResponseDataType1Response"
+            }
+          },
+          "default": {
+            "description": "err",
+            "schema": { "$ref": "#/definitions/SaveResponseDataType1Error" }
+          }
+        },
+        "tags": ["fixture"]
+      }
+    }
+  },
+  "definitions": {
+    "SaveResponseDataType1Error": {
+      "type": "object",
+      "properties": { "code": { "type": "integer", "format": "int32" } }
+    },
+    "SaveResponseDataType1Request": {
+      "type": "object",
+      "properties": { "limit": { "type": "integer", "format": "int32" } }
+    },
+    "SaveResponseDataType1Response": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,16 +1,10 @@
 import { splitTextByLines } from 'yummies/text';
 import type { AnyObject } from 'yummies/types';
 import type { BaseTmplParams } from '../types/base-tmpl-params.js';
-import { isSuccessHttpResponseStatus } from '../utils/success-http-response-status.js';
 
 export interface EndpointJSDocTmplParams extends BaseTmplParams {
   route: AnyObject;
   offset?: number;
-  /**
-   * When the route has exactly one 2xx response, use this name in `@responses` instead of STA’s
-   * (e.g. `Blob` → `GetMemoryLeakDataDC`).
-   */
-  operationSuccessResponseDisplayType?: string;
 }
 
 function getResponseContentTypes(raw: AnyObject): string[] {
@@ -88,12 +82,7 @@ function getSummaryAndDescriptionLines(
 }
 
 export const endpointJSDocTmpl = (params: EndpointJSDocTmplParams) => {
-  const {
-    route,
-    configuration,
-    offset = 0,
-    operationSuccessResponseDisplayType,
-  } = params;
+  const { route, configuration, offset = 0 } = params;
   const { routeName } = route;
   const rawRoute = route.raw as AnyObject;
   const routeRequest = route.request as AnyObject;
@@ -193,23 +182,10 @@ export const endpointJSDocTmpl = (params: EndpointJSDocTmplParams) => {
       name: 'responses',
     });
 
-    const successResponses = rawRoute.responsesTypes.filter((r: AnyObject) =>
-      isSuccessHttpResponseStatus(r),
-    );
-    const singleSuccessResponse = successResponses.length === 1;
-
     rawRoute.responsesTypes.forEach((response: AnyObject) => {
-      let responseTypeName = String(response.type);
-      if (
-        singleSuccessResponse &&
-        operationSuccessResponseDisplayType != null &&
-        isSuccessHttpResponseStatus(response)
-      ) {
-        responseTypeName = operationSuccessResponseDisplayType;
-      }
       jsDocLines.push({
         name: `**${response.status}**`,
-        content: `${_.replace(_.replace(responseTypeName, /\/\*/g, String.raw`\*`), /\*\//g, '*\\')} ${response.description}`,
+        content: `${_.replace(_.replace(response.type, /\/\*/g, String.raw`\*`), /\*\//g, '*\\')} ${response.description}`,
       });
     });
   }

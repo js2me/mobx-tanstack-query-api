@@ -14,13 +14,9 @@ import { allEndpointPerFileTmpl } from './templates/all-endpoints-per-file.tmpl.
 import { allExportsTmpl } from './templates/all-exports.tmpl.js';
 import { LINTERS_IGNORE } from './templates/constants.js';
 import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
-import {
-  endpointPerFileTmpl,
-  type PrecomputedNewEndpoint,
-} from './templates/endpoint-per-file.tmpl.js';
+import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
 import { indexTsForEndpointPerFileTmpl } from './templates/index-ts-for-endpoint-per-file.tmpl.js';
 import { metaInfoTmpl } from './templates/meta-info.tmpl.js';
-import { newEndpointTmpl } from './templates/new-endpoint.tmpl.js';
 import type {
   AllImportFileParams,
   BaseTmplParams,
@@ -30,7 +26,6 @@ import type {
   MetaInfo,
 } from './types/index.js';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-suffix.js';
-import { fixCollapsedObjectTypeAliases } from './utils/fix-collapsed-object-type-aliases.js';
 import { generateExport } from './utils/generate-export.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
@@ -353,15 +348,6 @@ const generateApiSingle = async (
     generated.configuration.modelTypes.filter((modelType) =>
       filterTypes(modelType),
     );
-  const swaggerSchemaForModelFix =
-    (generated.configuration.config as AnyObject)?.swaggerSchema ??
-    (generated.configuration as AnyObject).swaggerSchema;
-
-  generated.configuration.modelTypes = fixCollapsedObjectTypeAliases(
-    generated.configuration.modelTypes,
-    swaggerSchemaForModelFix,
-    utils.formatModelName,
-  );
 
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
@@ -386,8 +372,6 @@ const generateApiSingle = async (
   };
 
   const reservedDataContractNamesMap = new Map<string, number>();
-  /** Must stay in `data-contracts.ts` even when only one endpoint references them (see `forceSharedDataContractNames`). */
-  const forceSharedNamesForDataContracts = new Set<string>();
 
   const componentsSchemasForZod =
     (generated.configuration as AnyObject).config?.swaggerSchema?.components
@@ -417,75 +401,36 @@ const generateApiSingle = async (
 
       const fileNamesWithRequestInfo: string[] = [];
 
-      const flatEndpointMeta = params.noMetaInfo
-        ? null
-        : {
-            groupNames: [],
-            namespace,
-          };
-
-      const newEndpointByRoute = new Map<ParsedRoute, PrecomputedNewEndpoint>();
-
-      for (const route of allRoutes) {
-        const precomputed = newEndpointTmpl({
+      for await (const route of allRoutes) {
+        const {
+          content: requestInfoPerFileContent,
+          reservedDataContractNames,
+        } = await endpointPerFileTmpl({
           ...baseTmplParams,
           route,
+          relativePathDataContracts: '../data-contracts',
           groupName: null,
-          metaInfo: flatEndpointMeta,
-          zodContracts: params.zodContracts,
-          relativePathZodSchemas: hasZodContractsFile
-            ? '../contracts'
-            : undefined,
+          metaInfo: params.noMetaInfo
+            ? null
+            : {
+                groupNames: [],
+                namespace,
+              },
+          relativePathZodSchemas: hasZodContractsFile ? '../contracts' : null,
         });
-        newEndpointByRoute.set(route, precomputed);
-        precomputed.reservedDataContractNames.forEach((name) => {
-          reservedDataContractNamesMap.set(
-            name,
-            (reservedDataContractNamesMap.get(name) ?? 0) + 1,
-          );
-        });
-        for (const n of precomputed.forceSharedDataContractNames) {
-          forceSharedNamesForDataContracts.add(n);
-        }
-      }
-
-      const singleUseDataContractNames = new Set(
-        [...reservedDataContractNamesMap.entries()]
-          .filter(([, count]) => count === 1)
-          .map(([name]) => name),
-      );
-
-      for await (const route of allRoutes) {
-        const precomputed = newEndpointByRoute.get(route);
-        if (precomputed == null) {
-          continue;
-        }
-
-        const inlineSchemaDataContractNames = new Set(
-          precomputed.reservedDataContractNames.filter(
-            (name) =>
-              singleUseDataContractNames.has(name) &&
-              !precomputed.forceSharedDataContractNames?.has(name),
-          ),
-        );
-
-        const { content: requestInfoPerFileContent } =
-          await endpointPerFileTmpl({
-            ...baseTmplParams,
-            route,
-            relativePathDataContracts: '../data-contracts',
-            groupName: null,
-            metaInfo: flatEndpointMeta,
-            relativePathZodSchemas: hasZodContractsFile ? '../contracts' : null,
-            precomputedNewEndpoint: precomputed,
-            inlineSchemaDataContractNames,
-          });
 
         if (Array.isArray(route.raw.tags)) {
           route.raw.tags.forEach((tag) => {
             tagsSet.add(tag);
           });
         }
+
+        reservedDataContractNames.forEach((name) => {
+          reservedDataContractNamesMap.set(
+            name,
+            (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+          );
+        });
 
         if (!filterEndpoint(route)) {
           continue;
@@ -606,59 +551,6 @@ const generateApiSingle = async (
       params.filterGroups,
       (groupName) => groupName,
     );
-
-    const groupedNewEndpointByRoute = new Map<
-      ParsedRoute,
-      PrecomputedNewEndpoint
-    >();
-
-    if (outputType === 'one-endpoint-per-file') {
-      for (const [groupName, routes] of groupsMap) {
-        if (!filterGroups(groupName)) {
-          continue;
-        }
-
-        const groupedMetaInfo = params.noMetaInfo
-          ? null
-          : {
-              namespace,
-              groupNames: [],
-            };
-
-        for (const route of routes) {
-          const precomputed = newEndpointTmpl({
-            ...baseTmplParams,
-            route,
-            groupName,
-            metaInfo: groupedMetaInfo,
-            zodContracts: params.zodContracts,
-            relativePathZodSchemas: hasZodContractsFile
-              ? '../../contracts'
-              : undefined,
-          });
-          groupedNewEndpointByRoute.set(route, precomputed);
-          precomputed.reservedDataContractNames.forEach((name) => {
-            reservedDataContractNamesMap.set(
-              name,
-              (reservedDataContractNamesMap.get(name) ?? 0) + 1,
-            );
-          });
-          for (const n of precomputed.forceSharedDataContractNames) {
-            forceSharedNamesForDataContracts.add(n);
-          }
-        }
-      }
-    }
-
-    const singleUseGroupedDataContractNames =
-      outputType === 'one-endpoint-per-file'
-        ? new Set(
-            [...reservedDataContractNamesMap.entries()]
-              .filter(([, count]) => count === 1)
-              .map(([name]) => name),
-          )
-        : null;
-
     for await (const [groupName, routes] of groupsMap) {
       if (!filterGroups(groupName)) {
         continue;
@@ -679,40 +571,32 @@ const generateApiSingle = async (
         // #region Генерация одного эндпоинта на 1 файл
         codegenFs.createDir(path.resolve(groupDirectory, 'endpoints'));
 
-        const groupedMetaInfo = params.noMetaInfo
-          ? null
-          : {
-              namespace,
-              groupNames: [],
-            };
-
         for await (const route of routes) {
-          const precomputed = groupedNewEndpointByRoute.get(route);
-          if (precomputed == null) {
-            continue;
-          }
+          const {
+            content: requestInfoPerFileContent,
+            reservedDataContractNames,
+          } = await endpointPerFileTmpl({
+            ...baseTmplParams,
+            route,
+            relativePathDataContracts: '../../data-contracts',
+            relativePathZodSchemas: hasZodContractsFile
+              ? '../../contracts'
+              : null,
+            groupName,
+            metaInfo: params.noMetaInfo
+              ? null
+              : {
+                  namespace,
+                  groupNames: [],
+                },
+          });
 
-          const inlineSchemaDataContractNames = new Set(
-            precomputed.reservedDataContractNames.filter(
-              (name) =>
-                (singleUseGroupedDataContractNames?.has(name) ?? false) &&
-                !precomputed.forceSharedDataContractNames?.has(name),
-            ),
-          );
-
-          const { content: requestInfoPerFileContent } =
-            await endpointPerFileTmpl({
-              ...baseTmplParams,
-              route,
-              relativePathDataContracts: '../../data-contracts',
-              relativePathZodSchemas: hasZodContractsFile
-                ? '../../contracts'
-                : null,
-              groupName,
-              metaInfo: groupedMetaInfo,
-              precomputedNewEndpoint: precomputed,
-              inlineSchemaDataContractNames,
-            });
+          reservedDataContractNames.forEach((name) => {
+            reservedDataContractNamesMap.set(
+              name,
+              (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+            );
+          });
 
           if (!filterEndpoint(route)) {
             continue;
@@ -852,8 +736,7 @@ export * as ${exportGroupName} from './endpoints';
     reservedDataContractNamesMap.entries(),
   )
     .filter(([_, count]) => count === 1)
-    .map(([name]) => name)
-    .filter((name) => !forceSharedNamesForDataContracts.has(name));
+    .map(([name]) => name);
 
   const dataContractsContent = await dataContractsFileTmpl({
     ...baseTmplParams,

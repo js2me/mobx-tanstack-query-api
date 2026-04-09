@@ -6,12 +6,7 @@ import { callEndpointMeta } from '../utils/resolve-codegen-meta.js';
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 import { endpointJSDocTmpl } from './endpoint-jsdoc.tmpl.js';
-import {
-  type NewEndpointTmplParams,
-  newEndpointTmpl,
-} from './new-endpoint.tmpl.js';
-
-export type PrecomputedNewEndpoint = ReturnType<typeof newEndpointTmpl>;
+import { newEndpointTmpl } from './new-endpoint.tmpl.js';
 
 export interface EndpointPerFileTmplParams extends BaseTmplParams {
   route: ParsedRoute;
@@ -20,13 +15,6 @@ export interface EndpointPerFileTmplParams extends BaseTmplParams {
   metaInfo: Maybe<MetaInfo>;
   /** When set (e.g. '../contracts'), endpoint imports shared Zod contracts from this path instead of inlining them */
   relativePathZodSchemas?: string | null;
-  /** Skip `newEndpointTmpl` and use this (two-phase endpoint generation). */
-  precomputedNewEndpoint?: PrecomputedNewEndpoint;
-  /**
-   * Schema-backed data contracts in this set are inlined into this file (same as synthetic types).
-   * Used for types that appear in exactly one endpoint so they stay out of `data-contracts.ts`.
-   */
-  inlineSchemaDataContractNames?: ReadonlySet<string>;
 }
 
 export const endpointPerFileTmpl = async (
@@ -43,26 +31,22 @@ export const endpointPerFileTmpl = async (
     groupName,
     metaInfo,
     relativePathZodSchemas,
-    precomputedNewEndpoint,
-    inlineSchemaDataContractNames,
   } = params;
   const { _ } = utils;
 
-  const newEndpointParams: NewEndpointTmplParams = {
+  const {
+    content: requestInfoInstanceContent,
+    reservedDataContractNames,
+    localModelTypes,
+    contractsCode,
+  } = newEndpointTmpl({
     ...params,
     route,
     groupName,
     metaInfo,
     zodContracts: codegenParams.zodContracts,
     relativePathZodSchemas: relativePathZodSchemas ?? undefined,
-  };
-
-  const {
-    content: requestInfoInstanceContent,
-    reservedDataContractNames: endpointReservedDataContractNames,
-    localModelTypes,
-    contractsCode,
-  } = precomputedNewEndpoint ?? newEndpointTmpl(newEndpointParams);
+  });
 
   const dataContactNames = new Set(
     Object.keys(
@@ -72,22 +56,8 @@ export const endpointPerFileTmpl = async (
 
   const dataContractNamesInThisFile: string[] = [];
 
-  endpointReservedDataContractNames.forEach((reservedDataContractName) => {
-    if (
-      precomputedNewEndpoint?.endpointOnlyDataContractNames?.has(
-        reservedDataContractName,
-      )
-    ) {
-      return;
-    }
-    const inlineSchema =
-      (inlineSchemaDataContractNames?.has(reservedDataContractName) ?? false) &&
-      !(
-        precomputedNewEndpoint?.forceSharedDataContractNames?.has(
-          reservedDataContractName,
-        ) ?? false
-      );
-    if (!dataContactNames.has(reservedDataContractName) || inlineSchema) {
+  reservedDataContractNames.forEach((reservedDataContractName) => {
+    if (!dataContactNames.has(reservedDataContractName)) {
       dataContractNamesInThisFile.push(reservedDataContractName);
     }
   });
@@ -148,14 +118,7 @@ export const endpointPerFileTmpl = async (
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
       ${extraImportLines.join('\n')}
       ${zodImportsBlock}
-      ${dataContractImportToken}${
-        precomputedNewEndpoint?.staOperationResponseAliasLine
-          ? `
-
-${precomputedNewEndpoint.staOperationResponseAliasLine}
-`
-          : ''
-      }
+      ${dataContractImportToken}
 
       ${(
         await Promise.all(
@@ -200,8 +163,6 @@ ${precomputedNewEndpoint.staOperationResponseAliasLine}
       ${endpointJSDocTmpl({
         ...params,
         route,
-        operationSuccessResponseDisplayType:
-          precomputedNewEndpoint?.operationSuccessResponseDisplayType,
       })}
       export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}
       `);
@@ -213,8 +174,6 @@ ${precomputedNewEndpoint.staOperationResponseAliasLine}
     .map((modelType: AnyObject) => modelType.name as string)
     .filter(
       (modelTypeName) =>
-        modelTypeName !==
-          precomputedNewEndpoint?.staResponseAliasReplacesContractName &&
         !dataContractNamesInThisFile.includes(modelTypeName) &&
         dataContactNames.has(modelTypeName) &&
         new RegExp(`\\b${escapeRegExp(modelTypeName)}\\b`).test(
@@ -232,7 +191,7 @@ ${precomputedNewEndpoint.staOperationResponseAliasLine}
       : '';
 
   return {
-    reservedDataContractNames: endpointReservedDataContractNames,
+    reservedDataContractNames: dataContractNamesInThisFile,
     content: contentWithImportToken.replace(
       dataContractImportToken,
       dataContractImportLine,

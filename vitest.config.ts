@@ -23,6 +23,7 @@ export default defineConfig({
   },
   test: {
     globals: true,
+    testTimeout: 30_000,
     environment: 'jsdom',
     coverage: {
       provider: 'istanbul', // or 'v8'

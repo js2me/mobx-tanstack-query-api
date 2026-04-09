@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`generateApi merge-fluffy minimal > generates GET getFluffiesToMerge and POST mergeFluffy 1`] = `
+exports[`generateApi fluffy-duplicate-data-types > generates GET getFluffiesToMerge and POST mergeFluffy 1`] = `
 "/* eslint-disable */
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
@@ -9,7 +9,7 @@ import { Tag } from "../meta-info";
 
 import { ErrorPayloadDC, GetFluffiesToMergeResponseDC } from "../data-contracts";
 
-export type GetFluffiesToMergeDataDC = GetFluffiesToMergeResponseDC;
+export type GetFluffiesToMergeResultDC = GetFluffiesToMergeResponseDC;
 
 export type GetFluffiesToMergeErrorDC = ErrorPayloadDC;
 
@@ -26,11 +26,11 @@ export type GetFluffiesToMergeParams = {
  * @request **GET:/api/v1/resources/{id}/actions/combine**
  * @produces application/json
  * @responses
- * @**200** GetFluffiesToMergeDataDC Успешное завершение запроса.
+ * @**200** GetFluffiesToMergeResultDC Успешное завершение запроса.
  * @**default** ErrorPayloadDC Ошибка при обработке запроса.
  */
 export const getFluffiesToMerge = new Endpoint<
-  HttpResponse<GetFluffiesToMergeResponseDC, GetFluffiesToMergeErrorDC>,
+  HttpResponse<GetFluffiesToMergeResultDC, GetFluffiesToMergeErrorDC>,
   GetFluffiesToMergeParams,
   any
 >(
@@ -53,24 +53,18 @@ export const getFluffiesToMerge = new Endpoint<
 "
 `;
 
-exports[`generateApi merge-fluffy minimal > generates GET getFluffiesToMerge and POST mergeFluffy 2`] = `
+exports[`generateApi fluffy-duplicate-data-types > generates GET getFluffiesToMerge and POST mergeFluffy 2`] = `
 "/* eslint-disable */
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 import { Tag } from "../meta-info";
 
-import { ErrorPayloadDC, MergeFluffyDataDC } from "../data-contracts";
+import { ErrorPayloadDC, MergeFluffyBodyDC, MergeFluffyResponseDC } from "../data-contracts";
 
-export interface MergeFluffyResponseDC {
-  errors?: string[];
-}
+export type MergeFluffyResultDC = MergeFluffyResponseDC;
 
 export type MergeFluffyErrorDC = ErrorPayloadDC;
-
-export interface MergeFluffyBodyDC {
-  data: Record<string, MergeFluffyDataDC>;
-}
 
 export type MergeFluffyParams = {
   id: number;
@@ -91,7 +85,7 @@ export type MergeFluffyParams = {
  * @**default** ErrorPayloadDC Ошибка при обработке запроса.
  */
 export const mergeFluffy = new Endpoint<
-  HttpResponse<MergeFluffyResponseDC, MergeFluffyErrorDC>,
+  HttpResponse<MergeFluffyResultDC, MergeFluffyErrorDC>,
   MergeFluffyParams,
   any
 >(

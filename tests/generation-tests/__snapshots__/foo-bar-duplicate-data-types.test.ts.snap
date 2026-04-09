@@ -1,17 +1,15 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`generateApi getFooBar OpenAPI 3 (components.schemas.GetFooBarData) > generates endpoint getFooBar and model from schema GetFooBarData 1`] = `
+exports[`generateApi foo-bar-duplicate-data-types OpenAPI 3 (components.schemas.GetFooBarData) > generates endpoint getFooBar and model from schema GetFooBarData 1`] = `
 "/* eslint-disable */
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 import { Tag } from "../meta-info";
 
+import { GetFooBarDataDC } from "../data-contracts";
 
-
-export interface GetFooBarDataDC {
-  name: string;
-}
+export type GetFooBarResultDC = GetFooBarDataDC;
 
 export type GetFooBarParams = {
   requestParams?: RequestParams;
@@ -25,10 +23,10 @@ export type GetFooBarParams = {
  * @request **GET:/foo/bar**
  * @produces application/json
  * @responses
- * @**200** GetFooBarDataDC OK
+ * @**200** GetFooBarResultDC OK
  */
 export const getFooBar = new Endpoint<
-  HttpResponse<GetFooBarDataDC, any>,
+  HttpResponse<GetFooBarResultDC, any>,
   GetFooBarParams,
   any
 >(
@@ -51,11 +49,15 @@ export const getFooBar = new Endpoint<
 "
 `;
 
-exports[`generateApi getFooBar OpenAPI 3 (components.schemas.GetFooBarData) > generates endpoint getFooBar and model from schema GetFooBarData 2`] = `
+exports[`generateApi foo-bar-duplicate-data-types OpenAPI 3 (components.schemas.GetFooBarData) > generates endpoint getFooBar and model from schema GetFooBarData 2`] = `
 "/* eslint-disable */
 /* tslint:disable */
 
 export interface GetFooBarBazDataDC {
+  name: string;
+}
+
+export interface GetFooBarDataDC {
   name: string;
 }
 "

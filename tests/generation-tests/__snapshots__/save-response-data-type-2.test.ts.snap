@@ -1,0 +1,82 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi saveResponseDataType2 Swagger 2 (definitions only) > imports SaveResponseDataType2*DC from data-contracts 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Tag } from "../meta-info";
+
+import { SaveResponseDataType2ErrorDC, SaveResponseDataType2RequestDC, SaveResponseDataType2ResponseDC } from "../data-contracts";
+
+export type SaveResponseDataType2DataDC = SaveResponseDataType2ResponseDC;
+
+export type SaveResponseDataType2FailDC = SaveResponseDataType2ErrorDC;
+
+export type SaveResponseDataType2Params = {
+  resourceId: number;
+  body: SaveResponseDataType2RequestDC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Fixture**
+ *
+ * @operationId saveResponseDataType2
+ * @tags fixture
+ * @request **POST:/test/save-response-data-type-2/{resourceId}**
+ * @produces application/json
+ * @consumes application/json
+ * @responses
+ * @**200** SaveResponseDataType2DataDC ok
+ * @**default** SaveResponseDataType2ErrorDC err
+ */
+export const saveResponseDataType2 = new Endpoint<
+  HttpResponse<SaveResponseDataType2DataDC, SaveResponseDataType2FailDC>,
+  SaveResponseDataType2Params,
+  any
+>(
+  {
+    params: ({ resourceId, body, requestParams }) => ({
+      path: \`/test/save-response-data-type-2/\${resourceId}\`,
+      method: "POST",
+      body: body,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["resourceId", "body"],
+    operationId: "saveResponseDataType2",
+    path: ["test", "save-response-data-type-2", "{resourceId}"],
+    tags: [Tag.Fixture],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;
+
+exports[`generateApi saveResponseDataType2 Swagger 2 (definitions only) > imports SaveResponseDataType2*DC from data-contracts 2`] = `
+"/* eslint-disable */
+/* tslint:disable */
+
+export interface SaveResponseDataType2ErrorDC {
+  /** @format int32 */
+  code?: number;
+  message?: string;
+}
+
+export interface SaveResponseDataType2RequestDC {
+  overwrite?: boolean;
+  payload: string;
+  region: string;
+  variant: string;
+}
+
+export interface SaveResponseDataType2ResponseDC {
+  message?: string;
+  success?: boolean;
+}
+"
+`;

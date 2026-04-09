@@ -6,11 +6,11 @@ import { generateApi } from '../../src/codegen/index.js';
 
 const INPUT_FILE = path.resolve(
   __dirname,
-  './merge-fluffy-minimal.swagger2.json',
+  './fluffy-duplicate-data-types.swagger2.json',
 );
 const OUTPUT_DIR = path.resolve(
   __dirname,
-  './__generated__/merge-fluffy-minimal',
+  './__generated__/fluffy-duplicate-data-types',
 );
 const GET_ENDPOINT_FILE = path.resolve(
   OUTPUT_DIR,
@@ -23,7 +23,7 @@ const MERGE_ENDPOINT_FILE = path.resolve(
   'merge-fluffy.ts',
 );
 
-describe('generateApi merge-fluffy minimal', () => {
+describe('generateApi fluffy-duplicate-data-types', () => {
   beforeEach(async () => {
     await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
     await fs.mkdir(path.dirname(OUTPUT_DIR), { recursive: true });

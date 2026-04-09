@@ -1,0 +1,77 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi saveResponseDataType1 Swagger 2 (definitions.*) > keeps request/response models in data-contracts and imports them in the endpoint file 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Tag } from "../meta-info";
+
+import { SaveResponseDataType1ErrorDC, SaveResponseDataType1RequestDC, SaveResponseDataType1ResponseDC } from "../data-contracts";
+
+export type SaveResponseDataType1DataDC = SaveResponseDataType1ResponseDC;
+
+export type SaveResponseDataType1FailDC = SaveResponseDataType1ErrorDC;
+
+export type SaveResponseDataType1Params = {
+  body: SaveResponseDataType1RequestDC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Fixture**
+ *
+ * @operationId saveResponseDataType1
+ * @tags fixture
+ * @request **POST:/test/save-response-data-type-1**
+ * @produces application/json
+ * @consumes application/json
+ * @responses
+ * @**200** SaveResponseDataType1DataDC ok
+ * @**default** SaveResponseDataType1ErrorDC err
+ */
+export const saveResponseDataType1 = new Endpoint<
+  HttpResponse<SaveResponseDataType1DataDC, SaveResponseDataType1FailDC>,
+  SaveResponseDataType1Params,
+  any
+>(
+  {
+    params: ({ body, requestParams }) => ({
+      path: \`/test/save-response-data-type-1\`,
+      method: "POST",
+      body: body,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["body"],
+    operationId: "saveResponseDataType1",
+    path: ["test", "save-response-data-type-1"],
+    tags: [Tag.Fixture],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;
+
+exports[`generateApi saveResponseDataType1 Swagger 2 (definitions.*) > keeps request/response models in data-contracts and imports them in the endpoint file 2`] = `
+"/* eslint-disable */
+/* tslint:disable */
+
+export interface SaveResponseDataType1ErrorDC {
+  /** @format int32 */
+  code?: number;
+}
+
+export interface SaveResponseDataType1RequestDC {
+  /** @format int32 */
+  limit?: number;
+}
+
+export interface SaveResponseDataType1ResponseDC {
+  items?: string[];
+}
+"
+`;
