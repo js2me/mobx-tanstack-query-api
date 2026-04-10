@@ -88,6 +88,20 @@ This might be helpful if you need to merge two OpenAPI/Swagger files.
 
 Required output directory path.   
 
+### `dataContractTypeSuffix`
+
+Suffix for generated data-contract type names.
+Default: `DC`.
+
+Use this when you want to replace the default `*DC` naming with another suffix (for example `*DTO`).
+
+Example:
+```ts
+dataContractTypeSuffix: 'DTO'
+```
+
+_output example (names):_ `GetUserRequestDTO`, `GetUserResponseDTO`, `GetUserErrorDTO`
+
 ### `fetchSchemaRequestOptions`  
 
 Optional fetch options to fetch OpenAPI/Swagger file.   

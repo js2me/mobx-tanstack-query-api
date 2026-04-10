@@ -150,6 +150,10 @@ const generateApiSingle = async (
     ),
     outputDir: path.resolve(process.cwd(), params.output),
   };
+  const dataContractTypeSuffix =
+    params.dataContractTypeSuffix === false
+      ? ''
+      : (params.dataContractTypeSuffix ?? DEFAULT_DATA_CONTRACT_TYPE_SUFFIX);
 
   //#region swagger-typescript-api
   const swaggerTypescriptApiCodegenBaseParams = {
@@ -158,7 +162,7 @@ const generateApiSingle = async (
     cleanOutput: false,
     modular: true,
     patch: true,
-    typeSuffix: DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
+    typeSuffix: dataContractTypeSuffix,
     disableStrictSSL: false,
     singleHttpClient: true,
     extractRequestBody: true,

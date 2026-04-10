@@ -84,6 +84,14 @@ export interface GenerateQueryApiParams {
    */
   input: MaybeFalsy<string | AnyObject>;
   /**
+   * Suffix for generated data-contract type names.
+   * Default: `"DC"`.
+   * Set to `false` to disable suffix.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#datacontracttypesuffix)
+   */
+  dataContractTypeSuffix?: string | false;
+  /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#mixininput)
    */
   mixinInput?: string | AnyObject;

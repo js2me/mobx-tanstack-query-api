@@ -245,6 +245,11 @@ export const newEndpointTmpl = ({
   const zodContractsIsObject =
     typeof zodContracts === 'object' && zodContracts !== null;
   const hasZodContracts = zodContracts === true || zodContractsIsObject;
+  const dataContractTypeSuffix =
+    codegenParams.dataContractTypeSuffix === false
+      ? ''
+      : (codegenParams.dataContractTypeSuffix ??
+        DEFAULT_DATA_CONTRACT_TYPE_SUFFIX);
   const sharedContractSuffix = getZodContractSuffix(zodContracts);
   const endpointContractSuffix = getEndpointZodContractSuffix(zodContracts);
   const { _ } = utils;
@@ -524,7 +529,7 @@ export const newEndpointTmpl = ({
     ) {
       const resolved = typeNameToSchemaKey(
         aliasType.content.trim(),
-        DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
+        dataContractTypeSuffix,
       );
       if (resolved in componentsSchemas) responseSchemaKey = resolved;
     }
@@ -545,7 +550,7 @@ export const newEndpointTmpl = ({
           contractVarName,
           utils,
           componentsSchemas: componentsSchemas ?? undefined,
-          typeSuffix: DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
+          typeSuffix: dataContractTypeSuffix,
           responseSchemaKey: responseSchemaKey ?? undefined,
           useExternalZodSchemas: Boolean(relativePathZodSchemas),
           contractSuffix: sharedContractSuffix,

@@ -59,4 +59,72 @@ describe('generateApi saveResponseDataType1 Swagger 2 (definitions.*)', () => {
     expect(endpoint).toMatchSnapshot();
     expect(dataContracts).toMatchSnapshot();
   });
+
+  it('supports custom dataContractTypeSuffix in generated files', async () => {
+    await generateApi(
+      defineConfig({
+        input: INPUT_FILE,
+        output: OUTPUT_DIR,
+        noBarrelFiles: true,
+        removeUnusedTypes: true,
+        outputType: 'one-endpoint-per-file',
+        dataContractTypeSuffix: 'DTO',
+      }),
+    );
+
+    const endpoint = (await fs.readFile(ENDPOINT_FILE, 'utf-8')).replaceAll(
+      '\r\n',
+      '\n',
+    );
+    const dataContracts = (
+      await fs.readFile(DATA_CONTRACTS_FILE, 'utf-8')
+    ).replaceAll('\r\n', '\n');
+
+    expect(endpoint).toContain('SaveResponseDataType1RequestDTO');
+    expect(endpoint).toContain('SaveResponseDataType1ResponseDTO');
+    expect(endpoint).not.toContain('SaveResponseDataType1RequestDC');
+
+    expect(dataContracts).toContain(
+      'export interface SaveResponseDataType1RequestDTO',
+    );
+    expect(dataContracts).toContain(
+      'export interface SaveResponseDataType1ResponseDTO',
+    );
+    expect(dataContracts).not.toContain(
+      'export interface SaveResponseDataType1RequestDC',
+    );
+  });
+
+  it('supports dataContractTypeSuffix=false (no suffix)', async () => {
+    await generateApi(
+      defineConfig({
+        input: INPUT_FILE,
+        output: OUTPUT_DIR,
+        noBarrelFiles: true,
+        removeUnusedTypes: true,
+        outputType: 'one-endpoint-per-file',
+        dataContractTypeSuffix: false,
+      }),
+    );
+
+    const endpoint = (await fs.readFile(ENDPOINT_FILE, 'utf-8')).replaceAll(
+      '\r\n',
+      '\n',
+    );
+    const dataContracts = (
+      await fs.readFile(DATA_CONTRACTS_FILE, 'utf-8')
+    ).replaceAll('\r\n', '\n');
+
+    expect(endpoint).toContain('SaveResponseDataType1Request');
+    expect(endpoint).toContain('SaveResponseDataType1Response');
+    expect(endpoint).not.toContain('SaveResponseDataType1RequestDC');
+
+    expect(dataContracts).toContain('export interface SaveResponseDataType1Request');
+    expect(dataContracts).toContain(
+      'export interface SaveResponseDataType1Response',
+    );
+    expect(dataContracts).not.toContain(
+      'export interface SaveResponseDataType1RequestDC',
+    );
+  });
 });
