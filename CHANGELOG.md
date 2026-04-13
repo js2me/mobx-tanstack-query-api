@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.50.0
+
+### Minor Changes
+
+- [`baa9d2a`](https://github.com/js2me/mobx-tanstack-query-api/commit/baa9d2a92d876dce1dd40f290a81911c0d2ee741) Thanks [@js2me](https://github.com/js2me)! - added ability to modify type suffix for all (default `'DC'`)
+
 ## 0.49.2
 
 ### Patch Changes
