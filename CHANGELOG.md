@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.51.0
+
+### Minor Changes
+
+- [`c6d4ec4`](https://github.com/js2me/mobx-tanstack-query-api/commit/c6d4ec4463103acbdfb501fd8ae9c9de32180be3) Thanks [@js2me](https://github.com/js2me)! - improved `isHttpResponse` `isHttpBadResponse` with passing generic types (+ add unit tests)
+
 ## 0.50.0
 
 ### Minor Changes
