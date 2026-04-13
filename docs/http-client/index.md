@@ -192,13 +192,22 @@ const httpClient = new HttpClient<{ token?: string }>({
 ### Handle request errors
 
 ```ts
+import { isHttpResponse } from "mobx-tanstack-query-api";
+
 try {
   await httpClient.request({
     path: "/api/v1/fruits/unknown-id",
     method: "GET",
     format: "json",
   });
-} catch (error) {
+} catch (error: unknown) {
+  if (
+    isHttpResponse<{ id: number }, { message: string }, 404>(error, 404)
+  ) {
+    console.log("Typed status", error.status); // 404
+    console.log("Typed error payload", error.error.message);
+  }
+
   console.log("Request failed", error);
   console.log("Last bad response", httpClient.badResponse);
 }

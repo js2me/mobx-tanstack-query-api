@@ -130,17 +130,28 @@ export class HttpResponse<
   }
 }
 
-export const isHttpResponse = (
+export const isHttpResponse = <
+  TData = any,
+  TError = any,
+  TStatus extends number = number,
+>(
   response: unknown,
-  status?: number,
-): response is AnyHttpResponse =>
+  status?: TStatus,
+): response is HttpResponse<TData, TError, TStatus> =>
   typeof response === 'object' &&
   response instanceof HttpResponse &&
   'data' in response &&
   (!status || response.status === status);
 
-export const isHttpBadResponse = (
+export const isHttpBadResponse = <
+  TError = any,
+  TStatus extends number = number,
+>(
   response: unknown,
-): response is HttpResponse<null, any> => {
-  return isHttpResponse(response) && (!response.ok || !!response.error);
+  status?: TStatus,
+): response is HttpResponse<null, TError, TStatus> => {
+  return (
+    isHttpResponse<null, TError, TStatus>(response, status) &&
+    (!response.ok || !!response.error)
+  );
 };
