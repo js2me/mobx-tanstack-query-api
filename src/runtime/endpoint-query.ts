@@ -95,6 +95,12 @@ export class EndpointQuery<
         _observableData.params = {};
       }
       _observableData.initialized = true;
+    } else if (
+      !isQueryOptionsInputFn &&
+      'params' in unpackedQueryOptionsInput
+    ) {
+      _observableData.params = callFunction(params);
+      _observableData.initialized = true;
     }
 
     makeObservable(_observableData, {
@@ -234,9 +240,20 @@ export class EndpointQuery<
           ({ params, dynamicOptions, uniqKey }) => {
             runInAction(() => {
               _observableData.initialized = true;
-              _observableData.params = params;
-              _observableData.dynamicOptions = dynamicOptions;
-              _observableData.uniqKey = uniqKey;
+              if (!comparer.structural(_observableData.params, params)) {
+                _observableData.params = params;
+              }
+              if (
+                !comparer.structural(
+                  _observableData.dynamicOptions,
+                  dynamicOptions,
+                )
+              ) {
+                _observableData.dynamicOptions = dynamicOptions;
+              }
+              if (!comparer.structural(_observableData.uniqKey, uniqKey)) {
+                _observableData.uniqKey = uniqKey;
+              }
             });
           },
           {
