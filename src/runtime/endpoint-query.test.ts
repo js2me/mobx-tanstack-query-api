@@ -8,6 +8,7 @@ import {
   reaction,
   runInAction,
 } from 'mobx';
+import { Query } from 'mobx-tanstack-query';
 import { describe, expect, it, vi } from 'vitest';
 import { sleep } from 'yummies/async';
 import {
@@ -421,6 +422,68 @@ describe('EndpointQuery structural-equal reaction updates', () => {
     expect(observableData.params).toBe(initialParamsRef);
 
     disposeObserveParams();
+    query.destroy();
+  });
+});
+
+describe('EndpointQuery update branches', () => {
+  it('updates params and builds options when update input includes params key', () => {
+    const endpoint = createEndpointForQueryTests();
+    const query = endpoint.toQuery({
+      params: { id: 1 },
+      uniqKey: 'stable-key',
+      enableOnDemand: true,
+    });
+    const superUpdateSpy = vi
+      .spyOn(Query.prototype, 'update')
+      .mockImplementation((options: any) => options);
+
+    const result = query.update({
+      params: { id: 2 },
+      staleTime: 5_000,
+    });
+
+    expect(query.params).toEqual({ id: 2 });
+    expect(superUpdateSpy).toHaveBeenCalledWith({
+      enabled: true,
+      queryKey: endpoint.toQueryKey({ id: 2 }, 'stable-key'),
+      staleTime: 5_000,
+    });
+    expect(result).toEqual({
+      enabled: true,
+      queryKey: endpoint.toQueryKey({ id: 2 }, 'stable-key'),
+      staleTime: 5_000,
+    });
+
+    query.destroy();
+  });
+
+  it('reuses observable params when update input has no params key', () => {
+    const endpoint = createEndpointForQueryTests();
+    const query = endpoint.toQuery({
+      params: { id: 3 },
+      uniqKey: 'stable-key',
+      enableOnDemand: true,
+    });
+    const superUpdateSpy = vi
+      .spyOn(Query.prototype, 'update')
+      .mockImplementation((options: any) => options);
+
+    const result = query.update({
+      staleTime: 7_000,
+    });
+
+    expect(superUpdateSpy).toHaveBeenCalledWith({
+      enabled: true,
+      queryKey: endpoint.toQueryKey({ id: 3 }, 'stable-key'),
+      staleTime: 7_000,
+    });
+    expect(result).toEqual({
+      enabled: true,
+      queryKey: endpoint.toQueryKey({ id: 3 }, 'stable-key'),
+      staleTime: 7_000,
+    });
+
     query.destroy();
   });
 });
