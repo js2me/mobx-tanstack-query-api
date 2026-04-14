@@ -115,7 +115,33 @@ export class EndpointInfiniteQuery<
       initialized: false,
     };
 
-    if (!isQueryOptionsInputFn && typeof params !== 'function') {
+    if (isQueryOptionsInputFn) {
+      const {
+        params: initialParams,
+        abortSignal,
+        select,
+        onDone,
+        onError,
+        onInit,
+        enableOnDemand,
+        uniqKey: initialUniqKey,
+        transform: initialTransform,
+        mergePageParam: initialMergePageParam,
+        queryClient: _initialQueryClient,
+        ...initialDynamicOptions
+      } = unpackedQueryOptionsInput;
+      _observableData.params =
+        'params' in unpackedQueryOptionsInput
+          ? callFunction(initialParams)
+          : {};
+      _observableData.dynamicOptions = hasEnumerableKeys(initialDynamicOptions)
+        ? initialDynamicOptions
+        : undefined;
+      _observableData.uniqKey = initialUniqKey;
+      _observableData.transform = initialTransform;
+      _observableData.mergePageParam = initialMergePageParam;
+      _observableData.initialized = true;
+    } else if (typeof params !== 'function') {
       if ('params' in unpackedQueryOptionsInput) {
         _observableData.params = params;
       } else {

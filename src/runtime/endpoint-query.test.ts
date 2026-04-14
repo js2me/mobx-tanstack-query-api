@@ -225,50 +225,50 @@ describe('EndpointQuery structural computed recreation loop', () => {
   const createRuntimeEndpoints = () => {
     const queryClient = new EndpointQueryClient();
     const { httpClient } = createHttpClientWithGuardFetch();
-    const stableClusters = [{ id: 1 }];
+    const stableList = [{ id: 1 }];
 
-    const clustersEndpoint = new Endpoint<any, Record<string, never>>(
+    const listEndpoint = new Endpoint<any, Record<string, never>>(
       {
         params: () => ({
-          path: '/clusters',
+          path: '/struct-loop-parent-list',
           method: 'GET',
           format: 'json',
         }),
         requiredParams: [],
-        operationId: 'getClusters',
-        path: ['clusters'],
+        operationId: 'structLoopParentList',
+        path: ['struct-loop-parent-list'],
         tags: [],
         meta: {},
       },
       queryClient,
       httpClient,
     );
-    vi.spyOn(clustersEndpoint, 'request').mockResolvedValue({
+    vi.spyOn(listEndpoint, 'request').mockResolvedValue({
       ok: true,
       status: 200,
-      data: stableClusters,
+      data: stableList,
       error: null,
       headers: new Headers(),
       raw: null,
     } as any);
 
-    const childrenEndpoint = new Endpoint<any, { clusterId: number }>(
+    const nestedEndpoint = new Endpoint<any, { parentId: number }>(
       {
-        params: ({ clusterId }) => ({
-          path: `/clusters/${clusterId}/children`,
+        params: ({ parentId }) => ({
+          path: `/struct-loop-parent-list/${parentId}/nested`,
           method: 'GET',
           format: 'json',
         }),
-        requiredParams: ['clusterId'],
-        operationId: 'getClusterChildren',
-        path: ['clusters', '{clusterId}', 'children'],
+        requiredParams: ['parentId'],
+        operationId: 'structLoopNested',
+        path: ['struct-loop-parent-list', '{parentId}', 'nested'],
         tags: [],
         meta: {},
       },
       queryClient,
       httpClient,
     );
-    vi.spyOn(childrenEndpoint, 'request').mockResolvedValue({
+    vi.spyOn(nestedEndpoint, 'request').mockResolvedValue({
       ok: true,
       status: 200,
       data: [],
@@ -277,32 +277,32 @@ describe('EndpointQuery structural computed recreation loop', () => {
       raw: null,
     } as any);
 
-    return { clustersEndpoint, childrenEndpoint };
+    return { listEndpoint, nestedEndpoint };
   };
 
   it('does not enter structural-computed recreation loop when child model owns EndpointQuery', async () => {
-    const { clustersEndpoint, childrenEndpoint } = createRuntimeEndpoints();
+    const { listEndpoint, nestedEndpoint } = createRuntimeEndpoints();
     let paramsCalls = 0;
     const createdQueries: Array<{ destroy: () => void }> = [];
 
-    class ClusterNode {
-      childrenQuery = childrenEndpoint.toQuery({
+    class RowNode {
+      childrenQuery = nestedEndpoint.toQuery({
         params: () => {
           paramsCalls += 1;
           if (paramsCalls > 100) {
             throw new Error('infinite loop detected');
           }
-          return { clusterId: this.cluster.id };
+          return { parentId: this.item.id };
         },
       });
 
-      constructor(private cluster: { id: number }) {
+      constructor(private item: { id: number }) {
         createdQueries.push(this.childrenQuery);
       }
 
       get row() {
         return {
-          clusterId: this.cluster.id,
+          parentId: this.item.id,
           isFetching: this.childrenQuery.isFetching,
           hasData: !!this.childrenQuery.data,
         };
@@ -310,7 +310,7 @@ describe('EndpointQuery structural computed recreation loop', () => {
     }
 
     class TreeVm {
-      clustersQuery = clustersEndpoint.toQuery({
+      listQuery = listEndpoint.toQuery({
         params: () => ({}),
       });
 
@@ -324,14 +324,12 @@ describe('EndpointQuery structural computed recreation loop', () => {
       }
 
       get data() {
-        const clusters = this.clustersQuery.data ?? [];
-        return clusters.map(
-          (cluster: { id: number }) => new ClusterNode(cluster),
-        );
+        const items = this.listQuery.data ?? [];
+        return items.map((item: { id: number }) => new RowNode(item));
       }
 
       get rows() {
-        return this.data.map((item: ClusterNode) => item.row);
+        return this.data.map((item: RowNode) => item.row);
       }
     }
 
@@ -344,19 +342,19 @@ describe('EndpointQuery structural computed recreation loop', () => {
     expect(paramsCalls).toBeLessThanOrEqual(5);
 
     dispose();
-    vm.clustersQuery.destroy();
+    vm.listQuery.destroy();
     createdQueries.forEach((query) => {
       query.destroy();
     });
   });
 
   it('does not loop when child params are falsy', async () => {
-    const { clustersEndpoint, childrenEndpoint } = createRuntimeEndpoints();
+    const { listEndpoint, nestedEndpoint } = createRuntimeEndpoints();
     let paramsCalls = 0;
     const createdQueries: Array<{ destroy: () => void }> = [];
 
-    class ClusterNode {
-      childrenQuery = childrenEndpoint.toQuery({
+    class RowNode {
+      childrenQuery = nestedEndpoint.toQuery({
         params: () => {
           paramsCalls += 1;
           if (paramsCalls > 100) {
@@ -366,20 +364,20 @@ describe('EndpointQuery structural computed recreation loop', () => {
         },
       });
 
-      constructor(private cluster: { id: number }) {
+      constructor(private item: { id: number }) {
         createdQueries.push(this.childrenQuery);
       }
 
       get row() {
         return {
-          clusterId: this.cluster.id,
+          parentId: this.item.id,
           isFetching: this.childrenQuery.isFetching,
         };
       }
     }
 
     class TreeVm {
-      clustersQuery = clustersEndpoint.toQuery({
+      listQuery = listEndpoint.toQuery({
         params: () => ({}),
       });
 
@@ -393,14 +391,12 @@ describe('EndpointQuery structural computed recreation loop', () => {
       }
 
       get data() {
-        const clusters = this.clustersQuery.data ?? [];
-        return clusters.map(
-          (cluster: { id: number }) => new ClusterNode(cluster),
-        );
+        const items = this.listQuery.data ?? [];
+        return items.map((item: { id: number }) => new RowNode(item));
       }
 
       get rows() {
-        return this.data.map((item: ClusterNode) => item.row);
+        return this.data.map((item: RowNode) => item.row);
       }
     }
 
@@ -413,7 +409,7 @@ describe('EndpointQuery structural computed recreation loop', () => {
     expect(paramsCalls).toBeLessThanOrEqual(100);
 
     dispose();
-    vm.clustersQuery.destroy();
+    vm.listQuery.destroy();
     createdQueries.forEach((query) => {
       query.destroy();
     });
@@ -498,6 +494,210 @@ describe('EndpointInfiniteQuery structural-equal reaction updates', () => {
 
     disposeObserveParams();
     query.destroy();
+  });
+});
+
+describe('regression: class field toQuery + structural parent', () => {
+  const createRegressionEndpoints = () => {
+    const queryClient = new EndpointQueryClient();
+    const { httpClient } = createHttpClientWithGuardFetch();
+    const stableList = [{ id: 1 }];
+
+    const listEndpoint = new Endpoint<any, Record<string, never>>(
+      {
+        params: () => ({
+          path: '/regression-parent-list',
+          method: 'GET',
+          format: 'json',
+        }),
+        requiredParams: [],
+        operationId: 'regressionParentList',
+        path: ['regression-parent-list'],
+        tags: [],
+        meta: {},
+      },
+      queryClient,
+      httpClient,
+    );
+    vi.spyOn(listEndpoint, 'request').mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: stableList,
+      error: null,
+      headers: new Headers(),
+      raw: null,
+    } as any);
+
+    const childrenEndpoint = createTestEndpoint({ queryClient }).endpoint;
+    vi.spyOn(childrenEndpoint, 'request').mockResolvedValue({
+      ok: true,
+      status: 200,
+      data: [],
+      error: null,
+      headers: new Headers(),
+      raw: null,
+    } as any);
+
+    return { listEndpoint, childrenEndpoint };
+  };
+
+  it('does not enter infinite reaction loop when params function returns structurally same object', async () => {
+    const { listEndpoint, childrenEndpoint } = createRegressionEndpoints();
+    const abortController = new AbortController();
+    let paramsCalls = 0;
+    const createdQueries: Array<{ destroy: () => void }> = [];
+
+    class RowNode {
+      private readonly childrenQuery = childrenEndpoint.toQuery({
+        params: () => {
+          paramsCalls += 1;
+          if (paramsCalls > 100) {
+            throw new Error('infinite loop detected');
+          }
+          return { id: this.data.id };
+        },
+        abortSignal: abortController.signal,
+      });
+
+      constructor(
+        private readonly data: { id: number },
+        private readonly signal: AbortSignal,
+      ) {
+        createdQueries.push(this.childrenQuery);
+      }
+
+      get row() {
+        return {
+          id: this.data.id,
+          aborted: this.signal.aborted,
+          isFetching: this.childrenQuery.isFetching,
+          hasData: !!this.childrenQuery.data,
+        };
+      }
+    }
+
+    class TreeVm {
+      private readonly listQuery = listEndpoint.toQuery({
+        params: () => ({}),
+      });
+
+      constructor(private readonly signal: AbortSignal) {
+        makeObservable(this, {
+          data: computed({
+            equals: comparer.structural,
+          }),
+          rows: computed,
+        });
+      }
+
+      get data() {
+        const items = this.listQuery.data ?? [];
+        return items.map((item: { id: number }) => {
+          return new RowNode(item, this.signal);
+        });
+      }
+
+      get rows() {
+        return this.data.map((node: RowNode) => node.row);
+      }
+
+      destroy() {
+        this.listQuery.destroy();
+      }
+    }
+
+    const vm = new TreeVm(abortController.signal);
+    const dispose = reaction(() => vm.rows, noop, {
+      fireImmediately: true,
+    });
+
+    await sleep();
+    expect(paramsCalls).toBeLessThanOrEqual(5);
+
+    dispose();
+    vm.destroy();
+    createdQueries.forEach((query) => {
+      query.destroy();
+    });
+  });
+
+  it('stays stable when params returns falsy', async () => {
+    const { listEndpoint, childrenEndpoint } = createRegressionEndpoints();
+    const abortController = new AbortController();
+    let paramsCalls = 0;
+    const createdQueries: Array<{ destroy: () => void }> = [];
+
+    class RowNode {
+      private readonly childrenQuery = childrenEndpoint.toQuery({
+        params: () => {
+          paramsCalls += 1;
+          if (paramsCalls > 100) {
+            throw new Error('infinite loop detected');
+          }
+          return false;
+        },
+        abortSignal: abortController.signal,
+      });
+
+      constructor(
+        private readonly data: { id: number },
+        private readonly signal: AbortSignal,
+      ) {
+        createdQueries.push(this.childrenQuery);
+      }
+
+      get row() {
+        return {
+          id: this.data.id,
+          aborted: this.signal.aborted,
+          isFetching: this.childrenQuery.isFetching,
+        };
+      }
+    }
+
+    class TreeVm {
+      private readonly listQuery = listEndpoint.toQuery({
+        params: () => ({}),
+      });
+
+      constructor(private readonly signal: AbortSignal) {
+        makeObservable(this, {
+          data: computed({
+            equals: comparer.structural,
+          }),
+          rows: computed,
+        });
+      }
+
+      get data() {
+        const items = this.listQuery.data ?? [];
+        return items.map((item: { id: number }) => {
+          return new RowNode(item, this.signal);
+        });
+      }
+
+      get rows() {
+        return this.data.map((node: RowNode) => node.row);
+      }
+
+      destroy() {
+        this.listQuery.destroy();
+      }
+    }
+
+    const vm = new TreeVm(abortController.signal);
+    const dispose = reaction(() => vm.rows, noop, {
+      fireImmediately: true,
+    });
+
+    await sleep();
+    expect(paramsCalls).toBeLessThanOrEqual(100);
+
+    dispose();
+    vm.destroy();
+    createdQueries.forEach((query) => {
+      query.destroy();
+    });
   });
 });
 
