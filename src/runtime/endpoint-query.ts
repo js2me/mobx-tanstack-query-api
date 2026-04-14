@@ -15,6 +15,7 @@ import {
 } from 'mobx';
 import { Query, type QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
+import { hasEnumerableKeys } from 'yummies/data';
 import { getMobxAdministration, lazyObserve } from 'yummies/mobx';
 import type { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
@@ -86,6 +87,7 @@ export class EndpointQuery<
       dynamicOptions: undefined,
       response: null,
       uniqKey: unpackedQueryOptionsInput.uniqKey,
+      initialized: false,
     };
 
     if (!isQueryOptionsInputFn && typeof params !== 'function') {
@@ -106,10 +108,11 @@ export class EndpointQuery<
     makeObservable(_observableData, {
       params: observable.ref,
       response: observable.ref,
-      dynamicOptions: observable,
+      uniqKey: observable.ref,
+      initialized: observable.ref,
+      dynamicOptions: observable.ref,
     });
 
-    const lastHandledDataUpdatedAt = -1;
     const onDone =
       onDoneInput &&
       ((...args: Parameters<NonNullable<typeof onDoneInput>>) => {
@@ -219,10 +222,9 @@ export class EndpointQuery<
                 outParams = {};
               }
 
-              outDynamicOptions =
-                Object.keys(dynamicOptions).length > 0
-                  ? dynamicOptions
-                  : undefined;
+              outDynamicOptions = hasEnumerableKeys(dynamicOptions)
+                ? dynamicOptions
+                : undefined;
             } else if ('params' in unpackedQueryOptionsInput) {
               outParams = unpackedQueryOptionsInput.params;
               uniqKey = unpackedQueryOptionsInput.uniqKey;

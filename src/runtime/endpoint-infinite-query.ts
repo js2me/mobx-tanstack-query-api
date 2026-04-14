@@ -17,6 +17,7 @@ import {
   type InfiniteQueryUpdateOptionsAllVariants,
 } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
+import { hasEnumerableKeys } from 'yummies/data';
 import { getMobxAdministration, lazyObserve } from 'yummies/mobx';
 import type { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
@@ -111,6 +112,7 @@ export class EndpointInfiniteQuery<
       uniqKey: unpackedQueryOptionsInput.uniqKey,
       transform: transformResponse,
       mergePageParam,
+      initialized: false,
     };
 
     if (!isQueryOptionsInputFn && typeof params !== 'function') {
@@ -120,12 +122,20 @@ export class EndpointInfiniteQuery<
         _observableData.params = {};
       }
       _observableData.initialized = true;
+    } else if (
+      !isQueryOptionsInputFn &&
+      'params' in unpackedQueryOptionsInput
+    ) {
+      _observableData.params = callFunction(params);
+      _observableData.initialized = true;
     }
 
     makeObservable(_observableData, {
       params: observable.ref,
       response: observable.ref,
-      dynamicOptions: observable,
+      uniqKey: observable.ref,
+      initialized: observable.ref,
+      dynamicOptions: observable.ref,
       transform: observable.ref,
       mergePageParam: observable.ref,
     });
@@ -262,10 +272,9 @@ export class EndpointInfiniteQuery<
                 outParams = {};
               }
 
-              outDynamicOptions =
-                Object.keys(dynamicOptions).length > 0
-                  ? dynamicOptions
-                  : undefined;
+              outDynamicOptions = hasEnumerableKeys(dynamicOptions)
+                ? dynamicOptions
+                : undefined;
             } else if ('params' in unpackedQueryOptionsInput) {
               outParams = unpackedQueryOptionsInput.params;
               uniqKey = unpackedQueryOptionsInput.uniqKey;
@@ -289,11 +298,31 @@ export class EndpointInfiniteQuery<
           ({ params, dynamicOptions, uniqKey, transform, mergePageParam }) => {
             runInAction(() => {
               _observableData.initialized = true;
-              _observableData.params = params;
-              _observableData.dynamicOptions = dynamicOptions;
-              _observableData.uniqKey = uniqKey;
-              _observableData.transform = transform;
-              _observableData.mergePageParam = mergePageParam;
+              if (!comparer.structural(_observableData.params, params)) {
+                _observableData.params = params;
+              }
+              if (
+                !comparer.structural(
+                  _observableData.dynamicOptions,
+                  dynamicOptions,
+                )
+              ) {
+                _observableData.dynamicOptions = dynamicOptions;
+              }
+              if (!comparer.structural(_observableData.uniqKey, uniqKey)) {
+                _observableData.uniqKey = uniqKey;
+              }
+              if (!comparer.structural(_observableData.transform, transform)) {
+                _observableData.transform = transform;
+              }
+              if (
+                !comparer.structural(
+                  _observableData.mergePageParam,
+                  mergePageParam,
+                )
+              ) {
+                _observableData.mergePageParam = mergePageParam;
+              }
             });
           },
           {

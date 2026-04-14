@@ -72,11 +72,11 @@
     "http-status-code-types": "^1.0.1",
     "jiti": "^2.6.1",
     "lodash-es": "^4.18.1",
-    "mobx-tanstack-query": "^6.14.0",
+    "mobx-tanstack-query": "^6.15.1",
     "qs": "^6.15.0",
     "swagger-typescript-api": "^13.6.8",
     "ts-morph": "^27.0.2",
-    "yummies": "^7.15.1"
+    "yummies": "^7.18.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.10",

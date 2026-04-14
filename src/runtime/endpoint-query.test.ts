@@ -30,6 +30,39 @@ const createEndpointForQueryTests = () => {
 };
 
 describe('EndpointQuery reactive options input updates', () => {
+  it('reactively updates queryKey when only uniqKey changes', async () => {
+    const endpoint = createEndpointForQueryTests();
+    const uniqKeyBox = observable.box('first-key');
+
+    const query = endpoint.toQuery(() => ({
+      enableOnDemand: true,
+      params: { id: 1 },
+      uniqKey: uniqKeyBox.get(),
+    }));
+
+    const disposeObserveResult = reaction(() => query.result, noop, {
+      fireImmediately: true,
+    });
+
+    await sleep();
+
+    expect(query.options.queryKey).toEqual(
+      endpoint.toQueryKey({ id: 1 }, 'first-key'),
+    );
+
+    runInAction(() => {
+      uniqKeyBox.set('second-key');
+    });
+    await sleep();
+
+    expect(query.options.queryKey).toEqual(
+      endpoint.toQueryKey({ id: 1 }, 'second-key'),
+    );
+
+    disposeObserveResult();
+    query.destroy();
+  });
+
   it('reactively updates params, uniqKey and dynamic options for function input', async () => {
     const endpoint = createEndpointForQueryTests();
     const state = observable(
@@ -398,6 +431,48 @@ describe('EndpointQuery structural-equal reaction updates', () => {
         tick.get();
         return { id: 1 };
       },
+    });
+
+    const observableData = (query as any)._observableData;
+    const initialParamsRef = observableData.params;
+    let paramsWrites = 0;
+
+    const disposeObserveParams = observe(observableData, 'params', () => {
+      paramsWrites += 1;
+    });
+
+    runInAction(() => {
+      tick.set(1);
+    });
+    await sleep();
+
+    runInAction(() => {
+      tick.set(2);
+    });
+    await sleep();
+
+    expect(paramsWrites).toBe(0);
+    expect(observableData.params).toBe(initialParamsRef);
+
+    disposeObserveParams();
+    query.destroy();
+  });
+});
+
+describe('EndpointInfiniteQuery structural-equal reaction updates', () => {
+  it('does not write observableData.params for structurally equal params', async () => {
+    const endpoint = createEndpointForQueryTests();
+    const tick = observable.box(0);
+    const getNextPageParam = () => undefined;
+
+    const query = endpoint.toInfiniteQuery(() => {
+      tick.get();
+      return {
+        enableOnDemand: true,
+        initialPageParam: 0,
+        getNextPageParam,
+        params: { id: 1 },
+      };
     });
 
     const observableData = (query as any)._observableData;
