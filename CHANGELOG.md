@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.51.1
+
+### Patch Changes
+
+- [`96fb793`](https://github.com/js2me/mobx-tanstack-query-api/commit/96fb793ef5a8b01a7883373f67f070fe8fec988e) Thanks [@js2me](https://github.com/js2me)! - fixed circular updates due to react accessing
+
 ## 0.51.0
 
 ### Minor Changes
