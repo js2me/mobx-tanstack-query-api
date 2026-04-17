@@ -6,7 +6,7 @@ import { callEndpointMeta } from '../utils/resolve-codegen-meta.js';
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 import { endpointJSDocTmpl } from './endpoint-jsdoc.tmpl.js';
-import { newEndpointTmpl } from './new-endpoint.tmpl.js';
+import { newEndpointTmpl } from './new-endpoint.tmpl/index.js';
 
 export interface AllEndpointPerFileTmplParams extends BaseTmplParams {
   routes: ParsedRoute[];

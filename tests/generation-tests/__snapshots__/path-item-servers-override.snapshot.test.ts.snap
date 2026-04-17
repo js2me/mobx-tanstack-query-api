@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi path-item-level servers > uses last url from path item servers when operation has no servers 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+
+
+
+export interface GetPathItemServersDataDC {
+  name?: string;
+}
+
+export type GetPathItemServersParams = {
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Path item servers; operation has no servers field**
+ *
+ * @operationId getPathItemServers
+ * @request **GET:/catalog**
+ * @produces application/json
+ * @responses
+ * @**200** GetPathItemServersDataDC OK
+ */
+export const getPathItemServers = new Endpoint<
+  HttpResponse<GetPathItemServersDataDC, any>,
+  GetPathItemServersParams,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      baseUrl: "https://path-c.example.com",
+      path: \`/catalog\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "getPathItemServers",
+    path: ["catalog"],
+    tags: [],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;

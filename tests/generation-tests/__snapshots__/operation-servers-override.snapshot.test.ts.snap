@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi operation-level servers override > uses last url from operation.servers, not from global servers 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+
+
+
+export interface GetOperationServersOverrideDataDC {
+  id?: string;
+}
+
+export type GetOperationServersOverrideParams = {
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Operation servers override global servers**
+ *
+ * @operationId getOperationServersOverride
+ * @request **GET:/items**
+ * @produces application/json
+ * @responses
+ * @**200** GetOperationServersOverrideDataDC OK
+ */
+export const getOperationServersOverride = new Endpoint<
+  HttpResponse<GetOperationServersOverrideDataDC, any>,
+  GetOperationServersOverrideParams,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      baseUrl: "https://op-c.example.com",
+      path: \`/items\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "getOperationServersOverride",
+    path: ["items"],
+    tags: [],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;

@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi snapshot three OpenAPI servers > generates endpoint matching snapshot (spec defines three servers) 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+
+
+
+export interface GetMultiServerWeatherDataDC {
+  city?: string;
+}
+
+export type GetMultiServerWeatherParams = {
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Snapshot fixture for OpenAPI servers array**
+ *
+ * @operationId getMultiServerWeather
+ * @request **GET:/weather**
+ * @produces application/json
+ * @responses
+ * @**200** GetMultiServerWeatherDataDC OK
+ */
+export const getMultiServerWeather = new Endpoint<
+  HttpResponse<GetMultiServerWeatherDataDC, any>,
+  GetMultiServerWeatherParams,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      baseUrl: "http://some-other.api.openweathermap.org/data/2.5",
+      path: \`/weather\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "getMultiServerWeather",
+    path: ["weather"],
+    tags: [],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;

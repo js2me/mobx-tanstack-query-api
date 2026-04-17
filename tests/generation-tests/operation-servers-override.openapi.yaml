@@ -1,0 +1,31 @@
+openapi: 3.0.3
+info:
+  title: Operation-level servers override
+  version: 1.0.0
+servers:
+  - url: https://global.example.com/
+    description: Global first
+  - url: https://global-last.example.com/
+    description: Global last (must not be baseUrl when operation.servers is set)
+paths:
+  /items:
+    get:
+      operationId: getOperationServersOverride
+      summary: Operation servers override global servers
+      servers:
+        - url: https://op-a.example.com/
+          description: Operation server A
+        - url: https://op-b.example.com/
+          description: Operation server B
+        - url: https://op-c.example.com/
+          description: Operation server C (last — expected baseUrl)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string

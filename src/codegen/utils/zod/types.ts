@@ -5,49 +5,6 @@ export type RequestParam = {
   type: string;
 };
 
-/** OpenAPI/JSON Schema subset we use for Zod generation */
-export type OpenAPISchema = {
-  type?: string;
-  $ref?: string;
-  allOf?: OpenAPISchema[];
-  properties?: Record<string, OpenAPISchema>;
-  required?: string[];
-  items?: OpenAPISchema;
-  enum?: unknown[];
-  nullable?: boolean;
-  format?: string;
-  additionalProperties?: boolean | OpenAPISchema;
-  minLength?: number;
-  maxLength?: number;
-  minimum?: number;
-  maximum?: number;
-  minItems?: number;
-  maxItems?: number;
-  pattern?: string;
-};
-
-export const REF_PREFIX = '#/components/schemas/';
-export const REF_PREFIX_PARAMS = '#/components/parameters/';
-
-/** OpenAPI parameter (operation.parameters item or resolved from components.parameters) */
-export type OpenAPIParameter = {
-  name?: string;
-  in?: string;
-  required?: boolean;
-  schema?: OpenAPISchema;
-  type?: string;
-  format?: string;
-  items?: OpenAPISchema;
-};
-
-/** Minimal shape used to extract response schema $ref; accepts raw OpenAPI operation or route raw. */
-export type OperationWithResponses = {
-  responses?: Record<
-    string,
-    { content?: Record<string, { schema?: { $ref?: string } }> }
-  >;
-};
-
 export interface EndpointZodContractsResult {
   content: string;
   /** Contract var names to import from the central contracts file (e.g. ['appleContract', 'coreContract']) */

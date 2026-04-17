@@ -37,6 +37,7 @@ export const getMemoryLeak = new Endpoint<
 >(
   {
     params: ({ query, requestParams }) => ({
+      baseUrl: "/_neutral",
       path: \`/api/v1/memory/leak\`,
       method: "GET",
       query: query,

@@ -1,0 +1,30 @@
+openapi: 3.0.3
+info:
+  title: Path-item-level servers
+  version: 1.0.0
+servers:
+  - url: https://global.example.com/
+    description: Global (ignored when path item defines servers)
+  - url: https://global-last.example.com/
+paths:
+  /catalog:
+    servers:
+      - url: https://path-a.example.com/
+        description: Path server A
+      - url: https://path-b.example.com/
+        description: Path server B
+      - url: https://path-c.example.com/
+        description: Path server C (last — expected baseUrl)
+    get:
+      operationId: getPathItemServers
+      summary: Path item servers; operation has no servers field
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string

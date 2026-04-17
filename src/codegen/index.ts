@@ -373,7 +373,16 @@ const generateApiSingle = async (
     importFileParams,
     utils,
     filterTypes,
+    swaggerSchema: ((generated.configuration as GenerateApiConfiguration).config
+      ?.swaggerSchema ??
+      (generated.configuration as AnyObject)?.swaggerSchema) as AnyObject,
   };
+
+  if (
+    !(generated.configuration as GenerateApiConfiguration).config?.swaggerSchema
+  ) {
+    console.log('dddddddddddddd');
+  }
 
   const reservedDataContractNamesMap = new Map<string, number>();
 
@@ -757,7 +766,6 @@ export * as ${exportGroupName} from './endpoints';
   if (hasZodContractsFile && componentsSchemasForZod) {
     const contractsTsContent = buildCentralZodContractsFile({
       componentsSchemas: componentsSchemasForZod as Record<string, AnyObject>,
-      utils,
       contractSuffix: zodContractSuffix,
     });
     const formattedContractsContent = await generated.formatTSContent(

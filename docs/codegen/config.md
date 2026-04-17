@@ -467,6 +467,46 @@ export const getMyData = new Endpoint<...>(
 );
 ```
 
+### `formatBaseUrl`
+
+Controls how OpenAPI `servers[].url` is emitted as `baseUrl` in generated endpoint `params`.
+
+Default: `'normalize'`
+
+Supported values:
+
+- **`'as-is'`** — use the server URL exactly as provided in the schema.
+- **`'normalize'`** — if `baseUrl` ends with `/` and generated `path` starts with `/`, remove the trailing `/` from `baseUrl`.  
+  If the resulting `baseUrl` is an empty string (`''`), `baseUrl` is not emitted at all.
+- **Function** — custom formatter called at **codegen** time:
+  - input: `(originalBaseUrl: string, routeInfo: RouteBaseInfo)`
+  - return: resulting `baseUrl` string for this endpoint
+
+Example (`'as-is'`):
+
+```ts
+formatBaseUrl: 'as-is',
+```
+
+Example (`'normalize'`):
+
+```ts
+formatBaseUrl: 'normalize',
+```
+
+Example (function):
+
+```ts
+import type { RouteBaseInfo } from 'mobx-tanstack-query-api/cli';
+
+formatBaseUrl: (originalBaseUrl: string, routeInfo: RouteBaseInfo) => {
+  if (routeInfo.operationId.startsWith('admin')) {
+    return `${originalBaseUrl}/admin`;
+  }
+  return originalBaseUrl;
+},
+```
+
 ### `removeUnusedTypes`   
 
 This option removes all data contracts which are not used in any endpoint.   

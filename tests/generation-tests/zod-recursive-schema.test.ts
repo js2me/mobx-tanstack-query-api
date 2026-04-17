@@ -4,7 +4,7 @@ import {
   buildEndpointZodContractsCode,
 } from '../../src/codegen/utils/zod/build-endpoint-zod-contracts-code.js';
 import * as _ from 'lodash-es';
-import type { OpenAPIParameter, OpenAPISchema } from '../../src/codegen/utils/zod/types.js';
+import { OpenAPIParameter, OpenAPISchema } from '../../src/codegen/utils/swagger/types.js';
 
 const utils = { _ };
 
@@ -37,7 +37,6 @@ describe('zod recursive schema — explicit return type for z.lazy (TS 7024)', (
 
     const content = buildCentralZodContractsFile({
       componentsSchemas: recursiveSchema,
-      utils,
     });
 
     // Without explicit (): z.ZodTypeAny => TS reports 7024 for recursion
@@ -66,7 +65,6 @@ describe('zod recursive schema — explicit return type for z.lazy (TS 7024)', (
       inputParams: [],
       responseDataTypeName: 'TreeNodeDC',
       contractVarName: 'getTreeContract',
-      utils,
       componentsSchemas: recursiveSchema,
     });
 
@@ -99,6 +97,7 @@ describe('zod params schema — query object from OpenAPI operation parameters',
       contractVarName: 'getItemsContract',
       utils,
       componentsSchemas: {},
+      // @ts-expect-error
       openApiOperation: operation,
       openApiComponentsParameters: null,
       queryParamName: 'query',
@@ -132,6 +131,7 @@ describe('zod params schema — query object from OpenAPI operation parameters',
       contractVarName: 'getItemContract',
       utils,
       componentsSchemas: {},
+      // @ts-expect-error
       openApiOperation: operation,
       openApiComponentsParameters: componentsParameters,
       queryParamName: 'query',
@@ -162,7 +162,6 @@ describe('zod params schema — query object from OpenAPI operation parameters',
       responseSchemaKey: 'TreeNode',
       contractVarName: 'getTreeValidator',
       contractSuffix: 'Validator',
-      utils,
       componentsSchemas: recursiveSchema,
       useExternalZodSchemas: true,
     });
@@ -256,7 +255,6 @@ describe('zod central schemas — no ZodTypeAny for non-cyclic refs', () => {
   it('buildCentralZodContractsFile does not emit ZodTypeAny for refs to other contracts (only for self-ref)', () => {
     const content = buildCentralZodContractsFile({
       componentsSchemas: nonCyclicSchemas,
-      utils,
     });
 
     expect(content).toContain('containerSchemaDc');
@@ -289,7 +287,6 @@ describe('zod central schemas — no ZodTypeAny for non-cyclic refs', () => {
     };
     const content = buildCentralZodContractsFile({
       componentsSchemas: withRecursive,
-      utils,
     });
 
     // Only the recursive schema uses ZodTypeAny

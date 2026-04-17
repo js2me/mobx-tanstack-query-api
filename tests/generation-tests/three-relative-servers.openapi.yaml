@@ -1,0 +1,26 @@
+openapi: 3.0.3
+info:
+  title: Relative servers snapshot API
+  version: 1.0.0
+servers:
+  - url: /api/v1/
+    description: Versioned root
+  - url: /api/beta/
+    description: Beta subtree
+  - url: /api/canary/
+    description: Last relative server (expected in baseUrl)
+paths:
+  /ping:
+    get:
+      operationId: getRelativeServersPing
+      summary: Snapshot fixture for relative OpenAPI servers URLs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean

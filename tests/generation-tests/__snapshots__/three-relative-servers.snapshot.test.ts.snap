@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi snapshot three relative OpenAPI servers > generates endpoint with baseUrl from last relative server url 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+
+
+
+export interface GetRelativeServersPingDataDC {
+  ok?: boolean;
+}
+
+export type GetRelativeServersPingParams = {
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Snapshot fixture for relative OpenAPI servers URLs**
+ *
+ * @operationId getRelativeServersPing
+ * @request **GET:/ping**
+ * @produces application/json
+ * @responses
+ * @**200** GetRelativeServersPingDataDC OK
+ */
+export const getRelativeServersPing = new Endpoint<
+  HttpResponse<GetRelativeServersPingDataDC, any>,
+  GetRelativeServersPingParams,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      baseUrl: "/api/canary",
+      path: \`/ping\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "getRelativeServersPing",
+    path: ["ping"],
+    tags: [],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;

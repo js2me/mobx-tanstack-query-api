@@ -554,6 +554,7 @@ describe('regression: class field toQuery + structural parent', () => {
           if (paramsCalls > 100) {
             throw new Error('infinite loop detected');
           }
+          // TODO: this.data should be this.data?
           return { id: this.data.id };
         },
         abortSignal: abortController.signal,

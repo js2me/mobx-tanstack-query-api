@@ -1,54 +1,12 @@
-import type { AnyObject } from 'yummies/types';
+import { camelCase } from 'lodash-es';
+import type { ParsedRoute } from 'swagger-typescript-api';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from '../data-contract-type-suffix.js';
+import { collectRefs } from '../swagger/collect-refs.js';
+import { parseRef } from '../swagger/parse-ref.js';
+import { resolveQueryParameters } from '../swagger/resolve-query-parameters.js';
+import type { OpenAPIParameter, OpenAPISchema } from '../swagger/types.js';
 import { DEFAULT_ZOD_CONTRACT_SUFFIX } from './contract-suffix.js';
-import {
-  type EndpointZodContractsResult,
-  type OpenAPIParameter,
-  type OpenAPISchema,
-  type OperationWithResponses,
-  REF_PREFIX,
-  REF_PREFIX_PARAMS,
-  type RequestParam,
-} from './types.js';
-
-function parseRef(ref: string): string | null {
-  if (typeof ref !== 'string' || !ref.startsWith(REF_PREFIX)) return null;
-  return ref.slice(REF_PREFIX.length);
-}
-
-function parseParamRef(ref: string): string | null {
-  if (typeof ref !== 'string' || !ref.startsWith(REF_PREFIX_PARAMS))
-    return null;
-  return ref.slice(REF_PREFIX_PARAMS.length);
-}
-
-/**
- * Extract OpenAPI schema key from response $ref (e.g. from responses['200'].content['application/json'].schema.$ref).
- * Use this for the data contract so we resolve the actual schema (e.g. GoldenApple) instead of the alias type name (GetGoldenAppleDataDC).
- */
-export function getResponseSchemaKeyFromOperation(
-  rawOperation: OperationWithResponses | Record<string, unknown>,
-): string | null {
-  const op = rawOperation as OperationWithResponses;
-  const responses = op?.responses;
-  if (!responses || typeof responses !== 'object') return null;
-  const successStatus = Object.keys(responses).find((s) => {
-    const code = Number.parseInt(s, 10);
-    return code >= 200 && code < 300;
-  });
-  if (!successStatus) return null;
-  const successResponse = responses[successStatus] as
-    | {
-        content?: Record<string, { schema?: { $ref?: string } }>;
-      }
-    | undefined;
-  const content = successResponse?.content;
-  if (!content || typeof content !== 'object') return null;
-  const jsonContent = content['application/json'] ?? Object.values(content)[0];
-  const ref = jsonContent?.schema?.$ref;
-  if (typeof ref !== 'string') return null;
-  return parseRef(ref);
-}
+import type { EndpointZodContractsResult, RequestParam } from './types.js';
 
 /**
  * Resolve generated type name to OpenAPI schema key (e.g. RelaySignalPacketDC -> RelaySignalPacket).
@@ -192,44 +150,11 @@ function schemaToZodExpr(
   return nullable ? `${base}.nullable()` : base;
 }
 
-/**
- * Collect all schema keys referenced from this schema (transitively).
- */
-function collectRefs(
-  schema: OpenAPISchema | undefined,
-  schemas: Record<string, OpenAPISchema>,
-  out: Set<string>,
-): void {
-  if (!schema) return;
-  if (schema.$ref) {
-    const key = parseRef(schema.$ref);
-    if (key && key in schemas && !out.has(key)) {
-      out.add(key);
-      collectRefs(schemas[key], schemas, out);
-    }
-    return;
-  }
-  if (schema.allOf) {
-    for (const part of schema.allOf) collectRefs(part, schemas, out);
-  }
-  if (schema.properties) {
-    for (const v of Object.values(schema.properties)) {
-      collectRefs(v, schemas, out);
-    }
-  }
-  if (schema.items) collectRefs(schema.items, schemas, out);
-  if (typeof schema.additionalProperties === 'object') {
-    collectRefs(schema.additionalProperties, schemas, out);
-  }
-}
-
 export function dataContractTypeNameToZodVarName(
   typeName: string,
-  utils: { _: AnyObject },
   contractSuffix = DEFAULT_ZOD_CONTRACT_SUFFIX,
 ): string {
-  const _ = utils._ as typeof import('lodash-es');
-  return `${_.camelCase(typeName)}${contractSuffix}`;
+  return `${camelCase(typeName)}${contractSuffix}`;
 }
 
 /**
@@ -238,65 +163,13 @@ export function dataContractTypeNameToZodVarName(
  */
 export function schemaKeyToContractVarName(
   key: string,
-  utils: { _: AnyObject },
   contractSuffix = DEFAULT_ZOD_CONTRACT_SUFFIX,
   typeSuffix = DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
 ): string {
   return dataContractTypeNameToZodVarName(
     `${key}${typeSuffix}`,
-    utils,
     contractSuffix,
   );
-}
-
-/**
- * Resolve operation.parameters to a list of query params { name, required, schema }.
- * Expands $ref from components.parameters. Supports OAS2 (type/items on param) and OAS3 (param.schema).
- */
-function resolveQueryParameters(
-  operation: {
-    parameters?: Array<{
-      $ref?: string;
-      in?: string;
-      name?: string;
-      required?: boolean;
-      schema?: OpenAPISchema;
-      type?: string;
-      format?: string;
-      items?: OpenAPISchema;
-    }>;
-  },
-  componentsParameters: Record<string, OpenAPIParameter> | null,
-): Array<{ name: string; required: boolean; schema: OpenAPISchema }> {
-  const list: Array<{
-    name: string;
-    required: boolean;
-    schema: OpenAPISchema;
-  }> = [];
-  const params = operation?.parameters;
-  if (!Array.isArray(params) || !params.length) return list;
-  for (const p of params) {
-    let param: OpenAPIParameter = p as OpenAPIParameter;
-    if (p.$ref && componentsParameters) {
-      const key = parseParamRef(p.$ref);
-      if (key && key in componentsParameters)
-        param = componentsParameters[key] as OpenAPIParameter;
-    }
-    if (param.in !== 'query') continue;
-    const name = param.name;
-    if (!name) continue;
-    const schema: OpenAPISchema = param.schema ?? {
-      type: param.type ?? 'string',
-      format: param.format,
-      items: param.items,
-    };
-    list.push({
-      name,
-      required: param.required === true,
-      schema,
-    });
-  }
-  return list;
 }
 
 /**
@@ -361,18 +234,16 @@ function generateAuxiliarySchemas(
  */
 export function buildCentralZodContractsFile(params: {
   componentsSchemas: Record<string, OpenAPISchema>;
-  utils: { _: AnyObject };
   contractSuffix?: string;
   typeSuffix?: string;
 }): string {
   const {
     componentsSchemas,
-    utils,
     contractSuffix = DEFAULT_ZOD_CONTRACT_SUFFIX,
     typeSuffix = DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
   } = params;
   const schemaKeyToContractVarNameFn = (key: string) =>
-    schemaKeyToContractVarName(key, utils, contractSuffix, typeSuffix);
+    schemaKeyToContractVarName(key, contractSuffix, typeSuffix);
   const lines = generateAuxiliarySchemas(
     Object.keys(componentsSchemas),
     componentsSchemas,
@@ -409,7 +280,6 @@ function typeToZodSchemaFallback(typeStr: string): string {
 export function typeToZodSchemaWithSchema(
   typeStr: string,
   schemas: Record<string, OpenAPISchema> | null,
-  utils: { _: AnyObject },
   typeSuffix: string = DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
   contractSuffix = DEFAULT_ZOD_CONTRACT_SUFFIX,
 ): { expr: string; refs: string[] } {
@@ -430,7 +300,7 @@ export function typeToZodSchemaWithSchema(
   const refs = new Set<string>();
   collectRefs(schema, schemas, refs);
   const schemaKeyToContractVarNameFn = (key: string) =>
-    schemaKeyToContractVarName(key, utils, contractSuffix, typeSuffix);
+    schemaKeyToContractVarName(key, contractSuffix, typeSuffix);
   const expr = schemaToZodExpr(
     schema,
     schemas,
@@ -453,7 +323,6 @@ export function typeToZodSchema(typeStr: string): string {
 function schemaKeyToZod(
   schemaKey: string,
   schemas: Record<string, OpenAPISchema>,
-  utils: { _: AnyObject },
   typeSuffix = DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
   contractSuffix = DEFAULT_ZOD_CONTRACT_SUFFIX,
 ): { expr: string; refs: string[] } {
@@ -462,7 +331,7 @@ function schemaKeyToZod(
   const refs = new Set<string>();
   collectRefs(schema, schemas, refs);
   const schemaKeyToContractVarNameFn = (key: string) =>
-    schemaKeyToContractVarName(key, utils, contractSuffix, typeSuffix);
+    schemaKeyToContractVarName(key, contractSuffix, typeSuffix);
   const expr = schemaToZodExpr(
     schema,
     schemas,
@@ -495,7 +364,6 @@ export function buildEndpointZodContractsCode(params: {
   inputParams: RequestParam[];
   responseDataTypeName: string;
   contractVarName: string;
-  utils: { _: AnyObject };
   contractSuffix?: string;
   /** OpenAPI components.schemas for detailed Zod generation */
   componentsSchemas?: Record<string, OpenAPISchema> | null;
@@ -505,7 +373,7 @@ export function buildEndpointZodContractsCode(params: {
   /** When true, do not emit auxiliary contracts inline; they are expected from a central contracts.ts file (zodContractImportNames will be non-empty) */
   useExternalZodSchemas?: boolean;
   /** OpenAPI operation (path + method) to build query object schema from parameters with in: 'query' */
-  openApiOperation?: OpenAPIOperationForZod | null;
+  openApiOperation?: ParsedRoute['raw'] | null;
   /** OpenAPI components.parameters to resolve $ref in operation.parameters */
   openApiComponentsParameters?: Record<string, OpenAPIParameter> | null;
   /** Name of the input param that holds query (default 'query') */
@@ -515,7 +383,6 @@ export function buildEndpointZodContractsCode(params: {
     inputParams,
     responseDataTypeName,
     contractVarName,
-    utils,
     contractSuffix = DEFAULT_ZOD_CONTRACT_SUFFIX,
     componentsSchemas = null,
     typeSuffix = DEFAULT_DATA_CONTRACT_TYPE_SUFFIX,
@@ -525,8 +392,6 @@ export function buildEndpointZodContractsCode(params: {
     openApiComponentsParameters = null,
     queryParamName = 'query',
   } = params;
-  const _ = utils._ as typeof import('lodash-es');
-
   const allAuxiliaryKeys = new Set<string>();
   const paramParts: string[] = [];
 
@@ -537,7 +402,7 @@ export function buildEndpointZodContractsCode(params: {
       : [];
 
   const schemaKeyToContractVarNameFn = (key: string) =>
-    schemaKeyToContractVarName(key, utils, contractSuffix, typeSuffix);
+    schemaKeyToContractVarName(key, contractSuffix, typeSuffix);
 
   for (const p of inputParams) {
     let expr: string;
@@ -557,7 +422,6 @@ export function buildEndpointZodContractsCode(params: {
       const result = typeToZodSchemaWithSchema(
         p.type,
         componentsSchemas,
-        utils,
         typeSuffix,
         contractSuffix,
       );
@@ -577,14 +441,12 @@ export function buildEndpointZodContractsCode(params: {
       ? schemaKeyToZod(
           responseSchemaKey,
           componentsSchemas,
-          utils,
           typeSuffix,
           contractSuffix,
         )
       : typeToZodSchemaWithSchema(
           responseDataTypeName,
           componentsSchemas,
-          utils,
           typeSuffix,
           contractSuffix,
         );

@@ -32,13 +32,14 @@ export type CodegenModuleResolution =
 
 /**
  * Identity of an endpoint at codegen time (operation, path, generated contract variable base name).
- * Used by `zodContracts` callbacks and by `requestPathPrefix` / `requestPathSuffix` when they are functions.
+ * Used by `zodContracts` callbacks and by `requestPathPrefix` / `requestPathSuffix` / `formatBaseUrl`
+ * when they are functions.
  */
 export interface RouteBaseInfo {
   operationId: string;
   path: string;
   method: string;
-  contractName: string;
+  contractName: Maybe<string>;
 }
 
 /** Static `endpointMeta` value or return type of its callback. */
@@ -110,12 +111,20 @@ export interface GenerateQueryApiParams {
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#requestpathprefix)
    */
   requestPathPrefix?: string | ((endpoint: RouteBaseInfo) => string);
-  /**
-   * String: inserted as-is after the route path. Function: receives endpoint info and returns the suffix string.
+  /**   * String: inserted as-is after the route path. Function: receives endpoint info and returns the suffix string.
    *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#requestpathsuffix)
    */
   requestPathSuffix?: string | ((endpoint: RouteBaseInfo) => string);
+  /**
+   * Controls how OpenAPI `servers` `url` is emitted as `baseUrl` in generated endpoint params.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#formatbaseurl)
+   */
+  formatBaseUrl?:
+    | 'as-is'
+    | 'normalize'
+    | ((originalBaseUrl: string, routeInfo: RouteBaseInfo) => string);
 
   /**
    * Static partial {@link FullRequestParams}, a **non-empty** string (inserted as a TS expression inside

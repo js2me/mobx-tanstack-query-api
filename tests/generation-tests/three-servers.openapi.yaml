@@ -1,0 +1,26 @@
+openapi: 3.0.3
+info:
+  title: Multi-server snapshot API
+  version: 1.0.0
+servers:
+  - url: https://api.openweathermap.org/data/2.5/
+    description: Production server
+  - url: http://beta.api.openweathermap.org/data/2.5/
+    description: Beta server
+  - url: http://some-other.api.openweathermap.org/data/2.5/
+    description: Some other server
+paths:
+  /weather:
+    get:
+      operationId: getMultiServerWeather
+      summary: Snapshot fixture for OpenAPI servers array
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  city:
+                    type: string
