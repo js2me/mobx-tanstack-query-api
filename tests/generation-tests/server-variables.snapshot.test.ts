@@ -11,6 +11,7 @@ const ENDPOINT_FILE = path.resolve(
   'endpoints',
   'get-server-variables.ts',
 );
+const META_INFO_FILE = path.resolve(OUTPUT_DIR, 'meta-info.ts');
 
 describe('generateApi snapshot server variables', () => {
   beforeEach(async () => {
@@ -32,5 +33,8 @@ describe('generateApi snapshot server variables', () => {
 
     const content = await fs.readFile(ENDPOINT_FILE, 'utf-8');
     expect(content.replaceAll('\r\n', '\n')).toMatchSnapshot();
+
+    const metaInfoContent = await fs.readFile(META_INFO_FILE, 'utf-8');
+    expect(metaInfoContent.replaceAll('\r\n', '\n')).toMatchSnapshot();
   });
 });

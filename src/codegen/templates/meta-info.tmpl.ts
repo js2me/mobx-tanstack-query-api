@@ -23,6 +23,7 @@ export const formatTagNameEnumKey = (
 
 export const metaInfoTmpl = async ({
   metaInfo,
+  swaggerSchema,
   utils,
   formatTSContent,
   codegenParams,
@@ -34,10 +35,52 @@ export const metaInfoTmpl = async ({
       it,
     ]),
   );
+  const apiServers = Array.isArray(swaggerSchema?.servers)
+    ? swaggerSchema.servers
+        .map((server: AnyObject) => {
+          if (typeof server?.url !== 'string' || server.url.length === 0) {
+            return null;
+          }
+
+          const variables = Object.fromEntries(
+            Object.entries(server.variables ?? {})
+              .map(([key, value]) => [key, (value as AnyObject)?.default])
+              .filter(([_, defaultValue]) => defaultValue != null),
+          );
+
+          return {
+            description:
+              typeof server.description === 'string' &&
+              server.description.length > 0
+                ? server.description
+                : null,
+            data: {
+              url: server.url,
+              ...(Object.keys(variables).length > 0 ? { variables } : {}),
+            },
+          };
+        })
+        .filter(Boolean)
+    : [];
 
   return await formatTSContent(`${LINTERS_IGNORE}
   ${[
     metaInfo?.namespace && `export const namespace = "${metaInfo?.namespace}";`,
+    apiServers.length > 0 &&
+      `
+export const apiServers = [
+  ${apiServers
+    .map((server) =>
+      [
+        server?.description && `/** ${server.description} */`,
+        JSON.stringify(server?.data),
+      ]
+        .filter(Boolean)
+        .join('\n'),
+    )
+    .join(',\n  ')}
+];
+`,
     metaInfo?.groupNames?.length &&
       `
 export const enum Group {

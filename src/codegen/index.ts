@@ -735,9 +735,14 @@ export * as ${exportGroupName} from './endpoints';
     // #endregion
   }
 
+  const hasRootServers =
+    Array.isArray(baseTmplParams.swaggerSchema?.servers) &&
+    baseTmplParams.swaggerSchema.servers.length > 0;
+
   const metaInfo: Maybe<MetaInfo> =
     !params.noMetaInfo &&
-    (namespace ?? (nonEmptyGroups.size > 0 || tagsSet.size > 0))
+    (namespace ??
+      (nonEmptyGroups.size > 0 || tagsSet.size > 0 || hasRootServers))
       ? {
           namespace,
           groupNames: [...nonEmptyGroups.values()],

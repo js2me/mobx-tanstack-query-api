@@ -49,3 +49,17 @@ export const getServerVariables = new Endpoint<
 );
 "
 `;
+
+exports[`generateApi snapshot server variables > uses server url with template variables as generated baseUrl 2`] = `
+"/* eslint-disable */
+/* tslint:disable */
+
+export const apiServers = [
+  /** Templated server URL with variables */
+  {
+    url: "https://{env}.api.example.com:{port}/{basePath}/",
+    variables: { env: "dev", port: "443", basePath: "v1" },
+  },
+];
+"
+`;
