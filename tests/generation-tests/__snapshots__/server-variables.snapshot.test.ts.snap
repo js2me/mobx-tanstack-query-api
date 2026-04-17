@@ -1,0 +1,51 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi snapshot server variables > uses server url with template variables as generated baseUrl 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+
+
+
+export interface GetServerVariablesDataDC {
+  ok?: boolean;
+}
+
+export type GetServerVariablesParams = {
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Snapshot fixture for OpenAPI server variables**
+ *
+ * @operationId getServerVariables
+ * @request **GET:/status**
+ * @produces application/json
+ * @responses
+ * @**200** GetServerVariablesDataDC OK
+ */
+export const getServerVariables = new Endpoint<
+  HttpResponse<GetServerVariablesDataDC, any>,
+  GetServerVariablesParams,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      baseUrl: "https://{env}.api.example.com:{port}/{basePath}",
+      path: \`/status\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "getServerVariables",
+    path: ["status"],
+    tags: [],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;

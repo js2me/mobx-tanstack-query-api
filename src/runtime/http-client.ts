@@ -1,5 +1,6 @@
-import { action, makeObservable, observable } from 'mobx';
+import { action, observable } from 'mobx';
 import { type BooleanOptional, type IStringifyOptions, stringify } from 'qs';
+import { applyObservable } from 'yummies/mobx';
 import type { AnyObject, Class, Defined, Maybe } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import {
@@ -12,22 +13,49 @@ import {
 export type QueryParamsType = Record<string | number, any>;
 
 export interface FullRequestParams extends Omit<RequestInit, 'body'> {
-  /** set parameter to `true` for call `securityWorker` for this request */
+  /**
+   * Enables security handling for this request.
+   * When `true`, configured security/interceptor logic can attach auth headers/tokens.
+   */
   secure?: boolean;
-  /** request path */
+  /**
+   * Endpoint path part without query string.
+   * Usually starts with `/`, e.g. `/users/me`.
+   */
   path: string;
-  /** content type of request body */
+  /**
+   * Request payload content type.
+   * Controls both `Content-Type` header and payload formatter selection.
+   */
   contentType?: string;
-  /** query params */
+  /**
+   * Query parameters object that will be serialized with `toQueryString`.
+   */
   query?: QueryParamsType;
-  /** format of response (i.e. response.json() -> format: "json") */
+  /**
+   * Expected response body format.
+   * Example: `json` maps to `response.json()`.
+   */
   format?: ResponseFormat;
-  /** request body */
+  /**
+   * Request body payload before formatting.
+   * Formatter is selected by `contentType`.
+   */
   body?: unknown;
-  /** base url */
+  /**
+   * Base URL for this request.
+   * Overrides client-level `baseUrl` when provided.
+   */
   baseUrl?: string;
-  /** meta data */
+  /**
+   * Arbitrary request-level metadata passed through runtime hooks.
+   */
   meta?: Record<string, any>;
+  /**
+   * Values for OpenAPI server URL template variables.
+   * Example: baseUrl "https://{env}.api.com/{version}" + { env: "prod", version: "v1" }.
+   */
+  serverVars?: AnyObject;
 }
 
 export const ContentType = {
@@ -40,7 +68,7 @@ export const ContentType = {
 
 export type RequestParams = Omit<
   FullRequestParams,
-  'body' | 'method' | 'query' | 'path' | 'serviceName'
+  'body' | 'method' | 'query' | 'path'
 >;
 
 export interface HttpClientConfig<TMeta = unknown> {
@@ -59,6 +87,7 @@ export interface HttpClientConfig<TMeta = unknown> {
     fullParams: FullRequestParams,
     formattedParts: { baseUrl: string; path: string; query: string },
     metadata: TMeta | null,
+    endpoint: Maybe<AnyEndpoint>,
   ) => string;
   interceptor?: (
     requestParams: RequestParams,
@@ -103,13 +132,10 @@ export class HttpClient<TMeta = unknown> {
 
     this.updateConfig(this.config);
 
-    observable.ref(this, 'badResponse');
-    observable.ref(this, 'meta');
-
-    action(this, 'setMeta');
-    action(this, 'setBadResponse');
-
-    makeObservable(this);
+    applyObservable(this, [
+      [observable.ref, 'badResponse', 'meta'],
+      [action, 'setMeta', 'setBadResponse'],
+    ]);
   }
 
   get baseUrl() {
@@ -210,8 +236,25 @@ export class HttpClient<TMeta = unknown> {
     return response;
   }
 
-  public buildUrl = (params: FullRequestParams) => {
+  public getBaseUrl(
+    params: Pick<FullRequestParams, 'baseUrl' | 'serverVars'>,
+    endpoint?: Maybe<AnyEndpoint>,
+  ) {
     const baseUrl = params.baseUrl ?? this.baseUrl ?? '';
+
+    if (!params.serverVars) {
+      return baseUrl;
+    }
+
+    return Object.entries(params.serverVars).reduce(
+      (result, [key, value]) =>
+        result.replaceAll(`{${key}}`, value == null ? '' : String(value)),
+      baseUrl,
+    );
+  }
+
+  public buildUrl(params: FullRequestParams, endpoint?: Maybe<AnyEndpoint>) {
+    const baseUrl = this.getBaseUrl(params, endpoint);
 
     const path = params.path;
 
@@ -220,13 +263,18 @@ export class HttpClient<TMeta = unknown> {
     const query = queryString ? `?${queryString}` : '';
 
     if (this.config.buildUrl) {
-      return this.config.buildUrl(params, { baseUrl, path, query }, this.meta);
+      return this.config.buildUrl(
+        params,
+        { baseUrl, path, query },
+        this.meta,
+        endpoint,
+      );
     }
 
     const url = baseUrl + path + query;
 
     return url;
-  };
+  }
 
   public request<T, E>(
     fullParams: FullRequestParams,
@@ -255,7 +303,7 @@ export class HttpClient<TMeta = unknown> {
 
     const responseFormat = format || requestParams.format;
 
-    const url = this.buildUrl(fullParams);
+    const url = this.buildUrl(fullParams, endpoint);
 
     let headers: Headers;
 

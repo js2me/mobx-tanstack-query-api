@@ -1,0 +1,36 @@
+openapi: 3.0.3
+info:
+  title: Server variables snapshot API
+  version: 1.0.0
+servers:
+  - url: https://{env}.api.example.com:{port}/{basePath}/
+    description: Templated server URL with variables
+    variables:
+      env:
+        default: dev
+        enum:
+          - dev
+          - stage
+          - prod
+        description: Deployment environment
+      port:
+        default: '443'
+        description: API port
+      basePath:
+        default: v1
+        description: API version path segment
+paths:
+  /status:
+    get:
+      operationId: getServerVariables
+      summary: Snapshot fixture for OpenAPI server variables
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean

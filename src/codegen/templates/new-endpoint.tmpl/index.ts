@@ -2,7 +2,6 @@ import {
   camelCase,
   compact,
   join,
-  last,
   map,
   sortBy,
   uniq,
@@ -12,7 +11,6 @@ import {
 } from 'lodash-es';
 import type { ParsedRoute } from 'swagger-typescript-api';
 import { callFunction } from 'yummies/common';
-import { typeGuard } from 'yummies/type-guard';
 import type { AnyObject, Maybe } from 'yummies/types';
 import type { BaseTmplParams } from '../../types/base-tmpl-params.js';
 import type {
@@ -32,10 +30,13 @@ import {
   formatTagNameEnumKey,
 } from '../meta-info.tmpl.js';
 import { buildZodEndpointData } from './utils/build-zod-endpoint-data.js';
+import { chooseOpenApiServer } from './utils/choose-open-api-server.js';
 import { getRequestBodyContentType } from './utils/get-request-body-content-type.js';
 import { getResponseFormat } from './utils/get-response-format.js';
 import { getResponseSchemaKey } from './utils/get-response-schema-key.js';
 import { normalizeBaseUrlForPath } from './utils/normalize-base-url-for-path.js';
+import { overrideRequestParamsToSpreadLine } from './utils/override-request-params-to-spread-line.js';
+import { tmplDataToSourceExpr } from './utils/tmpl-data-to-source-expr.js';
 
 type RuntimeExpressionOrBoolean = string | boolean;
 type RuntimeContractsRule =
@@ -48,49 +49,6 @@ type RuntimeContractsRule =
 export type ZodContractsOption = NonNullable<
   GenerateQueryApiParams['zodContracts']
 >;
-
-function tmplDataToSourceExpr(tmplData: string | AnyObject): string {
-  return typeof tmplData === 'string' ? tmplData : JSON.stringify(tmplData);
-}
-
-function overrideRequestParamsToSpreadLine(value: unknown): string | null {
-  if (typeof value === 'string') {
-    return value.trim() === '' ? null : `...(${value}),`;
-  }
-  if (!typeGuard.isObject(value) || Object.keys(value).length === 0) {
-    return null;
-  }
-  return `...(${JSON.stringify(value)}),`;
-}
-
-/**
- * Last `url` from OpenAPI `servers` (operation > path item > root), including relative URLs.
- */
-function resolveLastOpenApiServerUrl(params: {
-  swaggerSchema: AnyObject | null | undefined;
-  route: ParsedRoute;
-}): string | undefined {
-  const { swaggerSchema, route } = params;
-
-  const pathItem =
-    route.raw.route && swaggerSchema?.paths
-      ? (swaggerSchema.paths as AnyObject)[route.raw.route]
-      : undefined;
-
-  if (
-    // @ts-expect-error
-    Array.isArray(route.raw?.servers) &&
-    // @ts-expect-error
-    route.raw.servers.length > 0
-  ) {
-    // @ts-expect-error
-    return last<AnyObject>(route.raw.servers)?.url;
-  }
-  if (Array.isArray(pathItem?.servers) && pathItem.servers.length > 0) {
-    return last<AnyObject>(pathItem.servers)?.url;
-  }
-  return last<AnyObject>(swaggerSchema?.servers)?.url;
-}
 
 export interface NewEndpointTmplParams extends BaseTmplParams {
   route: ParsedRoute;
@@ -391,28 +349,25 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     : null;
   const throwOptObj = isRuntimeContractsRuleObject(throwOpt) ? throwOpt : null;
 
-  const lastServerBaseUrl = resolveLastOpenApiServerUrl({
+  const serverBaseUrl = chooseOpenApiServer({
     swaggerSchema,
     route,
-  });
-  const formattedBaseUrl =
-    lastServerBaseUrl == null
-      ? undefined
-      : (() => {
-          const formatBaseUrlOption =
-            codegenParams.formatBaseUrl ?? 'normalize';
-          if (formatBaseUrlOption === 'as-is') {
-            return lastServerBaseUrl;
-          }
-          if (formatBaseUrlOption === 'normalize') {
-            return normalizeBaseUrlForPath(lastServerBaseUrl, resultPath);
-          }
-          return callFunction(
-            formatBaseUrlOption,
-            lastServerBaseUrl,
-            routeBaseInfo,
-          );
-        })();
+  })?.url;
+
+  const formattedBaseUrl = (() => {
+    if (serverBaseUrl == null) {
+      return undefined;
+    }
+
+    const formatBaseUrlOption = codegenParams.formatBaseUrl ?? 'normalize';
+    if (formatBaseUrlOption === 'as-is') {
+      return serverBaseUrl;
+    }
+    if (formatBaseUrlOption === 'normalize') {
+      return normalizeBaseUrlForPath(serverBaseUrl, resultPath);
+    }
+    return callFunction(formatBaseUrlOption, serverBaseUrl, routeBaseInfo);
+  })();
 
   const baseUrlLine =
     formattedBaseUrl != null && formattedBaseUrl !== ''
@@ -515,7 +470,7 @@ new ${importFileParams.endpoint.exportName}<
         })}],
         ${groupName ? `group: ${metaInfo ? `Group.${formatGroupNameEnumKey(groupName, utils)}` : `"${groupName}"`},` : ''}
         ${metaInfo?.namespace ? `namespace,` : ''}
-        meta: ${requestInfoMeta?.tmplData == null ? '{}' : tmplDataToSourceExpr(requestInfoMeta.tmplData)},
+        meta: ${tmplDataToSourceExpr(requestInfoMeta?.tmplData)},
         ${contractLine}
         ${validateContractLine}
         ${throwContractsLine}
