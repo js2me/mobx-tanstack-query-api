@@ -127,11 +127,9 @@ export interface GenerateQueryApiParams {
     | ((originalBaseUrl: string, routeInfo: RouteBaseInfo) => string);
 
   /**
-   * Static partial {@link FullRequestParams}, a **non-empty** string (inserted as a TS expression inside
-   * `...(<expr>),`, same idea as `endpointMeta.tmplData` string), or a function evaluated at **codegen**
-   * time per endpoint with {@link RouteBaseInfo}. The result is spread into each generated
-   * `configuration.params` return **before** `...requestParams`, so callers can still override those keys
-   * at runtime. Falsy values are ignored (nothing is emitted).
+   * Default request fields in generated `params` (before `...requestParams`; callers can still override).
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#overriderequestparams)
    */
   overrideRequestParams?: MaybeFn<
     MaybeFalsy<Partial<FullRequestParams> | string>,

@@ -507,6 +507,38 @@ formatBaseUrl: (originalBaseUrl: string, routeInfo: RouteBaseInfo) => {
 },
 ```
 
+### `overrideRequestParams`
+
+Default values for request fields such as `secure`, `baseUrl`, or `meta` in each generated `params` function. They are emitted **before** `...requestParams`, so callers can still pass their own `requestParams` and override these keys.
+
+You can pass:
+
+- A **plain object** — same defaults for every endpoint in this config.
+- A **function** — choose defaults per endpoint; the argument is the same `RouteBaseInfo` shape as for [`requestPathPrefix`](#requestpathprefix) (`operationId`, `path`, `method`, optional `contractName`).
+- A **string** — advanced: pasted into generated code as a TypeScript expression.
+
+Falsy values (for example `undefined`, or a whitespace-only string) add nothing to the output.
+
+Example — shared HTTPS and base URL for all endpoints:
+
+```ts
+overrideRequestParams: {
+  secure: true,
+  baseUrl: 'https://api.example',
+},
+```
+
+Example — different `meta` by `operationId`:
+
+```ts
+import type { RouteBaseInfo } from 'mobx-tanstack-query-api/cli';
+
+overrideRequestParams: (route: RouteBaseInfo) =>
+  route.operationId.startsWith('admin')
+    ? { meta: { role: 'admin' } }
+    : { meta: { role: 'public' } },
+```
+
 ### `removeUnusedTypes`   
 
 This option removes all data contracts which are not used in any endpoint.   
