@@ -61,7 +61,11 @@ export interface CodegenEndpointMetaData {
 
 export type EndpointMetaOption =
   | CodegenEndpointMetaData
-  | ((route: ParsedRoute, utils: CodegenDataUtils) => CodegenEndpointMetaData);
+  | ((
+      route: ParsedRoute,
+      utils: CodegenDataUtils,
+      swaggerSchema: AnyObject,
+    ) => CodegenEndpointMetaData);
 
 /** Static `requestMeta` value or return type of its callback. */
 export interface CodegenRequestMetaData {
@@ -71,7 +75,11 @@ export interface CodegenRequestMetaData {
 
 export type RequestMetaOption =
   | CodegenRequestMetaData
-  | ((route: ParsedRoute, utils: CodegenDataUtils) => CodegenRequestMetaData);
+  | ((
+      route: ParsedRoute,
+      utils: CodegenDataUtils,
+      swaggerSchema: AnyObject,
+    ) => CodegenRequestMetaData);
 
 export interface GenerateQueryApiParams {
   /**
@@ -110,12 +118,16 @@ export interface GenerateQueryApiParams {
    *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#requestpathprefix)
    */
-  requestPathPrefix?: string | ((endpoint: RouteBaseInfo) => string);
+  requestPathPrefix?:
+    | string
+    | ((endpoint: RouteBaseInfo, swaggerSchema: AnyObject) => string);
   /**   * String: inserted as-is after the route path. Function: receives endpoint info and returns the suffix string.
    *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#requestpathsuffix)
    */
-  requestPathSuffix?: string | ((endpoint: RouteBaseInfo) => string);
+  requestPathSuffix?:
+    | string
+    | ((endpoint: RouteBaseInfo, swaggerSchema: AnyObject) => string);
   /**
    * Controls how OpenAPI `servers` `url` is emitted as `baseUrl` in generated endpoint params.
    *
@@ -124,7 +136,11 @@ export interface GenerateQueryApiParams {
   formatBaseUrl?:
     | 'as-is'
     | 'normalize'
-    | ((originalBaseUrl: string, routeInfo: RouteBaseInfo) => string);
+    | ((
+        originalBaseUrl: string,
+        routeInfo: RouteBaseInfo,
+        swaggerSchema: AnyObject,
+      ) => string);
 
   /**
    * Default request fields in generated `params` (before `...requestParams`; callers can still override).
@@ -133,7 +149,7 @@ export interface GenerateQueryApiParams {
    */
   overrideRequestParams?: MaybeFn<
     MaybeFalsy<Partial<FullRequestParams> | string>,
-    [routeInfo: RouteBaseInfo]
+    [routeInfo: RouteBaseInfo, swaggerSchema: AnyObject]
   >;
 
   /**
@@ -149,6 +165,7 @@ export interface GenerateQueryApiParams {
   formatEndpointName?: (
     endpointName: string,
     endpointData: RawRouteInfo,
+    swaggerSchema: AnyObject,
   ) => Maybe<string>;
 
   /**
@@ -157,6 +174,7 @@ export interface GenerateQueryApiParams {
   formatExportGroupName?: (
     groupName: string,
     utils: CodegenDataUtils,
+    swaggerSchema: AnyObject,
   ) => string;
 
   /**
@@ -208,7 +226,7 @@ export interface GenerateQueryApiParams {
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#groupby)
    */
   groupBy?:
-    | ((endpoint: EndpointData) => string)
+    | ((endpoint: EndpointData, swaggerSchema: AnyObject) => string)
     | `path-segment`
     | `path-segment-${number}`
     | `tag`
@@ -219,7 +237,7 @@ export interface GenerateQueryApiParams {
    *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#namespace)
    */
-  namespace?: string | ((utils: AnyObject) => string);
+  namespace?: string | ((utils: AnyObject, swaggerSchema: AnyObject) => string);
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#addpathsegmenttoroutename)
@@ -279,17 +297,23 @@ export interface GenerateQueryApiParams {
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#filterendpoints)
    */
-  filterEndpoints?: FilterOption<(endpoint: EndpointData) => boolean>;
+  filterEndpoints?: FilterOption<
+    (endpoint: EndpointData, swaggerSchema: AnyObject) => boolean
+  >;
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#filtertypes)
    */
-  filterTypes?: FilterOption<(type: TypeInfo) => boolean>;
+  filterTypes?: FilterOption<
+    (type: TypeInfo, swaggerSchema: AnyObject) => boolean
+  >;
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#filtergroups)
    */
-  filterGroups?: FilterOption<(groupName: string) => boolean>;
+  filterGroups?: FilterOption<
+    (groupName: string, swaggerSchema: AnyObject) => boolean
+  >;
 
   libImports?: {
     'mobx-tanstack-query-api'?: string;
@@ -333,7 +357,11 @@ export interface GenerateQueryApiParams {
               params?: RuntimeExpressionOrBoolean;
               data?: RuntimeExpressionOrBoolean;
             },
-          [contractName: string, routeInfo: RouteBaseInfo]
+          [
+            contractName: string,
+            routeInfo: RouteBaseInfo,
+            swaggerSchema: AnyObject,
+          ]
         >;
         throw?: MaybeFn<
           | RuntimeExpressionOrBoolean
@@ -341,12 +369,20 @@ export interface GenerateQueryApiParams {
               params?: RuntimeExpressionOrBoolean;
               data?: RuntimeExpressionOrBoolean;
             },
-          [contractName: string, routeInfo: RouteBaseInfo]
+          [
+            contractName: string,
+            routeInfo: RouteBaseInfo,
+            swaggerSchema: AnyObject,
+          ]
         >;
         /** String: runtime condition. Function: codegen-time filter for (contractName, routeInfo). */
         appendRule?: MaybeFn<
           RuntimeExpressionOrBoolean,
-          [contractName: string, routeInfo: RouteBaseInfo]
+          [
+            contractName: string,
+            routeInfo: RouteBaseInfo,
+            swaggerSchema: AnyObject,
+          ]
         >;
         /** Suffix for generated shared Zod schema variables. Default: "". */
         suffix?: string;

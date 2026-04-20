@@ -243,7 +243,11 @@ const generateApiSingle = async (
     const endpointName = formattedRouteName;
 
     const resultRouteName =
-      params?.formatEndpointName?.(endpointName, routeInfo) ??
+      params?.formatEndpointName?.(
+        endpointName,
+        routeInfo,
+        swaggerSchemaRefForHooks,
+      ) ??
       swaggerTypescriptApiCodegenBaseParams?.hooks?.onFormatRouteName?.(
         routeInfo,
         endpointName,
@@ -271,6 +275,8 @@ const generateApiSingle = async (
     return inputData;
   };
   let mixinSwaggerSchema: Maybe<AnyObject> = null;
+  /** Set in `onInit` so {@link GenerateQueryApiParams.formatEndpointName} can read the schema before `generateApiFromSwagger` resolves. */
+  let swaggerSchemaRefForHooks: AnyObject = {};
 
   if (params.mixinInput) {
     await generateApiFromSwagger({
@@ -279,6 +285,7 @@ const generateApiSingle = async (
       hooks: {
         onInit: (configuration, _codegenProcess) => {
           mixinSwaggerSchema = cloneDeep(configuration.swaggerSchema);
+          swaggerSchemaRefForHooks = configuration.swaggerSchema as AnyObject;
         },
         onPrepareConfig: prepareConfig,
         onFormatRouteName: formatRouteName,
@@ -309,6 +316,8 @@ const generateApiSingle = async (
           ...mixinSwaggerSchema?.components?.schemas,
         };
 
+        swaggerSchemaRefForHooks = resultSwaggerSchema as AnyObject;
+
         return swaggerTypescriptApiCodegenBaseParams?.hooks?.onInit?.(
           configuration,
           codeGenProcessFromInit,
@@ -320,6 +329,10 @@ const generateApiSingle = async (
   });
 
   //#endregion
+
+  const swaggerSchema = ((generated.configuration as GenerateApiConfiguration)
+    .config?.swaggerSchema ??
+    (generated.configuration as AnyObject)?.swaggerSchema) as AnyObject;
 
   const utils = codegenProcess.getRenderTemplateData()
     .utils as CodegenDataUtils;
@@ -333,7 +346,7 @@ const generateApiSingle = async (
 
   if (params.namespace) {
     if (typeof params.namespace === 'function') {
-      namespace = params.namespace(utils);
+      namespace = params.namespace(utils, swaggerSchema);
     } else {
       namespace = utils._.camelCase(params.namespace);
     }
@@ -350,7 +363,7 @@ const generateApiSingle = async (
 
   generated.configuration.modelTypes =
     generated.configuration.modelTypes.filter((modelType) =>
-      filterTypes(modelType),
+      filterTypes(modelType, swaggerSchema),
     );
 
   const allRoutes = Object.values(generated.configuration.routes)
@@ -373,31 +386,19 @@ const generateApiSingle = async (
     importFileParams,
     utils,
     filterTypes,
-    swaggerSchema: ((generated.configuration as GenerateApiConfiguration).config
-      ?.swaggerSchema ??
-      (generated.configuration as AnyObject)?.swaggerSchema) as AnyObject,
+    swaggerSchema,
   };
-
-  if (
-    !(generated.configuration as GenerateApiConfiguration).config?.swaggerSchema
-  ) {
-    console.log('dddddddddddddd');
-  }
 
   const reservedDataContractNamesMap = new Map<string, number>();
 
-  const componentsSchemasForZod =
-    (generated.configuration as AnyObject).config?.swaggerSchema?.components
-      ?.schemas ??
-    (generated.configuration as AnyObject).swaggerSchema?.components?.schemas;
   const zodContractSuffix = getZodContractSuffix(params.zodContracts);
   const hasZodContractsFile =
     (params.zodContracts === true ||
       (typeof params.zodContracts === 'object' &&
         params.zodContracts != null)) &&
-    componentsSchemasForZod &&
-    typeof componentsSchemasForZod === 'object' &&
-    Object.keys(componentsSchemasForZod).length > 0;
+    swaggerSchema?.components?.schemas &&
+    typeof swaggerSchema?.components?.schemas === 'object' &&
+    Object.keys(swaggerSchema?.components?.schemas).length > 0;
 
   const collectedExportFilesFromIndexFile: string[] = [];
 
@@ -445,7 +446,7 @@ const generateApiSingle = async (
           );
         });
 
-        if (!filterEndpoint(route)) {
+        if (!filterEndpoint(route, swaggerSchema)) {
           continue;
         }
 
@@ -497,7 +498,9 @@ const generateApiSingle = async (
         );
       });
 
-      const filteredRoutes = allRoutes.filter(filterEndpoint);
+      const filteredRoutes = allRoutes.filter((route) =>
+        filterEndpoint(route, swaggerSchema),
+      );
 
       const hasFilteredRoutes = filteredRoutes.length > 0;
 
@@ -533,7 +536,7 @@ const generateApiSingle = async (
       let group: string | undefined;
 
       if (typeof params.groupBy === 'function') {
-        group = params.groupBy(route);
+        group = params.groupBy(route, swaggerSchema);
       } else if (params.groupBy?.includes('path-segment')) {
         const segmentIndex =
           +params.groupBy.replaceAll(/path-segment-?/g, '') || 0;
@@ -565,7 +568,7 @@ const generateApiSingle = async (
       (groupName) => groupName,
     );
     for await (const [groupName, routes] of groupsMap) {
-      if (!filterGroups(groupName)) {
+      if (!filterGroups(groupName, swaggerSchema)) {
         continue;
       }
 
@@ -611,7 +614,7 @@ const generateApiSingle = async (
             );
           });
 
-          if (!filterEndpoint(route)) {
+          if (!filterEndpoint(route, swaggerSchema)) {
             continue;
           }
 
@@ -665,7 +668,9 @@ const generateApiSingle = async (
           );
         });
 
-        const filteredRoutes = routes.filter(filterEndpoint);
+        const filteredRoutes = routes.filter((route) =>
+          filterEndpoint(route, swaggerSchema),
+        );
 
         hasFilteredRoutes = filteredRoutes.length > 0;
 
@@ -696,7 +701,11 @@ const generateApiSingle = async (
       if (hasFilteredRoutes) {
         nonEmptyGroups.add(groupName);
         const exportGroupName = params.formatExportGroupName
-          ? params.formatExportGroupName(_.camelCase(groupName), utils)
+          ? params.formatExportGroupName(
+              _.camelCase(groupName),
+              utils,
+              swaggerSchema,
+            )
           : _.camelCase(groupName);
 
         if (shouldGenerateBarrelFiles) {
@@ -768,9 +777,12 @@ export * as ${exportGroupName} from './endpoints';
     content: dataContractsContent,
   });
 
-  if (hasZodContractsFile && componentsSchemasForZod) {
+  if (hasZodContractsFile && swaggerSchema?.components?.schemas) {
     const contractsTsContent = buildCentralZodContractsFile({
-      componentsSchemas: componentsSchemasForZod as Record<string, AnyObject>,
+      componentsSchemas: swaggerSchema?.components?.schemas as Record<
+        string,
+        AnyObject
+      >,
       contractSuffix: zodContractSuffix,
     });
     const formattedContractsContent = await generated.formatTSContent(

@@ -26,6 +26,7 @@ export const allEndpointPerFileTmpl = async (
     formatTSContent,
     importFileParams,
     utils,
+    swaggerSchema,
     relativePathDataContracts,
     groupName,
     metaInfo,
@@ -96,7 +97,12 @@ export const allEndpointPerFileTmpl = async (
         route,
         contractsCode,
       }) => {
-        const requestInfoMeta = callEndpointMeta(codegenParams, route, utils);
+        const requestInfoMeta = callEndpointMeta(
+          codegenParams,
+          route,
+          utils,
+          swaggerSchema,
+        );
 
         if (requestInfoMeta?.typeNameImportPath && requestInfoMeta.typeName) {
           extraImportLines.push(

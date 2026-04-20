@@ -86,7 +86,8 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     (it) =>
       +it.status >= 200 &&
       +it.status < 300 &&
-      (!(it as AnyObject).typeData || filterTypes((it as AnyObject).typeData)),
+      (!(it as AnyObject).typeData ||
+        filterTypes((it as AnyObject).typeData, swaggerSchema)),
   );
 
   const { requestBodyInfo, responseBodyInfo } = route as AnyObject;
@@ -228,8 +229,18 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     lastDynamicStructPos++;
   }
 
-  const requestInfoMeta = callEndpointMeta(codegenParams, route, utils);
-  const requestMeta = callRequestMeta(codegenParams, route, utils);
+  const requestInfoMeta = callEndpointMeta(
+    codegenParams,
+    route,
+    utils,
+    swaggerSchema,
+  );
+  const requestMeta = callRequestMeta(
+    codegenParams,
+    route,
+    utils,
+    swaggerSchema,
+  );
   const routeBaseInfo: RouteBaseInfo = {
     operationId: raw.operationId ?? '',
     path,
@@ -238,13 +249,25 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   };
 
   const overrideRequestParamsSpreadLine = overrideRequestParamsToSpreadLine(
-    callFunction(codegenParams.overrideRequestParams, routeBaseInfo),
+    callFunction(
+      codegenParams.overrideRequestParams,
+      routeBaseInfo,
+      swaggerSchema,
+    ),
   );
 
   const resultPath =
-    (callFunction(codegenParams.requestPathPrefix, routeBaseInfo) || '') +
+    (callFunction(
+      codegenParams.requestPathPrefix,
+      routeBaseInfo,
+      swaggerSchema,
+    ) || '') +
     path +
-    (callFunction(codegenParams.requestPathSuffix, routeBaseInfo) || '');
+    (callFunction(
+      codegenParams.requestPathSuffix,
+      routeBaseInfo,
+      swaggerSchema,
+    ) || '');
 
   const bodyContentType =
     getRequestBodyContentType(
@@ -279,7 +302,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
         (it) =>
           it.status !== 'default' &&
           (!(it as AnyObject).typeData ||
-            filterTypes((it as AnyObject).typeData)),
+            filterTypes((it as AnyObject).typeData, swaggerSchema)),
       ) || [];
 
     if (!responses?.length) {
@@ -320,13 +343,14 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   }`,
   });
 
-  const isAllowedInputType = filterTypes(requestInputTypeDc);
+  const isAllowedInputType = filterTypes(requestInputTypeDc, swaggerSchema);
 
   const validateOpt = zodContractsIsObject
     ? callFunction(
         zodContracts.validate,
         routeBaseInfo.contractName!,
         routeBaseInfo,
+        swaggerSchema,
       )
     : zodContracts === true
       ? true
@@ -336,6 +360,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
         zodContracts.throw,
         routeBaseInfo.contractName!,
         routeBaseInfo,
+        swaggerSchema,
       )
     : undefined;
   const isRuntimeContractsRuleObject = (
@@ -366,7 +391,12 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     if (formatBaseUrlOption === 'normalize') {
       return normalizeBaseUrlForPath(serverBaseUrl, resultPath);
     }
-    return callFunction(formatBaseUrlOption, serverBaseUrl, routeBaseInfo);
+    return callFunction(
+      formatBaseUrlOption,
+      serverBaseUrl,
+      routeBaseInfo,
+      swaggerSchema,
+    );
   })();
 
   const baseUrlLine =
@@ -380,6 +410,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
           zodContracts.appendRule,
           routeBaseInfo.contractName!,
           routeBaseInfo,
+          swaggerSchema,
         )
       : null;
 
