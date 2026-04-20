@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.52.0
+
+### Minor Changes
+
+- [`90026f2`](https://github.com/js2me/mobx-tanstack-query-api/commit/90026f25f196581164d1e6a3016ae1047e8897f7) Thanks [@js2me](https://github.com/js2me)! - passing swaggerSchema to all dynamic functions for codegen
+
+- [`d936b44`](https://github.com/js2me/mobx-tanstack-query-api/commit/d936b4452f596d6ca03959644f633067e8827836) Thanks [@js2me](https://github.com/js2me)! - new `chooseServer` option to choose openapi server for route
+
 ## 0.51.1
 
 ### Patch Changes
