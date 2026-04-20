@@ -377,6 +377,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   const serverBaseUrl = chooseOpenApiServer({
     swaggerSchema,
     route,
+    chooseServer: codegenParams.chooseServer,
   })?.url;
 
   const formattedBaseUrl = (() => {

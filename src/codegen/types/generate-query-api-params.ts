@@ -5,6 +5,7 @@ import type {
 } from 'swagger-typescript-api';
 import type { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/types';
 import type { FullRequestParams } from '../../runtime/http-client.js';
+import type { ChooseOpenApiServerFn } from '../templates/new-endpoint.tmpl/utils/choose-open-api-server.js';
 import type { RemoveUnusedTypesParams } from '../utils/remove-unused-types.js';
 import type { FilterOption } from '../utils/unpack-filter-option.js';
 import type { CodegenDataUtils } from './codegen-data-utils.js';
@@ -325,6 +326,15 @@ export interface GenerateQueryApiParams {
     groupEnumValue?: (group: string, namespace?: Maybe<string>) => string;
     tagEnumValue?: (tag: string, namespace?: Maybe<string>) => string;
   };
+
+  /**
+   * Optional codegen-time callback that selects which OpenAPI `Server` object provides the `url` emitted as `baseUrl`
+   * in generated endpoint params when `servers` appear at the API root, on the path item, or on the operation.
+   * Return `undefined` or `null` to use the default resolution (last server at operation level, then path level, then root).
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#chooseserver)
+   */
+  chooseServer?: ChooseOpenApiServerFn;
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#cleanoutput)
