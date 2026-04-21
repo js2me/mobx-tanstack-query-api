@@ -66,6 +66,12 @@ export const allEndpointPerFileTmpl = async (
 
     return { ...newEndpointTemplateData, route };
   });
+  const endpointAliasTypeNamesInFile = new Set<string>();
+  newEndpointTemplates.forEach((template) => {
+    template.endpointAliasTypeNames?.forEach((name) => {
+      endpointAliasTypeNamesInFile.add(name);
+    });
+  });
 
   const extraImportLines: string[] = [];
 
@@ -225,6 +231,7 @@ export const allEndpointPerFileTmpl = async (
     .map((modelType: AnyObject) => modelType.name as string)
     .filter(
       (modelTypeName) =>
+        !endpointAliasTypeNamesInFile.has(modelTypeName) &&
         !dataContractNamesInThisFile.has(modelTypeName) &&
         dataContactNames.has(modelTypeName) &&
         new RegExp(`\\b${escapeRegExp(modelTypeName)}\\b`).test(

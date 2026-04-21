@@ -177,6 +177,39 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     }
   }
 
+  const resolvedSuccessTypeName =
+    responseSchemaKey != null
+      ? (configuration.modelTypes.find((modelType: AnyObject) => {
+          if (typeof modelType.name !== 'string') {
+            return false;
+          }
+          return (
+            typeNameToSchemaKey(modelType.name, dataContractTypeSuffix) ===
+            responseSchemaKey
+          );
+        })?.name as string | undefined)
+      : undefined;
+
+  const outputSuffix = `Output${dataContractTypeSuffix}`;
+  const isStaOutputAlias = defaultOkResponse.endsWith(outputSuffix);
+  const isResolvedResultType =
+    typeof resolvedSuccessTypeName === 'string' &&
+    /Result(?:[A-Z0-9_]*)?$/.test(resolvedSuccessTypeName);
+  const useCollisionAliasRecovery = isStaOutputAlias && isResolvedResultType;
+  const effectiveOkResponseType = useCollisionAliasRecovery
+    ? (resolvedSuccessTypeName as string)
+    : defaultOkResponse;
+
+  const failSuffix = `Fail${dataContractTypeSuffix}`;
+  const errorSuffix = `Error${dataContractTypeSuffix}`;
+  const canUseReverseFailAlias =
+    typeof requestOutputErrorType === 'string' &&
+    requestOutputErrorType !== 'any' &&
+    requestOutputErrorType.endsWith(failSuffix) &&
+    operationErrorTypeName.endsWith(errorSuffix) &&
+    requestOutputErrorType.slice(0, -failSuffix.length) ===
+      operationErrorTypeName.slice(0, -errorSuffix.length);
+
   const zodData = buildZodEndpointData({
     ...params,
     inputParams,
@@ -215,7 +248,14 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   };
 
   const tags = (raw.tags || []).filter(Boolean);
-  const requestOutputDataTypes = positiveResponseTypes.map((it) => it.type);
+  const requestOutputDataTypes = positiveResponseTypes.map((it, index) =>
+    index === 0 && useCollisionAliasRecovery
+      ? effectiveOkResponseType
+      : it.type,
+  );
+  const reservedErrorContractType = canUseReverseFailAlias
+    ? operationErrorTypeName
+    : requestOutputErrorType || 'any';
   const operationIdDataContractName = operationDataTypeName;
 
   const pathParamsToInline = path.split('/').slice(1) as string[];
@@ -295,6 +335,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
 
   const reservedDataContractNames: string[] = [
     ...requestOutputDataTypes,
+    reservedErrorContractType,
     requestOutputErrorType || 'any',
     ...getArgs({
       withPayload: true,
@@ -305,31 +346,41 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   const staOperationResponseAliasLine =
     positiveResponseTypes?.length === 1 &&
     responseFormat === '"blob"' &&
+    defaultOkResponse === effectiveOkResponseType &&
     operationIdDataContractName !== operationDataTypeName &&
     defaultOkResponse !== operationIdDataContractName
       ? `export type ${operationIdDataContractName} = ${defaultOkResponse};`
       : undefined;
   const operationDataAliasLine =
-    !preferExistingResultTypeAsData &&
-    defaultOkResponse !== operationDataTypeName
-      ? `export type ${operationDataTypeName} = ${defaultOkResponse};`
+    (useCollisionAliasRecovery || !preferExistingResultTypeAsData) &&
+    effectiveOkResponseType !== operationDataTypeName
+      ? `export type ${operationDataTypeName} = ${effectiveOkResponseType};`
       : undefined;
   const operationErrorAliasLine =
     requestOutputErrorType !== operationErrorTypeName
-      ? `export type ${operationErrorTypeName} = ${requestOutputErrorType};`
+      ? canUseReverseFailAlias
+        ? `export type ${requestOutputErrorType} = ${operationErrorTypeName};`
+        : `export type ${operationErrorTypeName} = ${requestOutputErrorType};`
       : undefined;
+  const operationErrorAliasTypeName = operationErrorAliasLine
+    ? canUseReverseFailAlias
+      ? requestOutputErrorType
+      : operationErrorTypeName
+    : null;
   const staResponseAliasReplacesContractName = staOperationResponseAliasLine
     ? operationIdDataContractName
     : undefined;
   const operationSuccessResponseDisplayType = staOperationResponseAliasLine
     ? operationIdDataContractName
-    : preferExistingResultTypeAsData
-      ? defaultOkResponse
-      : operationDataTypeName;
+    : useCollisionAliasRecovery
+      ? operationDataTypeName
+      : preferExistingResultTypeAsData
+        ? defaultOkResponse
+        : operationDataTypeName;
   const endpointAliasTypeNames = uniq(
     [
       operationDataAliasLine ? operationDataTypeName : null,
-      operationErrorAliasLine ? operationErrorTypeName : null,
+      operationErrorAliasTypeName,
       staOperationResponseAliasLine ? operationIdDataContractName : null,
     ].filter(Boolean) as string[],
   );
@@ -359,10 +410,15 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     if (responses.length === 1 && responses[0].isSuccess) {
       const successType = staResponseAliasReplacesContractName
         ? staResponseAliasReplacesContractName
-        : preferExistingResultTypeAsData
-          ? responses[0].type
-          : operationDataTypeName;
-      return `HttpResponse<${successType}, ${operationErrorTypeName}>`;
+        : useCollisionAliasRecovery
+          ? operationDataTypeName
+          : preferExistingResultTypeAsData
+            ? responses[0].type
+            : operationDataTypeName;
+      const errorType = canUseReverseFailAlias
+        ? requestOutputErrorType
+        : operationErrorTypeName;
+      return `HttpResponse<${successType}, ${errorType}>`;
     }
 
     return `HttpMultistatusResponse<{

@@ -199,6 +199,9 @@ export const endpointPerFileTmpl = async (
     .map((modelType: AnyObject) => modelType.name as string)
     .filter(
       (modelTypeName) =>
+        !requestInfoTemplateResult.endpointAliasTypeNames?.includes(
+          modelTypeName,
+        ) &&
         modelTypeName !==
           requestInfoTemplateResult.staResponseAliasReplacesContractName &&
         !dataContractNamesInThisFile.includes(modelTypeName) &&

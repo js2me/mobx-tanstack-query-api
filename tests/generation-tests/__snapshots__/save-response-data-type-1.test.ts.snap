@@ -8,11 +8,9 @@ import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 import { Tag } from "../meta-info";
 
 import { SaveResponseDataType1ErrorDC, SaveResponseDataType1RequestDC, SaveResponseDataType1ResponseDC } from "../data-contracts";
-export type SaveResponseDataType1ErrorDC = SaveResponseDataType1FailDC;
+export type SaveResponseDataType1FailDC = SaveResponseDataType1ErrorDC;
 
 export type SaveResponseDataType1DataDC = SaveResponseDataType1ResponseDC;
-
-export type SaveResponseDataType1FailDC = SaveResponseDataType1ErrorDC;
 
 export type SaveResponseDataType1Params = {
   body: SaveResponseDataType1RequestDC;
@@ -32,7 +30,7 @@ export type SaveResponseDataType1Params = {
  * @**default** SaveResponseDataType1ErrorDC err
  */
 export const saveResponseDataType1 = new Endpoint<
-  HttpResponse<SaveResponseDataType1DataDC, SaveResponseDataType1ErrorDC>,
+  HttpResponse<SaveResponseDataType1DataDC, SaveResponseDataType1FailDC>,
   SaveResponseDataType1Params,
   any
 >(

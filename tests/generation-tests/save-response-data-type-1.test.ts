@@ -44,18 +44,28 @@ describe('generateApi saveResponseDataType1 Swagger 2 (definitions.*)', () => {
       await fs.readFile(DATA_CONTRACTS_FILE, 'utf-8')
     ).replaceAll('\r\n', '\n');
 
-    expect(endpoint).toContain('from "../data-contracts"');
-    expect(endpoint).toContain('SaveResponseDataType1RequestDC');
-    expect(endpoint).toContain('SaveResponseDataType1ResponseDC');
-    expect(endpoint).not.toMatch(
-      /export interface SaveResponseDataType1ResponseDC\b/,
-    );
-    expect(dataContracts).toContain(
-      'export interface SaveResponseDataType1RequestDC',
-    );
-    expect(dataContracts).toContain(
-      'export interface SaveResponseDataType1ResponseDC',
-    );
+    // что должно импортироваться
+    expect(endpoint).toContain(`import { SaveResponseDataType1ErrorDC, SaveResponseDataType1RequestDC, SaveResponseDataType1ResponseDC } from "../data-contracts";`);
+
+    // лишние типы которых быть не должно
+    expect(endpoint).not.toContain('export type SaveResponseDataType1DataDC = SaveResponseDataType1Data;');
+    expect(endpoint).not.toContain('export type SaveResponseDataType1DataDC = SaveResponseDataType1DataDC;');
+    // лишние типы которых быть не должно
+    expect(endpoint).not.toContain('export type SaveResponseDataType1ErrorDC = SaveResponseDataType1Fail;');
+    expect(endpoint).not.toContain('export type SaveResponseDataType1ErrorDC = SaveResponseDataType1FailDC;');
+  
+    // этих типов вообще не должно быть в этом файле, у них нет почему то суффикса
+    expect(endpoint).not.toContain('export type SaveResponseDataType1Data = SaveResponseDataType1Response;');
+    expect(endpoint).not.toContain('export type SaveResponseDataType1Data = SaveResponseDataType1ResponseDC;');
+    expect(endpoint).not.toContain('export type SaveResponseDataType1Fail = SaveResponseDataType1Error;');
+    expect(endpoint).not.toContain('export type SaveResponseDataType1Fail = SaveResponseDataType1ErrorDC;');
+
+    // это правильная генерация типов
+    expect(endpoint).toContain(`export type SaveResponseDataType1DataDC = SaveResponseDataType1ResponseDC;`)
+    expect(endpoint).toContain(`export type SaveResponseDataType1FailDC = SaveResponseDataType1ErrorDC;`)
+
+    expect(endpoint).toContain(`export const saveResponseDataType1 = new Endpoint<`)
+    expect(endpoint).toContain(`HttpResponse<SaveResponseDataType1DataDC, SaveResponseDataType1FailDC>,`)
     expect(endpoint).toMatchSnapshot();
     expect(dataContracts).toMatchSnapshot();
   });
@@ -77,7 +87,7 @@ describe('generateApi saveResponseDataType1 Swagger 2 (definitions.*)', () => {
     );
     const dataContracts = (
       await fs.readFile(DATA_CONTRACTS_FILE, 'utf-8')
-    ).replaceAll('\r\n', '\n');
+    );
 
     console.log('f', endpoint);
 
@@ -99,15 +109,24 @@ describe('generateApi saveResponseDataType1 Swagger 2 (definitions.*)', () => {
     expect(endpoint).not.toContain('export type SaveResponseDataType1Fail = ');
     expect(endpoint).not.toContain('export type SaveResponseDataType1Data = SaveResponseDataType1Response;');
 
-    expect(dataContracts).toContain(
-      'export interface SaveResponseDataType1RequestDC',
-    );
-    expect(dataContracts).toContain(
-      'export interface SaveResponseDataType1ResponseDC',
-    );
-    expect(dataContracts).toContain(
-      'export interface SaveResponseDataType1ErrorDC',
-    );
+    expect(dataContracts).toBe(
+`/* eslint-disable */
+/* tslint:disable */
+
+export interface SaveResponseDataType1ErrorDC {
+  /** @format int32 */
+  code?: number;
+}
+
+export interface SaveResponseDataType1RequestDC {
+  /** @format int32 */
+  limit?: number;
+}
+
+export interface SaveResponseDataType1ResponseDC {
+  items?: string[];
+}
+`);
   });
 
   it('supports custom dataContractTypeSuffix in generated files', async () => {
