@@ -7,6 +7,7 @@ import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
 
+export type GetRelativeServersPingErrorDC = any;
 
 export interface GetRelativeServersPingDataDC {
   ok?: boolean;
@@ -26,7 +27,7 @@ export type GetRelativeServersPingParams = {
  * @**200** GetRelativeServersPingDataDC OK
  */
 export const getRelativeServersPing = new Endpoint<
-  HttpResponse<GetRelativeServersPingDataDC, any>,
+  HttpResponse<GetRelativeServersPingDataDC, GetRelativeServersPingErrorDC>,
   GetRelativeServersPingParams,
   any
 >(

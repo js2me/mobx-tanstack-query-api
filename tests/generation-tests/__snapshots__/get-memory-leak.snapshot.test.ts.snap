@@ -8,7 +8,6 @@ import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 import { Tag } from "../meta-info";
 
 import { NeutralStatusDC } from "../data-contracts";
-
 export type GetMemoryLeakDataDC = Blob;
 
 export type GetMemoryLeakErrorDC = NeutralStatusDC;
@@ -55,5 +54,17 @@ export const getMemoryLeak = new Endpoint<
   queryClient,
   http,
 );
+"
+`;
+
+exports[`generateApi snapshot getMemoryLeak > generates endpoint matching snapshot 2`] = `
+"/* eslint-disable */
+/* tslint:disable */
+
+export interface NeutralStatusDC {
+  /** @format int32 */
+  code?: number;
+  message?: string;
+}
 "
 `;

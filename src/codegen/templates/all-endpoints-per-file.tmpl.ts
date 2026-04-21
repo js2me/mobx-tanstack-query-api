@@ -35,7 +35,8 @@ export const allEndpointPerFileTmpl = async (
 
   const { _ } = utils;
 
-  const dataContractNamesInThisFile: string[] = [];
+  const dataContractNamesInThisFile = new Set<string>();
+  const reservedDataContractNamesInFile = new Set<string>();
   const dataContactNames = new Set(
     Object.keys(
       (configuration.config.swaggerSchema as any)?.components?.schemas,
@@ -50,11 +51,16 @@ export const allEndpointPerFileTmpl = async (
       zodContracts: codegenParams.zodContracts,
       relativePathZodSchemas: relativePathZodSchemas ?? undefined,
     });
-    const { reservedDataContractNames } = newEndpointTemplateData;
+    const { reservedDataContractNames, endpointAliasTypeNames } =
+      newEndpointTemplateData;
 
     reservedDataContractNames.forEach((reservedDataContractName) => {
+      reservedDataContractNamesInFile.add(reservedDataContractName);
+      if (endpointAliasTypeNames?.includes(reservedDataContractName)) {
+        return;
+      }
       if (!dataContactNames.has(reservedDataContractName)) {
-        dataContractNamesInThisFile.push(reservedDataContractName);
+        dataContractNamesInThisFile.add(reservedDataContractName);
       }
     });
 
@@ -96,6 +102,8 @@ export const allEndpointPerFileTmpl = async (
         localModelTypes,
         route,
         contractsCode,
+        operationDataAliasLine,
+        operationErrorAliasLine,
         staOperationResponseAliasLine,
         operationSuccessResponseDisplayType,
       }) => {
@@ -124,6 +132,8 @@ export const allEndpointPerFileTmpl = async (
           contractsResult != null ? `\n\n${contractsResult.content}\n\n` : '';
 
         return `
+      ${operationDataAliasLine ?? ''}
+      ${operationErrorAliasLine ?? ''}
       ${staOperationResponseAliasLine ?? ''}
       ${(
         await Promise.all(
@@ -183,7 +193,7 @@ export const allEndpointPerFileTmpl = async (
 
       ${(
         await Promise.all(
-          dataContractNamesInThisFile.map(async (dataContractName) => {
+          [...dataContractNamesInThisFile].map(async (dataContractName) => {
             const modelType = configuration.modelTypes.find(
               (modelType: AnyObject) => modelType.name === dataContractName,
             );
@@ -215,7 +225,7 @@ export const allEndpointPerFileTmpl = async (
     .map((modelType: AnyObject) => modelType.name as string)
     .filter(
       (modelTypeName) =>
-        !dataContractNamesInThisFile.includes(modelTypeName) &&
+        !dataContractNamesInThisFile.has(modelTypeName) &&
         dataContactNames.has(modelTypeName) &&
         new RegExp(`\\b${escapeRegExp(modelTypeName)}\\b`).test(
           contentWithImportToken,
@@ -232,7 +242,7 @@ export const allEndpointPerFileTmpl = async (
       : '';
 
   return {
-    reservedDataContractNames: dataContractNamesInThisFile,
+    reservedDataContractNames: [...reservedDataContractNamesInFile],
     content: contentWithImportToken.replace(
       dataContractImportToken,
       dataContractImportLine,

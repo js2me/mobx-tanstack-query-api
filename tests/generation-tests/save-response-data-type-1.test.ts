@@ -60,6 +60,56 @@ describe('generateApi saveResponseDataType1 Swagger 2 (definitions.*)', () => {
     expect(dataContracts).toMatchSnapshot();
   });
 
+  it('keeps only generated endpoint aliases in endpoint file', async () => {
+    await generateApi(
+      defineConfig({
+        input: INPUT_FILE,
+        output: OUTPUT_DIR,
+        noBarrelFiles: true,
+        removeUnusedTypes: true,
+        outputType: 'one-endpoint-per-file',
+      }),
+    );
+
+    const endpoint = (await fs.readFile(ENDPOINT_FILE, 'utf-8')).replaceAll(
+      '\r\n',
+      '\n',
+    );
+    const dataContracts = (
+      await fs.readFile(DATA_CONTRACTS_FILE, 'utf-8')
+    ).replaceAll('\r\n', '\n');
+
+    console.log('f', endpoint);
+
+    expect(endpoint).toContain(
+      'export type SaveResponseDataType1DataDC = SaveResponseDataType1ResponseDC;',
+    );
+    expect(endpoint).not.toContain(
+      'export type SaveResponseDataType1ErrorDC = SaveResponseDataType1ErrorDC;',
+    );
+    expect(endpoint).toContain('export type SaveResponseDataType1Params = {');
+
+    expect(endpoint).not.toContain(
+      'export type SaveResponseDataType1Data = SaveResponseDataType1ResponseDC;',
+    );
+    expect(endpoint).not.toContain(
+      'export type SaveResponseDataType1Fail = SaveResponseDataType1ErrorDC;',
+    );
+    expect(endpoint).not.toContain('export type SaveResponseDataType1Data = ');
+    expect(endpoint).not.toContain('export type SaveResponseDataType1Fail = ');
+    expect(endpoint).not.toContain('export type SaveResponseDataType1Data = SaveResponseDataType1Response;');
+
+    expect(dataContracts).toContain(
+      'export interface SaveResponseDataType1RequestDC',
+    );
+    expect(dataContracts).toContain(
+      'export interface SaveResponseDataType1ResponseDC',
+    );
+    expect(dataContracts).toContain(
+      'export interface SaveResponseDataType1ErrorDC',
+    );
+  });
+
   it('supports custom dataContractTypeSuffix in generated files', async () => {
     await generateApi(
       defineConfig({

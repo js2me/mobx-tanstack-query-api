@@ -7,6 +7,7 @@ import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
 
+export type GetServerVariablesErrorDC = any;
 
 export interface GetServerVariablesDataDC {
   ok?: boolean;
@@ -26,7 +27,7 @@ export type GetServerVariablesParams = {
  * @**200** GetServerVariablesDataDC OK
  */
 export const getServerVariables = new Endpoint<
-  HttpResponse<GetServerVariablesDataDC, any>,
+  HttpResponse<GetServerVariablesDataDC, GetServerVariablesErrorDC>,
   GetServerVariablesParams,
   any
 >(

@@ -759,10 +759,21 @@ export * as ${exportGroupName} from './endpoints';
         }
       : null;
 
+  const schemaDataContractNames = new Set(
+    Object.keys((swaggerSchema as any)?.components?.schemas ?? {}).map(
+      (schemaName) => utils.formatModelName(schemaName),
+    ),
+  );
+
   const excludedDataContractNames = Array.from(
     reservedDataContractNamesMap.entries(),
   )
-    .filter(([_, count]) => count === 1)
+    .filter(([name, count]) => {
+      if (count !== 1) {
+        return false;
+      }
+      return !schemaDataContractNames.has(name);
+    })
     .map(([name]) => name);
 
   const dataContractsContent = await dataContractsFileTmpl({

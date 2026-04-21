@@ -11,6 +11,7 @@ const ENDPOINT_FILE = path.resolve(
   'endpoints',
   'get-memory-leak.ts',
 );
+const DATA_CONTRACTS_FILE = path.resolve(OUTPUT_DIR, 'data-contracts.ts');
 
 describe('generateApi snapshot getMemoryLeak', () => {
   beforeEach(async () => {
@@ -32,8 +33,21 @@ describe('generateApi snapshot getMemoryLeak', () => {
       }),
     );
 
-    const content = await fs.readFile(ENDPOINT_FILE, 'utf-8');
-    expect(content.replaceAll('\r\n', '\n')).toMatchSnapshot();
+    const endpointContent = (await fs.readFile(ENDPOINT_FILE, 'utf-8')).replaceAll(
+      '\r\n',
+      '\n',
+    );
+    const dataContractsContent = (
+      await fs.readFile(DATA_CONTRACTS_FILE, 'utf-8')
+    ).replaceAll('\r\n', '\n');
+
+    expect(endpointContent).toContain('export type GetMemoryLeakDataDC = Blob;');
+    expect(dataContractsContent).not.toContain(
+      'export type GetMemoryLeakDataDC = Blob;',
+    );
+
+    expect(endpointContent).toMatchSnapshot();
+    expect(dataContractsContent).toMatchSnapshot();
   });
 });
 

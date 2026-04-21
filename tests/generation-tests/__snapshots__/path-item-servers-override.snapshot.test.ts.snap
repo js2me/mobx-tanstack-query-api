@@ -7,6 +7,7 @@ import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
 
+export type GetPathItemServersErrorDC = any;
 
 export interface GetPathItemServersDataDC {
   name?: string;
@@ -26,7 +27,7 @@ export type GetPathItemServersParams = {
  * @**200** GetPathItemServersDataDC OK
  */
 export const getPathItemServers = new Endpoint<
-  HttpResponse<GetPathItemServersDataDC, any>,
+  HttpResponse<GetPathItemServersDataDC, GetPathItemServersErrorDC>,
   GetPathItemServersParams,
   any
 >(

@@ -8,6 +8,7 @@ import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 import { Tag } from "../meta-info";
 
 import { GetFooBarDataDC } from "../data-contracts";
+export type GetFooBarErrorDC = any;
 
 export type GetFooBarResultDC = GetFooBarDataDC;
 
@@ -26,7 +27,7 @@ export type GetFooBarParams = {
  * @**200** GetFooBarResultDC OK
  */
 export const getFooBar = new Endpoint<
-  HttpResponse<GetFooBarResultDC, any>,
+  HttpResponse<GetFooBarResultDC, GetFooBarErrorDC>,
   GetFooBarParams,
   any
 >(

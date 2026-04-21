@@ -1,0 +1,55 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Result priority fixture",
+    "version": "0.1"
+  },
+  "basePath": "/",
+  "produces": ["application/json"],
+  "paths": {
+    "/api/v1/collision/check": {
+      "get": {
+        "operationId": "getCollision",
+        "summary": "Checks collision result payload",
+        "tags": ["collision"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/GetCollisionResult"
+            }
+          },
+          "default": {
+            "description": "Error",
+            "schema": {
+              "$ref": "#/definitions/GetCollisionError"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "GetCollisionData": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string" }
+      }
+    },
+    "GetCollisionError": {
+      "type": "object",
+      "properties": {
+        "code": { "type": "integer", "format": "int32" }
+      }
+    },
+    "GetCollisionResult": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/GetCollisionData"
+        }
+      }
+    }
+  }
+}

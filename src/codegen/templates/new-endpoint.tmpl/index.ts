@@ -135,6 +135,12 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     ? routeResponse.errorType
     : 'any';
   const defaultBadResponse = requestOutputErrorType;
+  const endpointBaseTypeName = upperFirst(camelCase(route.routeName.usage));
+  const operationDataTypeName = `${endpointBaseTypeName}DataDC`;
+  const operationErrorTypeName = `${endpointBaseTypeName}ErrorDC`;
+  const preferExistingResultTypeAsData = /Result(?:[A-Z0-9_]*)?$/.test(
+    defaultOkResponse,
+  );
 
   let responseSchemaKey = getResponseSchemaKey(route);
 
@@ -210,9 +216,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
 
   const tags = (raw.tags || []).filter(Boolean);
   const requestOutputDataTypes = positiveResponseTypes.map((it) => it.type);
-  const operationIdDataContractName = `${upperFirst(
-    camelCase(route.routeName.usage),
-  )}DataDC`;
+  const operationIdDataContractName = operationDataTypeName;
 
   const pathParamsToInline = path.split('/').slice(1) as string[];
 
@@ -289,27 +293,55 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
       method,
     ) || null;
 
-  const reservedDataContractNames: string[] = uniq([
+  const reservedDataContractNames: string[] = [
     ...requestOutputDataTypes,
     requestOutputErrorType || 'any',
     ...getArgs({
       withPayload: true,
     }).map((it) => it.type),
-  ]);
+  ];
 
   const pathDeclaration = resultPath.replaceAll('$', '');
   const staOperationResponseAliasLine =
     positiveResponseTypes?.length === 1 &&
     responseFormat === '"blob"' &&
+    operationIdDataContractName !== operationDataTypeName &&
     defaultOkResponse !== operationIdDataContractName
       ? `export type ${operationIdDataContractName} = ${defaultOkResponse};`
+      : undefined;
+  const operationDataAliasLine =
+    !preferExistingResultTypeAsData &&
+    defaultOkResponse !== operationDataTypeName
+      ? `export type ${operationDataTypeName} = ${defaultOkResponse};`
+      : undefined;
+  const operationErrorAliasLine =
+    requestOutputErrorType !== operationErrorTypeName
+      ? `export type ${operationErrorTypeName} = ${requestOutputErrorType};`
       : undefined;
   const staResponseAliasReplacesContractName = staOperationResponseAliasLine
     ? operationIdDataContractName
     : undefined;
   const operationSuccessResponseDisplayType = staOperationResponseAliasLine
     ? operationIdDataContractName
-    : undefined;
+    : preferExistingResultTypeAsData
+      ? defaultOkResponse
+      : operationDataTypeName;
+  const endpointAliasTypeNames = uniq(
+    [
+      operationDataAliasLine ? operationDataTypeName : null,
+      operationErrorAliasLine ? operationErrorTypeName : null,
+      staOperationResponseAliasLine ? operationIdDataContractName : null,
+    ].filter(Boolean) as string[],
+  );
+  if (operationDataAliasLine) {
+    reservedDataContractNames.push(operationDataTypeName);
+  }
+  if (operationErrorAliasLine) {
+    reservedDataContractNames.push(operationErrorTypeName);
+  }
+  if (staOperationResponseAliasLine) {
+    reservedDataContractNames.push(operationIdDataContractName);
+  }
 
   const getHttpRequestGenerics = () => {
     const responses =
@@ -325,9 +357,12 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     }
 
     if (responses.length === 1 && responses[0].isSuccess) {
-      return `HttpResponse<${
-        staResponseAliasReplacesContractName ?? responses[0].type
-      }, ${requestOutputErrorType}>`;
+      const successType = staResponseAliasReplacesContractName
+        ? staResponseAliasReplacesContractName
+        : preferExistingResultTypeAsData
+          ? responses[0].type
+          : operationDataTypeName;
+      return `HttpResponse<${successType}, ${operationErrorTypeName}>`;
     }
 
     return `HttpMultistatusResponse<{
@@ -479,10 +514,13 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   })();
 
   return {
-    reservedDataContractNames,
+    reservedDataContractNames: uniq(reservedDataContractNames),
     localModelTypes: isAllowedInputType ? [requestInputTypeDc] : [],
     contractsCode: zodData?.contractsCode ?? undefined,
     contractsVarName: zodData?.contractVarName ?? undefined,
+    endpointAliasTypeNames,
+    operationDataAliasLine,
+    operationErrorAliasLine,
     staOperationResponseAliasLine,
     staResponseAliasReplacesContractName,
     operationSuccessResponseDisplayType,

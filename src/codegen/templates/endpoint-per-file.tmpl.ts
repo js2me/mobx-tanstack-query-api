@@ -60,6 +60,13 @@ export const endpointPerFileTmpl = async (
   const dataContractNamesInThisFile: string[] = [];
 
   reservedDataContractNames.forEach((reservedDataContractName) => {
+    if (
+      requestInfoTemplateResult.endpointAliasTypeNames?.includes(
+        reservedDataContractName,
+      )
+    ) {
+      return;
+    }
     if (!dataContactNames.has(reservedDataContractName)) {
       dataContractNamesInThisFile.push(reservedDataContractName);
     }
@@ -115,6 +122,13 @@ export const endpointPerFileTmpl = async (
   const zodImportsBlock = [zodImportLine, zodSchemasImportLine]
     .filter(Boolean)
     .join('\n');
+  const endpointAliasesBlock = [
+    requestInfoTemplateResult.operationDataAliasLine,
+    requestInfoTemplateResult.operationErrorAliasLine,
+    requestInfoTemplateResult.staOperationResponseAliasLine,
+  ]
+    .filter(Boolean)
+    .join('\n');
   const contentWithImportToken = await formatTSContent(`${LINTERS_IGNORE}
       import {
         RequestParams,
@@ -126,11 +140,8 @@ export const endpointPerFileTmpl = async (
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
       ${extraImportLines.join('\n')}
       ${zodImportsBlock}
-      ${dataContractImportToken}${
-        requestInfoTemplateResult.staOperationResponseAliasLine
-          ? `\n\n${requestInfoTemplateResult.staOperationResponseAliasLine}\n`
-          : ''
-      }
+      ${dataContractImportToken}
+      ${endpointAliasesBlock}
 
       ${(
         await Promise.all(
@@ -207,7 +218,7 @@ export const endpointPerFileTmpl = async (
       : '';
 
   return {
-    reservedDataContractNames: dataContractNamesInThisFile,
+    reservedDataContractNames,
     content: contentWithImportToken.replace(
       dataContractImportToken,
       dataContractImportLine,
