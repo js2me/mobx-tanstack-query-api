@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.52.1
+
+### Patch Changes
+
+- [`ddbf7d1`](https://github.com/js2me/mobx-tanstack-query-api/commit/ddbf7d1c8178dc4309a99c0a1f83c687e8f8ec24) Thanks [@js2me](https://github.com/js2me)! - fixed binary export local endpoint types
+
+- [`4c3fbbb`](https://github.com/js2me/mobx-tanstack-query-api/commit/4c3fbbb800a582bb3c7b95e1dfe9b6cff7d55bda) Thanks [@js2me](https://github.com/js2me)! - fix endpoint data/error alias generation and keep generated aliases out of shared data-contract exports
+
+- [`2ebec4c`](https://github.com/js2me/mobx-tanstack-query-api/commit/2ebec4c2ff3fdba367f93d201adede798fa690cd) Thanks [@js2me](https://github.com/js2me)! - allow chooseServer to return false to skip openapi server selection and omit baseUrl from servers
+
 ## 0.52.0
 
 ### Minor Changes
