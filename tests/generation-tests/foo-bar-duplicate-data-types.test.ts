@@ -40,6 +40,8 @@ describe('generateApi foo-bar-duplicate-data-types OpenAPI 3 (components.schemas
       await fs.readFile(DATA_CONTRACTS_FILE, 'utf-8')
     ).replaceAll('\r\n', '\n');
 
+    expect(endpoint).toContain(`export type GetFooBarResultDC = GetFooBarDataDC;`);
+
     expect(endpoint).toMatchSnapshot();
     expect(dataContracts).toMatchSnapshot();
   });

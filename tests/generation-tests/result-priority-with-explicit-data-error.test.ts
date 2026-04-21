@@ -13,6 +13,7 @@ const OUTPUT_DIR = path.resolve(
   './__generated__/result-priority-with-explicit-data-error',
 );
 const ENDPOINT_FILE = path.resolve(OUTPUT_DIR, 'endpoints', 'get-collision.ts');
+const DC_FILE = path.resolve(OUTPUT_DIR, 'data-contracts.ts');
 
 describe('generateApi result/data/error name collision behavior', () => {
   beforeEach(async () => {
@@ -32,22 +33,52 @@ describe('generateApi result/data/error name collision behavior', () => {
       }),
     );
 
-    const endpoint = (await fs.readFile(ENDPOINT_FILE, 'utf-8')).replaceAll(
-      '\r\n',
-      '\n',
-    );
+    const endpoint = (await fs.readFile(ENDPOINT_FILE, 'utf-8'));
+
+    const dataContracts = (await fs.readFile(DC_FILE, 'utf-8'));
 
     expect(endpoint).toContain(
-      'import { GetCollisionDataDC, GetCollisionErrorDC, GetCollisionResultDC } from "../data-contracts";',
+      'import { GetCollisionErrorDC, GetCollisionResultDC } from "../data-contracts";',
     );
-    // swagger-typescript-api resolves naming collision as Output/Fail;
-    // codegen keeps endpoint-level Data/Error aliases that point to them.
-    expect(endpoint).toContain('export type GetCollisionDataDC = GetCollisionOutputDC;');
-    expect(endpoint).toContain('export type GetCollisionErrorDC = GetCollisionFailDC;');
-    expect(endpoint).toContain('export type GetCollisionOutputDC = GetCollisionResultDC;');
+
+    // потому что этот тип не нужен, так как можно испольовать напрямую
+    expect(endpoint).not.toContain('export type GetCollisionOutputDC = GetCollisionResultDC;');
+    // так
+    expect(endpoint).toContain('export type GetCollisionDataDC = GetCollisionResultDC;');
+
+
+
+    // этого типа не должно быть потому что тип с таким же именем импортируется в файл
+    expect(endpoint).not.toContain('export type GetCollisionErrorDC = GetCollisionFailDC;');
+    // должен быть этот тип, где Fail по сути доп резолв нейминг, если Error уже занят
+    expect(endpoint).toContain('export type GetCollisionFailDC = GetCollisionErrorDC;');
+
+    // также еще одно доказательство что нужны типы импортируются
+    expect(endpoint).toContain(`import { GetCollisionErrorDC, GetCollisionResultDC } from "../data-contracts";`);
+
     expect(endpoint).toContain(
-      'HttpResponse<GetCollisionDataDC, GetCollisionErrorDC>',
+      'HttpResponse<GetCollisionDataDC, GetCollisionFailDC>',
     );
-    expect(endpoint).toContain('@**200** GetCollisionDataDC OK');
+    expect(endpoint).toContain(
+`export const getCollision = new Endpoint<
+  HttpResponse<GetCollisionDataDC, GetCollisionFailDC>,`
+);
+
+
+    // а тут доказательство что нужные типы есть
+    expect(dataContracts).toContain(
+`export interface GetCollisionDataDC {
+  id: string;
+}
+
+export interface GetCollisionErrorDC {
+  /** @format int32 */
+  code?: number;
+}
+
+export interface GetCollisionResultDC {
+  data?: GetCollisionDataDC;
+}
+`)
   });
 });
