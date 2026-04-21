@@ -35,12 +35,7 @@ export const endpointPerFileTmpl = async (
   } = params;
   const { _ } = utils;
 
-  const {
-    content: requestInfoInstanceContent,
-    reservedDataContractNames,
-    localModelTypes,
-    contractsCode,
-  } = newEndpointTmpl({
+  const requestInfoTemplateResult = newEndpointTmpl({
     ...params,
     route,
     groupName,
@@ -48,6 +43,13 @@ export const endpointPerFileTmpl = async (
     zodContracts: codegenParams.zodContracts,
     relativePathZodSchemas: relativePathZodSchemas ?? undefined,
   });
+
+  const {
+    content: requestInfoInstanceContent,
+    reservedDataContractNames,
+    localModelTypes,
+    contractsCode,
+  } = requestInfoTemplateResult;
 
   const dataContactNames = new Set(
     Object.keys(
@@ -124,7 +126,11 @@ export const endpointPerFileTmpl = async (
       import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
       ${extraImportLines.join('\n')}
       ${zodImportsBlock}
-      ${dataContractImportToken}
+      ${dataContractImportToken}${
+        requestInfoTemplateResult.staOperationResponseAliasLine
+          ? `\n\n${requestInfoTemplateResult.staOperationResponseAliasLine}\n`
+          : ''
+      }
 
       ${(
         await Promise.all(
@@ -169,6 +175,8 @@ export const endpointPerFileTmpl = async (
       ${endpointJSDocTmpl({
         ...params,
         route,
+        operationSuccessResponseDisplayType:
+          requestInfoTemplateResult.operationSuccessResponseDisplayType,
       })}
       export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}
       `);
@@ -180,6 +188,8 @@ export const endpointPerFileTmpl = async (
     .map((modelType: AnyObject) => modelType.name as string)
     .filter(
       (modelTypeName) =>
+        modelTypeName !==
+          requestInfoTemplateResult.staResponseAliasReplacesContractName &&
         !dataContractNamesInThisFile.includes(modelTypeName) &&
         dataContactNames.has(modelTypeName) &&
         new RegExp(`\\b${escapeRegExp(modelTypeName)}\\b`).test(

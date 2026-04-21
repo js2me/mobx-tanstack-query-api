@@ -9,6 +9,8 @@ import { Tag } from "../meta-info";
 
 import { NeutralStatusDC } from "../data-contracts";
 
+export type GetMemoryLeakDataDC = Blob;
+
 export type GetMemoryLeakErrorDC = NeutralStatusDC;
 
 export type GetMemoryLeakParams = {
@@ -27,11 +29,11 @@ export type GetMemoryLeakParams = {
  * @request **GET:/api/v1/memory/leak**
  * @produces application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
  * @responses
- * @**200** Blob A successful response.
+ * @**200** GetMemoryLeakDataDC A successful response.
  * @**default** NeutralStatusDC An unexpected error response.
  */
 export const getMemoryLeak = new Endpoint<
-  HttpResponse<Blob, GetMemoryLeakErrorDC>,
+  HttpResponse<GetMemoryLeakDataDC, GetMemoryLeakErrorDC>,
   GetMemoryLeakParams,
   any
 >(

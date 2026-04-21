@@ -96,6 +96,8 @@ export const allEndpointPerFileTmpl = async (
         localModelTypes,
         route,
         contractsCode,
+        staOperationResponseAliasLine,
+        operationSuccessResponseDisplayType,
       }) => {
         const requestInfoMeta = callEndpointMeta(
           codegenParams,
@@ -122,6 +124,7 @@ export const allEndpointPerFileTmpl = async (
           contractsResult != null ? `\n\n${contractsResult.content}\n\n` : '';
 
         return `
+      ${staOperationResponseAliasLine ?? ''}
       ${(
         await Promise.all(
           localModelTypes.map(async (modelType) => {
@@ -141,6 +144,7 @@ export const allEndpointPerFileTmpl = async (
       ${endpointJSDocTmpl({
         ...params,
         route,
+        operationSuccessResponseDisplayType,
       })}
       export const ${_.camelCase(route.routeName.usage)} = ${requestInfoInstanceContent}               
 `;

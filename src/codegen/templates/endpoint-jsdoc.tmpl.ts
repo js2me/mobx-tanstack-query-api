@@ -5,6 +5,7 @@ import type { BaseTmplParams } from '../types/base-tmpl-params.js';
 export interface EndpointJSDocTmplParams extends BaseTmplParams {
   route: AnyObject;
   offset?: number;
+  operationSuccessResponseDisplayType?: string;
 }
 
 function getResponseContentTypes(raw: AnyObject): string[] {
@@ -82,7 +83,12 @@ function getSummaryAndDescriptionLines(
 }
 
 export const endpointJSDocTmpl = (params: EndpointJSDocTmplParams) => {
-  const { route, configuration, offset = 0 } = params;
+  const {
+    route,
+    configuration,
+    offset = 0,
+    operationSuccessResponseDisplayType,
+  } = params;
   const { routeName } = route;
   const rawRoute = route.raw as AnyObject;
   const routeRequest = route.request as AnyObject;
@@ -183,9 +189,13 @@ export const endpointJSDocTmpl = (params: EndpointJSDocTmplParams) => {
     });
 
     rawRoute.responsesTypes.forEach((response: AnyObject) => {
+      const responseTypeForDocs =
+        response.isSuccess && operationSuccessResponseDisplayType
+          ? operationSuccessResponseDisplayType
+          : response.type;
       jsDocLines.push({
         name: `**${response.status}**`,
-        content: `${_.replace(_.replace(response.type, /\/\*/g, String.raw`\*`), /\*\//g, '*\\')} ${response.description}`,
+        content: `${_.replace(_.replace(responseTypeForDocs, /\/\*/g, String.raw`\*`), /\*\//g, '*\\')} ${response.description}`,
       });
     });
   }

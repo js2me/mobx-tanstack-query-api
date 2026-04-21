@@ -210,6 +210,9 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
 
   const tags = (raw.tags || []).filter(Boolean);
   const requestOutputDataTypes = positiveResponseTypes.map((it) => it.type);
+  const operationIdDataContractName = `${upperFirst(
+    camelCase(route.routeName.usage),
+  )}DataDC`;
 
   const pathParamsToInline = path.split('/').slice(1) as string[];
 
@@ -295,6 +298,18 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   ]);
 
   const pathDeclaration = resultPath.replaceAll('$', '');
+  const staOperationResponseAliasLine =
+    positiveResponseTypes?.length === 1 &&
+    responseFormat === '"blob"' &&
+    defaultOkResponse !== operationIdDataContractName
+      ? `export type ${operationIdDataContractName} = ${defaultOkResponse};`
+      : undefined;
+  const staResponseAliasReplacesContractName = staOperationResponseAliasLine
+    ? operationIdDataContractName
+    : undefined;
+  const operationSuccessResponseDisplayType = staOperationResponseAliasLine
+    ? operationIdDataContractName
+    : undefined;
 
   const getHttpRequestGenerics = () => {
     const responses =
@@ -310,7 +325,9 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     }
 
     if (responses.length === 1 && responses[0].isSuccess) {
-      return `HttpResponse<${responses[0].type}, ${requestOutputErrorType}>`;
+      return `HttpResponse<${
+        staResponseAliasReplacesContractName ?? responses[0].type
+      }, ${requestOutputErrorType}>`;
     }
 
     return `HttpMultistatusResponse<{
@@ -466,6 +483,9 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     localModelTypes: isAllowedInputType ? [requestInputTypeDc] : [],
     contractsCode: zodData?.contractsCode ?? undefined,
     contractsVarName: zodData?.contractVarName ?? undefined,
+    staOperationResponseAliasLine,
+    staResponseAliasReplacesContractName,
+    operationSuccessResponseDisplayType,
     content: `
 new ${importFileParams.endpoint.exportName}<
   ${getHttpRequestGenerics()},
