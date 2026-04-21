@@ -28,7 +28,7 @@ export type ChooseOpenApiServerFn = (
   route: ParsedRoute,
   servers: CollectedOpenApiServers,
   swaggerSchema: AnyObject,
-) => Maybe<OpenApiServer>;
+) => Maybe<OpenApiServer> | false;
 
 export function chooseOpenApiServer(params: {
   swaggerSchema: AnyObject | null | undefined;
@@ -54,6 +54,9 @@ export function chooseOpenApiServer(params: {
       collectedServers,
       swaggerSchema as AnyObject,
     );
+    if (chosen === false) {
+      return undefined;
+    }
     if (chosen != null) {
       return chosen;
     }

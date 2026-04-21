@@ -330,6 +330,7 @@ export interface GenerateQueryApiParams {
   /**
    * Optional codegen-time callback that selects which OpenAPI `Server` object provides the `url` emitted as `baseUrl`
    * in generated endpoint params when `servers` appear at the API root, on the path item, or on the operation.
+   * Return `false` to skip server selection for the endpoint (`baseUrl` will not be emitted from OpenAPI `servers`).
    * Return `undefined` or `null` to use the default resolution (last server at operation level, then path level, then root).
    *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#chooseserver)

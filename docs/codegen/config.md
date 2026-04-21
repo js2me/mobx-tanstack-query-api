@@ -519,13 +519,17 @@ Codegen collects three arrays (possibly empty):
 | `path` | `servers` on the path item for this route |
 | `route` | `servers` on the operation (swagger-typescript-api exposes this on `route.raw`) |
 
-**Signature:** `(route, servers, swaggerSchema) => OpenApiServer \| null \| undefined`
+**Signature:** `(route, servers, swaggerSchema) => OpenApiServer \| false \| null \| undefined`
 
 - **`route`** — the parsed route (`ParsedRoute` from `swagger-typescript-api`).
 - **`servers`** — `{ root, path, route }` as in the table above; each value is an `OpenApiServer[]`.
 - **`swaggerSchema`** — the full OpenAPI root object for this run.
 
-**Return value:** the chosen server object, or **`undefined` / `null`** to fall back to the built-in rule: use the **last** server in the operation list if non-empty, else the **last** on the path item, else the **last** at the root (same precedence as picking a single URL without this option).
+**Return value:**
+
+- return an `OpenApiServer` object to force that server;
+- return **`false`** to skip server selection entirely for this endpoint (no `baseUrl` from OpenAPI `servers` will be emitted);
+- return **`undefined` / `null`** to fall back to the built-in rule: use the **last** server in the operation list if non-empty, else the **last** on the path item, else the **last** at the root (same precedence as picking a single URL without this option).
 
 The selected server’s `url` is then passed through [`formatBaseUrl`](#formatbaseurl) (default `'normalize'`) before it appears in generated code.
 
@@ -544,6 +548,12 @@ chooseServer: (_route, servers) => {
   const staging = servers.route.find((s) => s.url?.includes('staging'));
   return staging ?? servers.route.at(-1);
 },
+```
+
+Example — disable `baseUrl` from OpenAPI `servers`:
+
+```ts
+chooseServer: () => false,
 ```
 
 ### `overrideRequestParams`
