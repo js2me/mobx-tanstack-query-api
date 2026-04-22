@@ -11,6 +11,7 @@ import {
 import { Query } from 'mobx-tanstack-query';
 import { describe, expect, it, vi } from 'vitest';
 import { sleep } from 'yummies/async';
+import { mockEndpointRequestOnce } from '../testing/mock-endpoint-request-once.js';
 import {
   createHttpClientWithGuardFetch,
   createTestEndpoint,
@@ -110,7 +111,7 @@ describe('EndpointQuery reactive options input updates', () => {
       endpoint.toQueryKey({ id: 2 }, 'second'),
     );
     expect(query.options.staleTime).toBe(1_337);
-    expect((query as any)._observableData.dynamicOptions).toEqual({
+    expect(query.options).toMatchObject({
       staleTime: 1_337,
     });
 
@@ -122,7 +123,6 @@ describe('EndpointQuery reactive options input updates', () => {
     await sleep();
 
     expect(query.options.queryKey).toEqual(endpoint.toQueryKey({ id: 2 }));
-    expect((query as any)._observableData.dynamicOptions).toBeUndefined();
 
     disposeObserveResult();
     query.destroy();
@@ -417,7 +417,7 @@ describe('EndpointQuery structural computed recreation loop', () => {
 });
 
 describe('EndpointQuery structural-equal reaction updates', () => {
-  it('does not write observableData.params for structurally equal params', async () => {
+  it('does not write sync.params for structurally equal params', async () => {
     const endpoint = createEndpointForQueryTests();
     const tick = observable.box(0);
 
@@ -429,11 +429,11 @@ describe('EndpointQuery structural-equal reaction updates', () => {
       },
     });
 
-    const observableData = (query as any)._observableData;
-    const initialParamsRef = observableData.params;
+    const sync = (query as any)._sync;
+    const initialParamsRef = sync.params;
     let paramsWrites = 0;
 
-    const disposeObserveParams = observe(observableData, 'params', () => {
+    const disposeObserveParams = observe(sync, 'params', () => {
       paramsWrites += 1;
     });
 
@@ -448,7 +448,7 @@ describe('EndpointQuery structural-equal reaction updates', () => {
     await sleep();
 
     expect(paramsWrites).toBe(0);
-    expect(observableData.params).toBe(initialParamsRef);
+    expect(sync.params).toBe(initialParamsRef);
 
     disposeObserveParams();
     query.destroy();
@@ -761,5 +761,140 @@ describe('EndpointQuery update branches', () => {
     });
 
     query.destroy();
+  });
+});
+
+describe('derived class constructor order regression', () => {
+  it('binds queryRef from options callback before first queryFn write', async () => {
+    const queryClient = new EndpointQueryClient({
+      defaultOptions: {
+        queries: {
+          enableOnDemand: false,
+          retry: false,
+        },
+      },
+    });
+    const { endpoint } = createTestEndpoint({ queryClient });
+    const onErrorSpy = vi.fn();
+
+    mockEndpointRequestOnce(endpoint, {
+      success: {
+        value: 'early',
+      },
+    });
+
+    class BaseUnit {
+      constructor(protected readonly signal?: AbortSignal) {}
+    }
+
+    class DerivedUnit extends BaseUnit {
+      private readonly query = endpoint.toQuery(() => ({
+        abortSignal: this.signal,
+        params: { id: 1 },
+        enableOnDemand: false,
+        onError: onErrorSpy,
+      }));
+
+      get response() {
+        return this.query.response;
+      }
+
+      destroy() {
+        this.query.destroy();
+      }
+    }
+
+    const unit = new DerivedUnit(new AbortController().signal);
+    await sleep();
+
+    expect(onErrorSpy).not.toHaveBeenCalled();
+    expect(unit.response?.data).toEqual({ value: 'early' });
+
+    unit.destroy();
+  });
+
+  it("Must call super constructor in derived class before accessing 'this' or returning from derived constructor", async () => {
+    const queryClient = new EndpointQueryClient({
+      defaultOptions: {
+        queries: {
+          autoRemovePreviousQuery: true,
+          enableOnDemand: true,
+          throwOnError: true,
+          refetchOnWindowFocus: false,
+          refetchOnReconnect: false,
+          staleTime: (query) => {
+            if (query.getObserversCount() > 1) {
+              return Infinity;
+            }
+
+            return 0;
+          },
+          retry: false,
+          gcTime: 0,
+          dynamicOptionsComparer: comparer.structural,
+        },
+        mutations: {
+          gcTime: 0,
+          networkMode: 'always',
+          throwOnError: true,
+        },
+      },
+    });
+    const { endpoint } = createTestEndpoint({ queryClient });
+
+    mockEndpointRequestOnce(endpoint, {
+      success: {
+        value: '1',
+      },
+    });
+
+    class BaseUnit {
+      constructor(protected readonly signal?: AbortSignal) {}
+    }
+
+    const onErrorSpy = vi.fn();
+
+    class NeutralUnit extends BaseUnit {
+      private readonly primaryMap = observable.map<string, any>();
+      private readonly secondaryMap = observable.map<string, any>();
+
+      private readonly listQuery = endpoint.toQuery(() => ({
+        abortSignal: this.signal,
+        params: { id: 1 },
+        enableOnDemand: false,
+        select: (data) => data.value,
+        onDone: (value) => {
+          if (value.startsWith('S_')) {
+            this.secondaryMap.set(value, value);
+          } else {
+            this.primaryMap.set(value, value);
+          }
+        },
+        onError: onErrorSpy,
+      }));
+
+      get all() {
+        return [
+          ...Array.from(this.primaryMap.values()),
+          ...Array.from(this.secondaryMap.values()),
+        ];
+      }
+
+      destroy() {
+        this.listQuery.destroy();
+      }
+    }
+
+    const createInstance = () => new NeutralUnit(new AbortController().signal);
+    expect(createInstance).not.toThrow();
+
+    const instance = createInstance();
+    expect(instance.all).toEqual([]);
+
+    await sleep();
+
+    expect(onErrorSpy).not.toHaveBeenCalled();
+
+    instance.destroy();
   });
 });
