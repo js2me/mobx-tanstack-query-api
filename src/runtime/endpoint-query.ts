@@ -10,14 +10,12 @@ import {
   computed,
   makeObservable,
   observable,
-  reaction,
   runInAction,
 } from 'mobx';
 import { Query, type QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
 import { hasEnumerableKeys } from 'yummies/data';
-import { getMobxAdministration, lazyObserve } from 'yummies/mobx';
-import type { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/types';
+import type { AnyObject, Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type {
   EndpointQueryFlattenOptions,
@@ -28,12 +26,9 @@ import type {
 import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { RequestParams } from './http-client.js';
 
-interface InternalObservableData<TEndpoint extends AnyEndpoint> {
+interface EndpointQuerySync<TEndpoint extends AnyEndpoint> {
   params: MaybeFalsy<TEndpoint['__params']>;
   uniqKey?: EndpointQueryUniqKey;
-  initialized?: boolean;
-  dynamicOptions?: any;
-  response: TEndpoint['__response'] | null;
 }
 
 /**
@@ -46,7 +41,9 @@ export class EndpointQuery<
   TData = TQueryFnData,
   TQueryData = TQueryFnData,
 > extends Query<TQueryFnData, TError, TData, TQueryData> {
-  private _observableData: InternalObservableData<TEndpoint>;
+  private _sync!: EndpointQuerySync<TEndpoint>;
+  private _endpoint!: AnyEndpoint;
+  response: TEndpoint['__response'] | null = null;
 
   /**
    * Creates `EndpointQuery` instance.
@@ -54,7 +51,7 @@ export class EndpointQuery<
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/#constructor)
    */
   constructor(
-    private endpoint: AnyEndpoint,
+    endpoint: AnyEndpoint,
     inputQueryClient: EndpointQueryClient,
     queryOptionsInput:
       | EndpointQueryOptions<TEndpoint, TQueryFnData, TError, TData, TQueryData>
@@ -82,82 +79,86 @@ export class EndpointQuery<
 
     const queryClient = overridedQueryClient ?? inputQueryClient;
 
-    const _observableData: InternalObservableData<TEndpoint> = {
+    const sync: EndpointQuerySync<TEndpoint> = {
       params: null,
-      dynamicOptions: undefined,
-      response: null,
       uniqKey: unpackedQueryOptionsInput.uniqKey,
-      initialized: false,
     };
 
-    if (isQueryOptionsInputFn) {
-      const {
-        params: initialParams,
-        abortSignal,
-        select,
-        onDone,
-        onError,
-        onInit,
-        enableOnDemand,
-        uniqKey: initialUniqKey,
-        ...initialDynamicOptions
-      } = unpackedQueryOptionsInput;
-      _observableData.params =
-        'params' in unpackedQueryOptionsInput
-          ? callFunction(initialParams)
-          : {};
-      _observableData.dynamicOptions = hasEnumerableKeys(initialDynamicOptions)
-        ? initialDynamicOptions
-        : undefined;
-      _observableData.uniqKey = initialUniqKey;
-      _observableData.initialized = true;
-    } else if (typeof params !== 'function') {
-      if ('params' in unpackedQueryOptionsInput) {
-        _observableData.params = params;
-      } else {
-        _observableData.params = {};
-      }
-      _observableData.initialized = true;
-    } else if (
-      !isQueryOptionsInputFn &&
-      'params' in unpackedQueryOptionsInput
-    ) {
-      _observableData.params = callFunction(params);
-      _observableData.initialized = true;
-    }
-
-    makeObservable(_observableData, {
+    makeObservable(sync, {
       params: observable.ref,
-      response: observable.ref,
       uniqKey: observable.ref,
-      initialized: observable.ref,
-      dynamicOptions: observable.ref,
     });
 
-    const onDone =
-      onDoneInput &&
-      ((...args: Parameters<NonNullable<typeof onDoneInput>>) => {
-        // const currentDataUpdatedAt = this.dataUpdatedAt ?? 0;
-        // if (currentDataUpdatedAt === lastHandledDataUpdatedAt) {
-        //   return;
-        // }
-        // lastHandledDataUpdatedAt = currentDataUpdatedAt;
-        onDoneInput(...args);
-      });
+    const onDone = onDoneInput as any;
+
+    let self!: EndpointQuery<
+      TEndpoint,
+      TQueryFnData,
+      TError,
+      TData,
+      TQueryData
+    >;
 
     super({
       ...queryOptions,
       onDone,
       queryClient,
       meta: endpoint.toQueryMeta(queryOptions.meta),
-      options: (): any => {
+      options: (query): any => {
+        self = query as any;
+
+        let resolvedParams: MaybeFalsy<TEndpoint['__params']>;
+        let dynamicOptions: any;
+        let resolvedUniqKey: Maybe<EndpointQueryUniqKey>;
+
+        if (isQueryOptionsInputFn) {
+          const result = queryOptionsInput();
+          const {
+            params,
+            abortSignal,
+            select,
+            onDone,
+            onError,
+            onInit,
+            enableOnDemand,
+            uniqKey: uk,
+            ...rest
+          } = result;
+
+          resolvedUniqKey = uk;
+
+          if ('params' in result) {
+            resolvedParams = callFunction(params);
+          } else {
+            resolvedParams = {};
+          }
+
+          dynamicOptions = hasEnumerableKeys(rest) ? rest : undefined;
+        } else if ('params' in unpackedQueryOptionsInput) {
+          const params = unpackedQueryOptionsInput.params;
+          resolvedParams = callFunction(params);
+          resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
+        } else {
+          resolvedParams = {};
+          resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
+        }
+
+        runInAction(() => {
+          if (!comparer.structural(sync.params, resolvedParams)) {
+            sync.params = resolvedParams;
+          }
+          if (!comparer.structural(sync.uniqKey, resolvedUniqKey)) {
+            sync.uniqKey = resolvedUniqKey;
+          }
+        });
+
         const builtOptions = buildOptionsFromParams(
           endpoint,
-          _observableData.params,
-          _observableData.uniqKey,
+          resolvedParams,
+          resolvedUniqKey,
         );
 
-        let isEnabled = !!_observableData.initialized && builtOptions.enabled;
+        let isEnabled = builtOptions.enabled;
 
         if (
           typeof queryOptionsInput !== 'function' &&
@@ -169,16 +170,16 @@ export class EndpointQuery<
         return {
           ...builtOptions,
           enabled: isEnabled,
-          ..._observableData.dynamicOptions,
+          ...dynamicOptions,
         };
       },
       queryFn: async (ctx): Promise<any> => {
         const params = endpoint.getParamsFromContext(ctx);
 
         runInAction(() => {
-          _observableData.response = null;
-          if (!comparer.structural(params, _observableData.params)) {
-            _observableData.params = params;
+          self.response = null;
+          if (!comparer.structural(params, sync.params)) {
+            sync.params = params;
           }
         });
 
@@ -200,105 +201,20 @@ export class EndpointQuery<
         const response = await endpoint.request(fixedInput);
 
         runInAction(() => {
-          _observableData.response = response as TEndpoint['__response'];
+          self.response = response as TEndpoint['__response'];
         });
 
         return (await transformResponse?.(response)) ?? response.data;
       },
     });
 
-    const parentAtom = getMobxAdministration(this);
+    self = this;
+    this._sync = sync;
+    this._endpoint = endpoint;
 
     computed.struct(this, 'params');
-    computed.struct(this, 'response');
+    observable.ref(this, 'response');
     makeObservable(this);
-
-    if (isQueryOptionsInputFn || typeof params === 'function') {
-      const createParamsReaction = () =>
-        reaction(
-          (): Partial<InternalObservableData<TEndpoint>> => {
-            let outDynamicOptions: InternalObservableData<TEndpoint>['dynamicOptions'];
-            let outParams: MaybeFn<MaybeFalsy<TEndpoint['__params']>>;
-            let uniqKey: Maybe<EndpointQueryUniqKey>;
-
-            if (isQueryOptionsInputFn) {
-              const result = queryOptionsInput();
-              const {
-                params,
-                abortSignal,
-                select,
-                onDone,
-                onError,
-                onInit,
-                enableOnDemand,
-                uniqKey: _uniqKey,
-                ...dynamicOptions
-              } = result;
-
-              uniqKey = _uniqKey;
-
-              if ('params' in result) {
-                outParams = result.params;
-              } else {
-                outParams = {};
-              }
-
-              outDynamicOptions = hasEnumerableKeys(dynamicOptions)
-                ? dynamicOptions
-                : undefined;
-            } else if ('params' in unpackedQueryOptionsInput) {
-              outParams = unpackedQueryOptionsInput.params;
-              uniqKey = unpackedQueryOptionsInput.uniqKey;
-            } else {
-              outParams = {};
-              uniqKey = unpackedQueryOptionsInput.uniqKey;
-            }
-
-            return {
-              params: callFunction(outParams),
-              dynamicOptions: outDynamicOptions,
-              uniqKey,
-            };
-          },
-          ({ params, dynamicOptions, uniqKey }) => {
-            runInAction(() => {
-              _observableData.initialized = true;
-              if (!comparer.structural(_observableData.params, params)) {
-                _observableData.params = params;
-              }
-              if (
-                !comparer.structural(
-                  _observableData.dynamicOptions,
-                  dynamicOptions,
-                )
-              ) {
-                _observableData.dynamicOptions = dynamicOptions;
-              }
-              if (!comparer.structural(_observableData.uniqKey, uniqKey)) {
-                _observableData.uniqKey = uniqKey;
-              }
-            });
-          },
-          {
-            fireImmediately: true,
-          },
-        );
-
-      if (this.features.lazy) {
-        lazyObserve({
-          property: parentAtom.values_.get('_result'),
-          onStart: createParamsReaction,
-          onEnd: (disposeFn) => disposeFn(),
-        });
-      } else {
-        this.abortController.signal.addEventListener(
-          'abort',
-          createParamsReaction(),
-        );
-      }
-    }
-
-    this._observableData = _observableData;
   }
 
   /**
@@ -307,16 +223,7 @@ export class EndpointQuery<
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/#params)
    */
   get params() {
-    return this._observableData.params;
-  }
-
-  /**
-   * Last raw HTTP response returned by endpoint.
-   *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/#response)
-   */
-  get response() {
-    return this._observableData.response;
+    return this._sync.params;
   }
 
   /**
@@ -332,31 +239,28 @@ export class EndpointQuery<
       params?: MaybeFalsy<TEndpoint['__params']>;
     },
   ) {
+    if (this._endpoint === undefined) {
+      return super.update(updateParams as any);
+    }
+
     if ('params' in updateParams) {
       const { params, ...options } = updateParams;
       runInAction(() => {
-        this._observableData.params = params;
+        this._sync.params = params;
       });
       return super.update({
-        ...buildOptionsFromParams(
-          this.endpoint,
-          params,
-          this._observableData.uniqKey,
-        ),
+        ...buildOptionsFromParams(this._endpoint, params, this._sync.uniqKey),
         ...options,
       });
-    } else if (this._observableData) {
-      return super.update({
-        ...buildOptionsFromParams(
-          this.endpoint,
-          this._observableData.params,
-          this._observableData.uniqKey,
-        ),
-        ...updateParams,
-      });
-    } else {
-      return super.update(updateParams);
     }
+    return super.update({
+      ...buildOptionsFromParams(
+        this._endpoint,
+        this._sync.params,
+        this._sync.uniqKey,
+      ),
+      ...updateParams,
+    });
   }
 
   /**
@@ -382,22 +286,19 @@ export class EndpointQuery<
     params: MaybeFalsy<TEndpoint['__params']>,
   ): Promise<QueryObserverResult<TData, TError>> {
     runInAction(() => {
-      this._observableData.params = params;
+      this._sync.params = params;
     });
     return await super.start(
-      buildOptionsFromParams(
-        this.endpoint,
-        params,
-        this._observableData.uniqKey,
-      ),
+      buildOptionsFromParams(this._endpoint, params, this._sync.uniqKey),
     );
   }
 
   protected handleDestroy(): void {
     super.handleDestroy();
     runInAction(() => {
-      this._observableData.params = undefined;
-      this._observableData.dynamicOptions = undefined;
+      this._sync.params = undefined;
+      this.response = null;
+      this._sync.uniqKey = undefined;
     });
   }
 }
