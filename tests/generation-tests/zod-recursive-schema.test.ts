@@ -3,7 +3,7 @@ import {
   buildCentralZodContractsFile,
   buildEndpointZodContractsCode,
 } from '../../src/codegen/utils/zod/build-endpoint-zod-contracts-code.js';
-import * as _ from 'lodash-es';
+import * as _ from 'es-toolkit';
 import { OpenAPIParameter, OpenAPISchema } from '../../src/codegen/utils/swagger/types.js';
 
 const utils = { _ };

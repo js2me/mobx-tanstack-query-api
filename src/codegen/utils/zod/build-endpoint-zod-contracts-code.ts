@@ -1,4 +1,4 @@
-import { camelCase } from 'lodash-es';
+import { camelCase } from 'es-toolkit';
 import type { ParsedRoute } from 'swagger-typescript-api';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from '../data-contract-type-suffix.js';
 import { collectRefs } from '../swagger/collect-refs.js';

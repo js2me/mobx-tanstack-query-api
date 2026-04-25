@@ -1,4 +1,4 @@
-import { last } from 'lodash-es';
+import { last } from 'es-toolkit';
 import type { ParsedRoute } from 'swagger-typescript-api';
 import type { AnyObject, Maybe } from 'yummies/types';
 
