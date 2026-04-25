@@ -74,9 +74,9 @@
     "lodash-es": "^4.18.1",
     "mobx-tanstack-query": "^6.16.0",
     "qs": "^6.15.0",
-    "swagger-typescript-api": "^13.6.10",
+    "swagger-typescript-api": "^13.7.0",
     "ts-morph": "^27.0.2",
-    "yummies": "^7.18.0"
+    "yummies": "^7.19.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.10",
