@@ -8,7 +8,7 @@ import {
   reaction,
   runInAction,
 } from 'mobx';
-import { Query } from 'mobx-tanstack-query';
+import { InfiniteQuery } from 'mobx-tanstack-query';
 import { describe, expect, it, vi } from 'vitest';
 import { sleep } from 'yummies/async';
 import { mockEndpointRequestOnce } from '../testing/mock-endpoint-request-once.js';
@@ -19,7 +19,7 @@ import {
 import { Endpoint } from './endpoint.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 
-const createEndpointForQueryTests = () => {
+const createEndpointForInfiniteQueryTests = () => {
   const queryClient = new EndpointQueryClient({
     defaultOptions: {
       queries: {
@@ -30,13 +30,59 @@ const createEndpointForQueryTests = () => {
   return createTestEndpoint({ queryClient }).endpoint;
 };
 
-describe('EndpointQuery reactive options input updates', () => {
+describe('EndpointInfiniteQuery structural-equal reaction updates', () => {
+  it('does not write sync.params for structurally equal params', async () => {
+    const endpoint = createEndpointForInfiniteQueryTests();
+    const tick = observable.box(0);
+    const getNextPageParam = () => undefined;
+
+    const query = endpoint.toInfiniteQuery(() => {
+      tick.get();
+      return {
+        enableOnDemand: true,
+        initialPageParam: 0,
+        getNextPageParam,
+        params: { id: 1 },
+      };
+    });
+
+    const sync = (query as any)._sync;
+    const initialParamsRef = sync.params;
+    let paramsWrites = 0;
+
+    const disposeObserveParams = observe(sync, 'params', () => {
+      paramsWrites += 1;
+    });
+
+    runInAction(() => {
+      tick.set(1);
+    });
+    await sleep();
+
+    runInAction(() => {
+      tick.set(2);
+    });
+    await sleep();
+
+    expect(paramsWrites).toBe(0);
+    expect(sync.params).toBe(initialParamsRef);
+
+    disposeObserveParams();
+    query.destroy();
+  });
+});
+
+describe('EndpointInfiniteQuery reactive options input updates', () => {
+  const getNextPageParam = () => undefined;
+
   it('reactively updates queryKey when only uniqKey changes', async () => {
-    const endpoint = createEndpointForQueryTests();
+    const endpoint = createEndpointForInfiniteQueryTests();
     const uniqKeyBox = observable.box('first-key');
 
-    const query = endpoint.toQuery(() => ({
+    const query = endpoint.toInfiniteQuery(() => ({
       enableOnDemand: true,
+      initialPageParam: 0,
+      getNextPageParam,
       params: { id: 1 },
       uniqKey: uniqKeyBox.get(),
     }));
@@ -48,7 +94,7 @@ describe('EndpointQuery reactive options input updates', () => {
     await sleep();
 
     expect(query.options.queryKey).toEqual(
-      endpoint.toQueryKey({ id: 1 }, 'first-key'),
+      endpoint.toInfiniteQueryKey({ id: 1 }, 'first-key'),
     );
 
     runInAction(() => {
@@ -57,7 +103,7 @@ describe('EndpointQuery reactive options input updates', () => {
     await sleep();
 
     expect(query.options.queryKey).toEqual(
-      endpoint.toQueryKey({ id: 1 }, 'second-key'),
+      endpoint.toInfiniteQueryKey({ id: 1 }, 'second-key'),
     );
 
     disposeObserveResult();
@@ -65,7 +111,7 @@ describe('EndpointQuery reactive options input updates', () => {
   });
 
   it('reactively updates params, uniqKey and dynamic options for function input', async () => {
-    const endpoint = createEndpointForQueryTests();
+    const endpoint = createEndpointForInfiniteQueryTests();
     const state = observable(
       {
         id: 1,
@@ -79,8 +125,10 @@ describe('EndpointQuery reactive options input updates', () => {
       },
     );
 
-    const query = endpoint.toQuery(() => ({
+    const query = endpoint.toInfiniteQuery(() => ({
       enableOnDemand: true,
+      initialPageParam: 0,
+      getNextPageParam,
       params: { id: state.id },
       ...(state.includeUniqKey ? { uniqKey: state.uniqKey } : {}),
       ...(state.includeDynamicOptions ? { staleTime: 1_337 } : {}),
@@ -94,7 +142,7 @@ describe('EndpointQuery reactive options input updates', () => {
 
     expect(query.params).toEqual({ id: 1 });
     expect(query.options.queryKey).toEqual(
-      endpoint.toQueryKey({ id: 1 }, 'first'),
+      endpoint.toInfiniteQueryKey({ id: 1 }, 'first'),
     );
     expect(query.options.staleTime).toBeUndefined();
 
@@ -108,12 +156,9 @@ describe('EndpointQuery reactive options input updates', () => {
 
     expect(query.params).toEqual({ id: 2 });
     expect(query.options.queryKey).toEqual(
-      endpoint.toQueryKey({ id: 2 }, 'second'),
+      endpoint.toInfiniteQueryKey({ id: 2 }, 'second'),
     );
     expect(query.options.staleTime).toBe(1_337);
-    expect(query.options).toMatchObject({
-      staleTime: 1_337,
-    });
 
     runInAction(() => {
       state.includeUniqKey = false;
@@ -122,22 +167,26 @@ describe('EndpointQuery reactive options input updates', () => {
 
     await sleep();
 
-    expect(query.options.queryKey).toEqual(endpoint.toQueryKey({ id: 2 }));
+    expect(query.options.queryKey).toEqual(
+      endpoint.toInfiniteQueryKey({ id: 2 }),
+    );
 
     disposeObserveResult();
     query.destroy();
   });
 
   it('uses empty object params when function input omits params and updates on changes', async () => {
-    const endpoint = createEndpointForQueryTests();
+    const endpoint = createEndpointForInfiniteQueryTests();
     const paramsBox = observable.box<{ id: number } | null>(null, {
       deep: false,
     });
 
-    const query = endpoint.toQuery(() => {
+    const query = endpoint.toInfiniteQuery(() => {
       const params = paramsBox.get();
       return {
         enableOnDemand: true,
+        initialPageParam: 0,
+        getNextPageParam,
         uniqKey: 'stable-key',
         ...(params ? { params } : {}),
       };
@@ -151,7 +200,7 @@ describe('EndpointQuery reactive options input updates', () => {
 
     expect(query.params).toEqual({});
     expect(query.options.queryKey).toEqual(
-      endpoint.toQueryKey(undefined, 'stable-key'),
+      endpoint.toInfiniteQueryKey(undefined, 'stable-key'),
     );
 
     runInAction(() => {
@@ -162,7 +211,7 @@ describe('EndpointQuery reactive options input updates', () => {
 
     expect(query.params).toEqual({ id: 7 });
     expect(query.options.queryKey).toEqual(
-      endpoint.toQueryKey({ id: 7 }, 'stable-key'),
+      endpoint.toInfiniteQueryKey({ id: 7 }, 'stable-key'),
     );
 
     runInAction(() => {
@@ -173,7 +222,7 @@ describe('EndpointQuery reactive options input updates', () => {
 
     expect(query.params).toEqual({});
     expect(query.options.queryKey).toEqual(
-      endpoint.toQueryKey(undefined, 'stable-key'),
+      endpoint.toInfiniteQueryKey(undefined, 'stable-key'),
     );
 
     disposeObserveResult();
@@ -181,14 +230,16 @@ describe('EndpointQuery reactive options input updates', () => {
   });
 
   it('reactively resolves params and uniqKey for object input with params function', async () => {
-    const endpoint = createEndpointForQueryTests();
+    const endpoint = createEndpointForInfiniteQueryTests();
     const paramsBox = observable.box<{ id: number } | null>(null, {
       deep: false,
     });
     const uniqKeyBox = observable.box('first-uniq');
 
-    const query = endpoint.toQuery({
+    const query = endpoint.toInfiniteQuery({
       enableOnDemand: true,
+      initialPageParam: 0,
+      getNextPageParam,
       params: () => paramsBox.get(),
       uniqKey: () => uniqKeyBox.get(),
     });
@@ -201,7 +252,7 @@ describe('EndpointQuery reactive options input updates', () => {
 
     expect(query.params).toBe(null);
     expect(query.options.queryKey).toEqual(
-      endpoint.toQueryKey(undefined, 'first-uniq'),
+      endpoint.toInfiniteQueryKey(undefined, 'first-uniq'),
     );
 
     runInAction(() => {
@@ -213,7 +264,7 @@ describe('EndpointQuery reactive options input updates', () => {
 
     expect(query.params).toEqual({ id: 3 });
     expect(query.options.queryKey).toEqual(
-      endpoint.toQueryKey({ id: 3 }, 'second-uniq'),
+      endpoint.toInfiniteQueryKey({ id: 3 }, 'second-uniq'),
     );
 
     disposeObserveResult();
@@ -221,11 +272,80 @@ describe('EndpointQuery reactive options input updates', () => {
   });
 });
 
-describe('EndpointQuery structural computed recreation loop', () => {
+describe('EndpointInfiniteQuery update branches', () => {
+  const getNextPageParam = () => undefined;
+
+  it('updates params and builds options when update input includes params key', () => {
+    const endpoint = createEndpointForInfiniteQueryTests();
+    const query = endpoint.toInfiniteQuery({
+      params: { id: 1 },
+      uniqKey: 'stable-key',
+      initialPageParam: 0,
+      getNextPageParam,
+      enableOnDemand: true,
+    });
+    const superUpdateSpy = vi
+      .spyOn(InfiniteQuery.prototype, 'update')
+      .mockImplementation((options: any) => options);
+
+    const result = query.update({
+      params: { id: 2 },
+      staleTime: 5_000,
+    } as any);
+
+    expect(query.params).toEqual({ id: 2 });
+    expect(superUpdateSpy).toHaveBeenCalledWith({
+      enabled: true,
+      queryKey: endpoint.toInfiniteQueryKey({ id: 2 }, 'stable-key'),
+      staleTime: 5_000,
+    });
+    expect(result).toEqual({
+      enabled: true,
+      queryKey: endpoint.toInfiniteQueryKey({ id: 2 }, 'stable-key'),
+      staleTime: 5_000,
+    });
+
+    query.destroy();
+  });
+
+  it('reuses observable params when update input has no params key', () => {
+    const endpoint = createEndpointForInfiniteQueryTests();
+    const query = endpoint.toInfiniteQuery({
+      params: { id: 3 },
+      uniqKey: 'stable-key',
+      initialPageParam: 0,
+      getNextPageParam,
+      enableOnDemand: true,
+    });
+    const superUpdateSpy = vi
+      .spyOn(InfiniteQuery.prototype, 'update')
+      .mockImplementation((options: any) => options);
+
+    const result = query.update({
+      staleTime: 7_000,
+    } as any);
+
+    expect(superUpdateSpy).toHaveBeenCalledWith({
+      enabled: true,
+      queryKey: endpoint.toInfiniteQueryKey({ id: 3 }, 'stable-key'),
+      staleTime: 7_000,
+    });
+    expect(result).toEqual({
+      enabled: true,
+      queryKey: endpoint.toInfiniteQueryKey({ id: 3 }, 'stable-key'),
+      staleTime: 7_000,
+    });
+
+    query.destroy();
+  });
+});
+
+describe('EndpointInfiniteQuery structural computed recreation loop', () => {
   const createRuntimeEndpoints = () => {
     const queryClient = new EndpointQueryClient();
     const { httpClient } = createHttpClientWithGuardFetch();
     const stableList = [{ id: 1 }];
+    const getNextPageParam = () => undefined;
 
     const listEndpoint = new Endpoint<any, Record<string, never>>(
       {
@@ -277,16 +397,19 @@ describe('EndpointQuery structural computed recreation loop', () => {
       raw: null,
     } as any);
 
-    return { listEndpoint, nestedEndpoint };
+    return { listEndpoint, nestedEndpoint, getNextPageParam };
   };
 
-  it('does not enter structural-computed recreation loop when child model owns EndpointQuery', async () => {
-    const { listEndpoint, nestedEndpoint } = createRuntimeEndpoints();
+  it('does not enter structural-computed recreation loop when child model owns EndpointInfiniteQuery', async () => {
+    const { listEndpoint, nestedEndpoint, getNextPageParam } =
+      createRuntimeEndpoints();
     let paramsCalls = 0;
     const createdQueries: Array<{ destroy: () => void }> = [];
 
     class RowNode {
-      childrenQuery = nestedEndpoint.toQuery({
+      childrenQuery = nestedEndpoint.toInfiniteQuery({
+        initialPageParam: 0,
+        getNextPageParam,
         params: () => {
           paramsCalls += 1;
           if (paramsCalls > 100) {
@@ -310,7 +433,9 @@ describe('EndpointQuery structural computed recreation loop', () => {
     }
 
     class TreeVm {
-      listQuery = listEndpoint.toQuery({
+      listQuery = listEndpoint.toInfiniteQuery({
+        initialPageParam: 0,
+        getNextPageParam,
         params: () => ({}),
       });
 
@@ -324,7 +449,7 @@ describe('EndpointQuery structural computed recreation loop', () => {
       }
 
       get data() {
-        const items = this.listQuery.data ?? [];
+        const items = this.listQuery.data?.pages?.flat() ?? [];
         return items.map((item: { id: number }) => new RowNode(item));
       }
 
@@ -349,12 +474,15 @@ describe('EndpointQuery structural computed recreation loop', () => {
   });
 
   it('does not loop when child params are falsy', async () => {
-    const { listEndpoint, nestedEndpoint } = createRuntimeEndpoints();
+    const { listEndpoint, nestedEndpoint, getNextPageParam } =
+      createRuntimeEndpoints();
     let paramsCalls = 0;
     const createdQueries: Array<{ destroy: () => void }> = [];
 
     class RowNode {
-      childrenQuery = nestedEndpoint.toQuery({
+      childrenQuery = nestedEndpoint.toInfiniteQuery({
+        initialPageParam: 0,
+        getNextPageParam,
         params: () => {
           paramsCalls += 1;
           if (paramsCalls > 100) {
@@ -377,7 +505,9 @@ describe('EndpointQuery structural computed recreation loop', () => {
     }
 
     class TreeVm {
-      listQuery = listEndpoint.toQuery({
+      listQuery = listEndpoint.toInfiniteQuery({
+        initialPageParam: 0,
+        getNextPageParam,
         params: () => ({}),
       });
 
@@ -391,7 +521,7 @@ describe('EndpointQuery structural computed recreation loop', () => {
       }
 
       get data() {
-        const items = this.listQuery.data ?? [];
+        const items = this.listQuery.data?.pages?.flat() ?? [];
         return items.map((item: { id: number }) => new RowNode(item));
       }
 
@@ -416,50 +546,12 @@ describe('EndpointQuery structural computed recreation loop', () => {
   });
 });
 
-describe('EndpointQuery structural-equal reaction updates', () => {
-  it('does not write sync.params for structurally equal params', async () => {
-    const endpoint = createEndpointForQueryTests();
-    const tick = observable.box(0);
-
-    const query = endpoint.toQuery({
-      enableOnDemand: true,
-      params: () => {
-        tick.get();
-        return { id: 1 };
-      },
-    });
-
-    const sync = (query as any)._sync;
-    const initialParamsRef = sync.params;
-    let paramsWrites = 0;
-
-    const disposeObserveParams = observe(sync, 'params', () => {
-      paramsWrites += 1;
-    });
-
-    runInAction(() => {
-      tick.set(1);
-    });
-    await sleep();
-
-    runInAction(() => {
-      tick.set(2);
-    });
-    await sleep();
-
-    expect(paramsWrites).toBe(0);
-    expect(sync.params).toBe(initialParamsRef);
-
-    disposeObserveParams();
-    query.destroy();
-  });
-});
-
-describe('regression: class field toQuery + structural parent', () => {
+describe('regression: class field toInfiniteQuery + structural parent', () => {
   const createRegressionEndpoints = () => {
     const queryClient = new EndpointQueryClient();
     const { httpClient } = createHttpClientWithGuardFetch();
     const stableList = [{ id: 1 }];
+    const getNextPageParam = () => undefined;
 
     const listEndpoint = new Endpoint<any, Record<string, never>>(
       {
@@ -496,23 +588,25 @@ describe('regression: class field toQuery + structural parent', () => {
       raw: null,
     } as any);
 
-    return { listEndpoint, childrenEndpoint };
+    return { listEndpoint, childrenEndpoint, getNextPageParam };
   };
 
   it('does not enter infinite reaction loop when params function returns structurally same object', async () => {
-    const { listEndpoint, childrenEndpoint } = createRegressionEndpoints();
+    const { listEndpoint, childrenEndpoint, getNextPageParam } =
+      createRegressionEndpoints();
     const abortController = new AbortController();
     let paramsCalls = 0;
     const createdQueries: Array<{ destroy: () => void }> = [];
 
     class RowNode {
-      private readonly childrenQuery = childrenEndpoint.toQuery({
+      private readonly childrenQuery = childrenEndpoint.toInfiniteQuery({
+        initialPageParam: 0,
+        getNextPageParam,
         params: () => {
           paramsCalls += 1;
           if (paramsCalls > 100) {
             throw new Error('infinite loop detected');
           }
-          // TODO: this.data should be this.data?
           return { id: this.data.id };
         },
         abortSignal: abortController.signal,
@@ -536,7 +630,9 @@ describe('regression: class field toQuery + structural parent', () => {
     }
 
     class TreeVm {
-      private readonly listQuery = listEndpoint.toQuery({
+      private readonly listQuery = listEndpoint.toInfiniteQuery({
+        initialPageParam: 0,
+        getNextPageParam,
         params: () => ({}),
       });
 
@@ -550,7 +646,7 @@ describe('regression: class field toQuery + structural parent', () => {
       }
 
       get data() {
-        const items = this.listQuery.data ?? [];
+        const items = this.listQuery.data?.pages?.flat() ?? [];
         return items.map((item: { id: number }) => {
           return new RowNode(item, this.signal);
         });
@@ -581,13 +677,16 @@ describe('regression: class field toQuery + structural parent', () => {
   });
 
   it('stays stable when params returns falsy', async () => {
-    const { listEndpoint, childrenEndpoint } = createRegressionEndpoints();
+    const { listEndpoint, childrenEndpoint, getNextPageParam } =
+      createRegressionEndpoints();
     const abortController = new AbortController();
     let paramsCalls = 0;
     const createdQueries: Array<{ destroy: () => void }> = [];
 
     class RowNode {
-      private readonly childrenQuery = childrenEndpoint.toQuery({
+      private readonly childrenQuery = childrenEndpoint.toInfiniteQuery({
+        initialPageParam: 0,
+        getNextPageParam,
         params: () => {
           paramsCalls += 1;
           if (paramsCalls > 100) {
@@ -615,7 +714,9 @@ describe('regression: class field toQuery + structural parent', () => {
     }
 
     class TreeVm {
-      private readonly listQuery = listEndpoint.toQuery({
+      private readonly listQuery = listEndpoint.toInfiniteQuery({
+        initialPageParam: 0,
+        getNextPageParam,
         params: () => ({}),
       });
 
@@ -629,7 +730,7 @@ describe('regression: class field toQuery + structural parent', () => {
       }
 
       get data() {
-        const items = this.listQuery.data ?? [];
+        const items = this.listQuery.data?.pages?.flat() ?? [];
         return items.map((item: { id: number }) => {
           return new RowNode(item, this.signal);
         });
@@ -660,96 +761,6 @@ describe('regression: class field toQuery + structural parent', () => {
   });
 });
 
-describe('EndpointQuery update branches', () => {
-  it('updates params and builds options when update input includes params key', () => {
-    const endpoint = createEndpointForQueryTests();
-    const query = endpoint.toQuery({
-      params: { id: 1 },
-      uniqKey: 'stable-key',
-      enableOnDemand: true,
-    });
-    const superUpdateSpy = vi
-      .spyOn(Query.prototype, 'update')
-      .mockImplementation((options: any) => options);
-
-    const result = query.update({
-      params: { id: 2 },
-      staleTime: 5_000,
-    });
-
-    expect(query.params).toEqual({ id: 2 });
-    expect(superUpdateSpy).toHaveBeenCalledWith({
-      enabled: true,
-      queryKey: endpoint.toQueryKey({ id: 2 }, 'stable-key'),
-      staleTime: 5_000,
-    });
-    expect(result).toEqual({
-      enabled: true,
-      queryKey: endpoint.toQueryKey({ id: 2 }, 'stable-key'),
-      staleTime: 5_000,
-    });
-
-    query.destroy();
-  });
-
-  it('reuses observable params when update input has no params key', () => {
-    const endpoint = createEndpointForQueryTests();
-    const query = endpoint.toQuery({
-      params: { id: 3 },
-      uniqKey: 'stable-key',
-      enableOnDemand: true,
-    });
-    const superUpdateSpy = vi
-      .spyOn(Query.prototype, 'update')
-      .mockImplementation((options: any) => options);
-
-    const result = query.update({
-      staleTime: 7_000,
-    });
-
-    expect(superUpdateSpy).toHaveBeenCalledWith({
-      enabled: true,
-      queryKey: endpoint.toQueryKey({ id: 3 }, 'stable-key'),
-      staleTime: 7_000,
-    });
-    expect(result).toEqual({
-      enabled: true,
-      queryKey: endpoint.toQueryKey({ id: 3 }, 'stable-key'),
-      staleTime: 7_000,
-    });
-
-    query.destroy();
-  });
-});
-
-describe('EndpointQuery params function calls on creation', () => {
-  it('calls params function exactly twice during query creation', () => {
-    const endpoint = createEndpointForQueryTests();
-    const paramsFn = vi.fn(() => ({ id: 1 }));
-
-    const query = endpoint.toQuery({
-      enableOnDemand: true,
-      params: paramsFn,
-    });
-
-    expect(paramsFn).toHaveBeenCalledTimes(2);
-    query.destroy();
-  });
-
-  it('calls params function two times during function-based query creation', () => {
-    const endpoint = createEndpointForQueryTests();
-    const paramsFn = vi.fn(() => ({ id: 1 }));
-
-    const query = endpoint.toQuery(() => ({
-      enableOnDemand: true,
-      params: paramsFn(),
-    }));
-
-    expect(paramsFn).toHaveBeenCalledTimes(2);
-    query.destroy();
-  });
-});
-
 describe('derived class constructor order regression', () => {
   it('binds queryRef from options callback before first queryFn write', async () => {
     const queryClient = new EndpointQueryClient({
@@ -762,6 +773,7 @@ describe('derived class constructor order regression', () => {
     });
     const { endpoint } = createTestEndpoint({ queryClient });
     const onErrorSpy = vi.fn();
+    const getNextPageParam = () => undefined;
 
     mockEndpointRequestOnce(endpoint, {
       success: {
@@ -774,9 +786,11 @@ describe('derived class constructor order regression', () => {
     }
 
     class DerivedUnit extends BaseUnit {
-      private readonly query = endpoint.toQuery(() => ({
+      private readonly query = endpoint.toInfiniteQuery(() => ({
         abortSignal: this.signal,
         params: { id: 1 },
+        initialPageParam: 0,
+        getNextPageParam,
         enableOnDemand: false,
         onError: onErrorSpy,
       }));
@@ -799,7 +813,7 @@ describe('derived class constructor order regression', () => {
     unit.destroy();
   });
 
-  it('keeps derived constructor stable when fields use toQuery with structural dynamic options', async () => {
+  it("Must call super constructor in derived class before accessing 'this' or returning from derived constructor", async () => {
     const queryClient = new EndpointQueryClient({
       defaultOptions: {
         queries: {
@@ -827,6 +841,7 @@ describe('derived class constructor order regression', () => {
       },
     });
     const { endpoint } = createTestEndpoint({ queryClient });
+    const getNextPageParam = () => undefined;
 
     mockEndpointRequestOnce(endpoint, {
       success: {
@@ -844,17 +859,21 @@ describe('derived class constructor order regression', () => {
       private readonly primaryMap = observable.map<string, any>();
       private readonly secondaryMap = observable.map<string, any>();
 
-      private readonly listQuery = endpoint.toQuery(() => ({
+      private readonly listQuery = endpoint.toInfiniteQuery(() => ({
         abortSignal: this.signal,
         params: { id: 1 },
+        initialPageParam: 0,
+        getNextPageParam,
         enableOnDemand: false,
-        select: (data) => data.value,
-        onDone: (value) => {
-          if (value.startsWith('S_')) {
-            this.secondaryMap.set(value, value);
-          } else {
-            this.primaryMap.set(value, value);
-          }
+        select: (data: any) => data.pages.flat(),
+        onDone: (items) => {
+          items?.forEach((item: any) => {
+            if (item?.code?.startsWith('S_')) {
+              this.secondaryMap.set(item.code, item);
+            } else {
+              this.primaryMap.set(item?.code ?? 'unknown', item);
+            }
+          });
         },
         onError: onErrorSpy,
       }));
