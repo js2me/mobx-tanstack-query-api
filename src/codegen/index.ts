@@ -1,7 +1,7 @@
 import { rmSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep } from 'es-toolkit';
 import {
   type GenerateApiConfiguration,
   generateApi as generateApiFromSwagger,
@@ -342,11 +342,11 @@ const generateApiSingle = async (
   const outputType = params.outputType ?? 'one-endpoint-per-file';
   const shouldGenerateBarrelFiles = !params.noBarrelFiles;
 
-  let namespace: Maybe<string> = null;
+  let namespace: string | null = null;
 
   if (params.namespace) {
     if (typeof params.namespace === 'function') {
-      namespace = params.namespace(utils, swaggerSchema);
+      namespace = params.namespace(utils, swaggerSchema) ?? null;
     } else {
       namespace = utils._.camelCase(params.namespace);
     }

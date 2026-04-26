@@ -1,14 +1,4 @@
-import {
-  camelCase,
-  compact,
-  join,
-  map,
-  sortBy,
-  uniq,
-  upperCase,
-  upperFirst,
-  values,
-} from 'lodash-es';
+import { camelCase, compact, uniq, upperCase, upperFirst } from 'es-toolkit';
 import type { ParsedRoute } from 'swagger-typescript-api';
 import { callFunction } from 'yummies/common';
 import type { AnyObject, Maybe } from 'yummies/types';
@@ -60,7 +50,7 @@ export interface NewEndpointTmplParams extends BaseTmplParams {
   relativePathZodSchemas?: string | null;
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: <explanation>
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: template builder with many conditional branches
 export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   const {
     route,
@@ -98,8 +88,13 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     routeRequest;
   const { raw } = route;
   const queryName = query?.name || 'query';
-  const pathParams = values(parameters);
-  const pathParamsNames = map(pathParams, 'name');
+  const pathParams = Object.values(parameters ?? {}) as Array<{
+    name: string;
+    optional?: boolean;
+    type: string;
+    defaultValue?: string;
+  }>;
+  const pathParamsNames = pathParams.map((pathParam) => pathParam.name);
 
   type RequestParam = {
     name: string;
@@ -226,24 +221,26 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     withPayload?: boolean;
     withRequestConfigParam?: boolean;
   }): RequestParam[] => {
-    return sortBy(
-      compact([
-        ...(requestParams
-          ? [
-              {
-                name:
-                  pathParams.length > 0
-                    ? `{ ${join(pathParamsNames, ', ')}, ...${queryName} }`
-                    : queryName,
-                optional: false,
-                type: utils.getInlineParseContent(requestParams),
-              },
-            ]
-          : pathParams),
-        withPayload && payload,
-        withRequestConfigParam && requestConfigParam,
-      ]),
-      [(o: AnyObject) => o.optional],
+    const args = compact([
+      ...(requestParams
+        ? [
+            {
+              name:
+                pathParams.length > 0
+                  ? `{ ${pathParamsNames.join(', ')}, ...${queryName} }`
+                  : queryName,
+              optional: false,
+              type: utils.getInlineParseContent(requestParams),
+            },
+          ]
+        : pathParams),
+      withPayload && payload,
+      withRequestConfigParam && requestConfigParam,
+    ]) as RequestParam[];
+
+    return [...args].sort(
+      (left, right) =>
+        Number(Boolean(left.optional)) - Number(Boolean(right.optional)),
     );
   };
 

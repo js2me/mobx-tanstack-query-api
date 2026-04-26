@@ -238,7 +238,7 @@ export class HttpClient<TMeta = unknown> {
 
   public getBaseUrl(
     params: Pick<FullRequestParams, 'baseUrl' | 'serverVars'>,
-    endpoint?: Maybe<AnyEndpoint>,
+    _endpoint?: Maybe<AnyEndpoint>,
   ) {
     const baseUrl = params.baseUrl ?? this.baseUrl ?? '';
 

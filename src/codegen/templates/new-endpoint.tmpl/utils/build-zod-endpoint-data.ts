@@ -1,4 +1,4 @@
-import { camelCase } from 'lodash-es';
+import { camelCase } from 'es-toolkit';
 import { buildEndpointZodContractsCode } from '../../../utils/zod/build-endpoint-zod-contracts-code.js';
 import {
   getEndpointZodContractSuffix,
