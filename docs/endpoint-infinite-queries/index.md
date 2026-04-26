@@ -89,6 +89,7 @@ console.log(query.response?.data);
 ### mergePageParam
 
 Controls how `pageParam` is merged into endpoint params before request.
+When you use string shortcuts (`'params' | 'body' | 'query' | 'headers'`), `pageParam` must be an object.
 
 Supported shortcuts:
 
@@ -283,6 +284,12 @@ Full error:
 [mobx-tanstack-query-api] "<mergePageParam>" mergePageParam expects
 an object pageParam. Use a custom mergePageParam
 function for primitive page params.
+```
+
+Minified error:
+
+```txt
+[mobx-tanstack-query-api] minified error #1
 ```
 
 This happens when `mergePageParam` is one of string shortcuts (`'params' | 'body' | 'query' | 'headers'`), but current `pageParam` is not an object.
