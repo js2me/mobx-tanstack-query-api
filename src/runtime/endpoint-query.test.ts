@@ -722,6 +722,34 @@ describe('EndpointQuery update branches', () => {
   });
 });
 
+describe('EndpointQuery params function calls on creation', () => {
+  it('calls params function exactly twice during query creation', () => {
+    const endpoint = createEndpointForQueryTests();
+    const paramsFn = vi.fn(() => ({ id: 1 }));
+
+    const query = endpoint.toQuery({
+      enableOnDemand: true,
+      params: paramsFn,
+    });
+
+    expect(paramsFn).toHaveBeenCalledTimes(2);
+    query.destroy();
+  });
+
+  it('calls params function two times during function-based query creation', () => {
+    const endpoint = createEndpointForQueryTests();
+    const paramsFn = vi.fn(() => ({ id: 1 }));
+
+    const query = endpoint.toQuery(() => ({
+      enableOnDemand: true,
+      params: paramsFn(),
+    }));
+
+    expect(paramsFn).toHaveBeenCalledTimes(2);
+    query.destroy();
+  });
+});
+
 describe('derived class constructor order regression', () => {
   it('binds queryRef from options callback before first queryFn write', async () => {
     const queryClient = new EndpointQueryClient({
