@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.52.2
+
+### Patch Changes
+
+- [`87adbaa`](https://github.com/js2me/mobx-tanstack-query-api/commit/87adbaa53606d40e7c9e1019f2a1299e8aca52f1) Thanks [@js2me](https://github.com/js2me)! - update swagger-typescript-api to 13.7.0
+
+- [`451a36f`](https://github.com/js2me/mobx-tanstack-query-api/commit/451a36f2bf5751059ebafc6ea0b3b5b53e437bbc) Thanks [@js2me](https://github.com/js2me)! - removed lodash fully
+
 ## 0.52.1
 
 ### Patch Changes
