@@ -112,7 +112,11 @@ export class EndpointQuery<
         let resolvedUniqKey: Maybe<EndpointQueryUniqKey>;
 
         if (isQueryOptionsInputFn) {
-          const result = queryOptionsInput();
+          // Reuse the already evaluated constructor options on the first pass.
+          // This prevents an extra queryOptionsInput()/params invocation at creation time.
+          const result = self._result
+            ? queryOptionsInput()
+            : unpackedQueryOptionsInput;
           const {
             params,
             abortSignal,
