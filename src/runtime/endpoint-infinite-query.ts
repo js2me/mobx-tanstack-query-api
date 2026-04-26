@@ -9,7 +9,6 @@ import {
   computed,
   makeObservable,
   observable,
-  reaction,
   runInAction,
 } from 'mobx';
 import {
@@ -18,8 +17,8 @@ import {
 } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
 import { hasEnumerableKeys } from 'yummies/data';
-import { getMobxAdministration, lazyObserve } from 'yummies/mobx';
-import type { AnyObject, Maybe, MaybeFalsy, MaybeFn } from 'yummies/types';
+import { typeGuard } from 'yummies/type-guard';
+import type { AnyObject, Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type {
   EndpointInfiniteQueryFlattenOptions,
@@ -30,7 +29,7 @@ import type { EndpointQueryUniqKey } from './endpoint-query.types.js';
 import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { RequestParams } from './http-client.js';
 
-interface InternalObservableData<
+interface InternalSyncData<
   TEndpoint extends AnyEndpoint,
   TQueryFnData,
   TPageParam,
@@ -56,17 +55,14 @@ export class EndpointInfiniteQuery<
   TPageParam = unknown,
   TData = InfiniteData<TQueryFnData, TPageParam>,
 > extends InfiniteQuery<TQueryFnData, TError, TPageParam, TData, any[]> {
-  private _observableData: InternalObservableData<
-    TEndpoint,
-    TQueryFnData,
-    TPageParam
-  >;
+  private _sync!: InternalSyncData<TEndpoint, TQueryFnData, TPageParam>;
+  private _endpoint!: AnyEndpoint;
 
   /**
    * Creates `EndpointInfiniteQuery` instance.
    */
   constructor(
-    private endpoint: AnyEndpoint,
+    endpoint: AnyEndpoint,
     inputQueryClient: EndpointQueryClient,
     queryOptionsInput:
       | EndpointInfiniteQueryOptions<
@@ -101,90 +97,117 @@ export class EndpointInfiniteQuery<
 
     const queryClient = overridedQueryClient ?? inputQueryClient;
 
-    const _observableData: InternalObservableData<
-      TEndpoint,
-      TQueryFnData,
-      TPageParam
-    > = {
+    const sync: InternalSyncData<TEndpoint, TQueryFnData, TPageParam> = {
       params: null,
-      dynamicOptions: undefined,
       response: null,
       uniqKey: unpackedQueryOptionsInput.uniqKey,
       transform: transformResponse,
       mergePageParam,
-      initialized: false,
     };
 
-    if (isQueryOptionsInputFn) {
-      const {
-        params: initialParams,
-        abortSignal,
-        select,
-        onDone,
-        onError,
-        onInit,
-        enableOnDemand,
-        uniqKey: initialUniqKey,
-        transform: initialTransform,
-        mergePageParam: initialMergePageParam,
-        queryClient: _initialQueryClient,
-        ...initialDynamicOptions
-      } = unpackedQueryOptionsInput;
-      _observableData.params =
-        'params' in unpackedQueryOptionsInput
-          ? callFunction(initialParams)
-          : {};
-      _observableData.dynamicOptions = hasEnumerableKeys(initialDynamicOptions)
-        ? initialDynamicOptions
-        : undefined;
-      _observableData.uniqKey = initialUniqKey;
-      _observableData.transform = initialTransform;
-      _observableData.mergePageParam = initialMergePageParam;
-      _observableData.initialized = true;
-    } else if (typeof params !== 'function') {
-      if ('params' in unpackedQueryOptionsInput) {
-        _observableData.params = params;
-      } else {
-        _observableData.params = {};
-      }
-      _observableData.initialized = true;
-    } else if (
-      !isQueryOptionsInputFn &&
-      'params' in unpackedQueryOptionsInput
-    ) {
-      _observableData.params = callFunction(params);
-      _observableData.initialized = true;
-    }
-
-    makeObservable(_observableData, {
+    makeObservable(sync, {
       params: observable.ref,
       response: observable.ref,
       uniqKey: observable.ref,
-      initialized: observable.ref,
-      dynamicOptions: observable.ref,
       transform: observable.ref,
       mergePageParam: observable.ref,
     });
 
-    const onDone =
-      onDoneInput &&
-      ((...args: Parameters<NonNullable<typeof onDoneInput>>) => {
-        onDoneInput(...args);
-      });
+    const onDone = onDoneInput as any;
+
+    let queryRef!: EndpointInfiniteQuery<
+      TEndpoint,
+      TQueryFnData,
+      TError,
+      TPageParam,
+      TData
+    >;
 
     super({
       ...queryOptions,
       onDone,
       queryClient,
       meta: endpoint.toQueryMeta(queryOptions.meta),
-      options: (): any => {
+      options: (q): any => {
+        queryRef = q as EndpointInfiniteQuery<
+          TEndpoint,
+          TQueryFnData,
+          TError,
+          TPageParam,
+          TData
+        >;
+        let resolvedParams: MaybeFalsy<TEndpoint['__params']>;
+        let resolvedUniqKey: Maybe<EndpointQueryUniqKey>;
+        let resolvedTransform: InternalSyncData<
+          TEndpoint,
+          TQueryFnData,
+          TPageParam
+        >['transform'];
+        let resolvedMergePageParam: InternalSyncData<
+          TEndpoint,
+          TQueryFnData,
+          TPageParam
+        >['mergePageParam'];
+        let dynamicOptions: any;
+
+        if (isQueryOptionsInputFn) {
+          const result = queryOptionsInput();
+          const {
+            params: p,
+            abortSignal,
+            select,
+            onDone,
+            onError,
+            onInit,
+            enableOnDemand,
+            uniqKey: uk,
+            transform,
+            mergePageParam,
+            queryClient,
+            ...rest
+          } = result;
+          resolvedUniqKey = uk;
+          resolvedTransform = transform;
+          resolvedMergePageParam = mergePageParam;
+          resolvedParams = 'params' in result ? callFunction(p) : {};
+          dynamicOptions = hasEnumerableKeys(rest) ? rest : undefined;
+        } else if ('params' in unpackedQueryOptionsInput) {
+          const p = unpackedQueryOptionsInput.params;
+          resolvedParams = typeof p === 'function' ? callFunction(p) : p;
+          resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
+          resolvedTransform = unpackedQueryOptionsInput.transform;
+          resolvedMergePageParam = unpackedQueryOptionsInput.mergePageParam;
+        } else {
+          resolvedParams = {};
+          resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
+          resolvedTransform = unpackedQueryOptionsInput.transform;
+          resolvedMergePageParam = unpackedQueryOptionsInput.mergePageParam;
+        }
+
+        runInAction(() => {
+          if (!comparer.structural(sync.params, resolvedParams)) {
+            sync.params = resolvedParams;
+          }
+          if (!comparer.structural(sync.uniqKey, resolvedUniqKey)) {
+            sync.uniqKey = resolvedUniqKey;
+          }
+          if (!comparer.structural(sync.transform, resolvedTransform)) {
+            sync.transform = resolvedTransform;
+          }
+          if (
+            !comparer.structural(sync.mergePageParam, resolvedMergePageParam)
+          ) {
+            sync.mergePageParam = resolvedMergePageParam;
+          }
+        });
+
         const builtOptions = buildInfiniteOptionsFromParams(
           endpoint,
-          _observableData.params,
-          _observableData.uniqKey,
+          resolvedParams,
+          resolvedUniqKey,
         );
 
-        let isEnabled = !!_observableData.initialized && builtOptions.enabled;
+        let isEnabled = builtOptions.enabled;
 
         if (
           typeof queryOptionsInput !== 'function' &&
@@ -196,16 +219,16 @@ export class EndpointInfiniteQuery<
         return {
           ...builtOptions,
           enabled: isEnabled,
-          ..._observableData.dynamicOptions,
+          ...dynamicOptions,
         };
       },
       queryFn: async (ctx): Promise<any> => {
         const params = endpoint.getParamsFromContext(ctx);
 
         runInAction(() => {
-          _observableData.response = null;
-          if (!comparer.structural(params, _observableData.params)) {
-            _observableData.params = params;
+          sync.response = null;
+          if (!comparer.structural(params, sync.params)) {
+            sync.params = params;
           }
         });
 
@@ -213,7 +236,7 @@ export class EndpointInfiniteQuery<
           params,
           (ctx.pageParam as TPageParam) ?? queryOptions.initialPageParam,
           ctx,
-          _observableData.mergePageParam,
+          sync.mergePageParam,
         );
 
         let requestParams = mergedParams.requestParams as Maybe<RequestParams>;
@@ -234,157 +257,33 @@ export class EndpointInfiniteQuery<
         const response = await endpoint.request(fixedInput);
 
         runInAction(() => {
-          _observableData.response = response as TEndpoint['__response'];
+          sync.response = response as TEndpoint['__response'];
         });
 
-        return (await _observableData.transform?.(response)) ?? response.data;
+        return (await sync.transform?.(response)) ?? response.data;
       },
     });
-
-    const parentAtom = getMobxAdministration(this);
+    queryRef = this;
 
     computed.struct(this, 'params');
     computed.struct(this, 'response');
     makeObservable(this);
-
-    if (isQueryOptionsInputFn || typeof params === 'function') {
-      const createParamsReaction = () =>
-        reaction(
-          (): Partial<
-            InternalObservableData<TEndpoint, TQueryFnData, TPageParam>
-          > => {
-            let outDynamicOptions: InternalObservableData<
-              TEndpoint,
-              TQueryFnData,
-              TPageParam
-            >['dynamicOptions'];
-            let outParams: MaybeFn<MaybeFalsy<TEndpoint['__params']>>;
-            let outTransform: InternalObservableData<
-              TEndpoint,
-              TQueryFnData,
-              TPageParam
-            >['transform'];
-            let outMergePageParam: InternalObservableData<
-              TEndpoint,
-              TQueryFnData,
-              TPageParam
-            >['mergePageParam'];
-            let uniqKey: Maybe<EndpointQueryUniqKey>;
-
-            if (isQueryOptionsInputFn) {
-              const result = queryOptionsInput();
-              const {
-                params,
-                abortSignal,
-                select,
-                onDone,
-                onError,
-                onInit,
-                enableOnDemand,
-                uniqKey: _uniqKey,
-                transform,
-                mergePageParam,
-                queryClient,
-                ...dynamicOptions
-              } = result;
-
-              uniqKey = _uniqKey;
-              outTransform = transform;
-              outMergePageParam = mergePageParam;
-
-              if ('params' in result) {
-                outParams = result.params;
-              } else {
-                outParams = {};
-              }
-
-              outDynamicOptions = hasEnumerableKeys(dynamicOptions)
-                ? dynamicOptions
-                : undefined;
-            } else if ('params' in unpackedQueryOptionsInput) {
-              outParams = unpackedQueryOptionsInput.params;
-              uniqKey = unpackedQueryOptionsInput.uniqKey;
-              outTransform = unpackedQueryOptionsInput.transform;
-              outMergePageParam = unpackedQueryOptionsInput.mergePageParam;
-            } else {
-              outParams = {};
-              uniqKey = unpackedQueryOptionsInput.uniqKey;
-              outTransform = unpackedQueryOptionsInput.transform;
-              outMergePageParam = unpackedQueryOptionsInput.mergePageParam;
-            }
-
-            return {
-              params: callFunction(outParams),
-              dynamicOptions: outDynamicOptions,
-              uniqKey,
-              transform: outTransform,
-              mergePageParam: outMergePageParam,
-            };
-          },
-          ({ params, dynamicOptions, uniqKey, transform, mergePageParam }) => {
-            runInAction(() => {
-              _observableData.initialized = true;
-              if (!comparer.structural(_observableData.params, params)) {
-                _observableData.params = params;
-              }
-              if (
-                !comparer.structural(
-                  _observableData.dynamicOptions,
-                  dynamicOptions,
-                )
-              ) {
-                _observableData.dynamicOptions = dynamicOptions;
-              }
-              if (!comparer.structural(_observableData.uniqKey, uniqKey)) {
-                _observableData.uniqKey = uniqKey;
-              }
-              if (!comparer.structural(_observableData.transform, transform)) {
-                _observableData.transform = transform;
-              }
-              if (
-                !comparer.structural(
-                  _observableData.mergePageParam,
-                  mergePageParam,
-                )
-              ) {
-                _observableData.mergePageParam = mergePageParam;
-              }
-            });
-          },
-          {
-            fireImmediately: true,
-          },
-        );
-
-      if (this.features.lazy) {
-        lazyObserve({
-          property: parentAtom.values_.get('_result'),
-          onStart: createParamsReaction,
-          onEnd: (disposeFn) => disposeFn(),
-        });
-      } else {
-        this.abortController.signal.addEventListener(
-          'abort',
-          createParamsReaction(),
-        );
-      }
-    }
-
-    this._observableData = _observableData;
+    this._sync = sync;
+    this._endpoint = endpoint;
   }
 
   /**
    * Current base endpoint params used for `queryKey`.
    */
   get params() {
-    return this._observableData.params;
+    return this._sync.params;
   }
 
   /**
    * Last raw HTTP response returned by endpoint.
    */
   get response() {
-    return this._observableData.response;
+    return this._sync.response;
   }
 
   /**
@@ -404,37 +303,33 @@ export class EndpointInfiniteQuery<
       params?: MaybeFalsy<TEndpoint['__params']>;
     },
   ) {
-    if ('params' in updateParams) {
-      const { params, ...options } = updateParams;
-      if (this._observableData) {
-        runInAction(() => {
-          this._observableData.params = params;
-        });
-        return super.update({
-          ...buildInfiniteOptionsFromParams(
-            this.endpoint,
-            params,
-            this._observableData.uniqKey,
-          ),
-          ...options,
-        } as any);
-      }
-
-      return super.update(options as any);
+    if (this._endpoint === undefined) {
+      return super.update(updateParams as any);
     }
 
-    if (this._observableData) {
+    if ('params' in updateParams) {
+      const { params, ...options } = updateParams;
+      runInAction(() => {
+        this._sync.params = params;
+      });
       return super.update({
         ...buildInfiniteOptionsFromParams(
-          this.endpoint,
-          this._observableData.params,
-          this._observableData.uniqKey,
+          this._endpoint,
+          params,
+          this._sync.uniqKey,
         ),
-        ...updateParams,
+        ...options,
       } as any);
     }
 
-    return super.update(updateParams as any);
+    return super.update({
+      ...buildInfiniteOptionsFromParams(
+        this._endpoint,
+        this._sync.params,
+        this._sync.uniqKey,
+      ),
+      ...updateParams,
+    } as any);
   }
 
   /**
@@ -444,13 +339,13 @@ export class EndpointInfiniteQuery<
     params: MaybeFalsy<TEndpoint['__params']>,
   ): Promise<InfiniteQueryObserverResult<TData, TError>> {
     runInAction(() => {
-      this._observableData.params = params;
+      this._sync.params = params;
     });
     return await super.start(
       buildInfiniteOptionsFromParams(
-        this.endpoint,
+        this._endpoint,
         params,
-        this._observableData.uniqKey,
+        this._sync.uniqKey,
       ),
     );
   }
@@ -458,10 +353,11 @@ export class EndpointInfiniteQuery<
   protected handleDestroy(): void {
     super.handleDestroy();
     runInAction(() => {
-      this._observableData.params = undefined;
-      this._observableData.dynamicOptions = undefined;
-      this._observableData.transform = undefined;
-      this._observableData.mergePageParam = undefined;
+      this._sync.params = undefined;
+      this._sync.response = null;
+      this._sync.uniqKey = undefined;
+      this._sync.transform = undefined;
+      this._sync.mergePageParam = undefined;
     });
   }
 }
@@ -470,17 +366,16 @@ function ensureObjectPageParam(
   pageParam: unknown,
   mergePageParam: 'params' | 'body' | 'query' | 'headers',
 ): AnyObject {
-  if (
-    typeof pageParam === 'object' &&
-    pageParam !== null &&
-    !Array.isArray(pageParam)
-  ) {
+  if (typeGuard.isObject(pageParam)) {
     return pageParam as AnyObject;
   }
 
-  throw new Error(
-    `[mobx-tanstack-query-api] "${mergePageParam}" mergePageParam expects an object pageParam. Use a custom mergePageParam function for primitive page params.`,
-  );
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      `[mobx-tanstack-query-api] "${mergePageParam}" mergePageParam expects an object pageParam. Use a custom mergePageParam function for primitive page params.`,
+    );
+  }
+  throw new Error('[mobx-tanstack-query-api] minified error #1');
 }
 
 export function mergeInfiniteQueryPageParam<
@@ -512,7 +407,7 @@ export function mergeInfiniteQueryPageParam<
       return {
         ...params,
         body: {
-          ...(params.body as AnyObject),
+          ...params.body,
           ...objectPageParam,
         },
       };
@@ -520,7 +415,7 @@ export function mergeInfiniteQueryPageParam<
       return {
         ...params,
         query: {
-          ...(params.query as AnyObject),
+          ...params.query,
           ...objectPageParam,
         },
       };
@@ -528,7 +423,7 @@ export function mergeInfiniteQueryPageParam<
       return {
         ...params,
         headers: {
-          ...(params.headers as AnyObject),
+          ...params.headers,
           ...objectPageParam,
         },
       };

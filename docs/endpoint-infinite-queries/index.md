@@ -273,6 +273,49 @@ const query = getFruits.toInfiniteQuery(() => ({
 
 If `this.tableParams` is `null`, `undefined`, `false`, `0`, or `''`, the query stays disabled.
 
+## Errors
+
+### `#1 invalid pageParam shape`
+
+Full error:
+
+```txt
+[mobx-tanstack-query-api] "<mergePageParam>" mergePageParam expects
+an object pageParam. Use a custom mergePageParam
+function for primitive page params.
+```
+
+This happens when `mergePageParam` is one of string shortcuts (`'params' | 'body' | 'query' | 'headers'`), but current `pageParam` is not an object.
+
+Wrong:
+
+```ts
+const query = getFruits.toInfiniteQuery({
+  mergePageParam: "query",
+  initialPageParam: 0,
+  getNextPageParam: () => undefined,
+});
+```
+
+Correct options:
+
+- pass object `pageParam` for string merge shortcuts
+- or use custom `mergePageParam` function for primitive `pageParam`
+
+```ts
+const query = getFruits.toInfiniteQuery({
+  initialPageParam: 0,
+  mergePageParam: (params, pageParam) => ({
+    ...params,
+    query: {
+      ...params?.query,
+      offset: pageParam,
+    },
+  }),
+  getNextPageParam: () => undefined,
+});
+```
+
 ## Extras
 
 ### `ToEndpointInfiniteQuery` type
