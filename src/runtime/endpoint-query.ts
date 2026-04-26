@@ -121,6 +121,7 @@ export class EndpointQuery<
             onError,
             onInit,
             enableOnDemand,
+            meta,
             uniqKey: uk,
             ...rest
           } = result;
@@ -239,7 +240,7 @@ export class EndpointQuery<
       params?: MaybeFalsy<TEndpoint['__params']>;
     },
   ) {
-    if (this._endpoint === undefined) {
+    if (!this._endpoint) {
       return super.update(updateParams as any);
     }
 
@@ -285,6 +286,10 @@ export class EndpointQuery<
   async start(
     params: MaybeFalsy<TEndpoint['__params']>,
   ): Promise<QueryObserverResult<TData, TError>> {
+    if (!this._endpoint) {
+      return this.queryObserver.getCurrentResult();
+    }
+
     runInAction(() => {
       this._sync.params = params;
     });

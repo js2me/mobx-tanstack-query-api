@@ -771,7 +771,7 @@ describe('derived class constructor order regression', () => {
     unit.destroy();
   });
 
-  it("Must call super constructor in derived class before accessing 'this' or returning from derived constructor", async () => {
+  it('keeps derived constructor stable when fields use toQuery with structural dynamic options', async () => {
     const queryClient = new EndpointQueryClient({
       defaultOptions: {
         queries: {

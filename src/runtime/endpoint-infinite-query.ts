@@ -160,6 +160,7 @@ export class EndpointInfiniteQuery<
             onError,
             onInit,
             enableOnDemand,
+            meta,
             uniqKey: uk,
             transform,
             mergePageParam,
@@ -303,7 +304,7 @@ export class EndpointInfiniteQuery<
       params?: MaybeFalsy<TEndpoint['__params']>;
     },
   ) {
-    if (this._endpoint === undefined) {
+    if (!this._endpoint) {
       return super.update(updateParams as any);
     }
 
@@ -338,6 +339,10 @@ export class EndpointInfiniteQuery<
   async start(
     params: MaybeFalsy<TEndpoint['__params']>,
   ): Promise<InfiniteQueryObserverResult<TData, TError>> {
+    if (!this._endpoint) {
+      return this.queryObserver.getCurrentResult();
+    }
+
     runInAction(() => {
       this._sync.params = params;
     });
