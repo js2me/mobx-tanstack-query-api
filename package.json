@@ -72,7 +72,7 @@
     "es-toolkit": "^1.39.10",
     "mobx-tanstack-query": "^6.16.0",
     "qs": "^6.15.0",
-    "swagger-typescript-api": "^13.7.1",
+    "swagger-typescript-api": "^13.7.2",
     "ts-morph": "^27.0.2",
     "yummies": "^7.19.3"
   },
