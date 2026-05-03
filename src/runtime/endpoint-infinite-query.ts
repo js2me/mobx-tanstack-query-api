@@ -375,7 +375,7 @@ function ensureObjectPageParam(
     return pageParam as AnyObject;
   }
 
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV !== 'production') {
     throw new Error(
       `[mobx-tanstack-query-api] "${mergePageParam}" mergePageParam expects an object pageParam. Use a custom mergePageParam function for primitive page params.`,
     );
