@@ -27,7 +27,7 @@ export class EndpointMutation<
   /**
    * Creates `EndpointMutation` instance.
    *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-mutations/#constructor)
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-mutations/)
    */
   constructor(
     endpoint: AnyEndpoint,
