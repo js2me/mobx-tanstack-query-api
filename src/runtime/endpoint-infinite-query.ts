@@ -36,9 +36,6 @@ interface InternalSyncData<
 > {
   params: MaybeFalsy<TEndpoint['__params']>;
   uniqKey?: EndpointQueryUniqKey;
-  initialized?: boolean;
-  dynamicOptions?: any;
-  response: TEndpoint['__response'] | null;
   transform?: (
     response: TEndpoint['__response'],
   ) => TQueryFnData | Promise<TQueryFnData>;
@@ -57,6 +54,7 @@ export class EndpointInfiniteQuery<
 > extends InfiniteQuery<TQueryFnData, TError, TPageParam, TData, any[]> {
   private _sync!: InternalSyncData<TEndpoint, TQueryFnData, TPageParam>;
   private _endpoint!: AnyEndpoint;
+  response: TEndpoint['__response'] | null = null;
 
   /**
    * Creates `EndpointInfiniteQuery` instance.
@@ -99,7 +97,6 @@ export class EndpointInfiniteQuery<
 
     const sync: InternalSyncData<TEndpoint, TQueryFnData, TPageParam> = {
       params: null,
-      response: null,
       uniqKey: unpackedQueryOptionsInput.uniqKey,
       transform: transformResponse,
       mergePageParam,
@@ -107,7 +104,6 @@ export class EndpointInfiniteQuery<
 
     makeObservable(sync, {
       params: observable.ref,
-      response: observable.ref,
       uniqKey: observable.ref,
       transform: observable.ref,
       mergePageParam: observable.ref,
@@ -115,7 +111,7 @@ export class EndpointInfiniteQuery<
 
     const onDone = onDoneInput as any;
 
-    let queryRef!: EndpointInfiniteQuery<
+    let self!: EndpointInfiniteQuery<
       TEndpoint,
       TQueryFnData,
       TError,
@@ -128,14 +124,9 @@ export class EndpointInfiniteQuery<
       onDone,
       queryClient,
       meta: endpoint.toQueryMeta(queryOptions.meta),
-      options: (q): any => {
-        queryRef = q as EndpointInfiniteQuery<
-          TEndpoint,
-          TQueryFnData,
-          TError,
-          TPageParam,
-          TData
-        >;
+      options: (query): any => {
+        self = query as any;
+
         let resolvedParams: MaybeFalsy<TEndpoint['__params']>;
         let resolvedUniqKey: Maybe<EndpointQueryUniqKey>;
         let resolvedTransform: InternalSyncData<
@@ -151,7 +142,11 @@ export class EndpointInfiniteQuery<
         let dynamicOptions: any;
 
         if (isQueryOptionsInputFn) {
-          const result = queryOptionsInput();
+          // Reuse the already evaluated constructor options on the first pass.
+          // This prevents an extra queryOptionsInput()/params invocation at creation time.
+          const result = self._result
+            ? queryOptionsInput()
+            : unpackedQueryOptionsInput;
           const {
             params: p,
             abortSignal,
@@ -227,7 +222,7 @@ export class EndpointInfiniteQuery<
         const params = endpoint.getParamsFromContext(ctx);
 
         runInAction(() => {
-          sync.response = null;
+          self.response = null;
           if (!comparer.structural(params, sync.params)) {
             sync.params = params;
           }
@@ -258,19 +253,20 @@ export class EndpointInfiniteQuery<
         const response = await endpoint.request(fixedInput);
 
         runInAction(() => {
-          sync.response = response as TEndpoint['__response'];
+          self.response = response as TEndpoint['__response'];
         });
 
         return (await sync.transform?.(response)) ?? response.data;
       },
     });
-    queryRef = this;
 
-    computed.struct(this, 'params');
-    computed.struct(this, 'response');
-    makeObservable(this);
+    self = this;
     this._sync = sync;
     this._endpoint = endpoint;
+
+    computed.struct(this, 'params');
+    observable.ref(this, 'response');
+    makeObservable(this);
   }
 
   /**
@@ -278,13 +274,6 @@ export class EndpointInfiniteQuery<
    */
   get params() {
     return this._sync.params;
-  }
-
-  /**
-   * Last raw HTTP response returned by endpoint.
-   */
-  get response() {
-    return this._sync.response;
   }
 
   /**
@@ -359,7 +348,7 @@ export class EndpointInfiniteQuery<
     super.handleDestroy();
     runInAction(() => {
       this._sync.params = undefined;
-      this._sync.response = null;
+      this.response = null;
       this._sync.uniqKey = undefined;
       this._sync.transform = undefined;
       this._sync.mergePageParam = undefined;
