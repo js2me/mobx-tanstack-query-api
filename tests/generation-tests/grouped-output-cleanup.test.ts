@@ -19,7 +19,7 @@ describe('grouped output cleanup', () => {
     await fs.mkdir(path.dirname(OUTPUT_DIR), { recursive: true });
   });
 
-  it('removes stale flat endpoints folder when groupBy is enabled', async () => {
+  it('generates missing path param from params', async () => {
     await generateApi(
       defineConfig({
         removeUnusedTypes: true,
@@ -49,5 +49,21 @@ describe('grouped output cleanup', () => {
     await expect(
       fs.stat(path.resolve(OUTPUT_DIR, 'fluffies', 'endpoints', 'merge-fluffy.ts')),
     ).resolves.toBeTruthy();
+
+    const getFooBarEndpointPath = path.resolve(
+      OUTPUT_DIR,
+      'foo',
+      'endpoints',
+      'get-foo-bar.ts',
+    );
+    const getFooBarEndpointCode = await fs.readFile(getFooBarEndpointPath, 'utf8');
+
+    expect(getFooBarEndpointCode).toContain(
+      'params: ({ id, requestParams }) => ({',
+    );
+    expect(getFooBarEndpointCode).toContain('export type GetFooBarParams = {');
+    expect(getFooBarEndpointCode).toContain('  id: number;');
+    expect(getFooBarEndpointCode).toContain('path: `/foma-back/api/v1/foo/bar`,');
+    expect(getFooBarEndpointCode).toContain('requiredParams: ["id"],');
   });
 });
