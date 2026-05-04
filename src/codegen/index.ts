@@ -8,6 +8,7 @@ import {
   type Hooks,
   type ParsedRoute,
 } from 'swagger-typescript-api';
+import { callFunction } from 'yummies/common';
 import { toArray } from 'yummies/data';
 import type { AnyObject, Defined, Maybe } from 'yummies/types';
 import { allEndpointPerFileTmpl } from './templates/all-endpoints-per-file.tmpl.js';
@@ -24,6 +25,7 @@ import type {
   GenerateQueryApiParams,
   GenerateQueryApiParamsWithInput,
   MetaInfo,
+  RouteBaseInfo,
 } from './types/index.js';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-suffix.js';
 import { generateExport } from './utils/generate-export.js';
@@ -298,36 +300,38 @@ const generateApiSingle = async (
     ...inputToCodegenInput(params.input),
     hooks: {
       ...params.otherCodegenParams?.hooks,
-      // onCreateRoute: (routeData) => {
-      //   // routeData.request.path =
-      //   const routeBaseInfo: RouteBaseInfo = {
-      //     operationId: routeData.raw.operationId,
-      //     path: routeData.request.path!,
-      //     method: routeData.request.method!,
-      //     contractName: null,
-      //   };
+      onCreateRoute: (routeData) => {
+        // routeData.request.path =
+        const routeBaseInfo: RouteBaseInfo = {
+          operationId: routeData.raw.operationId,
+          path: routeData.request.path!,
+          method: routeData.request.method!,
+          contractName: null,
+        };
 
-      //   if (routeData.request.path !== undefined) {
-      //     routeData.request.path = (callFunction(
-      //         params.requestPathPrefix,
-      //         routeBaseInfo,
-      //         swaggerSchemaRefForHooks,
-      //       ) || '') +
-      //       routeData.request.path +
-      //       (callFunction(
-      //         params.requestPathSuffix,
-      //         routeBaseInfo,
-      //         swaggerSchemaRefForHooks,
-      //       ) || '');
+        if (routeData.request.path !== undefined) {
+          const prefix =
+            callFunction(
+              params.requestPathPrefix,
+              routeBaseInfo,
+              swaggerSchemaRefForHooks,
+            ) || '';
+          const suffix =
+            callFunction(
+              params.requestPathSuffix,
+              routeBaseInfo,
+              swaggerSchemaRefForHooks,
+            ) || '';
 
-      //   }
+          routeData.request.path = prefix + routeData.request.path + suffix;
+        }
 
-      //   if (params.otherCodegenParams?.hooks?.onCreateRoute) {
-      //     return params.otherCodegenParams.hooks.onCreateRoute(routeData);
-      //   }
+        if (params.otherCodegenParams?.hooks?.onCreateRoute) {
+          return params.otherCodegenParams.hooks.onCreateRoute(routeData);
+        }
 
-      //   return routeData;
-      // },
+        return routeData;
+      },
       onInit: (configuration, codeGenProcessFromInit) => {
         codegenProcess = codeGenProcessFromInit;
 

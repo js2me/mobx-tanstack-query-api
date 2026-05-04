@@ -300,18 +300,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     ),
   );
 
-  const resultPath =
-    (callFunction(
-      codegenParams.requestPathPrefix,
-      routeBaseInfo,
-      swaggerSchema,
-    ) || '') +
-    path +
-    (callFunction(
-      codegenParams.requestPathSuffix,
-      routeBaseInfo,
-      swaggerSchema,
-    ) || '');
+  const resultPath = path as string;
 
   const bodyContentType =
     getRequestBodyContentType(

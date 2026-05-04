@@ -109,5 +109,6 @@ describe('requestPathPrefix and requestPathSuffix', () => {
 
     expect(content).toContain('path: `/gadgets/after-post`');
     expect(content).not.toContain('after-get');
+    expect(content).toContain('* @request **POST:/gadgets**');
   });
 });
