@@ -26,7 +26,7 @@ import type {
 import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { RequestParams } from './http-client.js';
 
-interface EndpointQuerySync<TEndpoint extends AnyEndpoint> {
+export interface EndpointQueryInternalSync<TEndpoint extends AnyEndpoint> {
   params: MaybeFalsy<TEndpoint['__params']>;
   uniqKey?: EndpointQueryUniqKey;
 }
@@ -41,7 +41,7 @@ export class EndpointQuery<
   TData = TQueryFnData,
   TQueryData = TQueryFnData,
 > extends Query<TQueryFnData, TError, TData, TQueryData> {
-  private _sync!: EndpointQuerySync<TEndpoint>;
+  private _sync!: EndpointQueryInternalSync<TEndpoint>;
   private _endpoint!: AnyEndpoint;
   response: TEndpoint['__response'] | null = null;
 
@@ -79,7 +79,7 @@ export class EndpointQuery<
 
     const queryClient = overridedQueryClient ?? inputQueryClient;
 
-    const sync: EndpointQuerySync<TEndpoint> = {
+    const sync: EndpointQueryInternalSync<TEndpoint> = {
       params: null,
       uniqKey: unpackedQueryOptionsInput.uniqKey,
     };
@@ -209,7 +209,11 @@ export class EndpointQuery<
           self.response = response as TEndpoint['__response'];
         });
 
-        return (await transformResponse?.(response)) ?? response.data;
+        if (transformResponse) {
+          return await transformResponse(response);
+        }
+
+        return response.data;
       },
     });
 

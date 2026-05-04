@@ -25,20 +25,15 @@ import type {
   EndpointInfiniteQueryMergePageParam,
   EndpointInfiniteQueryOptions,
 } from './endpoint-infinite-query.types.js';
+import type { EndpointQueryInternalSync } from './endpoint-query.js';
 import type { EndpointQueryUniqKey } from './endpoint-query.types.js';
 import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { RequestParams } from './http-client.js';
 
-interface InternalSyncData<
+export interface InfiniteEndpointQueryInternalSync<
   TEndpoint extends AnyEndpoint,
-  TQueryFnData,
   TPageParam,
-> {
-  params: MaybeFalsy<TEndpoint['__params']>;
-  uniqKey?: EndpointQueryUniqKey;
-  transform?: (
-    response: TEndpoint['__response'],
-  ) => TQueryFnData | Promise<TQueryFnData>;
+> extends EndpointQueryInternalSync<TEndpoint> {
   mergePageParam?: EndpointInfiniteQueryMergePageParam<TEndpoint, TPageParam>;
 }
 
@@ -52,7 +47,7 @@ export class EndpointInfiniteQuery<
   TPageParam = unknown,
   TData = InfiniteData<TQueryFnData, TPageParam>,
 > extends InfiniteQuery<TQueryFnData, TError, TPageParam, TData, any[]> {
-  private _sync!: InternalSyncData<TEndpoint, TQueryFnData, TPageParam>;
+  private _sync!: InfiniteEndpointQueryInternalSync<TEndpoint, TPageParam>;
   private _endpoint!: AnyEndpoint;
   response: TEndpoint['__response'] | null = null;
 
@@ -95,17 +90,15 @@ export class EndpointInfiniteQuery<
 
     const queryClient = overridedQueryClient ?? inputQueryClient;
 
-    const sync: InternalSyncData<TEndpoint, TQueryFnData, TPageParam> = {
+    const sync: InfiniteEndpointQueryInternalSync<TEndpoint, TPageParam> = {
       params: null,
       uniqKey: unpackedQueryOptionsInput.uniqKey,
-      transform: transformResponse,
       mergePageParam,
     };
 
     makeObservable(sync, {
       params: observable.ref,
       uniqKey: observable.ref,
-      transform: observable.ref,
       mergePageParam: observable.ref,
     });
 
@@ -129,14 +122,8 @@ export class EndpointInfiniteQuery<
 
         let resolvedParams: MaybeFalsy<TEndpoint['__params']>;
         let resolvedUniqKey: Maybe<EndpointQueryUniqKey>;
-        let resolvedTransform: InternalSyncData<
+        let resolvedMergePageParam: InfiniteEndpointQueryInternalSync<
           TEndpoint,
-          TQueryFnData,
-          TPageParam
-        >['transform'];
-        let resolvedMergePageParam: InternalSyncData<
-          TEndpoint,
-          TQueryFnData,
           TPageParam
         >['mergePageParam'];
         let dynamicOptions: any;
@@ -163,7 +150,6 @@ export class EndpointInfiniteQuery<
             ...rest
           } = result;
           resolvedUniqKey = uk;
-          resolvedTransform = transform;
           resolvedMergePageParam = mergePageParam;
           resolvedParams = 'params' in result ? callFunction(p) : {};
           dynamicOptions = hasEnumerableKeys(rest) ? rest : undefined;
@@ -171,12 +157,10 @@ export class EndpointInfiniteQuery<
           const p = unpackedQueryOptionsInput.params;
           resolvedParams = typeof p === 'function' ? callFunction(p) : p;
           resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
-          resolvedTransform = unpackedQueryOptionsInput.transform;
           resolvedMergePageParam = unpackedQueryOptionsInput.mergePageParam;
         } else {
           resolvedParams = {};
           resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
-          resolvedTransform = unpackedQueryOptionsInput.transform;
           resolvedMergePageParam = unpackedQueryOptionsInput.mergePageParam;
         }
 
@@ -186,9 +170,6 @@ export class EndpointInfiniteQuery<
           }
           if (!comparer.structural(sync.uniqKey, resolvedUniqKey)) {
             sync.uniqKey = resolvedUniqKey;
-          }
-          if (!comparer.structural(sync.transform, resolvedTransform)) {
-            sync.transform = resolvedTransform;
           }
           if (
             !comparer.structural(sync.mergePageParam, resolvedMergePageParam)
@@ -256,7 +237,10 @@ export class EndpointInfiniteQuery<
           self.response = response as TEndpoint['__response'];
         });
 
-        return (await sync.transform?.(response)) ?? response.data;
+        if (transformResponse) {
+          return await transformResponse(response);
+        }
+        return response.data;
       },
     });
 
@@ -350,7 +334,6 @@ export class EndpointInfiniteQuery<
       this._sync.params = undefined;
       this.response = null;
       this._sync.uniqKey = undefined;
-      this._sync.transform = undefined;
       this._sync.mergePageParam = undefined;
     });
   }
