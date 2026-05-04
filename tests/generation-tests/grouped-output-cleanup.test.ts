@@ -10,7 +10,7 @@ const INPUT_FILE = path.resolve(
 );
 const OUTPUT_DIR = path.resolve(
   __dirname,
-  './__generated__/grouped-output-cleanup',
+  './__generated__/grouped-output-cleanup/shared/api/a/b/__generated__',
 );
 
 describe('grouped output cleanup', () => {
@@ -22,22 +22,21 @@ describe('grouped output cleanup', () => {
   it('removes stale flat endpoints folder when groupBy is enabled', async () => {
     await generateApi(
       defineConfig({
+        removeUnusedTypes: true,
+        chooseServer: () => false,
+  endpoint: 'builtin',
         input: INPUT_FILE,
         output: OUTPUT_DIR,
         noBarrelFiles: true,
-        removeUnusedTypes: true,
         outputType: 'one-endpoint-per-file',
-      }),
-    );
-
-    await generateApi(
-      defineConfig({
-        input: INPUT_FILE,
-        output: OUTPUT_DIR,
-        noBarrelFiles: true,
-        removeUnusedTypes: true,
-        outputType: 'one-endpoint-per-file',
-        groupBy: 'path-segment-2',
+        groupBy: 'path-segment-3',
+        transforms: {
+          tagEnumValue: (tag) => `A_B_${tag}`,
+        },
+        getEndpointMeta: () => ({
+          tmplData: "{ foo: 'bar' }",
+          typeName: 'Record<string, any>',
+        }),
       }),
     );
 

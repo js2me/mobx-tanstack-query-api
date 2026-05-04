@@ -23,7 +23,7 @@ export type GetFluffiesToMergeParams = {
  *
  * @operationId getFluffiesToMerge
  * @tags Acme, Fluffy
- * @request **GET:/api/v1/fluffies/{id}/actions/combine**
+ * @request **GET:/foma-back/api/v1/fluffies/{id}/actions/combine**
  * @produces application/json
  * @responses
  * @**200** GetFluffiesToMergeResultDC Успешное завершение запроса.
@@ -36,14 +36,14 @@ export const getFluffiesToMerge = new Endpoint<
 >(
   {
     params: ({ id, requestParams }) => ({
-      path: \`/api/v1/fluffies/\${id}/actions/combine\`,
+      path: \`/foma-back/api/v1/fluffies/\${id}/actions/combine\`,
       method: "GET",
       format: "json",
       ...requestParams,
     }),
     requiredParams: ["id"],
     operationId: "getFluffiesToMerge",
-    path: ["api", "v1", "fluffies", "{id}", "actions", "combine"],
+    path: ["foma-back", "api", "v1", "fluffies", "{id}", "actions", "combine"],
     tags: [Tag.Acme, Tag.Fluffy],
     meta: {},
   },
@@ -77,7 +77,7 @@ export type MergeFluffyParams = {
  *
  * @operationId mergeFluffy
  * @tags Acme, Fluffy
- * @request **POST:/api/v1/fluffies/{id}/actions/combine**
+ * @request **POST:/foma-back/api/v1/fluffies/{id}/actions/combine**
  * @produces application/json
  * @consumes application/json
  * @responses
@@ -91,7 +91,7 @@ export const mergeFluffy = new Endpoint<
 >(
   {
     params: ({ id, body, requestParams }) => ({
-      path: \`/api/v1/fluffies/\${id}/actions/combine\`,
+      path: \`/foma-back/api/v1/fluffies/\${id}/actions/combine\`,
       method: "POST",
       body: body,
       contentType: "application/json",
@@ -100,7 +100,7 @@ export const mergeFluffy = new Endpoint<
     }),
     requiredParams: ["id", "body"],
     operationId: "mergeFluffy",
-    path: ["api", "v1", "fluffies", "{id}", "actions", "combine"],
+    path: ["foma-back", "api", "v1", "fluffies", "{id}", "actions", "combine"],
     tags: [Tag.Acme, Tag.Fluffy],
     meta: {},
   },

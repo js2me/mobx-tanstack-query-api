@@ -9,7 +9,7 @@
   "produces": ["application/json"],
   "schemes": ["https", "http"],
   "paths": {
-    "/api/v1/fluffies/{id}/actions/combine": {
+    "/foma-back/api/v1/fluffies/{id}/actions/combine": {
       "get": {
         "operationId": "getFluffiesToMerge",
         "summary": "Возвращает данные по параметрам запроса",
@@ -67,7 +67,7 @@
         }
       }
     },
-    "/api/v1/foo/bar": {
+    "/foma-back/api/v1/foo/bar": {
       "get": {
         "operationId": "getFooBar",
         "summary": "Возвращает данные по параметрам запроса",
@@ -125,7 +125,7 @@
         }
       }
     },
-    "/api/v1/memes": {
+    "/foma-back/api/v1/memes": {
       "get": {
         "operationId": "getMeme",
         "summary": "Возвращает данные по параметрам запроса",
@@ -181,6 +181,20 @@
             "schema": { "$ref": "#/definitions/ErrorPayload" }
           }
         }
+      }
+    },
+    "/foma-back/api/v1/user": {
+      "get": {
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "oki"
+          }
+        },
+        "tags": [
+          "foma-back",
+          "users"
+        ]
       }
     }
   },
