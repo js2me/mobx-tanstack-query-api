@@ -157,7 +157,7 @@ export interface GenerateQueryApiParams {
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#removeunusedtypes)
    */
   removeUnusedTypes?:
-    | true
+    | boolean
     | Partial<Omit<RemoveUnusedTypesParams, 'directory'>>;
 
   /**
