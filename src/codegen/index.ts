@@ -297,6 +297,37 @@ const generateApiSingle = async (
     ...(swaggerTypescriptApiCodegenBaseParams as any),
     ...inputToCodegenInput(params.input),
     hooks: {
+      ...params.otherCodegenParams?.hooks,
+      // onCreateRoute: (routeData) => {
+      //   // routeData.request.path =
+      //   const routeBaseInfo: RouteBaseInfo = {
+      //     operationId: routeData.raw.operationId,
+      //     path: routeData.request.path!,
+      //     method: routeData.request.method!,
+      //     contractName: null,
+      //   };
+
+      //   if (routeData.request.path !== undefined) {
+      //     routeData.request.path = (callFunction(
+      //         params.requestPathPrefix,
+      //         routeBaseInfo,
+      //         swaggerSchemaRefForHooks,
+      //       ) || '') +
+      //       routeData.request.path +
+      //       (callFunction(
+      //         params.requestPathSuffix,
+      //         routeBaseInfo,
+      //         swaggerSchemaRefForHooks,
+      //       ) || '');
+
+      //   }
+
+      //   if (params.otherCodegenParams?.hooks?.onCreateRoute) {
+      //     return params.otherCodegenParams.hooks.onCreateRoute(routeData);
+      //   }
+
+      //   return routeData;
+      // },
       onInit: (configuration, codeGenProcessFromInit) => {
         codegenProcess = codeGenProcessFromInit;
 
