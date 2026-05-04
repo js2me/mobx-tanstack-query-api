@@ -15,8 +15,6 @@ import {
   InfiniteQuery,
   type InfiniteQueryUpdateOptionsAllVariants,
 } from 'mobx-tanstack-query';
-import { callFunction } from 'yummies/common';
-import { hasEnumerableKeys } from 'yummies/data';
 import { typeGuard } from 'yummies/type-guard';
 import type { AnyObject, Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
@@ -25,17 +23,12 @@ import type {
   EndpointInfiniteQueryMergePageParam,
   EndpointInfiniteQueryOptions,
 } from './endpoint-infinite-query.types.js';
-import type { EndpointQueryInternalSync } from './endpoint-query.js';
-import type { EndpointQueryUniqKey } from './endpoint-query.types.js';
 import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { RequestParams } from './http-client.js';
-
-export interface InfiniteEndpointQueryInternalSync<
-  TEndpoint extends AnyEndpoint,
-  TPageParam,
-> extends EndpointQueryInternalSync<TEndpoint> {
-  mergePageParam?: EndpointInfiniteQueryMergePageParam<TEndpoint, TPageParam>;
-}
+import {
+  createInternalQueryState,
+  type InternalQueryState,
+} from './utils/internal-query-state.js';
 
 /**
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/)
@@ -47,8 +40,7 @@ export class EndpointInfiniteQuery<
   TPageParam = unknown,
   TData = InfiniteData<TQueryFnData, TPageParam>,
 > extends InfiniteQuery<TQueryFnData, TError, TPageParam, TData, any[]> {
-  private _sync!: InfiniteEndpointQueryInternalSync<TEndpoint, TPageParam>;
-  private _endpoint!: AnyEndpoint;
+  private _internal!: InternalQueryState;
   response: TEndpoint['__response'] | null = null;
 
   /**
@@ -56,7 +48,7 @@ export class EndpointInfiniteQuery<
    */
   constructor(
     endpoint: AnyEndpoint,
-    inputQueryClient: EndpointQueryClient,
+    endpointQueryClient: EndpointQueryClient,
     queryOptionsInput:
       | EndpointInfiniteQueryOptions<
           TEndpoint,
@@ -73,147 +65,31 @@ export class EndpointInfiniteQuery<
           TData
         >),
   ) {
-    const isQueryOptionsInputFn = typeof queryOptionsInput === 'function';
-    const unpackedQueryOptionsInput = isQueryOptionsInputFn
-      ? queryOptionsInput()
-      : queryOptionsInput;
-
-    const {
-      uniqKey,
-      transform: transformResponse,
-      params,
-      onDone: onDoneInput,
-      queryClient: overridedQueryClient,
-      mergePageParam,
-      ...queryOptions
-    } = unpackedQueryOptionsInput;
-
-    const queryClient = overridedQueryClient ?? inputQueryClient;
-
-    const sync: InfiniteEndpointQueryInternalSync<TEndpoint, TPageParam> = {
-      params: null,
-      uniqKey: unpackedQueryOptionsInput.uniqKey,
-      mergePageParam,
-    };
-
-    makeObservable(sync, {
-      params: observable.ref,
-      uniqKey: observable.ref,
-      mergePageParam: observable.ref,
+    const internal = createInternalQueryState(endpoint, {
+      isFinite: false,
+      endpointQueryClient,
+      // @ts-expect-error
+      queryOptionsInput,
     });
 
-    const onDone = onDoneInput as any;
-
-    let self!: EndpointInfiniteQuery<
-      TEndpoint,
-      TQueryFnData,
-      TError,
-      TPageParam,
-      TData
-    >;
-
     super({
-      ...queryOptions,
-      onDone,
-      queryClient,
-      meta: endpoint.toQueryMeta(queryOptions.meta),
-      options: (query): any => {
-        self = query as any;
-
-        let resolvedParams: MaybeFalsy<TEndpoint['__params']>;
-        let resolvedUniqKey: Maybe<EndpointQueryUniqKey>;
-        let resolvedMergePageParam: InfiniteEndpointQueryInternalSync<
-          TEndpoint,
-          TPageParam
-        >['mergePageParam'];
-        let dynamicOptions: any;
-
-        if (isQueryOptionsInputFn) {
-          // Reuse the already evaluated constructor options on the first pass.
-          // This prevents an extra queryOptionsInput()/params invocation at creation time.
-          const result = self._result
-            ? queryOptionsInput()
-            : unpackedQueryOptionsInput;
-          const {
-            params: p,
-            abortSignal,
-            select,
-            onDone,
-            onError,
-            onInit,
-            enableOnDemand,
-            meta,
-            uniqKey: uk,
-            transform,
-            mergePageParam,
-            queryClient,
-            ...rest
-          } = result;
-          resolvedUniqKey = uk;
-          resolvedMergePageParam = mergePageParam;
-          resolvedParams = 'params' in result ? callFunction(p) : {};
-          dynamicOptions = hasEnumerableKeys(rest) ? rest : undefined;
-        } else if ('params' in unpackedQueryOptionsInput) {
-          const p = unpackedQueryOptionsInput.params;
-          resolvedParams = typeof p === 'function' ? callFunction(p) : p;
-          resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
-          resolvedMergePageParam = unpackedQueryOptionsInput.mergePageParam;
-        } else {
-          resolvedParams = {};
-          resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
-          resolvedMergePageParam = unpackedQueryOptionsInput.mergePageParam;
-        }
-
-        runInAction(() => {
-          if (!comparer.structural(sync.params, resolvedParams)) {
-            sync.params = resolvedParams;
-          }
-          if (!comparer.structural(sync.uniqKey, resolvedUniqKey)) {
-            sync.uniqKey = resolvedUniqKey;
-          }
-          if (
-            !comparer.structural(sync.mergePageParam, resolvedMergePageParam)
-          ) {
-            sync.mergePageParam = resolvedMergePageParam;
-          }
-        });
-
-        const builtOptions = buildInfiniteOptionsFromParams(
-          endpoint,
-          resolvedParams,
-          resolvedUniqKey,
-        );
-
-        let isEnabled = builtOptions.enabled;
-
-        if (
-          typeof queryOptionsInput !== 'function' &&
-          queryOptionsInput.enabled === false
-        ) {
-          isEnabled = false;
-        }
-
-        return {
-          ...builtOptions,
-          enabled: isEnabled,
-          ...dynamicOptions,
-        };
-      },
+      ...internal.initialQueryParams,
       queryFn: async (ctx): Promise<any> => {
         const params = endpoint.getParamsFromContext(ctx);
 
         runInAction(() => {
-          self.response = null;
-          if (!comparer.structural(params, sync.params)) {
-            sync.params = params;
+          internal.query.response = null;
+          if (!comparer.structural(params, internal.params)) {
+            internal.params = params;
           }
         });
 
         const mergedParams = mergeInfiniteQueryPageParam(
           params,
-          (ctx.pageParam as TPageParam) ?? queryOptions.initialPageParam,
+          (ctx.pageParam as TPageParam) ??
+            internal.initialQueryParams.initialPageParam,
           ctx,
-          sync.mergePageParam,
+          internal.mergePageParam,
         );
 
         let requestParams = mergedParams.requestParams as Maybe<RequestParams>;
@@ -234,19 +110,20 @@ export class EndpointInfiniteQuery<
         const response = await endpoint.request(fixedInput);
 
         runInAction(() => {
-          self.response = response as TEndpoint['__response'];
+          internal.query.response = response as TEndpoint['__response'];
         });
 
-        if (transformResponse) {
-          return await transformResponse(response);
+        if (internal.transformResponse) {
+          return await internal.transformResponse(response);
         }
         return response.data;
       },
     });
 
-    self = this;
-    this._sync = sync;
-    this._endpoint = endpoint;
+    // @ts-expect-error
+    internal.query = this;
+
+    this._internal = internal;
 
     computed.struct(this, 'params');
     observable.ref(this, 'response');
@@ -257,7 +134,7 @@ export class EndpointInfiniteQuery<
    * Current base endpoint params used for `queryKey`.
    */
   get params() {
-    return this._sync.params;
+    return this._internal.params;
   }
 
   /**
@@ -277,33 +154,22 @@ export class EndpointInfiniteQuery<
       params?: MaybeFalsy<TEndpoint['__params']>;
     },
   ) {
-    if (!this._endpoint) {
+    if (!this._internal?.endpoint) {
       return super.update(updateParams as any);
     }
 
     if ('params' in updateParams) {
       const { params, ...options } = updateParams;
-      runInAction(() => {
-        this._sync.params = params;
-      });
+      this._internal.setParamsImperative(params);
       return super.update({
-        ...buildInfiniteOptionsFromParams(
-          this._endpoint,
-          params,
-          this._sync.uniqKey,
-        ),
+        ...(this._internal.buildOptions(params) as any),
         ...options,
-      } as any);
+      });
     }
-
     return super.update({
-      ...buildInfiniteOptionsFromParams(
-        this._endpoint,
-        this._sync.params,
-        this._sync.uniqKey,
-      ),
+      ...(this._internal.buildOptions(this._internal.params) as any),
       ...updateParams,
-    } as any);
+    });
   }
 
   /**
@@ -312,29 +178,20 @@ export class EndpointInfiniteQuery<
   async start(
     params: MaybeFalsy<TEndpoint['__params']>,
   ): Promise<InfiniteQueryObserverResult<TData, TError>> {
-    if (!this._endpoint) {
+    if (!this._internal?.endpoint) {
       return this.queryObserver.getCurrentResult();
     }
 
-    runInAction(() => {
-      this._sync.params = params;
-    });
-    return await super.start(
-      buildInfiniteOptionsFromParams(
-        this._endpoint,
-        params,
-        this._sync.uniqKey,
-      ),
-    );
+    this._internal.setParamsImperative(params);
+
+    return await super.start(this._internal.buildOptions(params) as any);
   }
 
   protected handleDestroy(): void {
     super.handleDestroy();
+    this._internal.reset();
     runInAction(() => {
-      this._sync.params = undefined;
       this.response = null;
-      this._sync.uniqKey = undefined;
-      this._sync.mergePageParam = undefined;
     });
   }
 }
@@ -406,24 +263,3 @@ export function mergeInfiniteQueryPageParam<
       };
   }
 }
-
-export const buildInfiniteOptionsFromParams = (
-  endpoint: AnyEndpoint,
-  params: MaybeFalsy<AnyObject>,
-  uniqKey: Maybe<EndpointQueryUniqKey>,
-): { enabled: boolean; queryKey: any[] } => {
-  const { requiredParams } = endpoint.configuration;
-  let hasRequiredParams = false;
-
-  if (requiredParams.length > 0) {
-    hasRequiredParams =
-      !!params && requiredParams.every((param) => param in params);
-  } else {
-    hasRequiredParams = !!params;
-  }
-
-  return {
-    enabled: hasRequiredParams,
-    queryKey: endpoint.toInfiniteQueryKey(params || {}, uniqKey),
-  };
-};

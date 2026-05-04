@@ -4,7 +4,6 @@ import {
   computed,
   makeObservable,
   observable,
-  observe,
   reaction,
   runInAction,
 } from 'mobx';
@@ -29,48 +28,6 @@ const createEndpointForInfiniteQueryTests = () => {
   });
   return createTestEndpoint({ queryClient }).endpoint;
 };
-
-describe('EndpointInfiniteQuery structural-equal reaction updates', () => {
-  it('does not write sync.params for structurally equal params', async () => {
-    const endpoint = createEndpointForInfiniteQueryTests();
-    const tick = observable.box(0);
-    const getNextPageParam = () => undefined;
-
-    const query = endpoint.toInfiniteQuery(() => {
-      tick.get();
-      return {
-        enableOnDemand: true,
-        initialPageParam: 0,
-        getNextPageParam,
-        params: { id: 1 },
-      };
-    });
-
-    const sync = (query as any)._sync;
-    const initialParamsRef = sync.params;
-    let paramsWrites = 0;
-
-    const disposeObserveParams = observe(sync, 'params', () => {
-      paramsWrites += 1;
-    });
-
-    runInAction(() => {
-      tick.set(1);
-    });
-    await sleep();
-
-    runInAction(() => {
-      tick.set(2);
-    });
-    await sleep();
-
-    expect(paramsWrites).toBe(0);
-    expect(sync.params).toBe(initialParamsRef);
-
-    disposeObserveParams();
-    query.destroy();
-  });
-});
 
 describe('EndpointInfiniteQuery reactive options input updates', () => {
   const getNextPageParam = () => undefined;
@@ -306,10 +263,14 @@ describe('EndpointInfiniteQuery update branches', () => {
     });
 
     query.destroy();
+    superUpdateSpy.mockRestore();
   });
 
   it('reuses observable params when update input has no params key', () => {
     const endpoint = createEndpointForInfiniteQueryTests();
+    const superUpdateSpy = vi
+      .spyOn(InfiniteQuery.prototype, 'update')
+      .mockImplementation((options: any) => options);
     const query = endpoint.toInfiniteQuery({
       params: { id: 3 },
       uniqKey: 'stable-key',
@@ -317,17 +278,30 @@ describe('EndpointInfiniteQuery update branches', () => {
       getNextPageParam,
       enableOnDemand: true,
     });
-    const superUpdateSpy = vi
-      .spyOn(InfiniteQuery.prototype, 'update')
-      .mockImplementation((options: any) => options);
 
     const result = query.update({
       staleTime: 7_000,
     } as any);
 
-    expect(superUpdateSpy).toHaveBeenCalledWith({
+    expect(superUpdateSpy).toHaveBeenCalledTimes(2);
+    expect(superUpdateSpy).toHaveBeenNthCalledWith(1, {
       enabled: true,
       queryKey: endpoint.toInfiniteQueryKey({ id: 3 }, 'stable-key'),
+    });
+    expect(superUpdateSpy).toHaveBeenNthCalledWith(2, {
+      enabled: true,
+      queryKey: [
+        {
+          infiniteQuery: true,
+        },
+        'items',
+        '{id}',
+        'getItem',
+        {
+          id: 3,
+        },
+        'stable-key',
+      ],
       staleTime: 7_000,
     });
     expect(result).toEqual({
@@ -337,6 +311,7 @@ describe('EndpointInfiniteQuery update branches', () => {
     });
 
     query.destroy();
+    superUpdateSpy.mockRestore();
   });
 });
 

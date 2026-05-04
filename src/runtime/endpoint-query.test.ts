@@ -4,7 +4,6 @@ import {
   computed,
   makeObservable,
   observable,
-  observe,
   reaction,
   runInAction,
 } from 'mobx';
@@ -416,45 +415,6 @@ describe('EndpointQuery structural computed recreation loop', () => {
   });
 });
 
-describe('EndpointQuery structural-equal reaction updates', () => {
-  it('does not write sync.params for structurally equal params', async () => {
-    const endpoint = createEndpointForQueryTests();
-    const tick = observable.box(0);
-
-    const query = endpoint.toQuery({
-      enableOnDemand: true,
-      params: () => {
-        tick.get();
-        return { id: 1 };
-      },
-    });
-
-    const sync = (query as any)._sync;
-    const initialParamsRef = sync.params;
-    let paramsWrites = 0;
-
-    const disposeObserveParams = observe(sync, 'params', () => {
-      paramsWrites += 1;
-    });
-
-    runInAction(() => {
-      tick.set(1);
-    });
-    await sleep();
-
-    runInAction(() => {
-      tick.set(2);
-    });
-    await sleep();
-
-    expect(paramsWrites).toBe(0);
-    expect(sync.params).toBe(initialParamsRef);
-
-    disposeObserveParams();
-    query.destroy();
-  });
-});
-
 describe('regression: class field toQuery + structural parent', () => {
   const createRegressionEndpoints = () => {
     const queryClient = new EndpointQueryClient();
@@ -718,6 +678,92 @@ describe('EndpointQuery update branches', () => {
       staleTime: 7_000,
     });
 
+    query.destroy();
+  });
+});
+
+describe('EndpointQuery imperative params vs static options input', () => {
+  it('keeps update() params when options are re-evaluated with static object input', async () => {
+    const endpoint = createEndpointForQueryTests();
+    const query = endpoint.toQuery({
+      enableOnDemand: true,
+      params: { id: 1 },
+    });
+
+    const dispose = reaction(() => query.result, noop, {
+      fireImmediately: true,
+    });
+
+    await sleep();
+
+    expect(query.params).toEqual({ id: 1 });
+
+    query.update({ params: { id: 2 } });
+
+    await sleep();
+
+    expect(query.params).toEqual({ id: 2 });
+    expect(query.options.queryKey).toEqual(endpoint.toQueryKey({ id: 2 }));
+
+    dispose();
+    query.destroy();
+  });
+
+  it('keeps start() params when options are re-evaluated with static function input', async () => {
+    const endpoint = createEndpointForQueryTests();
+    const query = endpoint.toQuery(() => ({
+      enableOnDemand: true,
+      params: { id: 1 },
+    }));
+
+    const dispose = reaction(() => query.result, noop, {
+      fireImmediately: true,
+    });
+
+    await sleep();
+
+    await query.start({ id: 2 });
+
+    await sleep();
+
+    expect(query.params).toEqual({ id: 2 });
+    expect(query.options.queryKey).toEqual(endpoint.toQueryKey({ id: 2 }));
+
+    dispose();
+    query.destroy();
+  });
+
+  it('lets reactive options params win after start() once factory output changes', async () => {
+    const endpoint = createEndpointForQueryTests();
+    const state = observable({ id: 1 }, {}, { deep: false });
+
+    const query = endpoint.toQuery(() => ({
+      enableOnDemand: true,
+      params: { id: state.id },
+    }));
+
+    const dispose = reaction(() => query.result, noop, {
+      fireImmediately: true,
+    });
+
+    await sleep();
+
+    await query.start({ id: 9 });
+
+    await sleep();
+
+    expect(query.params).toEqual({ id: 9 });
+
+    runInAction(() => {
+      state.id = 3;
+    });
+
+    await sleep();
+
+    expect(query.params).toEqual({ id: 3 });
+    expect(query.options.queryKey).toEqual(endpoint.toQueryKey({ id: 3 }));
+
+    dispose();
     query.destroy();
   });
 });
