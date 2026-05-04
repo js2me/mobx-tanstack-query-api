@@ -22,7 +22,6 @@ describe('grouped output cleanup', () => {
   it('generates missing path param from params', async () => {
     await generateApi(
       defineConfig({
-        removeUnusedTypes: true,
         chooseServer: () => false,
   endpoint: 'builtin',
         input: INPUT_FILE,
