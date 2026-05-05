@@ -82,6 +82,8 @@ function cleanOutputDirectoriesOnDiskBeforeCodegen(
 export const generateApi = async (
   paramOrParams: GenerateQueryApiParams | GenerateQueryApiParams[],
 ): Promise<void> => {
+  console.log('');
+
   const params = toArray(paramOrParams).filter(
     (config): config is GenerateQueryApiParamsWithInput => {
       if (!config.input) {
@@ -89,9 +91,10 @@ export const generateApi = async (
           typeof config.output === 'string' && config.output
             ? ` (output: ${config.output})`
             : '';
-        console.warn(
-          `[mobx-tanstack-query-api/codegen] Skipping codegen config${outputHint}: "input" is missing or empty.`,
+        console.log(
+          `⏭️  Skipping codegen config${outputHint}: "input" is missing or empty.`,
         );
+        console.log('');
         return false;
       }
       return true;
@@ -102,6 +105,7 @@ export const generateApi = async (
 
   for await (const param of params) {
     await generateApiSingle(param);
+    console.log('');
   }
 };
 
@@ -109,12 +113,6 @@ const generateApiSingle = async (
   params: GenerateQueryApiParamsWithInput,
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: orchestration with many code paths
 ): Promise<void> => {
-  const tsconfigPath = params.tsconfigPath
-    ? path.resolve(__execdirname, params.tsconfigPath)
-    : path.resolve(__execdirname, './tsconfig.json');
-
-  console.info('using tsconfig', tsconfigPath);
-
   const importFileParams: AllImportFileParams = {
     queryClient:
       !params.queryClient || typeof params.queryClient === 'string'
@@ -368,6 +366,12 @@ const generateApiSingle = async (
     generated.configuration.modelTypes.filter((modelType) =>
       filterTypes(modelType, swaggerSchema),
     );
+
+  console.log(
+    '📦 Generating api...',
+    'input:',
+    typeof params.input === 'string' ? params.input : '<inline OpenAPI spec>',
+  );
 
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
@@ -958,4 +962,6 @@ ${generateExport({ asteriksAt: namespace }, './__exports', params)}
           : params.removeUnusedTypes.keepTypes,
     });
   }
+
+  console.log('✅ Codegen completed successfully:', paths.outputDir);
 };
