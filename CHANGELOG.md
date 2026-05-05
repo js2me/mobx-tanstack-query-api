@@ -1,5 +1,22 @@
 # mobx-tanstack-query-api
 
+## 0.52.3
+
+### Patch Changes
+
+- [`caeaf56`](https://github.com/js2me/mobx-tanstack-query-api/commit/caeaf565003e4743b2ffe244622d8b65a8182130) Thanks [@js2me](https://github.com/js2me)! - missing forwarding `hook` from `otherCodegenParams` to codegen
+
+- [`d095ffa`](https://github.com/js2me/mobx-tanstack-query-api/commit/d095ffab3289570c57e84cb8c605f13eb38f40c7) Thanks [@js2me](https://github.com/js2me)! - widen `GenerateQueryApiParams` types: `removeUnusedTypes` accepts `boolean` or options object (replacing narrow `false` / literal `true` in the public typings)
+
+- [`8e94d54`](https://github.com/js2me/mobx-tanstack-query-api/commit/8e94d549b1c014431583938f35d5fac3763e90b8) Thanks [@js2me](https://github.com/js2me)! - fixed `filterGroups` and `filterEndpoints` leaking filtered-out routes/types into generated output:
+
+  - `filterGroups`: operation-level alias types (e.g. `Op*DataDC`, `Op*ErrorDC`) of routes from filtered-out groups no longer appear in `data-contracts.ts`
+  - `filterEndpoints` with `outputType: 'endpoints-per-file'` (with or without `groupBy`): filtered-out endpoints are no longer emitted into `endpoints.ts`, and their operation-level alias types no longer leak into `data-contracts.ts`
+
+- [`cf6cb86`](https://github.com/js2me/mobx-tanstack-query-api/commit/cf6cb86a2a6140b03f07ef1df6e71a160899803f) Thanks [@js2me](https://github.com/js2me)! - fixed bug with not existed responses types in data contracts
+
+- [`76813da`](https://github.com/js2me/mobx-tanstack-query-api/commit/76813daf0cd3ec9b4e0dbb265372e385ce54baa2) Thanks [@js2me](https://github.com/js2me)! - add more log messages
+
 ## 0.52.2
 
 ### Patch Changes
