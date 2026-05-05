@@ -47,6 +47,23 @@ const removeUnusedTypesItteration = async ({
 
   if (candidateTypes.size === 0) return;
 
+  let replacedBrokenAliases = 0;
+  for (const typeAlias of dataContractsSourceFile.getTypeAliases()) {
+    const typeNode = typeAlias.getTypeNode();
+    if (!typeNode || !Node.isTypeReference(typeNode)) {
+      continue;
+    }
+
+    const referencedTypeName = typeNode.getTypeName().getText();
+    if (
+      referencedTypeName.endsWith('DC') &&
+      !candidateTypes.has(referencedTypeName)
+    ) {
+      typeAlias.setType('any');
+      replacedBrokenAliases++;
+    }
+  }
+
   const usedTypes = new Set<string>();
   const externalFiles = project
     .getSourceFiles()
@@ -137,7 +154,7 @@ const removeUnusedTypesItteration = async ({
     }
   }
 
-  if (removedCount > 0) {
+  if (removedCount > 0 || replacedBrokenAliases > 0) {
     await dataContractsSourceFile.save();
   }
 

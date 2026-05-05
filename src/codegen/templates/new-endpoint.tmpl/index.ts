@@ -23,7 +23,10 @@ import { buildZodEndpointData } from './utils/build-zod-endpoint-data.js';
 import { chooseOpenApiServer } from './utils/choose-open-api-server.js';
 import { getRequestBodyContentType } from './utils/get-request-body-content-type.js';
 import { getResponseFormat } from './utils/get-response-format.js';
-import { getResponseSchemaKey } from './utils/get-response-schema-key.js';
+import {
+  getResponseSchemaKey,
+  hasResponseComponentRef,
+} from './utils/get-response-schema-key.js';
 import { normalizeBaseUrlForPath } from './utils/normalize-base-url-for-path.js';
 import { overrideRequestParamsToSpreadLine } from './utils/override-request-params-to-spread-line.js';
 import { tmplDataToSourceExpr } from './utils/tmpl-data-to-source-expr.js';
@@ -118,6 +121,12 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   ].filter(Boolean);
 
   const defaultOkResponse = positiveResponseTypes?.[0]?.type || 'unknown';
+  const hasDefaultOkResponseTypeData = Boolean(
+    (positiveResponseTypes?.[0] as AnyObject | undefined)?.typeData,
+  );
+  const isIdentifierLikeOkResponse = /^[A-Za-z_$][\w$]*$/.test(
+    defaultOkResponse,
+  );
 
   const foundErrorModelType =
     (routeResponse.errorType &&
@@ -138,6 +147,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   );
 
   let responseSchemaKey = getResponseSchemaKey(route);
+  const hasComponentsResponseRef = hasResponseComponentRef(route);
 
   if (
     !responseSchemaKey &&
@@ -191,9 +201,16 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     typeof resolvedSuccessTypeName === 'string' &&
     /Result(?:[A-Z0-9_]*)?$/.test(resolvedSuccessTypeName);
   const useCollisionAliasRecovery = isStaOutputAlias && isResolvedResultType;
-  const effectiveOkResponseType = useCollisionAliasRecovery
+  const resolvedEffectiveOkResponseType = useCollisionAliasRecovery
     ? (resolvedSuccessTypeName as string)
     : defaultOkResponse;
+  const shouldFallbackMissingSuccessModelType =
+    isIdentifierLikeOkResponse &&
+    hasComponentsResponseRef &&
+    !hasDefaultOkResponseTypeData;
+  const effectiveOkResponseType = shouldFallbackMissingSuccessModelType
+    ? 'any'
+    : resolvedEffectiveOkResponseType;
 
   const failSuffix = `Fail${dataContractTypeSuffix}`;
   const errorSuffix = `Error${dataContractTypeSuffix}`;
@@ -343,7 +360,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   const staOperationResponseAliasLine =
     positiveResponseTypes?.length === 1 &&
     responseFormat === '"blob"' &&
-    defaultOkResponse === effectiveOkResponseType &&
+    resolvedEffectiveOkResponseType === effectiveOkResponseType &&
     operationIdDataContractName !== operationDataTypeName &&
     defaultOkResponse !== operationIdDataContractName
       ? `export type ${operationIdDataContractName} = ${defaultOkResponse};`

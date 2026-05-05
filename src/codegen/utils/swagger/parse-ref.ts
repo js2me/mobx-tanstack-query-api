@@ -1,6 +1,9 @@
+import { parseComponentRef } from './parse-component-ref.js';
+
 export const REF_PREFIX = '#/components/schemas/';
 
 export function parseRef(ref: string): string | null {
-  if (typeof ref !== 'string' || !ref.startsWith(REF_PREFIX)) return null;
-  return ref.slice(REF_PREFIX.length);
+  const parsed = parseComponentRef(ref);
+  if (!parsed || parsed.section !== 'schemas') return null;
+  return parsed.name;
 }

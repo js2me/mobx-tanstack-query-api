@@ -1,4 +1,5 @@
 import type { ParsedRoute } from 'swagger-typescript-api';
+import { parseComponentRef } from '../../../utils/swagger/parse-component-ref.js';
 import { parseRef } from '../../../utils/swagger/parse-ref.js';
 
 /*
@@ -34,7 +35,7 @@ import { parseRef } from '../../../utils/swagger/parse-ref.js';
  * Extract OpenAPI schema key from response $ref (e.g. from responses['200'].content['application/json'].schema.$ref).
  * Use this for the data contract so we resolve the actual schema (e.g. GoldenApple) instead of the alias type name (GetGoldenAppleDataDC).
  */
-export function getResponseSchemaKey(route: ParsedRoute): string | null {
+export function getResponseSchemaRef(route: ParsedRoute): string | null {
   const responses = route.raw?.responses;
 
   if (!responses || typeof responses !== 'object') {
@@ -62,11 +63,21 @@ export function getResponseSchemaKey(route: ParsedRoute): string | null {
   }
 
   const jsonContent = content['application/json'] ?? Object.values(content)[0];
-  const ref = jsonContent?.schema?.$ref;
+  return typeof jsonContent?.schema?.$ref === 'string'
+    ? jsonContent.schema.$ref
+    : null;
+}
 
-  if (typeof ref !== 'string') {
+export function hasResponseComponentRef(route: ParsedRoute): boolean {
+  const ref = getResponseSchemaRef(route);
+  const parsed = ref != null ? parseComponentRef(ref) : null;
+  return parsed != null && parsed.section !== 'schemas';
+}
+
+export function getResponseSchemaKey(route: ParsedRoute): string | null {
+  const ref = getResponseSchemaRef(route);
+  if (ref == null) {
     return null;
   }
-
   return parseRef(ref);
 }

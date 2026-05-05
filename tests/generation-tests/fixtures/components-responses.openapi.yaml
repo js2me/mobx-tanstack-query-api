@@ -1,0 +1,73 @@
+# Anonymized fixture — custom component sections + responses (no prod names).
+openapi: 3.0.3
+info:
+  title: fx9 fixture — component responses
+  version: 1.0.0
+paths:
+  /fx9/a/{wire7}:
+    get:
+      operationId: op001
+      parameters:
+        - in: path
+          name: wire7
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Fixture ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/r002"
+  /fx9/b/{wire7}:
+    get:
+      operationId: op002
+      parameters:
+        - in: path
+          name: wire7
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Fixture ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/slot9/r002"
+components:
+  responses:
+    r001:
+      type: object
+      properties:
+        id:
+          type: integer
+      required:
+        - id
+    r002:
+      allOf:
+        - $ref: "#/components/responses/r001"
+        - type: object
+          properties:
+            flux3:
+              type: array
+              items:
+                $ref: "#/components/responses/r002"
+  slot9:
+    r001:
+      type: object
+      properties:
+        id:
+          type: integer
+      required:
+        - id
+    r002:
+      allOf:
+        - $ref: "#/components/slot9/r001"
+        - type: object
+          properties:
+            flux3:
+              type: array
+              items:
+                $ref: "#/components/slot9/r002"

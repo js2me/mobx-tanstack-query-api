@@ -28,6 +28,7 @@ import type {
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-suffix.js';
 import { generateExport } from './utils/generate-export.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
+import { collectComponentContractNames } from './utils/swagger/collect-component-names.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
 import { buildCentralZodContractsFile } from './utils/zod/build-endpoint-zod-contracts-code.js';
 import { getZodContractSuffix } from './utils/zod/contract-suffix.js';
@@ -160,7 +161,7 @@ const generateApiSingle = async (
     httpClientType: 'fetch',
     // Output cleanup is handled here (batch rm + codegenFs.cleanDir); avoid swagger doing it too.
     cleanOutput: false,
-    modular: true,
+    modular: false,
     patch: true,
     typeSuffix: dataContractTypeSuffix,
     disableStrictSSL: false,
@@ -169,6 +170,7 @@ const generateApiSingle = async (
     extractRequestParams: false,
     extractResponseBody: true,
     extractResponseError: true,
+    extractResponses: true,
     generateResponses: true,
     generateClient: false,
     addReadonly: true,
@@ -759,10 +761,9 @@ export * as ${exportGroupName} from './endpoints';
         }
       : null;
 
-  const schemaDataContractNames = new Set(
-    Object.keys((swaggerSchema as any)?.components?.schemas ?? {}).map(
-      (schemaName) => utils.formatModelName(schemaName),
-    ),
+  const componentsContractNames = collectComponentContractNames(
+    swaggerSchema,
+    utils.formatModelName,
   );
 
   const excludedDataContractNames = Array.from(
@@ -772,7 +773,7 @@ export * as ${exportGroupName} from './endpoints';
       if (count !== 1) {
         return false;
       }
-      return !schemaDataContractNames.has(name);
+      return !componentsContractNames.has(name);
     })
     .map(([name]) => name);
 
