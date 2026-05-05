@@ -17,6 +17,7 @@ import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
 import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
 import { indexTsForEndpointPerFileTmpl } from './templates/index-ts-for-endpoint-per-file.tmpl.js';
 import { metaInfoTmpl } from './templates/meta-info.tmpl.js';
+import { newEndpointTmpl } from './templates/new-endpoint.tmpl/index.js';
 import type {
   AllImportFileParams,
   BaseTmplParams,
@@ -478,10 +479,50 @@ const generateApiSingle = async (
       // #endregion
     } else {
       // #region кодогенерация несколько эндпоинтов в 1 файле без группировки
-      const { content: requestInfoPerFileContent, reservedDataContractNames } =
-        await allEndpointPerFileTmpl({
+      const filteredRoutes = allRoutes.filter((route) =>
+        filterEndpoint(route, swaggerSchema),
+      );
+
+      // Для роутов, не прошедших filterEndpoint, в файл их не пишем,
+      // но reservedDataContractNames всё равно учитываем — иначе
+      // operation-level alias-типы (Op*DataDC и т.п.) этих роутов
+      // утекут в data-contracts.ts (см. excludedDataContractNames).
+      for (const route of allRoutes) {
+        if (filterEndpoint(route, swaggerSchema)) {
+          continue;
+        }
+        const { reservedDataContractNames } = newEndpointTmpl({
           ...baseTmplParams,
-          routes: allRoutes,
+          route,
+          groupName: null,
+          metaInfo: params.noMetaInfo
+            ? null
+            : {
+                namespace,
+                groupNames: [],
+              },
+          zodContracts: params.zodContracts,
+          relativePathZodSchemas: hasZodContractsFile
+            ? './contracts'
+            : undefined,
+        });
+        reservedDataContractNames.forEach((name) => {
+          reservedDataContractNamesMap.set(
+            name,
+            (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+          );
+        });
+      }
+
+      const hasFilteredRoutes = filteredRoutes.length > 0;
+
+      if (hasFilteredRoutes) {
+        const {
+          content: requestInfoPerFileContent,
+          reservedDataContractNames,
+        } = await allEndpointPerFileTmpl({
+          ...baseTmplParams,
+          routes: filteredRoutes,
           relativePathDataContracts: './data-contracts',
           groupName: null,
           metaInfo: params.noMetaInfo
@@ -493,20 +534,13 @@ const generateApiSingle = async (
           relativePathZodSchemas: hasZodContractsFile ? './contracts' : null,
         });
 
-      reservedDataContractNames.forEach((name) => {
-        reservedDataContractNamesMap.set(
-          name,
-          (reservedDataContractNamesMap.get(name) ?? 0) + 1,
-        );
-      });
+        reservedDataContractNames.forEach((name) => {
+          reservedDataContractNamesMap.set(
+            name,
+            (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+          );
+        });
 
-      const filteredRoutes = allRoutes.filter((route) =>
-        filterEndpoint(route, swaggerSchema),
-      );
-
-      const hasFilteredRoutes = filteredRoutes.length > 0;
-
-      if (hasFilteredRoutes) {
         filteredRoutes.forEach((route) => {
           if (Array.isArray(route.raw.tags)) {
             route.raw.tags.forEach((tag: string) => {
@@ -571,6 +605,34 @@ const generateApiSingle = async (
     );
     for await (const [groupName, routes] of groupsMap) {
       if (!filterGroups(groupName, swaggerSchema)) {
+        // Группа отфильтрована: файлы для неё не пишем, но всё равно
+        // собираем reservedDataContractNames по её роутам, чтобы
+        // operation-level alias-типы (Op*DataDC и т.п.) этих роутов
+        // корректно исключались из data-contracts.ts (см. excludedDataContractNames).
+        for (const route of routes) {
+          const { reservedDataContractNames } = newEndpointTmpl({
+            ...baseTmplParams,
+            route,
+            groupName,
+            metaInfo: params.noMetaInfo
+              ? null
+              : {
+                  namespace,
+                  groupNames: [],
+                },
+            zodContracts: params.zodContracts,
+            relativePathZodSchemas: hasZodContractsFile
+              ? '../../contracts'
+              : undefined,
+          });
+
+          reservedDataContractNames.forEach((name) => {
+            reservedDataContractNamesMap.set(
+              name,
+              (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+            );
+          });
+        }
         continue;
       }
 
@@ -646,37 +708,66 @@ const generateApiSingle = async (
         // #endregion
       } else {
         // #region Генерация нескольких эндпоинтов на 1 файл
-        const {
-          content: requestInfoPerFileContent,
-          reservedDataContractNames,
-        } = await allEndpointPerFileTmpl({
-          ...baseTmplParams,
-          routes,
-          relativePathDataContracts: '../data-contracts',
-          relativePathZodSchemas: hasZodContractsFile ? '../contracts' : null,
-          groupName,
-          metaInfo: params.noMetaInfo
-            ? null
-            : {
-                namespace,
-                groupNames: [],
-              },
-        });
-
-        reservedDataContractNames.forEach((name) => {
-          reservedDataContractNamesMap.set(
-            name,
-            (reservedDataContractNamesMap.get(name) ?? 0) + 1,
-          );
-        });
-
         const filteredRoutes = routes.filter((route) =>
           filterEndpoint(route, swaggerSchema),
         );
 
+        // См. комментарий в ветке без группировки: отфильтрованные роуты
+        // не пишем в файл, но reservedDataContractNames учитываем.
+        for (const route of routes) {
+          if (filterEndpoint(route, swaggerSchema)) {
+            continue;
+          }
+          const { reservedDataContractNames } = newEndpointTmpl({
+            ...baseTmplParams,
+            route,
+            groupName,
+            metaInfo: params.noMetaInfo
+              ? null
+              : {
+                  namespace,
+                  groupNames: [],
+                },
+            zodContracts: params.zodContracts,
+            relativePathZodSchemas: hasZodContractsFile
+              ? '../contracts'
+              : undefined,
+          });
+          reservedDataContractNames.forEach((name) => {
+            reservedDataContractNamesMap.set(
+              name,
+              (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+            );
+          });
+        }
+
         hasFilteredRoutes = filteredRoutes.length > 0;
 
         if (hasFilteredRoutes) {
+          const {
+            content: requestInfoPerFileContent,
+            reservedDataContractNames,
+          } = await allEndpointPerFileTmpl({
+            ...baseTmplParams,
+            routes: filteredRoutes,
+            relativePathDataContracts: '../data-contracts',
+            relativePathZodSchemas: hasZodContractsFile ? '../contracts' : null,
+            groupName,
+            metaInfo: params.noMetaInfo
+              ? null
+              : {
+                  namespace,
+                  groupNames: [],
+                },
+          });
+
+          reservedDataContractNames.forEach((name) => {
+            reservedDataContractNamesMap.set(
+              name,
+              (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+            );
+          });
+
           filteredRoutes.forEach((route) => {
             if (Array.isArray(route.raw.tags)) {
               route.raw.tags.forEach((tag: string) => {

@@ -1,0 +1,3987 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi snapshot filtered-groups (big-schema fixture) > generates grouped endpoints-per-file, data-contracts and meta in one snapshot bundle 1`] = `
+"/* --- data-contracts.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+
+export interface ResAcclaimedRoundabout39DC {
+  hardtofind_operating_864: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface ResAustereWarming31DC {
+  artistic_teriyaki_800: boolean;
+  valuable_reservation_763: boolean;
+  description: string;
+  name: string;
+  tags: string[];
+}
+
+export interface ResBustlingChasuble12DC {
+  heavy_ocelot_109: string;
+  informal_riser_617: string;
+  lined_toaster_931: string;
+}
+
+export interface ResClumsyPick13DC {
+  instructive_alert_276: "ev0" | "ev1";
+  weighty_interviewer_270: number;
+  name: string;
+}
+
+export interface ResDirtyFold15DC {
+  /** Fixture title. */
+  alive_dress_662?: "ev0" | "ev1";
+  /** Fixture title. */
+  boring_daughter_575?: number;
+  /** Fixture title. */
+  charming_perfection_540?: string;
+  /** Fixture title. */
+  fine_calculus_421?: number;
+  /** Fixture title. */
+  frozen_cycle_435?: number;
+  /**
+   * Fixture title.
+   * Fixture field.
+   * @default false
+   */
+  optimistic_redesign_474?: boolean;
+  /** Fixture title. */
+  quarterly_bestseller_183?: number;
+  /** Fixture title. */
+  reasonable_cinder_575?: number;
+  /** Fixture title. */
+  submissive_obedience_582?: string[];
+  /** Fixture title. */
+  trusting_papa_987?: number;
+  /** Fixture title. */
+  unknown_metal_799?: string;
+  /** Fixture title. */
+  wealthy_effector_339?: number;
+}
+
+export interface ResDistantPants18DC {
+  /** Fixture field. */
+  incomparable_relative_961: number;
+  /** Fixture field. */
+  kosher_championship_627?: string;
+  /** Fixture field. */
+  memorable_pilot_447: boolean;
+}
+
+export interface ResEveryHaversack53DC {
+  /** Fixture field. */
+  chilly_management_863: number;
+}
+
+export interface ResForcefulSpear5DC {
+  /** Fixture field. */
+  functional_precedent_766: number;
+  /** Fixture field. */
+  inexperienced_sprinkles_900: number;
+  /** Fixture field. */
+  kosher_championship_627?: string;
+  /** Fixture field. */
+  memorable_pilot_447: boolean;
+  unpleasant_mobility_124: "ev0" | "ev1";
+  /** Fixture field. */
+  name: string;
+}
+
+export interface ResFrizzyDevil63DC {
+  heavy_ocelot_109: string;
+  informal_riser_617: string;
+  lined_toaster_931: string;
+  musty_legislature_414: number;
+}
+
+export interface ResGoldenAnnual89DC {
+  /** Fixture field. */
+  ultimate_consistency_367: string;
+  /** Fixture field. */
+  weighty_interviewer_270: number;
+}
+
+export interface ResHappyTurret67DC {
+  /** Fixture title. */
+  crushing_fishery_2?: "ev0" | "ev1";
+  normal_fowl_227?: {
+    acidic_knuckle_282?: {
+      /**
+       * Fixture title.
+       * Fixture field.
+       */
+      clearcut_charm_466?: string;
+      lustrous_harp_607?: {
+        brown_cappelletti_735?: {
+          /**
+           * Fixture title.
+           * Fixture field.
+           */
+          late_story_491?: "ev0" | "ev1";
+          /**
+           * Fixture title.
+           * Fixture field.
+           * @default 0
+           */
+          unlucky_goodwill_42?: number;
+          /**
+           * Fixture title.
+           * Fixture field.
+           */
+          type?: "ev0" | "ev1" | "ev2";
+        };
+        rewarding_dash_996?: {
+          /**
+           * Fixture title.
+           * Fixture field.
+           */
+          late_story_491?: "ev0" | "ev1";
+          /**
+           * Fixture title.
+           * Fixture field.
+           * @default 0
+           */
+          unlucky_goodwill_42?: number;
+          /**
+           * Fixture title.
+           * Fixture field.
+           */
+          type?: "ev0" | "ev1" | "ev2";
+        };
+      };
+      valuable_sonnet_549?: {
+        /**
+         * Fixture title.
+         * Fixture field.
+         */
+        worthless_fen_326?: string;
+        /**
+         * Fixture title.
+         * Fixture field.
+         */
+        name?: string;
+      };
+    };
+    /** Fixture title. */
+    alive_dress_662?: "ev0" | "ev1";
+    /** Fixture title. */
+    athletic_gallery_560?: string;
+    /** Fixture title. */
+    charming_perfection_540?: string;
+    firm_spear_138?: string[];
+    /** Fixture title. */
+    little_privilege_885?: string;
+    old_nephew_600?: {
+      /**
+       * Fixture title.
+       * @default 1
+       */
+      boring_daughter_575?: number;
+      delirious_feather_139?: {
+        /** Fixture title. */
+        informal_tooth_772?: number;
+        /** Fixture title. */
+        in?: number;
+      };
+      /**
+       * Fixture title.
+       * @default 0
+       */
+      frozen_cycle_435?: number;
+      /**
+       * Fixture title.
+       * @default 0
+       */
+      quarterly_bestseller_183?: number;
+    };
+    plain_challenge_569?: {
+      /**
+       * Fixture title.
+       * Fixture field.
+       */
+      silver_strategy_993?: string;
+    };
+    /** Fixture title. */
+    submissive_obedience_582?: string[];
+    /** Fixture title. */
+    tall_horde_610?: number;
+    /** Fixture title. */
+    unknown_metal_799?: string;
+    /** Fixture title. */
+    watery_polarisation_58?: string;
+  };
+}
+
+export interface ResIgnorantPantyhose1DC {
+  /** Fixture field. */
+  name: string;
+}
+
+export interface ResInconsequentialEffector24DC {
+  /** Fixture field. */
+  irresponsible_vol_616: ResUnawareSpork92DC[];
+}
+
+/**
+ * Fixture field.
+ */
+export interface ResJubilantLender32DC {
+  /** Fixture field. */
+  antique_nun_284?: number | null;
+  /** Fixture field. */
+  cavernous_dandelion_49?: string | null;
+  /** Fixture field. */
+  charming_perfection_540?: string | null;
+  /** Fixture field. */
+  competent_outrun_824?: string | null;
+  /** Fixture field. */
+  deadly_peninsula_677?: Record<string, string> | null;
+  /** Fixture field. */
+  dual_nudge_743?: string | null;
+  /** Fixture field. */
+  eminent_nightlife_621: number;
+  /** Fixture field. */
+  excited_tenement_261?: "ev0" | "ev1" | "ev2" | null;
+  /**
+   * Fixture field.
+   * @min 1
+   */
+  extroverted_intent_348: number;
+  /**
+   * Fixture field.
+   * @min 1
+   */
+  familiar_almighty_251: number;
+  /** Fixture field. */
+  flawless_spirit_246?: string | null;
+  /** Fixture field. */
+  flickering_unibody_270: string;
+  /**
+   * Fixture field.
+   * @min 1
+   */
+  frozen_cycle_435: number;
+  /**
+   * Fixture field.
+   * @default false
+   */
+  funny_amendment_381: boolean;
+  /** Fixture field. */
+  hardtofind_operating_864:
+    | "ev0"
+    | "ev1"
+    | "ev2"
+    | "ev3"
+    | "ev4"
+    | "ev5"
+    | "ev6"
+    | "ev7"
+    | "ev8"
+    | "ev9";
+  /** Fixture field. */
+  harmful_scenario_948?: "ev0" | "ev1" | "ev2" | null;
+  /** Fixture field. */
+  heavy_knight_657?: string | null;
+  /** Fixture field. */
+  impractical_lady_91: string[];
+  /** Fixture field. */
+  inexperienced_sprinkles_900: number;
+  /** Fixture field. */
+  leading_freezing_803?: string | null;
+  /**
+   * Fixture field.
+   * @min 1
+   */
+  legal_conversation_236: number;
+  /**
+   * Fixture field.
+   * @default "infra"
+   */
+  lined_toaster_931?: string;
+  major_testing_607?: string;
+  /**
+   * Fixture field.
+   * @min 1
+   */
+  mammoth_vein_359: number;
+  /** Fixture field. */
+  messy_godfather_90?: Record<string, string>;
+  /**
+   * Fixture field.
+   * @format date-time
+   */
+  noted_giggle_829: string;
+  /** Fixture field. */
+  ornate_independence_483: "ev0" | "ev1";
+  /**
+   * Fixture field.
+   * @min 1
+   */
+  quarterly_bestseller_183: number;
+  /** Fixture field. */
+  secondhand_chiffonier_402?: string | null;
+  /** Fixture field. */
+  shady_adrenalin_793?: number[];
+  /**
+   * Fixture field.
+   * @format date-time
+   */
+  smooth_rationale_43: string;
+  /** Fixture field. */
+  soft_thongs_550?: "ev0" | "ev1" | null;
+  /** Fixture field. */
+  spherical_tribe_704: "ev0" | "ev1";
+  /** Fixture field. */
+  svelte_subexpression_721?: Record<string, any> | null;
+  tired_whack_794?: string;
+  /**
+   * Fixture field.
+   * @default false
+   */
+  tragic_velocity_524?: boolean;
+  /** Fixture field. */
+  trained_impostor_204: string;
+  /** Fixture field. */
+  unripe_thongs_47: string[];
+  /** Fixture field. */
+  untried_approach_419?: string | null;
+  /** Fixture field. */
+  upright_story_337?: string | null;
+  /** Fixture field. */
+  woeful_unit_458?: "ev0" | "ev1" | null;
+  /** Fixture field. */
+  worthy_archaeology_635?: string | null;
+}
+
+export interface ResMurkySundae35DC {
+  /** Fixture field. */
+  irresponsible_vol_616: ResShockedPostbox19DC[];
+}
+
+export interface ResNarrowWheel38DC {
+  /** Fixture title. */
+  crushing_fishery_2?: "ev0" | "ev1";
+  normal_fowl_227?: {
+    acidic_knuckle_282?: {
+      /**
+       * Fixture title.
+       * Fixture field.
+       */
+      clearcut_charm_466?: string;
+      lustrous_harp_607?: {
+        brown_cappelletti_735?: {
+          /**
+           * Fixture title.
+           * Fixture field.
+           */
+          late_story_491?: "ev0" | "ev1";
+          /**
+           * Fixture title.
+           * Fixture field.
+           * @default 0
+           */
+          unlucky_goodwill_42?: number;
+          /**
+           * Fixture title.
+           * Fixture field.
+           */
+          type?: "ev0" | "ev1" | "ev2";
+        };
+        rewarding_dash_996?: {
+          /**
+           * Fixture title.
+           * Fixture field.
+           */
+          late_story_491?: "ev0" | "ev1";
+          /**
+           * Fixture title.
+           * Fixture field.
+           * @default 0
+           */
+          unlucky_goodwill_42?: number;
+          /**
+           * Fixture title.
+           * Fixture field.
+           */
+          type?: "ev0" | "ev1" | "ev2";
+        };
+      };
+      valuable_sonnet_549?: {
+        /**
+         * Fixture title.
+         * Fixture field.
+         */
+        worthless_fen_326?: string;
+        /**
+         * Fixture title.
+         * Fixture field.
+         */
+        name?: string;
+      };
+    };
+    /** Fixture title. */
+    alive_dress_662?: "ev0" | "ev1";
+    /** Fixture title. */
+    charming_perfection_540?: string;
+    firm_spear_138?: string[];
+    /** Fixture title. */
+    little_privilege_885?: string;
+    old_nephew_600?: {
+      /**
+       * Fixture title.
+       * @default 1
+       */
+      boring_daughter_575?: number;
+      delirious_feather_139?: {
+        /** Fixture title. */
+        informal_tooth_772?: number;
+        /** Fixture title. */
+        in?: number;
+      };
+      /**
+       * Fixture title.
+       * @default 0
+       */
+      frozen_cycle_435?: number;
+      /**
+       * Fixture title.
+       * @default 0
+       */
+      quarterly_bestseller_183?: number;
+    };
+    /**
+     * Fixture title.
+     * Fixture field.
+     * @default false
+     */
+    optimistic_redesign_474?: boolean;
+    plain_challenge_569?: {
+      /**
+       * Fixture title.
+       * Fixture field.
+       */
+      silver_strategy_993?: string;
+    };
+    /**
+     * Fixture title.
+     * @default false
+     */
+    queasy_brush_360?: boolean;
+    /** Fixture title. */
+    submissive_obedience_582?: string[];
+    /** Fixture title. */
+    tall_horde_610?: number;
+    /** Fixture title. */
+    unknown_metal_799?: string;
+    /** Fixture title. */
+    watery_polarisation_58?: string;
+  };
+}
+
+export interface ResPreciousTopsail4DC {
+  instructive_alert_276: "ev0" | "ev1";
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export type ResPresentThyme1DC = SchCrowdedSkyline34DC;
+
+export interface ResQuickwittedOverheard64DC {
+  flickering_unibody_270: string;
+  inexperienced_sprinkles_900: number;
+  instructive_alert_276: "ev0" | "ev1";
+  /** @format date-time */
+  noted_giggle_829: string;
+  /** @format date-time */
+  smooth_rationale_43: string;
+  weighty_interviewer_270: number;
+  name: string;
+}
+
+export interface ResRightDime24DC {
+  /** Fixture field. */
+  careless_plastic_942: number;
+  /** Fixture field. */
+  unpleasant_mobility_124?: "ev0" | "ev1";
+  /** Fixture field. */
+  weighty_interviewer_270: number;
+}
+
+export type ResShockedPostbox19DC = ResUnawareSpork92DC & {
+  /** Fixture field. */
+  reasonable_disk_286?: ResShockedPostbox19DC[];
+};
+
+export interface ResSnivelingYeast49DC {
+  sparkling_gazebo_646: string;
+  wretched_straw_801?: string;
+  name: string;
+}
+
+export interface ResStableYogurt4DC {
+  /** Fixture field. */
+  flickering_unibody_270: string;
+  /** Fixture field. */
+  inexperienced_sprinkles_900: number;
+  /** Fixture field. */
+  majestic_thorn_613: "ev0" | "ev1";
+  /**
+   * Fixture field.
+   * @format date-time
+   */
+  noted_giggle_829: string;
+  /** Fixture field. */
+  pointed_requirement_855: string[];
+  /**
+   * Fixture field.
+   * @format date-time
+   */
+  scary_exterior_710?: string | null;
+  /** Fixture field. */
+  separate_zebra_644: number;
+  /** Fixture field. */
+  unripe_contractor_616: string;
+  /** Fixture field. */
+  name: string;
+}
+
+export interface ResUnawareSpork92DC {
+  /**
+   * Fixture field.
+   * @format date-time
+   */
+  appropriate_venom_221?: string | null;
+  /** Fixture field. */
+  baggy_underneath_477?: boolean;
+  /** Fixture field. */
+  bogus_knickers_672?: number;
+  /** Fixture field. */
+  brown_galoshes_842: string;
+  /** Fixture field. */
+  compassionate_overheard_611: string;
+  /** Fixture field. */
+  damaged_netsuke_292?: string | null;
+  /** Fixture field. */
+  flickering_unibody_270: string;
+  /** Fixture field. */
+  functional_precedent_766: number;
+  grimy_couch_191?: {
+    genuine_newsstand_364?: number;
+    mushy_charlatan_956?: number;
+    quarterly_conservative_915?: string;
+  };
+  /** Fixture field. */
+  inexperienced_sprinkles_900: number;
+  /**
+   * Fixture field.
+   * @format date-time
+   */
+  noted_giggle_829: string;
+  /** Fixture field. */
+  putrid_widow_426: string;
+  skeletal_hawk_954: {
+    noteworthy_vestment_812?: number;
+    trained_impostor_204?: string;
+  }[];
+  /**
+   * Fixture field.
+   * @format date-time
+   */
+  smooth_rationale_43: string;
+  /** Fixture field. */
+  unpleasant_mobility_124: "ev0" | "ev1";
+  /** Fixture field. */
+  urban_coast_986: string;
+  /** Fixture field. */
+  weighty_interviewer_270: number;
+  /** Fixture field. */
+  wellworn_milestone_693?: number | null;
+  /** Fixture field. */
+  name: string;
+}
+
+export type ResVainImport15DC = any;
+
+export interface SchAjarCinema32DC {
+  clueless_polyester_967: string;
+  lined_toaster_931: string;
+  stingy_trash_625: string;
+  worthy_archaeology_635: string;
+}
+
+export interface SchAlienatedFlat53DC {
+  clueless_polyester_967: SchReflectingEntry91DC;
+  decisive_scholarship_548?: {
+    inexperienced_sprinkles_900: number;
+    poor_email_971: string[];
+  };
+  /** Fixture field. */
+  reasonable_disk_286?: SchAlienatedFlat53DC[];
+}
+
+export interface SchAmbitiousTentacle99DC {
+  earnest_pile_927: {
+    milky_video_405: number;
+    svelte_tackle_202: number;
+    tidy_video_805: SchBlushingDeduction31DC[];
+    unlawful_membership_466?: SchBlushingDeduction31DC[];
+  };
+  only_characterization_749: {
+    milky_video_405: number;
+    svelte_tackle_202: number;
+  };
+  rosy_excess_726: SchFuzzyDrug7DC[];
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchAnnualBob98DC {
+  /** Fixture field. */
+  dense_meander_818: string[];
+  /** Fixture field. */
+  lined_toaster_931: string;
+  /**
+   * Fixture field.
+   * @example "depopulo substantia thesis"
+   */
+  understated_tool_985: string;
+  /**
+   * Fixture field.
+   * @example "cum tripudio beatus"
+   */
+  name: string;
+  /**
+   * Fixture field.
+   * @example "earum vestrum caries adficio tum"
+   */
+  type: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchAptPriesthood69DC {
+  clueless_polyester_967: string;
+  dense_meander_818: string[];
+  /** @default false */
+  fixed_sport_398: boolean;
+  wellworn_porter_29: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchAridArmoire79DC {
+  defenseless_tennis_163: number;
+  livid_chops_539: string;
+  rich_cork_822: string;
+  name: string;
+}
+
+export interface SchArtisticReboot34DC {
+  accurate_subsidy_125: string;
+  biodegradable_stall_231: string;
+  bitter_seafood_1: string;
+  candid_cannon_534: string;
+  clearcut_pillow_870: string;
+  elastic_receptor_654: string;
+  enchanted_teriyaki_37: string;
+  fatal_gymnast_624: string;
+  foolhardy_legend_251: string;
+  great_valentine_174: string;
+  hairy_freezing_171?: string;
+  inconsequential_palate_29: string;
+  juvenile_acquaintance_766?: string;
+  lined_polyester_515: string;
+  lone_whale_211: string;
+  mealy_tooth_562: string;
+  narrow_step_103: string;
+  nifty_hydrocarbon_360?: string;
+  normal_provision_917: string;
+  recent_icecream_683: string;
+  rich_dish_304: string;
+  royal_folklore_546?: string;
+  splendid_pearl_648: string;
+  tidy_carboxyl_638: string;
+  troubled_extension_972: string;
+  uniform_tuber_688: string;
+  warlike_piglet_650?: string;
+  weird_cosset_391: string;
+  which_stepmother_316?: string;
+  wise_tuba_666: string;
+}
+
+export interface SchAshamedSandbar62DC {
+  super_fund_30: {
+    simplistic_completion_914: string[];
+    name: string;
+  }[];
+  delete: boolean;
+  name: string;
+}
+
+export interface SchAssuredGovernment64DC {
+  dual_ethyl_679: string[];
+  vivid_trash_623: SchOptimalMeander61DC[];
+}
+
+export interface SchAthleticProduce21DC {
+  advanced_instance_295: SchGiftedPoppy54DC[];
+  aggressive_bidet_932?: number;
+  alive_range_151?: number;
+  brown_cappelletti_735: SchPoliteAccountability63DC[];
+  cruel_heartbeat_702: string;
+  curly_octave_415?: number;
+  dense_meander_818?: string;
+  dismal_barracks_914: string;
+  early_backbone_248?: string;
+  exalted_inspection_425: SchFavorableWarming35DC[];
+  glossy_zen_286: SchArtisticReboot34DC;
+  hoarse_euphonium_906: SchElegantEctoderm76DC[];
+  hot_sesame_394?: string;
+  jampacked_marathon_170?: number;
+  lively_jellyfish_531?: string;
+  official_fax_897?: number;
+  private_bestseller_777: Record<string, string>;
+  soupy_kielbasa_3?: number;
+  supportive_lace_765: SchKnownProvision19DC;
+  surprised_deck_568:
+    | "ev0"
+    | "ev1"
+    | "ev2"
+    | "ev3"
+    | "ev4"
+    | "ev5"
+    | "ev6"
+    | "ev7"
+    | "ev8";
+  tidy_video_805: Record<string, SchKnownProvision19DC>;
+  vivid_trash_623: SchBustlingMinor47DC[];
+  wideeyed_verve_618: SchKnownProvision19DC[];
+  worthless_fen_326: string;
+  yellowish_monocle_256?: string;
+  links?: SchFormalGloom78DC[];
+  name: string;
+}
+
+export interface SchAvariciousSettler7DC {
+  unsung_middle_272: SchShoddyFollowing87DC[];
+  properties: SchShoddyFollowing87DC[];
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchAveragePupil48DC {
+  /** @default false */
+  fixed_sport_398: boolean;
+  /** Fixture field. */
+  lost_custody_764?: SchRowdySummer29DC;
+  name: string;
+  options: SchHeftyExpense43DC;
+  type: SchScentedLady65DC;
+}
+
+export interface SchBitterCitizen19DC {
+  carefree_cope_455?: string;
+  great_language_127?: string;
+  internal_knitting_141?: string;
+  rigid_apparatus_198?: string;
+  scared_tuba_436?: string;
+  shabby_cinema_624?: string;
+  svelte_bandwidth_259?: string;
+  taut_department_70?: string;
+}
+
+export interface SchBlankOpera5DC {
+  better_ethyl_661: string;
+  blank_other_474: string;
+  fatherly_email_69: string;
+  stingy_trash_625: string;
+}
+
+export interface SchBlushingDeduction31DC {
+  confused_sightseeing_802: number;
+  name: SchBrightSteeple54DC;
+}
+
+export interface SchBlushingPlastic81DC {
+  dual_ethyl_679: string[];
+  upset_violin_966: SchCharmingMetal15DC[];
+}
+
+export interface SchBonyScale94DC {
+  competent_outrun_824: string;
+  dense_meander_818: string;
+  enraged_understanding_940?: boolean;
+  greedy_account_960?: SchBitterCitizen19DC;
+  lined_toaster_931: string;
+  weighty_interviewer_270?: number;
+  wordy_blossom_142?: SchRunnyDream63DC;
+}
+
+export enum SchBrightSteeple54DC {
+  Ev0 = "ev0",
+  Ev1 = "ev1",
+  Ev2 = "ev2",
+  Ev3 = "ev3",
+  Ev4 = "ev4",
+  Ev5 = "ev5",
+  Ev6 = "ev6",
+  Ev7 = "ev7",
+  Ev8 = "ev8",
+  Ev9 = "ev9",
+  Ev10 = "ev10",
+  Ev11 = "ev11",
+  Ev12 = "ev12",
+  Ev13 = "ev13",
+  Ev14 = "ev14",
+  Ev15 = "ev15",
+  Ev16 = "ev16",
+  Ev17 = "ev17",
+  Ev18 = "ev18",
+  Ev19 = "ev19",
+  Ev20 = "ev20",
+  Ev21 = "ev21",
+  Ev22 = "ev22",
+  Ev23 = "ev23",
+  Ev24 = "ev24",
+  Ev25 = "ev25",
+  Ev26 = "ev26",
+  Ev27 = "ev27",
+  Ev28 = "ev28",
+  Ev29 = "ev29",
+  Ev30 = "ev30",
+}
+
+export interface SchBustlingMinor47DC {
+  accurate_dash_973: string;
+  any_adaptation_903?: SchKnownProvision19DC;
+  biodegradable_verve_89: number;
+  busy_typewriter_288: string;
+  clearcut_charm_466: string;
+  clueless_polyester_967: string;
+  dense_meander_818: string;
+  early_backbone_248?: string;
+  gray_gloom_209?: SchTotalTackle66DC;
+  impassioned_bidet_870?: SchNimbleAdaptation15DC;
+  kooky_strait_994: string;
+  lined_toaster_931: string;
+  lustrous_harp_607: SchElegantEctoderm76DC[];
+  major_cannon_817: Record<string, SchKnownProvision19DC>;
+  monthly_quart_300: number;
+  slushy_bookend_683: boolean;
+  specific_adviser_211: string[];
+  surprised_deck_568: string;
+  trained_bend_874: string;
+  unique_lieu_86: boolean;
+  waterlogged_smoke_851: number;
+  wide_starboard_293: string;
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export enum SchBustlingTypeface38DC {
+  Ev0 = "ev0",
+  Ev1 = "ev1",
+  Ev2 = "ev2",
+  Ev3 = "ev3",
+  Ev4 = "ev4",
+  Ev5 = "ev5",
+  Ev6 = "ev6",
+}
+
+export interface SchCalculatingAppliance74DC {
+  clueless_polyester_967: string;
+  dense_meander_818: SchScientificWheel32DC[];
+  lined_toaster_931: string;
+  spiteful_programme_103: string;
+  name: string;
+}
+
+export interface SchCharmingMetal15DC {
+  aggressive_testimonial_785?: string;
+  any_adaptation_903?: SchKnownProvision19DC;
+  astonishing_begonia_621: string;
+  busy_typewriter_288: string;
+  buttery_newsletter_312: number;
+  cruel_heartbeat_702: number;
+  defensive_beret_227: string;
+  dense_meander_818?: string;
+  distinct_knuckle_904: {
+    faraway_academics_674?: number;
+    impossible_thyme_730: string;
+    other_cake_536: string;
+    submissive_hundred_663?: number;
+  }[];
+  dutiful_ad_616: string;
+  early_backbone_248?: string;
+  easy_validity_314: Record<string, string>;
+  failing_dependency_293: string;
+  favorite_gloom_378: string;
+  formal_council_830: number;
+  giving_hose_35: number;
+  graceful_elver_552: string;
+  gray_gloom_209?: SchTotalTackle66DC;
+  guilty_stitcher_636: string;
+  heavy_ocelot_109: string;
+  inexperienced_sprinkles_900: string;
+  informal_scrap_506: number;
+  interesting_certification_249: SchSickDaddy26DC;
+  knotty_invite_617: number;
+  kooky_strait_994: string;
+  last_larva_274: string;
+  lined_toaster_931: string;
+  lost_custody_764: string;
+  lustrous_harp_607?: SchElegantEctoderm76DC[];
+  nice_guidance_190: number;
+  oval_cassava_942?: number[];
+  palatable_tapioca_848?: boolean;
+  private_bestseller_777: Record<string, SchDistantBog40DC>;
+  probable_interviewer_597: string;
+  quarterly_chops_248: SchMeanMythology88DC;
+  respectful_precedent_66: Record<string, string>;
+  shallow_overheard_528?: string;
+  smart_vision_715: string;
+  specific_adviser_211?: string[];
+  stark_bran_668: SchGrubbyAntelope31DC[];
+  striking_switch_844: SchGiftedPoppy54DC[];
+  supportive_lace_765: SchMeanMythology88DC;
+  surprised_deck_568: string;
+  trained_bend_874?: string;
+  trusting_fund_905: string;
+  ultimate_dead_568: SchUnhealthyVelocity17DC;
+  unfit_optimal_191: {
+    authorized_worth_709: number;
+    hardtofind_reconsideration_693: number;
+    silky_carboxyl_191: number;
+    sunny_deduction_317: number;
+  };
+  valuable_sonnet_549: string;
+  vast_knickers_603: string;
+  wellgroomed_swath_259?: SchGrubbyAntelope31DC;
+  winged_hamburger_356: Record<string, string>;
+  worthless_fen_326: string;
+  youthful_hamburger_522: SchMeanMythology88DC;
+  links: SchFormalGloom78DC[];
+  name: string;
+}
+
+export interface SchCheapHelp34DC {
+  clueless_polyester_967: string;
+  decisive_scholarship_548?: {
+    inexperienced_sprinkles_900: number;
+    poor_email_971: string[];
+    name: string;
+  };
+  dense_meander_818: SchMeatyFlame21DC[];
+  intelligent_middle_775: {
+    defensive_beret_227: string;
+    dense_meander_818: string;
+    kooky_strait_994: string;
+  }[];
+  lined_toaster_931: string;
+  private_bestseller_777: Record<
+    string,
+    {
+      authentic_governance_938: number;
+      kosher_championship_627: string;
+      type: "ev0" | "ev1" | "ev2";
+    }
+  >;
+  /** Fixture field. */
+  secondhand_swing_732?: SchMundaneFormula7DC;
+  spiteful_programme_103: string;
+  vivid_trash_623: SchPunctualForgery23DC[];
+  name: string;
+}
+
+export interface SchChubbyPepper86DC {
+  dense_meander_818?: string[];
+  lined_toaster_931: string;
+  name: string;
+}
+
+export interface SchCluelessBin29DC {
+  enchanting_toothbrush_197: string;
+  kosher_championship_627: string;
+  rotating_foodstuffs_910: number;
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchComplicatedTaxicab19DC {
+  clueless_kettledrum_749: SchStrongDisk90DC;
+  svelte_tackle_202: number;
+  weighty_interviewer_270: number;
+  name: string;
+}
+
+export interface SchContentRemark54DC {
+  unsung_middle_272: SchLumberingPopulist82DC[];
+  properties: SchLumberingPopulist82DC[];
+}
+
+export interface SchCoolChasuble62DC {
+  favorite_peninsula_980: SchLiveObesity61DC[];
+  giving_swing_968: SchLiveObesity61DC[];
+  inexperienced_sprinkles_900: number;
+  leading_straw_650: SchLiveObesity61DC[];
+  description: string;
+  name: string;
+}
+
+export interface SchCooperativeEcliptic96DC {
+  kosher_championship_627?: string;
+}
+
+export interface SchCorruptCollaboration95DC {
+  immaculate_unique_242: string;
+  description: string;
+}
+
+export interface SchCourteousLicense30DC {
+  accurate_subsidy_125: string;
+  aggressive_bidet_932: number;
+  alive_range_151: number;
+  biodegradable_stall_231: string;
+  bitter_seafood_1: string;
+  brown_cappelletti_735: SchSugaryFinal6DC[];
+  burdensome_birdbath_366: string;
+  candid_cannon_534: string;
+  clearcut_pillow_870: string;
+  cruel_heartbeat_702: string;
+  curly_octave_415: number;
+  /** @example "voro denego denique" */
+  dismal_barracks_914: string;
+  early_backbone_248?: string;
+  elastic_receptor_654: string;
+  eminent_simple_935: SchTameFinding20DC;
+  enchanted_teriyaki_37: string;
+  fatal_gymnast_624: string;
+  foolhardy_legend_251: string;
+  gray_gloom_209: SchTameFinding20DC;
+  great_valentine_174: string;
+  hairy_freezing_171?: string;
+  inconsequential_palate_29: string;
+  jampacked_marathon_170?: number;
+  juvenile_acquaintance_766?: string;
+  lined_polyester_515: string;
+  lively_jellyfish_531?: string;
+  lone_whale_211: string;
+  lustrous_godfather_749: SchTameFinding20DC;
+  mealy_tooth_562: string;
+  narrow_step_103: string;
+  nifty_hydrocarbon_360?: string;
+  normal_provision_917: string;
+  optimal_godfather_683: SchTameFinding20DC;
+  private_bestseller_777: Record<string, string>;
+  quarterly_chops_248: SchTameFinding20DC;
+  recent_icecream_683: string;
+  rich_dish_304: string;
+  royal_folklore_546?: string;
+  soupy_kielbasa_3: number;
+  splendid_pearl_648: string;
+  supportive_lace_765: SchTameFinding20DC;
+  surprised_deck_568:
+    | "ev0"
+    | "ev1"
+    | "ev2"
+    | "ev3"
+    | "ev4"
+    | "ev5"
+    | "ev6"
+    | "ev7"
+    | "ev8";
+  teeming_veto_426: number;
+  tidy_carboxyl_638: string;
+  troubled_extension_972: string;
+  uniform_tuber_688: string;
+  vivid_trash_623: SchWarmKettledrum49DC[];
+  warlike_piglet_650?: string;
+  weird_cosset_391: string;
+  which_stepmother_316?: string;
+  wise_tuba_666: string;
+  worthless_fen_326: string;
+  /** @example "atrox spoliatio absum sodalitas" */
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchCrowdedSkyline34DC {
+  /** Fixture field. */
+  aware_charlatan_778:
+    | SchDismalEyebrow85DC
+    | SchLikableShark66DC
+    | SchEmotionalNumeracy41DC
+    | SchSphericalPilot50DC
+    | SchJuicyFowl41DC;
+  /** Fixture field. */
+  educated_gymnast_316?: SchUnluckyStump49DC;
+  feline_tomography_184?: {
+    aware_charlatan_778: string;
+    hardtofind_operating_864: number;
+  };
+  /**
+   * Fixture field.
+   * @example "corrupti alter cotidie sufficio sollicito"
+   */
+  flawless_spirit_246: string;
+  /** Fixture field. */
+  happy_soup_473?: SchYellowishExpansion48DC;
+}
+
+export interface SchCrushingUnderstanding76DC {
+  impartial_address_687?: string;
+  triangular_density_191?: string;
+  watery_publication_396?: string;
+}
+
+export interface SchDarlingUtilization74DC {
+  guilty_fishery_262: string;
+  impartial_bookend_940: number;
+}
+
+export interface SchDazzlingCoil54DC {
+  glittering_cook_137: string[];
+  lined_toaster_931: string;
+}
+
+export type SchDearestFowl26DC = Record<string, any>;
+
+export interface SchDentalQuart25DC {
+  /**
+   * @min 1
+   * @max 64
+   * @default 8
+   */
+  spiteful_legislature_65: number;
+  /**
+   * @min 1
+   * @max 512
+   * @default 60
+   */
+  troubled_minority_163: number;
+}
+
+export interface SchDiscretePetticoat89DC {
+  confused_sightseeing_802: string;
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export type SchDismalEyebrow85DC = Record<string, any>;
+
+export interface SchDistantBog40DC {
+  authentic_governance_938?: number;
+  favorite_gloom_378?: string;
+  kosher_championship_627: string;
+  parallel_premise_148?: boolean;
+}
+
+export interface SchDrearyOcelot19DC {
+  caring_flint_179: SchGranularDoing40DC;
+  inferior_spork_5: SchUtilizedStory23DC[];
+}
+
+export interface SchEducatedSwordfish15DC {
+  busy_typewriter_288: SchWigglyManagement13DC[];
+  impartial_bookend_940: SchJealousEntry36DC;
+  /** Fixture field. */
+  reasonable_disk_286?: SchJealousEntry36DC[];
+}
+
+export interface SchElectricChallenge66DC {
+  average_reasoning_609?: string;
+  /** @format uint */
+  dependent_seal_550?: number;
+  far_circumference_334: string;
+  faraway_academics_674: string;
+  inexperienced_sprinkles_900: number;
+  regular_tusk_123?: number;
+  slow_valley_398: boolean;
+  unhealthy_allocation_876: "ev0" | "ev1" | "ev2";
+  name: string;
+}
+
+export interface SchElegantEctoderm76DC {
+  accurate_dash_973?: string;
+  assured_design_800?: number;
+  breakable_packaging_601?: number;
+  busy_typewriter_288?: string;
+  clearcut_charm_466?: string;
+  clueless_polyester_967?: string;
+  concrete_blossom_887?: string;
+  darling_fledgling_15?: string[];
+  enchanted_scale_326?: SchKnownProvision19DC;
+  every_mentor_335?: boolean;
+  frizzy_flat_359?: string;
+  kooky_strait_994?: string;
+  late_story_491?: string;
+  lined_toaster_931?: string;
+  orderly_outset_79?: string;
+  private_bestseller_777?: Record<string, SchDistantBog40DC>;
+  quarterly_chops_248?: SchKnownProvision19DC;
+  shabby_baseboard_84?: number;
+  shallow_overheard_528?: string;
+  shocked_account_284?: string[];
+  sugary_range_774?: SchKnownProvision19DC;
+  surprised_deck_568?: string;
+  trained_bend_874?: string;
+  unlucky_goodwill_42?: string;
+  worthless_millet_838?: number;
+  yellowish_monocle_256?: number;
+  name?: string;
+  type: string;
+}
+
+export interface SchEllipticalNoon72DC {
+  favorite_peninsula_980: SchPoliticalDisadvantage72DC[];
+  giving_swing_968: SchPoliticalDisadvantage72DC[];
+  inexperienced_sprinkles_900: number;
+  leading_straw_650: SchPoliticalDisadvantage72DC[];
+  description: string;
+  name: string;
+  tags: string[];
+}
+
+/**
+ * Fixture field.
+ */
+export type SchEmotionalNumeracy41DC = Record<string, any>;
+
+/**
+ * Fixture field.
+ */
+export interface SchEntireCoil87DC {
+  bulky_finer_714: string;
+  dense_meander_818: string;
+  lined_toaster_931: string;
+}
+
+export interface SchEsteemedReplacement47DC {
+  growing_footrest_646: number;
+  lustrous_godfather_749: number;
+  nutritious_compromise_835: string;
+}
+
+export interface SchExaltedPassport28DC {
+  jumbo_baritone_20: string;
+  wise_labourer_33: string;
+}
+
+export interface SchFaintSeason40DC {
+  impartial_bookend_940?: number;
+  scaly_window_805: string;
+  tense_crosscontamination_408?: {
+    /** @example "spes urbanus" */
+    educated_gymnast_316?: string;
+    /** @example "magnam tunc synagoga cito debitis" */
+    flawless_spirit_246?: string;
+    /** @example "absorbeo administratio avarus arcesso supra" */
+    happy_soup_473?: string;
+  };
+}
+
+export interface SchFavorableWarming35DC {
+  concrete_blossom_887: string;
+  enchanted_scale_326?: SchWorthwhileScorpion30DC;
+  kooky_strait_994: string;
+  lustrous_harp_607?: SchElegantEctoderm76DC[];
+  next_scorn_716?: Record<string, string>;
+  only_characterization_749?: SchWorthwhileScorpion30DC;
+  sugary_range_774?: SchWorthwhileScorpion30DC;
+  surprised_deck_568: string;
+  name: string;
+  type: string;
+}
+
+export type SchFilthyOrchid12DC = number;
+
+export enum SchFlawlessTravel58DC {
+  Ev0 = "ev0",
+  Ev1 = "ev1",
+}
+
+export interface SchFormalGloom78DC {
+  better_extent_507: string;
+  name: string;
+}
+
+export interface SchFragrantGodfather94DC {
+  lined_toaster_931: string;
+  weighty_interviewer_270: number;
+  wrong_pecan_982?: SchAshamedSandbar62DC[];
+}
+
+export type SchFrontInstructor10DC = {
+  private_status_827: number;
+  warlike_piglet_650: string;
+  type: string;
+}[];
+
+export interface SchFrozenSprinkles16DC {
+  favorite_peninsula_980: SchPoliticalDisadvantage72DC[];
+  giving_swing_968: SchPoliticalDisadvantage72DC[];
+  leading_straw_650: SchPoliticalDisadvantage72DC[];
+  description: string;
+  name: string;
+  tags: string[];
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchFrugalDivine26DC {
+  /** @default false */
+  fixed_sport_398: boolean;
+  /** Fixture field. */
+  lost_custody_764?: SchRowdySummer29DC;
+  name: string;
+  options: SchHeftyExpense43DC;
+  type: SchScentedLady65DC;
+}
+
+export interface SchFuzzyDrug7DC {
+  earnest_pile_927: {
+    milky_video_405: number;
+    svelte_tackle_202: number;
+    tidy_video_805: SchBlushingDeduction31DC[];
+    unlawful_membership_466?: SchBlushingDeduction31DC[];
+  };
+  tough_formula_121: SchFilthyOrchid12DC;
+  type: SchScentedLady65DC;
+}
+
+export interface SchGiftedPoppy54DC {
+  ajar_flood_450?: number;
+  concrete_blossom_887: string;
+  firsthand_ferret_957?: string[];
+  great_language_127?: number;
+  informal_fuel_186?: number;
+  kooky_strait_994?: string;
+  lawful_masterpiece_567?: SchArtisticReboot34DC;
+  sniveling_adaptation_496?: number;
+  surprised_deck_568: string;
+  warlike_piglet_650: string;
+  name: string;
+  type: string;
+}
+
+export interface SchGiganticOther53DC {
+  lined_toaster_931: string;
+  weighty_interviewer_270: number;
+  name: string;
+}
+
+export interface SchGlumClimb76DC {
+  carefree_cope_455: string;
+  great_language_127: string;
+  internal_knitting_141: string;
+  rigid_apparatus_198: string;
+  scared_tuba_436: string;
+  shabby_cinema_624: string;
+  svelte_bandwidth_259: string;
+  taut_department_70: string;
+}
+
+export interface SchGranularDoing40DC {
+  earnest_pile_927: number;
+  same_habit_432: number;
+  shortterm_sunbeam_556: SchYoungDisposer38DC[];
+  supportive_lace_765: number;
+  tidy_video_805: SchYoungDisposer38DC[];
+}
+
+export interface SchGrizzledTerm71DC {
+  buttery_newsletter_312: number;
+  dense_meander_818: string;
+  disloyal_armoire_385?: {
+    buttery_newsletter_312: number;
+    easy_gym_126: boolean;
+    irresponsible_minister_808: number;
+    late_rim_592: number;
+    lined_toaster_931: string;
+    quickwitted_making_917: string;
+    supportive_pecan_274: number;
+    tidy_video_805?: SchRubberyPolyester46DC;
+    name: string;
+    type: "ev0" | "ev1";
+  }[];
+  easy_gym_126: boolean;
+  irresponsible_minister_808: number;
+  late_rim_592: number;
+  lined_toaster_931: string;
+  nifty_guidance_750?: Record<string, number>;
+  quickwitted_making_917: string;
+  supportive_pecan_274: number;
+  tidy_video_805?: SchRubberyPolyester46DC;
+  unfinished_perfection_221?: Record<string, number>;
+  name: string;
+  type: "ev0" | "ev1";
+}
+
+export interface SchGrubbyAntelope31DC {
+  accurate_dash_973: string;
+  any_adaptation_903?: SchKnownProvision19DC;
+  biodegradable_verve_89: number;
+  busy_typewriter_288: string;
+  clearcut_charm_466: string;
+  clueless_polyester_967: string;
+  gray_gloom_209?: SchTotalTackle66DC;
+  kooky_strait_994: string;
+  lined_toaster_931: string;
+  monthly_quart_300: number;
+  slushy_bookend_683: boolean;
+  surprised_deck_568: string;
+  trained_bend_874: string;
+  waterlogged_hydrolyse_509?: Record<string, any>;
+  wide_starboard_293: string;
+  name: string;
+}
+
+export interface SchGuiltyEntry87DC {
+  /** Fixture field. */
+  reasonable_disk_286?: SchGuiltyEntry87DC[];
+  /** Fixture field. */
+  super_fund_30?: string[];
+  weighty_interviewer_270?: number;
+  name: string;
+}
+
+export interface SchHappyResource46DC {
+  sore_curl_306: string;
+  worthless_fen_326: string;
+  name: "ev0" | "ev1" | "ev2" | "ev3";
+}
+
+export interface SchHappygoluckyDesign62DC {
+  political_peony_164: {
+    earnest_pile_927: number;
+    only_characterization_749: number;
+    svelte_tackle_202: number;
+    tidy_video_805: SchBlushingDeduction31DC[];
+    unlawful_membership_466: SchBlushingDeduction31DC[];
+  };
+  welloff_zebra_324?: {
+    alarmed_conservation_773: {
+      phony_awareness_233: number;
+      tidy_video_805: SchBlushingDeduction31DC[];
+      unlawful_membership_466: SchBlushingDeduction31DC[];
+      weighty_interviewer_270: number;
+      name: string;
+    }[];
+    /** @example 24383 */
+    blind_summary_894: number;
+    earnest_pile_927: number;
+    only_characterization_749: number;
+    svelte_tackle_202: number;
+    /** @example "aliquid admitto" */
+    name: string;
+  }[];
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchHeftyExpense43DC {
+  clueless_polyester_967: string;
+  scaly_window_805?: {
+    dense_meander_818: string;
+    trivial_cheese_66: string;
+  }[];
+}
+
+export interface SchHopefulWheel89DC {
+  faraway_academics_674?: number;
+  grim_technician_955: string;
+  other_cake_536: string;
+  submissive_hundred_663?: number;
+}
+
+export interface SchIcyElectronics74DC {
+  lined_toaster_931: string;
+  super_fund_30?: string[];
+  name: string;
+}
+
+export interface SchIdealDead82DC {
+  boiling_hierarchy_461?: number;
+  hardtofind_reconsideration_693?: number;
+  trusty_republican_914?: number;
+  unfortunate_coordination_761?: number;
+}
+
+export interface SchIdealWidow85DC {
+  boring_daughter_575: number;
+  clearcut_charm_466: string;
+  dense_meander_818: string;
+  favorite_gloom_378: string;
+  /** Fixture field. */
+  secondhand_swing_732?: SchMundaneFormula7DC;
+  surprised_deck_568: string;
+  valuable_sonnet_549: string;
+  worthless_fen_326: string;
+  name: string;
+}
+
+export type SchImpartialHexagon19DC = SchSqueakyFuton92DC[];
+
+export interface SchImportantMuscat47DC {
+  lined_toaster_931: string;
+  multicolored_intellect_256: {
+    favorite_ecliptic_597?: number;
+    inexperienced_sprinkles_900: number;
+    junior_folklore_128: string;
+    noteworthy_violin_621?: string;
+    plain_singing_111: string;
+    short_hygienic_490?: string;
+    name: string;
+  };
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchImpracticalDecryption64DC {
+  /** @format base64 */
+  confused_sightseeing_802: string;
+}
+
+export interface SchInbornRecovery77DC {
+  oblong_swanling_351?: {
+    circular_license_128: string[];
+    confused_sightseeing_802?: SchAmbitiousTentacle99DC;
+    name: string;
+  }[];
+  tempting_omelet_120: SchSimplisticApricot58DC;
+}
+
+export interface SchIncomparableRiser44DC {
+  ashamed_bandwidth_400?: number;
+  frizzy_vol_569?: number;
+  great_language_127?: number;
+  gripping_monster_418?: number;
+  internal_knitting_141?: number;
+  rigid_apparatus_198?: number;
+  sandy_feather_894?: number;
+  secret_palate_82?: number;
+  shabby_cinema_624?: number;
+  sorrowful_pine_785?: number;
+  stylish_airbus_466?: number;
+  substantial_character_940?: number;
+  taut_department_70?: number;
+  unripe_cutlet_449?: number;
+  wordy_blossom_142?: {
+    private_status_827: number;
+    warlike_piglet_650: string;
+    type: string;
+  }[];
+}
+
+export interface SchIncomparableSeafood15DC {
+  each_making_201?: {
+    poor_email_971: string[];
+    sweet_carboxyl_918: string;
+    weighty_interviewer_270: number;
+  }[];
+  frugal_yak_786?: {
+    lined_toaster_931: string;
+    super_fund_30: Record<
+      string,
+      Record<
+        string,
+        {
+          gripping_baseboard_237: string[];
+        }
+      >
+    >;
+    name: string;
+  }[];
+  livid_obligation_644?: {
+    dense_meander_818: string;
+    poor_email_971: string[];
+  }[];
+}
+
+export interface SchInformalLaughter88DC {
+  earnest_pile_927?: SchPoorTrolley71DC;
+  good_membership_929?: SchPoorTrolley71DC;
+  growing_footrest_646?: SchIncomparableRiser44DC;
+  supportive_lace_765?: SchIncomparableRiser44DC;
+}
+
+export interface SchInternationalGoing29DC {
+  admired_bandwidth_929: string;
+  parched_extension_598: string;
+  triangular_density_191: SchLinedChiffonier49DC[];
+}
+
+export interface SchJauntyOther22DC {
+  authentic_statue_262?: string;
+  only_characterization_749: number;
+  pastel_packaging_297: number;
+}
+
+export interface SchJealousEntry36DC {
+  bitter_birdcage_977: boolean;
+  blind_summary_894?: number;
+  inexperienced_sprinkles_900: number;
+  /** @default false */
+  kooky_flint_197: boolean;
+  super_fund_30?: SchWellmadeTennis15DC[];
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export type SchJuicyFowl41DC = Record<string, any>;
+
+export interface SchJuvenileAnticodon46DC {
+  bony_valuable_98: number;
+  concrete_napkin_704: number;
+  pastel_packaging_297: number;
+  triangular_density_191: SchCluelessBin29DC[];
+}
+
+export interface SchKnownProvision19DC {
+  ajar_flood_450?: number;
+  alert_louse_795?: number;
+  annual_premier_108?: number;
+  artistic_making_141?: number;
+  distorted_expense_767?: number;
+  exhausted_armchair_877?: number;
+  fat_premeditation_708?: number;
+  frizzy_vol_569?: number;
+  great_language_127?: number;
+  informal_atrium_456?: number;
+  internal_knitting_141?: number;
+  legal_spork_195?: number;
+  mammoth_stranger_72?: number;
+  meaty_diversity_811?: number;
+  miserable_gripper_503?: number;
+  narrow_switchboard_754?: number;
+  nifty_boyfriend_825?: number;
+  palatable_tuber_716?: number;
+  probable_lava_227?: number;
+  sandy_feather_894?: number;
+  secret_palate_82?: number;
+  selfassured_bonfire_921?: number;
+  shabby_cinema_624?: number;
+  sniveling_adaptation_496?: number;
+  sorrowful_pine_785?: number;
+  striking_switch_844?: number;
+  substantial_character_940?: number;
+  taut_department_70?: number;
+  tough_supplier_98?: number;
+  unripe_cutlet_449?: number;
+  whispered_bench_33?: number;
+  white_rawhide_612?: number;
+}
+
+export interface SchKookyDaddy40DC {
+  these_commodity_804: SchIcyElectronics74DC[];
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchLikableShark66DC {
+  /** Fixture field. */
+  bruised_pile_451: SchBustlingTypeface38DC;
+  /** Fixture field. */
+  shiny_tomography_752: SchWrathfulCoast33DC;
+}
+
+export interface SchLimpingVideo70DC {
+  carefree_cope_455: SchEsteemedReplacement47DC;
+  great_language_127: SchEsteemedReplacement47DC;
+  internal_knitting_141: SchEsteemedReplacement47DC;
+  rigid_apparatus_198: SchEsteemedReplacement47DC;
+  scared_tuba_436: SchEsteemedReplacement47DC;
+  shabby_cinema_624: SchEsteemedReplacement47DC;
+  svelte_bandwidth_259: SchEsteemedReplacement47DC;
+  taut_department_70: SchEsteemedReplacement47DC;
+}
+
+export interface SchLinedChiffonier49DC {
+  authentic_governance_938: number;
+  enchanting_toothbrush_197: string;
+  inexperienced_sprinkles_900: string;
+  kosher_championship_627: string;
+  lined_toaster_931: string;
+  rotating_foodstuffs_910: string;
+  trained_bend_874: string | null;
+  name: string;
+  type: string;
+}
+
+export interface SchLiveObesity61DC {
+  authorized_scenario_489: string;
+  confused_sightseeing_802: string;
+  skeletal_hornet_183?: string;
+  steel_pupil_353: string[];
+  name: string;
+  options?: SchVibrantPopulist8DC[];
+  required: boolean;
+  title: string;
+  type: "ev0" | "ev1" | "ev2" | "ev3" | "ev4";
+}
+
+export interface SchLivelyFog27DC {
+  vivid_trash_623: SchScentedSwanling17DC[];
+}
+
+export interface SchLumberingPopulist82DC {
+  confused_sightseeing_802: string;
+  sore_curl_306: string;
+  name: string;
+}
+
+export interface SchLustrousTuxedo4DC {
+  bruised_pile_451: string;
+  delirious_feather_139: string;
+  funny_goodwill_615: string;
+  limping_meatloaf_167: string;
+  sparkling_bid_521: string;
+  uniform_adult_223: string[];
+}
+
+export interface SchMaleSonnet49DC {
+  super_fund_30?: string[];
+  name: string;
+}
+
+export interface SchMealyHawk15DC {
+  authentic_governance_938: number;
+  crooked_wheel_932?: SchPitifulOil91DC;
+  important_hoof_867: number;
+  long_warming_333?: string;
+  personal_kiss_794: boolean;
+  some_knickers_389?: SchPitifulOil91DC;
+  valuable_sonnet_549?: SchPitifulOil91DC;
+}
+
+export interface SchMeanMythology88DC {
+  alert_louse_795?: number;
+  distorted_expense_767?: number;
+  exhausted_armchair_877?: number;
+  great_language_127?: number;
+  internal_knitting_141?: number;
+  mammoth_stranger_72?: number;
+  miserable_gripper_503?: number;
+  palatable_tuber_716?: number;
+  rigid_apparatus_198?: number;
+  shabby_cinema_624?: number;
+  taut_department_70?: number;
+  whispered_bench_33?: number;
+}
+
+export interface SchMeatyFlame21DC {
+  boring_daughter_575: number;
+  favorite_gloom_378: string;
+  finished_horst_636: number;
+  hardtofind_operating_864: string;
+  infatuated_pillbox_932: string;
+  meager_lady_758: string;
+  measly_linseed_507: number;
+  noxious_obesity_783: number;
+  outstanding_quinoa_526: string[];
+  private_bestseller_777: Record<string, string>;
+  soggy_tennis_204: number;
+  surprised_deck_568: string;
+  /** @format uint64 */
+  ultimate_affect_171: number;
+  upset_violin_966?: SchMysteriousEqual64DC[];
+  utilized_bathrobe_150: SchQuixoticDigestive19DC;
+  name: string;
+}
+
+export interface SchMulticoloredBench58DC {
+  bare_minority_497: string[];
+  inexperienced_sprinkles_900: number;
+  wrong_pecan_982: {
+    lined_toaster_931: string;
+    name: string;
+  }[];
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchMulticoloredTransom67DC {
+  confused_sightseeing_802: number;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchMundaneFormula7DC {
+  judicious_comparison_705?: boolean;
+  tidy_video_805: SchVastCash78DC[];
+}
+
+export type SchMushyPlumber74DC = Record<string, any>;
+
+export interface SchMysteriousEqual64DC {
+  clueless_polyester_967: string;
+  cruel_heartbeat_702: number;
+  dense_meander_818?: string;
+  distinct_knuckle_904?: {
+    impossible_thyme_730: string;
+    other_cake_536: string;
+  }[];
+  favorite_gloom_378: string;
+  interesting_certification_249: SchSickDaddy26DC;
+  lined_toaster_931: string;
+  lost_custody_764: string;
+  lustrous_harp_607?: SchSlightOutrun30DC[];
+  scaly_window_805: string;
+  /** Fixture field. */
+  secondhand_swing_732?: SchYouthfulPunctuation36DC;
+  smart_vision_715: string;
+  supportive_lace_765: SchPartialMerit60DC;
+  surprised_deck_568: string;
+  valuable_sonnet_549: string;
+  wide_starboard_293: string;
+  worthless_fen_326: string;
+  youthful_hamburger_522: SchPartialMerit60DC;
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchNeedyEqual89DC {
+  dense_meander_818: string;
+  thin_parsnip_570: string;
+}
+
+export interface SchNegativeOrchid86DC {
+  artistic_lady_281: {
+    apprehensive_programme_763: string;
+    busy_typewriter_288: string;
+    clueless_polyester_967: string;
+    lined_toaster_931: string;
+    spiteful_programme_103: string;
+    understated_tool_985: string;
+    name: string;
+    type: string;
+  };
+  dense_meander_818: string;
+  triangular_density_191: {
+    authentic_governance_938: number;
+    busy_typewriter_288: string;
+    knotty_finding_212: {
+      apprehensive_programme_763: string;
+      busy_typewriter_288: string;
+      clueless_polyester_967: string;
+      lined_toaster_931: string;
+      spiteful_programme_103: string;
+      understated_tool_985: string;
+      name: string;
+      type: string;
+    };
+    kosher_championship_627: string;
+    lined_toaster_931: string;
+    name: string;
+  }[];
+}
+
+export interface SchNeglectedLawmaker52DC {
+  /** Fixture field. */
+  favorite_peninsula_980: Record<string, string>;
+  /** Fixture field. */
+  giving_swing_968: Record<string, string>;
+  inexperienced_sprinkles_900: number;
+  /** Fixture field. */
+  leading_straw_650: Record<string, string>;
+}
+
+export interface SchNiceQuinoa61DC {
+  gray_coordination_734: {
+    able_charlatan_128: string;
+    lined_toaster_931: string;
+    lost_custody_764: string;
+    scratchy_marten_999: string;
+  }[];
+  simplistic_dwell_970: string;
+}
+
+export interface SchNimbleAdaptation15DC {
+  authentic_governance_938?: number;
+  bruised_pile_451: string;
+  juicy_lid_99?: Record<string, string>;
+  motionless_amnesty_567?: string;
+  stale_haversack_876?: boolean;
+  welldocumented_zebra_179?: SchCrushingUnderstanding76DC;
+}
+
+export interface SchOldStall10DC {
+  sugary_wriggler_830: boolean;
+  wobbly_bakeware_218: Record<string, SchSteepScorn12DC>;
+}
+
+export interface SchOptimalMeander61DC {
+  alert_majority_93: number;
+  broken_cricket_543: number;
+  busy_typewriter_288: string;
+  clearcut_charm_466: string;
+  clueless_polyester_967: string;
+  dense_meander_818: string;
+  gray_gloom_209: SchTotalTackle66DC;
+  helpless_gripper_69: number;
+  infatuated_pillbox_932: string;
+  instructive_traditionalism_550: number;
+  lined_toaster_931: string;
+  lustrous_harp_607: Record<string, SchElegantEctoderm76DC>;
+  major_cannon_817: Record<string, SchKnownProvision19DC>;
+  noted_soybean_682: string;
+  private_bestseller_777: Record<string, SchDistantBog40DC>;
+  responsible_pneumonia_20: string[];
+  soggy_tennis_204: number;
+  sparkling_bid_521: string;
+  specific_adviser_211: string[];
+  surprised_deck_568: string;
+  trusting_fund_905: string;
+  upset_violin_966: SchCharmingMetal15DC[];
+  links: SchFormalGloom78DC[];
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchOrangeAcquaintance28DC {
+  confused_sightseeing_802: SchShallowVolleyball27DC[];
+}
+
+export interface SchParallelPromise8DC {
+  inexperienced_sprinkles_900: number;
+  vibrant_version_188: SchEllipticalNoon72DC[];
+  description: string;
+  name: string;
+}
+
+export interface SchPartialMerit60DC {
+  great_language_127?: number;
+  internal_knitting_141?: number;
+  shabby_cinema_624?: number;
+  taut_department_70?: number;
+  whispered_bench_33?: number;
+}
+
+export interface SchPitifulOil91DC {
+  breakable_packaging_601: number;
+  fatherly_department_118?: number;
+  ironclad_dress_799: number;
+  last_larva_274: string;
+  mysterious_reorganisation_700?: string;
+  needy_exasperation_364: string;
+}
+
+export interface SchPoliteAccountability63DC {
+  accurate_dash_973?: string;
+  biodegradable_verve_89?: number;
+  bossy_gym_567?: SchMealyHawk15DC;
+  busy_typewriter_288?: string;
+  clueless_polyester_967: string;
+  cruel_heartbeat_702?: number;
+  delirious_feather_139: Record<string, string>;
+  distinct_knuckle_904?: SchHopefulWheel89DC[];
+  elegant_silk_847?: string;
+  favorable_copout_707?: SchKnownProvision19DC;
+  favorite_gloom_378?: string;
+  honored_following_734?: string;
+  impractical_toothbrush_132?: number;
+  inexperienced_sprinkles_900?: string;
+  kooky_strait_994?: string;
+  last_larva_274?: string;
+  lined_toaster_931: string;
+  lost_custody_764?: string;
+  lustrous_harp_607?: SchElegantEctoderm76DC[];
+  mysterious_signature_983?: number[];
+  nice_guidance_190?: number;
+  quarterly_chops_248: SchKnownProvision19DC;
+  reckless_technician_69?: string;
+  selfish_willow_331?: string;
+  stark_bran_668?: SchGrubbyAntelope31DC[];
+  striking_switch_844?: SchGiftedPoppy54DC[];
+  supportive_lace_765: SchKnownProvision19DC;
+  surprised_deck_568: string;
+  troubled_airman_86?: string;
+  unique_sunbeam_230?: number;
+  unruly_trick_12?: number;
+  unwieldy_secrecy_181: number;
+  valuable_sonnet_549?: string;
+  vast_knickers_603?: string;
+  weekly_digit_10?: string;
+  wellgroomed_swath_259?: SchGrubbyAntelope31DC;
+  whispered_junior_49: SchIdealDead82DC;
+  wide_starboard_293?: string;
+  winged_hamburger_356?: Record<string, string>;
+  worthless_fen_326?: string;
+  worthy_archaeology_635: string;
+  youthful_hamburger_522: SchKnownProvision19DC;
+  name: string;
+}
+
+export interface SchPoliticalDisadvantage72DC {
+  authorized_scenario_489: string;
+  skeletal_hornet_183?: string;
+  steel_pupil_353: string[];
+  name: string;
+  options?: SchVibrantPopulist8DC[];
+  required: boolean;
+  title: string;
+  type: "ev0" | "ev1" | "ev2" | "ev3" | "ev4";
+}
+
+export interface SchPoorTrolley71DC {
+  ashamed_bandwidth_400?: number;
+  colorless_fork_584?: {
+    private_status_827: number;
+    warlike_piglet_650: string;
+    type: string;
+  }[];
+  frizzy_vol_569?: number;
+  great_language_127?: number;
+  gripping_monster_418?: number;
+  internal_knitting_141?: number;
+  rigid_apparatus_198?: number;
+  sandy_feather_894?: number;
+  secret_palate_82?: number;
+  shabby_cinema_624?: number;
+  sorrowful_pine_785?: number;
+  stylish_airbus_466?: number;
+  substantial_character_940?: number;
+  taut_department_70?: number;
+  unripe_cutlet_449?: number;
+}
+
+export interface SchPracticalMakeover24DC {
+  breakable_packaging_601: string;
+  last_larva_274: string;
+  long_warming_333: string;
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchPrimaryTinderbox36DC {
+  blind_summary_894: number;
+  weighty_interviewer_270: number;
+}
+
+export interface SchPunctualForgery23DC {
+  clearcut_charm_466: string;
+  clueless_polyester_967: string;
+  lined_toaster_931: string;
+  super_fund_30: SchUnhappyVision98DC[];
+  trusting_fund_905: string;
+  unique_lieu_86: boolean;
+  name: string;
+}
+
+export interface SchPurpleDirector44DC {
+  pitiful_wasabi_426: string;
+  wise_labourer_33: string;
+}
+
+export interface SchPushyTrench5DC {
+  accurate_subsidy_125: string;
+  biodegradable_stall_231: string;
+  bitter_seafood_1: string;
+  candid_cannon_534: string;
+  clearcut_pillow_870: string;
+  elastic_receptor_654: string;
+  enchanted_teriyaki_37: string;
+  fatal_gymnast_624: string;
+  foolhardy_legend_251: string;
+  great_valentine_174: string;
+  hairy_freezing_171?: string;
+  inconsequential_palate_29: string;
+  juvenile_acquaintance_766?: string;
+  lined_polyester_515: string;
+  lone_whale_211: string;
+  mealy_tooth_562: string;
+  narrow_step_103: string;
+  nifty_hydrocarbon_360?: string;
+  normal_provision_917: string;
+  recent_icecream_683: string;
+  rich_dish_304: string;
+  royal_folklore_546?: string;
+  splendid_pearl_648: string;
+  tidy_carboxyl_638: string;
+  troubled_extension_972: string;
+  uniform_tuber_688: string;
+  warlike_piglet_650?: string;
+  weird_cosset_391: string;
+  which_stepmother_316?: string;
+  wise_tuba_666: string;
+}
+
+export interface SchQuixoticDigestive19DC {
+  good_membership_929: SchYoungHippodrome53DC;
+  supportive_lace_765: SchYoungHippodrome53DC;
+}
+
+export interface SchRealisticViability71DC {
+  enchanted_scale_326: number;
+  kooky_strait_994: string;
+  late_story_491: string;
+  quarterly_chops_248: number;
+  sugary_range_774: number;
+  surprised_deck_568: string;
+  trained_bend_874: string;
+  trusting_fund_905: string;
+  type: string;
+}
+
+export interface SchReflectingEntry91DC {
+  super_fund_30: Record<
+    string,
+    Record<
+      string,
+      {
+        gripping_baseboard_237: string[];
+      }
+    >
+  >;
+  name: string;
+}
+
+export interface SchRegalGoat52DC {
+  dense_meander_818: string;
+  infatuated_pillbox_932: string | null;
+  soggy_tennis_204: number;
+  upset_maestro_691: {
+    informal_tooth_772: SchUnknownHunt7DC[];
+    lined_toaster_931: string;
+    in: SchUnknownHunt7DC[];
+    name: string;
+  }[];
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchRemorsefulCinder60DC {
+  confused_sightseeing_802: string;
+}
+
+export interface SchRottenChap44DC {
+  growing_footrest_646?: SchGlumClimb76DC;
+  wordy_blossom_142?: SchFrontInstructor10DC;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchRowdySummer29DC {
+  hasty_teammate_958: string;
+  political_countess_143: string;
+  name: string;
+}
+
+export interface SchRubberyPolyester46DC {
+  earnest_pile_927?: SchIncomparableRiser44DC;
+  good_membership_929?: SchIncomparableRiser44DC;
+  growing_footrest_646?: SchIncomparableRiser44DC;
+  supportive_lace_765?: SchIncomparableRiser44DC;
+}
+
+export type SchRunnyDream63DC = {
+  private_status_827: number;
+  warlike_piglet_650: string;
+  type: string;
+}[];
+
+export interface SchRustyCircumference21DC {
+  insidious_poetry_779: string;
+  sore_curl_306: string;
+  weighty_interviewer_270: number;
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchSarcasticReasoning12DC {
+  /**
+   * Fixture field.
+   * @example 17158
+   */
+  immaculate_resource_440: number;
+  peaceful_pear_164: SchAnnualBob98DC[];
+  /**
+   * Fixture field.
+   * @example true
+   */
+  private_ruin_729: boolean;
+  /**
+   * Fixture field.
+   * @example 18444
+   */
+  wise_platter_986: number;
+  items: SchAnnualBob98DC[];
+}
+
+export enum SchScentedLady65DC {
+  Ev0 = "ev0",
+  Ev1 = "ev1",
+}
+
+export interface SchScentedSwanling17DC {
+  lined_toaster_931: string;
+  super_fund_30?: string[];
+  name: string;
+}
+
+export interface SchScientificWheel32DC {
+  favorite_gloom_378: string;
+  hardtofind_operating_864: string;
+  surprised_deck_568: string;
+  name: string;
+}
+
+export interface SchSecondaryUnblinking43DC {
+  memorable_pilot_447: boolean;
+}
+
+/**
+ * Fixture field.
+ */
+export type SchShallowVolleyball27DC =
+  | ({
+      type: "array";
+    } & SchOrangeAcquaintance28DC)
+  | ({
+      type: "bool";
+    } & SchSparklingDivine75DC)
+  | ({
+      type: "bytes";
+    } & SchImpracticalDecryption64DC)
+  | ({
+      type: "double";
+    } & SchSnivelingMeal11DC)
+  | ({
+      type: "int";
+    } & SchMulticoloredTransom67DC)
+  | ({
+      type: "string";
+    } & SchRemorsefulCinder60DC);
+
+export interface SchShoddyFollowing87DC {
+  confused_sightseeing_802: string;
+  sore_curl_306: string;
+  name: string;
+}
+
+export interface SchShortHippodrome79DC {
+  clueless_polyester_967: string;
+  dense_meander_818: SchScientificWheel32DC[];
+  lined_toaster_931: string;
+  spiteful_programme_103: string;
+  name: string;
+  type?: "ev0" | "ev1";
+}
+
+export interface SchShyHumidity38DC {
+  anguished_adult_966: string[];
+  /** @format uint */
+  dependent_seal_550?: number;
+  far_circumference_334: string;
+  unhealthy_allocation_876: "ev0" | "ev1" | "ev2";
+  upset_priesthood_107?: boolean;
+  name: string;
+}
+
+export interface SchSickDaddy26DC {
+  authentic_governance_938: number;
+  courageous_perp_493: SchPitifulOil91DC;
+  darling_squid_73: boolean;
+  dependable_perfection_841: number;
+  mysterious_reorganisation_700: string;
+  trivial_straw_334: SchPitifulOil91DC;
+  valuable_sonnet_549: SchPitifulOil91DC;
+}
+
+export interface SchSimplisticApricot58DC {
+  /** @example 757.15 */
+  earnest_pile_927?: number;
+  favorable_heartache_422?: boolean;
+  /** @example 16710 */
+  inexperienced_sprinkles_900: number;
+  /** @example 380.4 */
+  only_characterization_749?: number;
+  /** @example 814.96 */
+  svelte_tackle_202: number;
+  /** @example "maiores concido" */
+  name: string;
+}
+
+export interface SchSlightOutrun30DC {
+  concrete_blossom_887: string;
+  elderly_trench_48?: string;
+  enchanted_scale_326: {
+    informal_atrium_456: number;
+  };
+  frizzy_flat_359: string;
+  smart_vision_715?: string;
+  sugary_range_774: {
+    informal_atrium_456: number;
+  };
+  urban_ghost_432?: string;
+  valuable_sonnet_549?: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchSnivelingMeal11DC {
+  /** @format double */
+  confused_sightseeing_802: number;
+}
+
+export interface SchSoupyMilestone63DC {
+  creamy_coal_710?: string;
+  intent_monster_499?: string;
+  outlying_disk_519?: string;
+  /** @default false */
+  outstanding_aftermath_82?: boolean;
+  /** @pattern ssh-rsa AAAA[0-9A-Za-z+/]{200,1000}=*( ([^@]+@[^@]+))? */
+  right_schnitzel_997?: string;
+  showy_tabletop_662?: string;
+  /**
+   * @min 1
+   * @max 64
+   * @default 8
+   */
+  spiteful_legislature_65?: number;
+  /**
+   * @min 10
+   * @max 8192
+   * @default 500
+   */
+  terrible_bench_536?: number;
+  /**
+   * @min 1
+   * @max 512
+   * @default 60
+   */
+  troubled_minority_163?: number;
+  valuable_sonnet_549?: string;
+  worthless_fen_326?: string;
+  name?: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchSoupySustenance11DC {
+  dense_meander_818: string;
+  lined_toaster_931: string;
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchSparklingDivine75DC {
+  confused_sightseeing_802: boolean;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchSphericalPilot50DC {
+  /**
+   * Fixture field.
+   * @example "varius annus audax"
+   */
+  weekly_jacket_899: string;
+}
+
+export interface SchSplendidPigpen54DC {
+  genuine_newsstand_364?: number;
+  hospitable_median_105: SchNeglectedLawmaker52DC[];
+  quarterly_conservative_915: string;
+}
+
+export interface SchSqueakyFuton92DC {
+  lined_toaster_931: string;
+  wrong_pecan_982?: SchMaleSonnet49DC[];
+}
+
+export interface SchSteepScorn12DC {
+  assured_schnitzel_493: string;
+  /** @format int64 */
+  authentic_governance_938: number;
+  confused_sightseeing_802: string;
+  descriptive_publicity_516: string;
+  enraged_porter_231: boolean;
+  tame_bourgeoisie_811: string;
+}
+
+export interface SchStingyPacemaker57DC {
+  /** @format uint */
+  dependent_seal_550: number;
+  upset_priesthood_107?: boolean;
+}
+
+export interface SchStrongDisk90DC {
+  /** @default "RUB" */
+  clueless_kettledrum_749: "ev0" | "ev1" | "ev2";
+}
+
+export interface SchSubduedHamburger5DC {
+  confused_sightseeing_802: string;
+  inexperienced_sprinkles_900: number;
+  name: string;
+}
+
+export interface SchSugaryFinal6DC {
+  clueless_polyester_967: string;
+  gray_gloom_209: SchTameFinding20DC;
+  lined_toaster_931: string;
+  quarterly_chops_248: SchTameFinding20DC;
+  supportive_lace_765: SchTameFinding20DC;
+  surprised_deck_568: string;
+  worthy_archaeology_635: string;
+  youthful_hamburger_522: SchTameFinding20DC;
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchSunnyMinority67DC {
+  carefree_cope_455: SchJauntyOther22DC;
+  dense_meander_818: string;
+  descriptive_yeast_130?: SchTintedFork39DC[];
+  quarterly_bestseller_183: SchJauntyOther22DC;
+  svelte_bandwidth_259: SchJauntyOther22DC;
+  taut_department_70: SchJauntyOther22DC;
+}
+
+export interface SchTameFinding20DC {
+  /** @format double */
+  alert_louse_795: number;
+  /** @format double */
+  ashamed_bandwidth_400: number;
+  /** @format double */
+  bulky_lobster_405: number;
+  /** @format double */
+  carefree_cope_455: number;
+  /** @format double */
+  distorted_expense_767: number;
+  /** @format double */
+  exhausted_armchair_877: number;
+  /** @format double */
+  frozen_cycle_435: number;
+  /** @format double */
+  great_detective_992: number;
+  /** @format double */
+  great_language_127: number;
+  /** @format double */
+  gripping_monster_418: number;
+  /** @format double */
+  internal_knitting_141: number;
+  /** @format double */
+  legal_spork_195: number;
+  /** @format int64 */
+  mammoth_crosscontamination_733: number;
+  /** @format double */
+  scared_tuba_436: number;
+  /** @format double */
+  shabby_cinema_624: number;
+  /** @format double */
+  stylish_airbus_466: number;
+  /** @format double */
+  svelte_bandwidth_259: number;
+  /** @format double */
+  taut_department_70: number;
+  /** @format double */
+  whispered_bench_33: number;
+}
+
+export interface SchTintedFork39DC {
+  warlike_piglet_650: string;
+  winding_marimba_775: number;
+  type: string;
+}
+
+export interface SchTotalTackle66DC {
+  frozen_cycle_435?: string;
+  great_language_127?: string;
+  internal_knitting_141?: string;
+  shabby_cinema_624?: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchTrainedHippodrome1DC {
+  average_reasoning_609: string;
+  delirious_feather_139: "ev0" | "ev1" | "ev2" | "ev3";
+  /** @format uint */
+  dependent_seal_550?: number;
+  far_circumference_334?: string;
+  lined_toaster_931: string;
+  regular_tusk_123: number;
+  super_fund_30: string[];
+  /** Fixture field. */
+  worthy_archaeology_635: string;
+  name?: string;
+}
+
+export interface SchTrivialColonialism77DC {
+  dense_meander_818?: string;
+  dramatic_hoof_931?: string;
+  hardtofind_operating_864?: string;
+  puzzled_postbox_722?: string;
+  showy_tabletop_662?: string;
+  writhing_handful_567?: string;
+  name?: string;
+}
+
+export interface SchUncommonBestseller50DC {
+  busy_typewriter_288: string;
+  clearcut_charm_466: string;
+  clueless_polyester_967: string;
+  defensive_beret_227: string;
+  kooky_strait_994: string;
+  lined_toaster_931: string;
+  lustrous_harp_607: SchRealisticViability71DC[];
+  surprised_deck_568: string;
+  name: string;
+}
+
+export interface SchUnevenTusk49DC {
+  dense_meander_818: string;
+  hardtofind_operating_864: string;
+  lined_toaster_931: string;
+  thin_parsnip_570: string;
+  name: string;
+}
+
+export interface SchUnhappyVision98DC {
+  busy_typewriter_288: string;
+  dense_meander_818: string;
+  gray_gloom_209: {
+    great_language_127?: string;
+    internal_knitting_141?: string;
+    shabby_cinema_624?: string;
+    taut_department_70?: string;
+  };
+  helpless_gripper_69: number;
+  lustrous_harp_607: {
+    late_story_491: string;
+    unlucky_goodwill_42: string;
+    valuable_sonnet_549: {
+      last_larva_274: string;
+      lost_custody_764: string;
+      worthless_fen_326: string;
+      name: string;
+    };
+    name: string;
+    type: string;
+  }[];
+  responsible_pneumonia_20: string[];
+  surprised_deck_568: string;
+  upset_violin_966: SchUncommonBestseller50DC[];
+}
+
+export interface SchUnhealthyPuppet56DC {
+  buttery_newsletter_312: number;
+  dense_meander_818: string;
+  disloyal_armoire_385?: {
+    buttery_newsletter_312: number;
+    easy_gym_126: boolean;
+    irresponsible_minister_808: number;
+    late_rim_592: number;
+    quickwitted_making_917: string;
+    supportive_pecan_274: number;
+    tidy_video_805?: SchInformalLaughter88DC;
+    name: string;
+    type: "ev0" | "ev1";
+  }[];
+  easy_gym_126: boolean;
+  irresponsible_minister_808: number;
+  late_rim_592: number;
+  quickwitted_making_917: string;
+  supportive_pecan_274: number;
+  tidy_video_805?: SchInformalLaughter88DC;
+  name: string;
+  type: "ev0" | "ev1";
+}
+
+export interface SchUnhealthyVelocity17DC {
+  informal_tooth_772: SchLustrousTuxedo4DC[];
+  in: SchLustrousTuxedo4DC[];
+}
+
+export interface SchUnknownHunt7DC {
+  bruised_pile_451: string;
+  delirious_feather_139: string;
+  funny_goodwill_615: string;
+  limping_meatloaf_167: string;
+  sparkling_bid_521: string;
+  uniform_adult_223: string[];
+}
+
+/**
+ * Fixture field.
+ */
+export type SchUnluckyStump49DC = string;
+
+export interface SchUnwillingSupplier1DC {
+  genuine_newsstand_364?: number;
+  hospitable_median_105: SchNeglectedLawmaker52DC[];
+  quarterly_conservative_915: string;
+}
+
+export interface SchUtilizedStory23DC {
+  earnest_pile_927: number;
+  same_habit_432: number;
+  shortterm_sunbeam_556: SchYoungDisposer38DC[];
+  supportive_lace_765: number;
+  tidy_video_805: SchYoungDisposer38DC[];
+  name: string;
+  type: "ev0" | "ev1";
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchVastCash78DC {
+  charming_decision_583: SchWretchedAdult15DC[];
+  common_railway_469: SchBrightSteeple54DC;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchVastCommercial47DC {
+  criminal_swing_553?: string;
+  /** Fixture field. */
+  fuzzy_tuxedo_273: string;
+  /**
+   * Fixture field.
+   * @example 5706
+   */
+  inexperienced_sprinkles_900: number;
+  /**
+   * Fixture field.
+   * @example "demum saepe tredecim sui aequus"
+   */
+  lone_bug_616: string;
+  /**
+   * Fixture field.
+   * @example "bardus decerno bellicus tenax"
+   */
+  nervous_decryption_776: string;
+  /**
+   * Fixture field.
+   * @format uri
+   */
+  stiff_fork_279?: string;
+}
+
+export interface SchVibrantPopulist8DC {
+  confused_sightseeing_802: string;
+  content: string;
+}
+
+export interface SchWarmKettledrum49DC {
+  clearcut_charm_466: string;
+  clueless_polyester_967: string;
+  gray_gloom_209: SchTameFinding20DC;
+  lined_toaster_931: string;
+  surprised_deck_568: string;
+  trained_bend_874: string;
+  trusting_fund_905: string;
+  name: string;
+}
+
+export interface SchWeeUnit95DC {
+  dense_meander_818: string;
+  nautical_reservation_970: SchCorruptCollaboration95DC[];
+}
+
+export interface SchWellmadeTennis15DC {
+  inexperienced_sprinkles_900: number;
+  name: string;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchWelloffBoulevard41DC {
+  criminal_swing_553?: string;
+  /** Fixture field. */
+  fuzzy_tuxedo_273: string;
+  glittering_suitcase_322?: SchIncomparableSeafood15DC;
+  /**
+   * Fixture field.
+   * @example 29602
+   */
+  inexperienced_sprinkles_900: number;
+  /**
+   * Fixture field.
+   * @example "conculco teneo"
+   */
+  lone_bug_616: string;
+  /**
+   * Fixture field.
+   * @example "tergum tergo angelus"
+   */
+  nervous_decryption_776: string;
+  /**
+   * Fixture field.
+   * @format uri
+   */
+  stiff_fork_279?: string;
+}
+
+export interface SchWigglyManagement13DC {
+  inexperienced_sprinkles_900: number;
+  name: string;
+}
+
+export interface SchWorthwhileScorpion30DC {
+  informal_atrium_456?: number;
+  quiet_numeracy_310?: number;
+}
+
+/**
+ * Fixture field.
+ */
+export enum SchWrathfulCoast33DC {
+  Ev0 = "ev0",
+  Ev1 = "ev1",
+  Ev2 = "ev2",
+  Ev3 = "ev3",
+  Ev4 = "ev4",
+  Ev5 = "ev5",
+}
+
+/**
+ * Fixture field.
+ */
+export type SchWretchedAdult15DC = number[];
+
+export interface SchWrongQuinoa12DC {
+  good_membership_929: SchBlushingDeduction31DC[];
+  pastel_packaging_297: SchBlushingDeduction31DC[];
+}
+
+/**
+ * Fixture field.
+ */
+export type SchYellowishExpansion48DC = string;
+
+export interface SchYoungDisposer38DC {
+  confused_sightseeing_802: number;
+  noteworthy_tusk_369: number;
+  name: SchBrightSteeple54DC;
+}
+
+export interface SchYoungHippodrome53DC {
+  ashamed_bandwidth_400: number;
+  frozen_cycle_435: number;
+  gripping_monster_418: number;
+  internal_knitting_141: number;
+  quarterly_bestseller_183: number;
+  shabby_cinema_624: number;
+  stylish_airbus_466: number;
+}
+
+/**
+ * Fixture field.
+ */
+export interface SchYouthfulPunctuation36DC {
+  judicious_comparison_705?: boolean;
+  tidy_video_805: SchVastCash78DC[];
+}
+
+export interface SchZanyDiversity70DC {
+  flickering_unibody_270: string;
+  genuine_newsstand_364?: number;
+  hospitable_median_105: SchCoolChasuble62DC[];
+  inexperienced_sprinkles_900: number;
+  /** @format date-time */
+  noted_giggle_829: string;
+  quarterly_conservative_915: string;
+  /** @format date-time */
+  smooth_rationale_43: string;
+}
+
+
+/* --- meta-info.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+
+export const enum Group {
+  Tg21 = "tg21",
+}
+
+export const enum Tag {
+  /** Fixture field. */
+  Tg21 = "tg21",
+}
+
+
+/* --- tg-21/endpoints.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  HttpResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Group, Tag } from "../meta-info";
+
+import { SchAlienatedFlat53DC, SchAvariciousSettler7DC, SchBonyScale94DC, SchChubbyPepper86DC, SchContentRemark54DC, SchCrowdedSkyline34DC, SchGiganticOther53DC, SchGrizzledTerm71DC, SchGuiltyEntry87DC, SchImportantMuscat47DC, SchLimpingVideo70DC, SchNeedyEqual89DC, SchNegativeOrchid86DC, SchRegalGoat52DC, SchRottenChap44DC, SchSoupySustenance11DC, SchUnevenTusk49DC, SchUnhealthyPuppet56DC } from "../data-contracts";
+
+export type Op0008DataDC = SchChubbyPepper86DC;
+
+export type Op0023DataDC = SchUnevenTusk49DC;
+
+export type Op0036DataDC = SchChubbyPepper86DC;
+
+export type Op0040DataDC = SchChubbyPepper86DC;
+
+export type Op0078DataDC = SchRegalGoat52DC[];
+
+export type Op0079DataDC = SchNegativeOrchid86DC[];
+
+export type Op0080DataDC = SchContentRemark54DC;
+
+export type Op0081DataDC = {
+  apprehensive_programme_763: string;
+  dense_meander_818: string;
+}[];
+
+export type Op0082DataDC = SchGrizzledTerm71DC[];
+
+export type Op0083DataDC = SchAlienatedFlat53DC;
+
+export type Op0084DataDC = SchUnhealthyPuppet56DC[];
+
+export type Op0085DataDC = SchImportantMuscat47DC;
+
+export type Op0086DataDC = SchGrizzledTerm71DC[];
+
+export type Op0087DataDC = SchGrizzledTerm71DC[];
+
+export type Op0098DataDC = SchAvariciousSettler7DC;
+
+export type Op0109DataDC = {
+  /** Fixture field. */
+  bogus_heating_604?: number;
+  lined_toaster_931: string;
+  super_fund_30: string[];
+  weighty_interviewer_270?: number;
+  name: string;
+}[];
+
+export type Op0134DataDC = {
+  /** Fixture field. */
+  bogus_heating_604?: number;
+  /** Fixture field. */
+  dense_meander_818: string;
+  /** Fixture field. */
+  lined_toaster_931: string;
+  /** Fixture field. */
+  weighty_interviewer_270?: number;
+  /** Fixture field. */
+  wretched_space_260: string;
+  /** Fixture field. */
+  name: string;
+}[];
+
+export type Op0135DataDC = {
+  /** Fixture field. */
+  bogus_heating_604?: number;
+  /** Fixture field. */
+  dense_meander_818: string;
+  /** Fixture field. */
+  lined_toaster_931: string;
+  /** Fixture field. */
+  weighty_interviewer_270?: number;
+  /** Fixture field. */
+  wretched_space_260: string;
+  /** Fixture field. */
+  name: string;
+}[];
+
+export type Op0136DataDC = SchGuiltyEntry87DC;
+
+export type Op0138DataDC = SchLimpingVideo70DC;
+
+export type Op0147DataDC = any;
+
+export interface Op0147PayloadDC {
+  /** @default false */
+  fixed_sport_398: boolean;
+  lined_toaster_931: string;
+  livid_chops_539: string;
+  super_fund_30: string[];
+}
+
+export type Op0167DataDC = SchRottenChap44DC;
+
+export type Op0008ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0008Params = {
+  data: SchGiganticOther53DC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0008
+ * @tags tg21
+ * @request **POST:/fx9/r/119**
+ * @produces application/json
+ * @consumes application/json
+ * @secure
+ * @responses
+ * @**200** Op0008DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0008 = new Endpoint<
+  HttpResponse<Op0008DataDC, Op0008ErrorDC>,
+  Op0008Params,
+  any
+>(
+  {
+    params: ({ data, requestParams }) => ({
+      path: \`/fx9/r/119\`,
+      method: "POST",
+      body: data,
+      secure: true,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["data"],
+    operationId: "op0008",
+    path: ["fx9", "r", "119"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0023ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0023Params = {
+  data: SchNeedyEqual89DC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0023
+ * @tags tg21
+ * @request **POST:/fx9/r/117**
+ * @produces application/json
+ * @consumes application/json
+ * @secure
+ * @responses
+ * @**202** Op0023DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0023 = new Endpoint<
+  HttpResponse<Op0023DataDC, Op0023ErrorDC>,
+  Op0023Params,
+  any
+>(
+  {
+    params: ({ data, requestParams }) => ({
+      path: \`/fx9/r/117\`,
+      method: "POST",
+      body: data,
+      secure: true,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["data"],
+    operationId: "op0023",
+    path: ["fx9", "r", "117"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0036ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0036Params = {
+  data: SchSoupySustenance11DC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0036
+ * @tags tg21
+ * @request **POST:/fx9/r/120**
+ * @produces application/json
+ * @consumes application/json
+ * @secure
+ * @responses
+ * @**200** Op0036DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0036 = new Endpoint<
+  HttpResponse<Op0036DataDC, Op0036ErrorDC>,
+  Op0036Params,
+  any
+>(
+  {
+    params: ({ data, requestParams }) => ({
+      path: \`/fx9/r/120\`,
+      method: "POST",
+      body: data,
+      secure: true,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["data"],
+    operationId: "op0036",
+    path: ["fx9", "r", "120"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0040ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0040Params = {
+  data: SchGiganticOther53DC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0040
+ * @tags tg21
+ * @request **POST:/fx9/r/121**
+ * @produces application/json
+ * @consumes application/json
+ * @secure
+ * @responses
+ * @**200** Op0040DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0040 = new Endpoint<
+  HttpResponse<Op0040DataDC, Op0040ErrorDC>,
+  Op0040Params,
+  any
+>(
+  {
+    params: ({ data, requestParams }) => ({
+      path: \`/fx9/r/121\`,
+      method: "POST",
+      body: data,
+      secure: true,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["data"],
+    operationId: "op0040",
+    path: ["fx9", "r", "121"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0078ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0078Params = {
+  competentOutrun824: string;
+  query: {
+    lined_toaster_931: string;
+    super_fund_30?: string[];
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0078
+ * @tags tg21
+ * @request **GET:/fx9/r/127/{competent_outrun_824}**
+ * @produces application/json
+ * @secure
+ * @responses
+ * @**200** Op0078DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0078 = new Endpoint<
+  HttpResponse<Op0078DataDC, Op0078ErrorDC>,
+  Op0078Params,
+  any
+>(
+  {
+    params: ({ competentOutrun824, query, requestParams }) => ({
+      path: \`/fx9/r/127/\${competentOutrun824}\`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["competentOutrun824", "query"],
+    operationId: "op0078",
+    path: ["fx9", "r", "127", "{competentOutrun824}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0079ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0079Params = {
+  competentOutrun824: string;
+  query: {
+    /** Fixture field. */
+    lined_toaster_931: string;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId op0079
+ * @tags tg21
+ * @request **GET:/fx9/r/128/{competent_outrun_824}**
+ * @produces application/json
+ * @secure
+ * @responses
+ * @**200** Op0079DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0079 = new Endpoint<
+  HttpResponse<Op0079DataDC, Op0079ErrorDC>,
+  Op0079Params,
+  any
+>(
+  {
+    params: ({ competentOutrun824, query, requestParams }) => ({
+      path: \`/fx9/r/128/\${competentOutrun824}\`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["competentOutrun824", "query"],
+    operationId: "op0079",
+    path: ["fx9", "r", "128", "{competentOutrun824}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0080ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0080Params = {
+  competentOutrun824: string;
+  query: {
+    dense_meander_818: string;
+    lined_toaster_931: string;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0080
+ * @tags tg21
+ * @request **GET:/fx9/r/130/{competent_outrun_824}**
+ * @produces application/json
+ * @secure
+ * @responses
+ * @**200** Op0080DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0080 = new Endpoint<
+  HttpResponse<Op0080DataDC, Op0080ErrorDC>,
+  Op0080Params,
+  any
+>(
+  {
+    params: ({ competentOutrun824, query, requestParams }) => ({
+      path: \`/fx9/r/130/\${competentOutrun824}\`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["competentOutrun824", "query"],
+    operationId: "op0080",
+    path: ["fx9", "r", "130", "{competentOutrun824}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0081ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0081Params = {
+  competentOutrun824: string;
+  query: {
+    /** Fixture field. */
+    lined_toaster_931: string;
+    /** Fixture field. */
+    super_fund_30: string[];
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId op0081
+ * @tags tg21
+ * @request **GET:/fx9/r/131/{competent_outrun_824}**
+ * @produces application/json
+ * @secure
+ * @responses
+ * @**200** Op0081DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0081 = new Endpoint<
+  HttpResponse<Op0081DataDC, Op0081ErrorDC>,
+  Op0081Params,
+  any
+>(
+  {
+    params: ({ competentOutrun824, query, requestParams }) => ({
+      path: \`/fx9/r/131/\${competentOutrun824}\`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["competentOutrun824", "query"],
+    operationId: "op0081",
+    path: ["fx9", "r", "131", "{competentOutrun824}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0082ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0082Params = {
+  query: {
+    /** Fixture field. */
+    lined_toaster_931: string;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId op0082
+ * @tags tg21
+ * @request **GET:/fx9/r/74**
+ * @produces application/json
+ * @responses
+ * @**200** Op0082DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0082 = new Endpoint<
+  HttpResponse<Op0082DataDC, Op0082ErrorDC>,
+  Op0082Params,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/fx9/r/74\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["query"],
+    operationId: "op0082",
+    path: ["fx9", "r", "74"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0083ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0083Params = {
+  query: {
+    /** @example "ipsam maiores aegrus asperiores uredo" */
+    lined_toaster_931: string;
+    /**
+     * @default false
+     * @example false
+     */
+    sizzling_tuneup_471?: boolean;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0083
+ * @tags tg21
+ * @request **GET:/fx9/r/96**
+ * @produces application/json
+ * @responses
+ * @**200** Op0083DataDC Fixture field.
+ * @**203** Op0083DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0083 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Fixture field. */
+      200: Op0083DataDC;
+      /** Fixture field. */
+      203: {
+        elderly_design_154: string[];
+        unripe_bourgeoisie_382: SchAlienatedFlat53DC;
+      };
+    },
+    Op0083DataDC,
+    SchCrowdedSkyline34DC
+  >,
+  Op0083Params,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/fx9/r/96\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["query"],
+    operationId: "op0083",
+    path: ["fx9", "r", "96"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0084ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0084Params = {
+  query: {
+    /** Fixture field. */
+    lined_toaster_931: string;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId op0084
+ * @tags tg21
+ * @request **GET:/fx9/r/52**
+ * @produces application/json
+ * @responses
+ * @**200** Op0084DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0084 = new Endpoint<
+  HttpResponse<Op0084DataDC, Op0084ErrorDC>,
+  Op0084Params,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/fx9/r/52\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["query"],
+    operationId: "op0084",
+    path: ["fx9", "r", "52"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0085ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0085Params = {
+  competentOutrun824: string;
+  query: {
+    /** Fixture field. */
+    dense_meander_818?: string;
+    /** Fixture field. */
+    lined_toaster_931: string;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId op0085
+ * @tags tg21
+ * @request **GET:/fx9/r/126/{competent_outrun_824}**
+ * @produces application/json
+ * @secure
+ * @responses
+ * @**200** Op0085DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0085 = new Endpoint<
+  HttpResponse<Op0085DataDC, Op0085ErrorDC>,
+  Op0085Params,
+  any
+>(
+  {
+    params: ({ competentOutrun824, query, requestParams }) => ({
+      path: \`/fx9/r/126/\${competentOutrun824}\`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["competentOutrun824", "query"],
+    operationId: "op0085",
+    path: ["fx9", "r", "126", "{competentOutrun824}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0086ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0086Params = {
+  competentOutrun824: string;
+  query: {
+    /** Fixture field. */
+    lined_toaster_931: string;
+    /** Fixture field. */
+    super_fund_30?: string[];
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId op0086
+ * @tags tg21
+ * @request **GET:/fx9/r/125/{competent_outrun_824}**
+ * @produces application/json
+ * @secure
+ * @responses
+ * @**200** Op0086DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0086 = new Endpoint<
+  HttpResponse<Op0086DataDC, Op0086ErrorDC>,
+  Op0086Params,
+  any
+>(
+  {
+    params: ({ competentOutrun824, query, requestParams }) => ({
+      path: \`/fx9/r/125/\${competentOutrun824}\`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["competentOutrun824", "query"],
+    operationId: "op0086",
+    path: ["fx9", "r", "125", "{competentOutrun824}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0087ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0087Params = {
+  competentOutrun824: string;
+  query: {
+    /** Fixture field. */
+    lined_toaster_931: string;
+    /** Fixture field. */
+    super_fund_30?: string[];
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId op0087
+ * @tags tg21
+ * @request **GET:/fx9/r/85/{competent_outrun_824}**
+ * @produces application/json
+ * @responses
+ * @**200** Op0087DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0087 = new Endpoint<
+  HttpResponse<Op0087DataDC, Op0087ErrorDC>,
+  Op0087Params,
+  any
+>(
+  {
+    params: ({ competentOutrun824, query, requestParams }) => ({
+      path: \`/fx9/r/85/\${competentOutrun824}\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["competentOutrun824", "query"],
+    operationId: "op0087",
+    path: ["fx9", "r", "85", "{competentOutrun824}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0098ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0098Params = {
+  worthyArchaeology635: string;
+  query: {
+    dense_meander_818: string;
+    lined_toaster_931: string;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0098
+ * @tags tg21
+ * @request **GET:/fx9/r/6/{worthy_archaeology_635}**
+ * @produces application/json
+ * @secure
+ * @responses
+ * @**200** Op0098DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0098 = new Endpoint<
+  HttpResponse<Op0098DataDC, Op0098ErrorDC>,
+  Op0098Params,
+  any
+>(
+  {
+    params: ({ worthyArchaeology635, query, requestParams }) => ({
+      path: \`/fx9/r/6/\${worthyArchaeology635}\`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["worthyArchaeology635", "query"],
+    operationId: "op0098",
+    path: ["fx9", "r", "6", "{worthyArchaeology635}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0109ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0109Params = {
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0109
+ * @tags tg21
+ * @request **GET:/fx9/r/73**
+ * @produces application/json
+ * @responses
+ * @**200** Op0109DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0109 = new Endpoint<
+  HttpResponse<Op0109DataDC, Op0109ErrorDC>,
+  Op0109Params,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      path: \`/fx9/r/73\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "op0109",
+    path: ["fx9", "r", "73"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0134ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0134Params = {
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0134
+ * @tags tg21
+ * @request **GET:/fx9/r/114**
+ * @produces application/json
+ * @responses
+ * @**200** Op0134DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0134 = new Endpoint<
+  HttpResponse<Op0134DataDC, Op0134ErrorDC>,
+  Op0134Params,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      path: \`/fx9/r/114\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "op0134",
+    path: ["fx9", "r", "114"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0135ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0135Params = {
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0135
+ * @tags tg21
+ * @request **GET:/fx9/r/115**
+ * @produces application/json
+ * @responses
+ * @**200** Op0135DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0135 = new Endpoint<
+  HttpResponse<Op0135DataDC, Op0135ErrorDC>,
+  Op0135Params,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      path: \`/fx9/r/115\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "op0135",
+    path: ["fx9", "r", "115"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0136ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0136Params = {
+  query: {
+    /** @example "currus ascit" */
+    lined_toaster_931: string;
+    /**
+     * @default false
+     * @example true
+     */
+    sizzling_tuneup_471?: boolean;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0136
+ * @tags tg21
+ * @request **GET:/fx9/r/116**
+ * @produces application/json
+ * @responses
+ * @**200** Op0136DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0136 = new Endpoint<
+  HttpResponse<Op0136DataDC, Op0136ErrorDC>,
+  Op0136Params,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/fx9/r/116\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["query"],
+    operationId: "op0136",
+    path: ["fx9", "r", "116"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0138ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0138Params = {
+  competentOutrun824: string;
+  query: {
+    dense_meander_818: string;
+    /** Fixture field. */
+    lined_toaster_931: string;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId op0138
+ * @tags tg21
+ * @request **GET:/fx9/r/132/{competent_outrun_824}**
+ * @produces application/json
+ * @secure
+ * @responses
+ * @**200** Op0138DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0138 = new Endpoint<
+  HttpResponse<Op0138DataDC, Op0138ErrorDC>,
+  Op0138Params,
+  any
+>(
+  {
+    params: ({ competentOutrun824, query, requestParams }) => ({
+      path: \`/fx9/r/132/\${competentOutrun824}\`,
+      method: "GET",
+      query: query,
+      secure: true,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["competentOutrun824", "query"],
+    operationId: "op0138",
+    path: ["fx9", "r", "132", "{competentOutrun824}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0147ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0147Params = {
+  competentOutrun824: string;
+  data: Op0147PayloadDC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0147
+ * @tags tg21
+ * @request **POST:/fx9/r/133/{competent_outrun_824}**
+ * @consumes application/json
+ * @secure
+ * @responses
+ * @**200** Op0147DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0147 = new Endpoint<
+  HttpResponse<Op0147DataDC, Op0147ErrorDC>,
+  Op0147Params,
+  any
+>(
+  {
+    params: ({ competentOutrun824, data, requestParams }) => ({
+      path: \`/fx9/r/133/\${competentOutrun824}\`,
+      method: "POST",
+      body: data,
+      secure: true,
+      contentType: "application/json",
+      ...requestParams,
+    }),
+    requiredParams: ["competentOutrun824", "data"],
+    operationId: "op0147",
+    path: ["fx9", "r", "133", "{competentOutrun824}"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+export type Op0167ErrorDC = SchCrowdedSkyline34DC;
+
+export type Op0167Params = {
+  data: SchBonyScale94DC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * Fixture field.
+ *
+ * @operationId op0167
+ * @tags tg21
+ * @request **POST:/fx9/r/124**
+ * @produces application/json
+ * @consumes application/json
+ * @secure
+ * @responses
+ * @**200** Op0167DataDC Fixture field.
+ * @**default** SchCrowdedSkyline34DC
+ */
+export const op0167 = new Endpoint<
+  HttpResponse<Op0167DataDC, Op0167ErrorDC>,
+  Op0167Params,
+  any
+>(
+  {
+    params: ({ data, requestParams }) => ({
+      path: \`/fx9/r/124\`,
+      method: "POST",
+      body: data,
+      secure: true,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["data"],
+    operationId: "op0167",
+    path: ["fx9", "r", "124"],
+    tags: [Tag.Tg21],
+    group: Group.Tg21,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+"
+`;
