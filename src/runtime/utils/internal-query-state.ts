@@ -76,11 +76,9 @@ export function createInternalQueryState<TParams extends AnyObject>(
     ...queryOptions
   } = unpackedQueryOptionsInput;
 
-  const imperativeCtx = {
-    imperativeOverride: false,
-    inputParamsSampled: false,
-    lastInputResolved: undefined as any,
-  };
+  let imperativeOverride = false;
+  let inputParamsSampled = false;
+  let lastInputResolved: any;
 
   const state: InternalQueryState<TParams> = {
     query: null as any,
@@ -99,13 +97,13 @@ export function createInternalQueryState<TParams extends AnyObject>(
       );
     },
     setParamsImperative(params) {
-      imperativeCtx.imperativeOverride = true;
+      imperativeOverride = true;
       this.params = params;
     },
     reset() {
-      imperativeCtx.imperativeOverride = false;
-      imperativeCtx.inputParamsSampled = false;
-      imperativeCtx.lastInputResolved = undefined;
+      imperativeOverride = false;
+      inputParamsSampled = false;
+      lastInputResolved = undefined;
       runInAction(() => {
         this.params = undefined;
         this.uniqKey = undefined;
@@ -159,7 +157,8 @@ export function createInternalQueryState<TParams extends AnyObject>(
               : {};
           dynamicOptions = hasEnumerableKeys(rest) ? rest : undefined;
         } else if ('params' in unpackedQueryOptionsInput) {
-          inputResolved = callFunction(unpackedQueryOptionsInput.params);
+          const p = unpackedQueryOptionsInput.params;
+          inputResolved = typeof p === 'function' ? callFunction(p) : p;
           resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
           resolvedMergePageParam = unpackedQueryOptionsInput.mergePageParam;
           dynamicOptions = undefined;
@@ -170,21 +169,21 @@ export function createInternalQueryState<TParams extends AnyObject>(
           dynamicOptions = undefined;
         }
 
-        const hadPriorInputSample = imperativeCtx.inputParamsSampled;
-        imperativeCtx.inputParamsSampled = true;
+        const hadPriorInputSample = inputParamsSampled;
+        inputParamsSampled = true;
 
         let resolvedParams: MaybeFalsy<AnyObject>;
-        if (!imperativeCtx.imperativeOverride) {
-          imperativeCtx.lastInputResolved = inputResolved;
+        if (!imperativeOverride) {
+          lastInputResolved = inputResolved;
           resolvedParams = inputResolved;
         } else if (
           hadPriorInputSample &&
-          inputResolved !== imperativeCtx.lastInputResolved &&
-          !comparer.structural(inputResolved, imperativeCtx.lastInputResolved)
+          inputResolved !== lastInputResolved &&
+          !comparer.structural(inputResolved, lastInputResolved)
         ) {
-          imperativeCtx.imperativeOverride = false;
+          imperativeOverride = false;
           resolvedParams = inputResolved;
-          imperativeCtx.lastInputResolved = inputResolved;
+          lastInputResolved = inputResolved;
         } else {
           const sameAsCurrentParams =
             inputResolved === state.params ||
@@ -192,10 +191,10 @@ export function createInternalQueryState<TParams extends AnyObject>(
           if (!sameAsCurrentParams) {
             resolvedParams = state.params ?? inputResolved;
           } else {
-            imperativeCtx.imperativeOverride = false;
+            imperativeOverride = false;
             resolvedParams = inputResolved;
           }
-          imperativeCtx.lastInputResolved = inputResolved;
+          lastInputResolved = inputResolved;
         }
 
         runInAction(() => {
