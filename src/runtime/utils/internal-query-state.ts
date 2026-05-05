@@ -76,9 +76,11 @@ export function createInternalQueryState<TParams extends AnyObject>(
     ...queryOptions
   } = unpackedQueryOptionsInput;
 
-  let imperativeOverride = false;
-  let inputParamsSampled = false;
-  let lastInputResolved: any;
+  const imperativeCtx = {
+    imperativeOverride: false,
+    inputParamsSampled: false,
+    lastInputResolved: undefined as any,
+  };
 
   const state: InternalQueryState<TParams> = {
     query: null as any,
@@ -97,13 +99,13 @@ export function createInternalQueryState<TParams extends AnyObject>(
       );
     },
     setParamsImperative(params) {
-      imperativeOverride = true;
+      imperativeCtx.imperativeOverride = true;
       this.params = params;
     },
     reset() {
-      imperativeOverride = false;
-      inputParamsSampled = false;
-      lastInputResolved = undefined;
+      imperativeCtx.imperativeOverride = false;
+      imperativeCtx.inputParamsSampled = false;
+      imperativeCtx.lastInputResolved = undefined;
       runInAction(() => {
         this.params = undefined;
         this.uniqKey = undefined;
@@ -115,22 +117,24 @@ export function createInternalQueryState<TParams extends AnyObject>(
       onDone,
       queryClient: overridedQueryClient ?? endpointQueryClient,
       meta: endpoint.toQueryMeta(queryOptions.meta),
+      // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TanStack `options()` bundles unpack + imperative merge
       options: (queryArg: any) => {
         state.query = queryArg as any;
 
-        let resolvedParams: MaybeFalsy<AnyObject>;
-        let dynamicOptions: any;
-        let resolvedUniqKey: Maybe<EndpointQueryUniqKey>;
-        let resolvedMergePageParam: InternalQueryState['mergePageParam'];
-
         let inputResolved: MaybeFalsy<AnyObject>;
+        let resolvedUniqKey: Maybe<EndpointQueryUniqKey>;
+        let resolvedMergePageParam:
+          | EndpointInfiniteQueryMergePageParam<AnyEndpoint, any>
+          | undefined;
+        let dynamicOptions: any;
+
+        const isMobxQueryInitialized = Boolean(
+          (state.query as unknown as { _result?: unknown })._result,
+        );
 
         if (isQueryOptionsInputFn) {
-          // Reuse the already evaluated constructor options on the first pass.
-          // This prevents an extra queryOptionsInput()/params invocation at creation time.
-          // @ts-expect-error
-          const result = state.query._result
-            ? queryOptionsInput()
+          const result = isMobxQueryInitialized
+            ? (queryOptionsInput as () => any)()
             : unpackedQueryOptionsInput;
           const {
             params,
@@ -145,66 +149,75 @@ export function createInternalQueryState<TParams extends AnyObject>(
             mergePageParam,
             ...rest
           } = result;
-
           resolvedUniqKey = uniqKey;
           resolvedMergePageParam = mergePageParam;
-
-          if ('params' in result) {
-            inputResolved = callFunction(params);
-          } else {
-            inputResolved = {};
-          }
-
+          inputResolved =
+            'params' in result
+              ? typeof params === 'function'
+                ? callFunction(params)
+                : params
+              : {};
           dynamicOptions = hasEnumerableKeys(rest) ? rest : undefined;
         } else if ('params' in unpackedQueryOptionsInput) {
-          const params = unpackedQueryOptionsInput.params;
-          inputResolved = callFunction(params);
+          inputResolved = callFunction(unpackedQueryOptionsInput.params);
           resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
           resolvedMergePageParam = unpackedQueryOptionsInput.mergePageParam;
+          dynamicOptions = undefined;
         } else {
           inputResolved = {};
           resolvedUniqKey = unpackedQueryOptionsInput.uniqKey;
           resolvedMergePageParam = unpackedQueryOptionsInput.mergePageParam;
+          dynamicOptions = undefined;
         }
 
-        const hadPriorInputSample = inputParamsSampled;
-        inputParamsSampled = true;
+        const hadPriorInputSample = imperativeCtx.inputParamsSampled;
+        imperativeCtx.inputParamsSampled = true;
 
-        if (
-          imperativeOverride &&
-          hadPriorInputSample &&
-          !comparer.structural(inputResolved, lastInputResolved)
-        ) {
-          imperativeOverride = false;
+        let resolvedParams: MaybeFalsy<AnyObject>;
+        if (!imperativeCtx.imperativeOverride) {
+          imperativeCtx.lastInputResolved = inputResolved;
           resolvedParams = inputResolved;
         } else if (
-          imperativeOverride &&
-          (!hadPriorInputSample ||
-            comparer.structural(inputResolved, lastInputResolved))
+          hadPriorInputSample &&
+          inputResolved !== imperativeCtx.lastInputResolved &&
+          !comparer.structural(inputResolved, imperativeCtx.lastInputResolved)
         ) {
-          if (!comparer.structural(inputResolved, state.params)) {
+          imperativeCtx.imperativeOverride = false;
+          resolvedParams = inputResolved;
+          imperativeCtx.lastInputResolved = inputResolved;
+        } else {
+          const sameAsCurrentParams =
+            inputResolved === state.params ||
+            comparer.structural(inputResolved, state.params);
+          if (!sameAsCurrentParams) {
             resolvedParams = state.params ?? inputResolved;
           } else {
-            imperativeOverride = false;
+            imperativeCtx.imperativeOverride = false;
             resolvedParams = inputResolved;
           }
-        } else {
-          resolvedParams = inputResolved;
+          imperativeCtx.lastInputResolved = inputResolved;
         }
 
-        lastInputResolved = inputResolved;
-
         runInAction(() => {
-          if (!comparer.structural(state.params, resolvedParams)) {
+          if (
+            resolvedParams !== state.params &&
+            !comparer.structural(state.params, resolvedParams)
+          ) {
             state.params = resolvedParams;
           }
-          if (!comparer.structural(state.uniqKey, resolvedUniqKey)) {
+          if (
+            resolvedUniqKey !== state.uniqKey &&
+            !comparer.structural(state.uniqKey, resolvedUniqKey)
+          ) {
             state.uniqKey = resolvedUniqKey;
           }
-          if (
-            !comparer.structural(state.mergePageParam, resolvedMergePageParam)
-          ) {
-            state.mergePageParam = resolvedMergePageParam;
+          if (!isFinite) {
+            if (
+              resolvedMergePageParam !== state.mergePageParam &&
+              !comparer.structural(state.mergePageParam, resolvedMergePageParam)
+            ) {
+              state.mergePageParam = resolvedMergePageParam;
+            }
           }
         });
 
