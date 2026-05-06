@@ -1,0 +1,100 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi GitLab URL refs > loads relative refs from GitLab repository file URLs 1`] = `
+"/* --- data-contracts.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+
+export interface MemorySegmentResponseDC {
+  memoryId: number;
+  segment: string;
+}
+
+export interface TestFooErrorDC {
+  /** @example "SERVICE_NOT_FOUND" */
+  code: string;
+  message: string;
+  traceId?: string;
+}
+
+
+/* --- endpoints/get-memory.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Tag } from "../meta-info";
+
+import { MemorySegmentResponseDC, TestFooErrorDC } from "../data-contracts";
+
+export type GetMemoryDataDC = MemorySegmentResponseDC[];
+
+export type GetMemoryErrorDC = TestFooErrorDC;
+
+export type GetMemoryParams = {
+  query?: {
+    /** Id of memory to be fetched. */
+    id?: number;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Get path for memory**
+ *
+ * @operationId getMemory
+ * @tags memories
+ * @request **GET:/v1/memories/path**
+ * @produces application/json
+ * @responses
+ * @**200** GetMemoryDataDC Successful operation. Memory info provided.
+ * @**404** TestFooErrorDC No memory with provided id.
+ */
+export const getMemory = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Successful operation. Memory info provided. */
+      200: GetMemoryDataDC;
+      /** No memory with provided id. */
+      404: TestFooErrorDC;
+    },
+    GetMemoryDataDC,
+    GetMemoryErrorDC
+  >,
+  GetMemoryParams,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/v1/memories/path\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "getMemory",
+    path: ["v1", "memories", "path"],
+    tags: [Tag.Memories],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- meta-info.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+
+export const enum Tag {
+  /** memories */
+  Memories = "memories",
+}
+
+"
+`;
