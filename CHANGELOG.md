@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.52.5
+
+### Patch Changes
+
+- [`f9a267a`](https://github.com/js2me/mobx-tanstack-query-api/commit/f9a267aa8d357eddfbb6a48bc879d213109da4df) Thanks [@js2me](https://github.com/js2me)! - fixed external refs usage (e.g. gitlab refs)
+
 ## 0.52.4
 
 ### Patch Changes
