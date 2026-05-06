@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.52.4
+
+### Patch Changes
+
+- [`3def9fa`](https://github.com/js2me/mobx-tanstack-query-api/commit/3def9fa2966d02b60cae4ca9d60b7a3c8417e9e5) Thanks [@js2me](https://github.com/js2me)! - update all deps to mihor latest + swagger-typescript-api to 13.8.0
+
 ## 0.52.3
 
 ### Patch Changes
