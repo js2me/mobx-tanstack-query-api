@@ -3,6 +3,7 @@ import type { AnyObject, Maybe } from 'yummies/types';
 import type { BaseTmplParams, MetaInfo } from '../types/index.js';
 import { generateImport } from '../utils/generate-import.js';
 import { callEndpointMeta } from '../utils/resolve-codegen-meta.js';
+import { collectComponentContractNames } from '../utils/swagger/collect-component-names.js';
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 import { endpointJSDocTmpl } from './endpoint-jsdoc.tmpl.js';
@@ -37,10 +38,9 @@ export const allEndpointPerFileTmpl = async (
 
   const dataContractNamesInThisFile = new Set<string>();
   const reservedDataContractNamesInFile = new Set<string>();
-  const dataContactNames = new Set(
-    Object.keys(
-      (configuration.config.swaggerSchema as any)?.components?.schemas,
-    ).map((schemaName) => utils.formatModelName(schemaName)),
+  const dataContactNames = collectComponentContractNames(
+    swaggerSchema,
+    utils.formatModelName,
   );
   const newEndpointTemplates = routes.map((route) => {
     const newEndpointTemplateData = newEndpointTmpl({

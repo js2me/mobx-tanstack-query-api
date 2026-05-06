@@ -41,6 +41,7 @@ export interface RouteBaseInfo {
   path: string;
   method: string;
   contractName: Maybe<string>;
+  parsed?: ParsedRoute;
 }
 
 /** Static `endpointMeta` value or return type of its callback. */

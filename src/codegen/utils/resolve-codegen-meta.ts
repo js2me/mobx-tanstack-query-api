@@ -11,10 +11,10 @@ const warnedDeprecatedGetEndpointMeta = new WeakMap<object, true>();
 const warnedDeprecatedGetRequestMeta = new WeakMap<object, true>();
 
 const DEPRECATED_GET_ENDPOINT_META =
-  '[mobx-tanstack-query-api/codegen] `getEndpointMeta` is deprecated and will be removed in a future release. Use `endpointMeta` instead.';
+  '⚠️  "getEndpointMeta" is deprecated and will be removed in a future release. Use "endpointMeta" instead.';
 
 const DEPRECATED_GET_REQUEST_META =
-  '[mobx-tanstack-query-api/codegen] `getRequestMeta` is deprecated and will be removed in a future release. Use `requestMeta` instead.';
+  '⚠️  "getRequestMeta" is deprecated and will be removed in a future release. Use "requestMeta" instead.';
 
 function resolveEndpointMetaOption(
   option: EndpointMetaOption,

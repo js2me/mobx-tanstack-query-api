@@ -18,6 +18,7 @@ import { dataContractsFileTmpl } from './templates/data-contracts-file.tmpl.js';
 import { endpointPerFileTmpl } from './templates/endpoint-per-file.tmpl.js';
 import { indexTsForEndpointPerFileTmpl } from './templates/index-ts-for-endpoint-per-file.tmpl.js';
 import { metaInfoTmpl } from './templates/meta-info.tmpl.js';
+import { newEndpointTmpl } from './templates/new-endpoint.tmpl/index.js';
 import type {
   AllImportFileParams,
   BaseTmplParams,
@@ -30,6 +31,7 @@ import type {
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-suffix.js';
 import { generateExport } from './utils/generate-export.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
+import { collectComponentContractNames } from './utils/swagger/collect-component-names.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
 import { buildCentralZodContractsFile } from './utils/zod/build-endpoint-zod-contracts-code.js';
 import { getZodContractSuffix } from './utils/zod/contract-suffix.js';
@@ -82,6 +84,8 @@ function cleanOutputDirectoriesOnDiskBeforeCodegen(
 export const generateApi = async (
   paramOrParams: GenerateQueryApiParams | GenerateQueryApiParams[],
 ): Promise<void> => {
+  console.log('');
+
   const params = toArray(paramOrParams).filter(
     (config): config is GenerateQueryApiParamsWithInput => {
       if (!config.input) {
@@ -89,9 +93,10 @@ export const generateApi = async (
           typeof config.output === 'string' && config.output
             ? ` (output: ${config.output})`
             : '';
-        console.warn(
-          `[mobx-tanstack-query-api/codegen] Skipping codegen config${outputHint}: "input" is missing or empty.`,
+        console.log(
+          `⏭️  Skipping codegen config${outputHint}: "input" is missing or empty.`,
         );
+        console.log('');
         return false;
       }
       return true;
@@ -102,6 +107,7 @@ export const generateApi = async (
 
   for await (const param of params) {
     await generateApiSingle(param);
+    console.log('');
   }
 };
 
@@ -109,12 +115,6 @@ const generateApiSingle = async (
   params: GenerateQueryApiParamsWithInput,
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: orchestration with many code paths
 ): Promise<void> => {
-  const tsconfigPath = params.tsconfigPath
-    ? path.resolve(__execdirname, params.tsconfigPath)
-    : path.resolve(__execdirname, './tsconfig.json');
-
-  console.info('using tsconfig', tsconfigPath);
-
   const importFileParams: AllImportFileParams = {
     queryClient:
       !params.queryClient || typeof params.queryClient === 'string'
@@ -162,7 +162,7 @@ const generateApiSingle = async (
     httpClientType: 'fetch',
     // Output cleanup is handled here (batch rm + codegenFs.cleanDir); avoid swagger doing it too.
     cleanOutput: false,
-    modular: true,
+    modular: false,
     patch: true,
     typeSuffix: dataContractTypeSuffix,
     disableStrictSSL: false,
@@ -171,6 +171,7 @@ const generateApiSingle = async (
     extractRequestParams: false,
     extractResponseBody: true,
     extractResponseError: true,
+    extractResponses: true,
     generateResponses: true,
     generateClient: false,
     addReadonly: true,
@@ -300,38 +301,6 @@ const generateApiSingle = async (
     ...inputToCodegenInput(params.input),
     hooks: {
       ...params.otherCodegenParams?.hooks,
-      onCreateRoute: (routeData) => {
-        // routeData.request.path =
-        const routeBaseInfo: RouteBaseInfo = {
-          operationId: routeData.raw.operationId,
-          path: routeData.request.path!,
-          method: routeData.request.method!,
-          contractName: null,
-        };
-
-        if (routeData.request.path !== undefined) {
-          const prefix =
-            callFunction(
-              params.requestPathPrefix,
-              routeBaseInfo,
-              swaggerSchemaRefForHooks,
-            ) || '';
-          const suffix =
-            callFunction(
-              params.requestPathSuffix,
-              routeBaseInfo,
-              swaggerSchemaRefForHooks,
-            ) || '';
-
-          routeData.request.path = prefix + routeData.request.path + suffix;
-        }
-
-        if (params.otherCodegenParams?.hooks?.onCreateRoute) {
-          return params.otherCodegenParams.hooks.onCreateRoute(routeData);
-        }
-
-        return routeData;
-      },
       onInit: (configuration, codeGenProcessFromInit) => {
         codegenProcess = codeGenProcessFromInit;
 
@@ -357,6 +326,38 @@ const generateApiSingle = async (
           configuration,
           codeGenProcessFromInit,
         );
+      },
+      onCreateRoute: (routeData) => {
+        const routeBaseInfo: RouteBaseInfo = {
+          operationId: routeData.raw.operationId,
+          path: routeData.request.path!,
+          method: routeData.request.method!,
+          contractName: null,
+          parsed: routeData,
+        };
+
+        if (routeData.request.path !== undefined) {
+          const prefix =
+            callFunction(
+              params.requestPathPrefix,
+              routeBaseInfo,
+              swaggerSchemaRefForHooks,
+            ) || '';
+          const suffix =
+            callFunction(
+              params.requestPathSuffix,
+              routeBaseInfo,
+              swaggerSchemaRefForHooks,
+            ) || '';
+
+          routeData.request.path = prefix + routeData.request.path + suffix;
+        }
+
+        if (params.otherCodegenParams?.hooks?.onCreateRoute) {
+          return params.otherCodegenParams.hooks.onCreateRoute(routeData);
+        }
+
+        return routeData;
       },
       onPrepareConfig: prepareConfig,
       onFormatRouteName: formatRouteName,
@@ -400,6 +401,12 @@ const generateApiSingle = async (
     generated.configuration.modelTypes.filter((modelType) =>
       filterTypes(modelType, swaggerSchema),
     );
+
+  console.log(
+    '📦 Generating api...',
+    'input:',
+    typeof params.input === 'string' ? params.input : '<inline OpenAPI spec>',
+  );
 
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
@@ -511,10 +518,50 @@ const generateApiSingle = async (
       // #endregion
     } else {
       // #region кодогенерация несколько эндпоинтов в 1 файле без группировки
-      const { content: requestInfoPerFileContent, reservedDataContractNames } =
-        await allEndpointPerFileTmpl({
+      const filteredRoutes = allRoutes.filter((route) =>
+        filterEndpoint(route, swaggerSchema),
+      );
+
+      // Для роутов, не прошедших filterEndpoint, в файл их не пишем,
+      // но reservedDataContractNames всё равно учитываем — иначе
+      // operation-level alias-типы (Op*DataDC и т.п.) этих роутов
+      // утекут в data-contracts.ts (см. excludedDataContractNames).
+      for (const route of allRoutes) {
+        if (filterEndpoint(route, swaggerSchema)) {
+          continue;
+        }
+        const { reservedDataContractNames } = newEndpointTmpl({
           ...baseTmplParams,
-          routes: allRoutes,
+          route,
+          groupName: null,
+          metaInfo: params.noMetaInfo
+            ? null
+            : {
+                namespace,
+                groupNames: [],
+              },
+          zodContracts: params.zodContracts,
+          relativePathZodSchemas: hasZodContractsFile
+            ? './contracts'
+            : undefined,
+        });
+        reservedDataContractNames.forEach((name) => {
+          reservedDataContractNamesMap.set(
+            name,
+            (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+          );
+        });
+      }
+
+      const hasFilteredRoutes = filteredRoutes.length > 0;
+
+      if (hasFilteredRoutes) {
+        const {
+          content: requestInfoPerFileContent,
+          reservedDataContractNames,
+        } = await allEndpointPerFileTmpl({
+          ...baseTmplParams,
+          routes: filteredRoutes,
           relativePathDataContracts: './data-contracts',
           groupName: null,
           metaInfo: params.noMetaInfo
@@ -526,20 +573,13 @@ const generateApiSingle = async (
           relativePathZodSchemas: hasZodContractsFile ? './contracts' : null,
         });
 
-      reservedDataContractNames.forEach((name) => {
-        reservedDataContractNamesMap.set(
-          name,
-          (reservedDataContractNamesMap.get(name) ?? 0) + 1,
-        );
-      });
+        reservedDataContractNames.forEach((name) => {
+          reservedDataContractNamesMap.set(
+            name,
+            (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+          );
+        });
 
-      const filteredRoutes = allRoutes.filter((route) =>
-        filterEndpoint(route, swaggerSchema),
-      );
-
-      const hasFilteredRoutes = filteredRoutes.length > 0;
-
-      if (hasFilteredRoutes) {
         filteredRoutes.forEach((route) => {
           if (Array.isArray(route.raw.tags)) {
             route.raw.tags.forEach((tag: string) => {
@@ -604,6 +644,34 @@ const generateApiSingle = async (
     );
     for await (const [groupName, routes] of groupsMap) {
       if (!filterGroups(groupName, swaggerSchema)) {
+        // Группа отфильтрована: файлы для неё не пишем, но всё равно
+        // собираем reservedDataContractNames по её роутам, чтобы
+        // operation-level alias-типы (Op*DataDC и т.п.) этих роутов
+        // корректно исключались из data-contracts.ts (см. excludedDataContractNames).
+        for (const route of routes) {
+          const { reservedDataContractNames } = newEndpointTmpl({
+            ...baseTmplParams,
+            route,
+            groupName,
+            metaInfo: params.noMetaInfo
+              ? null
+              : {
+                  namespace,
+                  groupNames: [],
+                },
+            zodContracts: params.zodContracts,
+            relativePathZodSchemas: hasZodContractsFile
+              ? '../../contracts'
+              : undefined,
+          });
+
+          reservedDataContractNames.forEach((name) => {
+            reservedDataContractNamesMap.set(
+              name,
+              (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+            );
+          });
+        }
         continue;
       }
 
@@ -679,37 +747,66 @@ const generateApiSingle = async (
         // #endregion
       } else {
         // #region Генерация нескольких эндпоинтов на 1 файл
-        const {
-          content: requestInfoPerFileContent,
-          reservedDataContractNames,
-        } = await allEndpointPerFileTmpl({
-          ...baseTmplParams,
-          routes,
-          relativePathDataContracts: '../data-contracts',
-          relativePathZodSchemas: hasZodContractsFile ? '../contracts' : null,
-          groupName,
-          metaInfo: params.noMetaInfo
-            ? null
-            : {
-                namespace,
-                groupNames: [],
-              },
-        });
-
-        reservedDataContractNames.forEach((name) => {
-          reservedDataContractNamesMap.set(
-            name,
-            (reservedDataContractNamesMap.get(name) ?? 0) + 1,
-          );
-        });
-
         const filteredRoutes = routes.filter((route) =>
           filterEndpoint(route, swaggerSchema),
         );
 
+        // См. комментарий в ветке без группировки: отфильтрованные роуты
+        // не пишем в файл, но reservedDataContractNames учитываем.
+        for (const route of routes) {
+          if (filterEndpoint(route, swaggerSchema)) {
+            continue;
+          }
+          const { reservedDataContractNames } = newEndpointTmpl({
+            ...baseTmplParams,
+            route,
+            groupName,
+            metaInfo: params.noMetaInfo
+              ? null
+              : {
+                  namespace,
+                  groupNames: [],
+                },
+            zodContracts: params.zodContracts,
+            relativePathZodSchemas: hasZodContractsFile
+              ? '../contracts'
+              : undefined,
+          });
+          reservedDataContractNames.forEach((name) => {
+            reservedDataContractNamesMap.set(
+              name,
+              (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+            );
+          });
+        }
+
         hasFilteredRoutes = filteredRoutes.length > 0;
 
         if (hasFilteredRoutes) {
+          const {
+            content: requestInfoPerFileContent,
+            reservedDataContractNames,
+          } = await allEndpointPerFileTmpl({
+            ...baseTmplParams,
+            routes: filteredRoutes,
+            relativePathDataContracts: '../data-contracts',
+            relativePathZodSchemas: hasZodContractsFile ? '../contracts' : null,
+            groupName,
+            metaInfo: params.noMetaInfo
+              ? null
+              : {
+                  namespace,
+                  groupNames: [],
+                },
+          });
+
+          reservedDataContractNames.forEach((name) => {
+            reservedDataContractNamesMap.set(
+              name,
+              (reservedDataContractNamesMap.get(name) ?? 0) + 1,
+            );
+          });
+
           filteredRoutes.forEach((route) => {
             if (Array.isArray(route.raw.tags)) {
               route.raw.tags.forEach((tag: string) => {
@@ -794,10 +891,9 @@ export * as ${exportGroupName} from './endpoints';
         }
       : null;
 
-  const schemaDataContractNames = new Set(
-    Object.keys((swaggerSchema as any)?.components?.schemas ?? {}).map(
-      (schemaName) => utils.formatModelName(schemaName),
-    ),
+  const componentsContractNames = collectComponentContractNames(
+    swaggerSchema,
+    utils.formatModelName,
   );
 
   const excludedDataContractNames = Array.from(
@@ -807,7 +903,7 @@ export * as ${exportGroupName} from './endpoints';
       if (count !== 1) {
         return false;
       }
-      return !schemaDataContractNames.has(name);
+      return !componentsContractNames.has(name);
     })
     .map(([name]) => name);
 
@@ -901,4 +997,6 @@ ${generateExport({ asteriksAt: namespace }, './__exports', params)}
           : params.removeUnusedTypes.keepTypes,
     });
   }
+
+  console.log('✅ Codegen completed successfully:', paths.outputDir);
 };
