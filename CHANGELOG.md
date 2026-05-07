@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.52.7
+
+### Patch Changes
+
+- [`7e2ebb2`](https://github.com/js2me/mobx-tanstack-query-api/commit/7e2ebb2367bda3fc95cc5c23ac17e9605996fa8f) Thanks [@js2me](https://github.com/js2me)! - fixed codegen with wrong http status codes for HttpMultistatusResponse
+
 ## 0.52.6
 
 ### Patch Changes
