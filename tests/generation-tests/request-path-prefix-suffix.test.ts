@@ -7,7 +7,7 @@ import type { GenerateQueryApiParams } from '../../src/codegen/types/index.js';
 
 const INPUT_FILE = path.resolve(
   __dirname,
-  './request-path-prefix-suffix.openapi.json',
+  './fixtures/request-path-prefix-suffix.openapi.json',
 );
 const OUTPUT_DIR = path.resolve(
   __dirname,

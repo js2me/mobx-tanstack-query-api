@@ -296,73 +296,88 @@ const generateApiSingle = async (
     });
   }
 
-  const generated = await generateApiFromSwagger({
-    ...(swaggerTypescriptApiCodegenBaseParams as any),
-    ...inputToCodegenInput(params.input),
-    hooks: {
-      ...params.otherCodegenParams?.hooks,
-      onInit: (configuration, codeGenProcessFromInit) => {
-        codegenProcess = codeGenProcessFromInit;
+  let generated: Awaited<ReturnType<typeof generateApiFromSwagger>>;
 
-        const resultSwaggerSchema = configuration.swaggerSchema as AnyObject;
+  const input = inputToCodegenInput(params.input);
 
-        resultSwaggerSchema.components = resultSwaggerSchema.components || {};
-        resultSwaggerSchema.components.schemas =
-          resultSwaggerSchema.components.schemas || {};
+  try {
+    generated = await generateApiFromSwagger({
+      ...(swaggerTypescriptApiCodegenBaseParams as any),
+      ...input,
+      hooks: {
+        ...params.otherCodegenParams?.hooks,
+        onInit: (configuration, codeGenProcessFromInit) => {
+          codegenProcess = codeGenProcessFromInit;
 
-        resultSwaggerSchema.paths = {
-          ...resultSwaggerSchema.paths,
-          ...mixinSwaggerSchema?.paths,
-        };
+          const resultSwaggerSchema = configuration.swaggerSchema as AnyObject;
 
-        resultSwaggerSchema.components.schemas = {
-          ...resultSwaggerSchema.components.schemas,
-          ...mixinSwaggerSchema?.components?.schemas,
-        };
+          resultSwaggerSchema.components = resultSwaggerSchema.components || {};
+          resultSwaggerSchema.components.schemas =
+            resultSwaggerSchema.components.schemas || {};
 
-        swaggerSchemaRefForHooks = resultSwaggerSchema as AnyObject;
+          resultSwaggerSchema.paths = {
+            ...resultSwaggerSchema.paths,
+            ...mixinSwaggerSchema?.paths,
+          };
 
-        return swaggerTypescriptApiCodegenBaseParams?.hooks?.onInit?.(
-          configuration,
-          codeGenProcessFromInit,
-        );
+          resultSwaggerSchema.components.schemas = {
+            ...resultSwaggerSchema.components.schemas,
+            ...mixinSwaggerSchema?.components?.schemas,
+          };
+
+          swaggerSchemaRefForHooks = resultSwaggerSchema as AnyObject;
+
+          return swaggerTypescriptApiCodegenBaseParams?.hooks?.onInit?.(
+            configuration,
+            codeGenProcessFromInit,
+          );
+        },
+        onCreateRoute: (routeData) => {
+          const routeBaseInfo: RouteBaseInfo = {
+            operationId: routeData.raw.operationId,
+            path: routeData.request.path!,
+            method: routeData.request.method!,
+            contractName: null,
+            parsed: routeData,
+          };
+
+          if (routeData.request.path !== undefined) {
+            const prefix =
+              callFunction(
+                params.requestPathPrefix,
+                routeBaseInfo,
+                swaggerSchemaRefForHooks,
+              ) || '';
+            const suffix =
+              callFunction(
+                params.requestPathSuffix,
+                routeBaseInfo,
+                swaggerSchemaRefForHooks,
+              ) || '';
+
+            routeData.request.path = prefix + routeData.request.path + suffix;
+          }
+
+          if (params.otherCodegenParams?.hooks?.onCreateRoute) {
+            return params.otherCodegenParams.hooks.onCreateRoute(routeData);
+          }
+
+          return routeData;
+        },
+        onPrepareConfig: prepareConfig,
+        onFormatRouteName: formatRouteName,
       },
-      onCreateRoute: (routeData) => {
-        const routeBaseInfo: RouteBaseInfo = {
-          operationId: routeData.raw.operationId,
-          path: routeData.request.path!,
-          method: routeData.request.method!,
-          contractName: null,
-          parsed: routeData,
-        };
-
-        if (routeData.request.path !== undefined) {
-          const prefix =
-            callFunction(
-              params.requestPathPrefix,
-              routeBaseInfo,
-              swaggerSchemaRefForHooks,
-            ) || '';
-          const suffix =
-            callFunction(
-              params.requestPathSuffix,
-              routeBaseInfo,
-              swaggerSchemaRefForHooks,
-            ) || '';
-
-          routeData.request.path = prefix + routeData.request.path + suffix;
-        }
-
-        if (params.otherCodegenParams?.hooks?.onCreateRoute) {
-          return params.otherCodegenParams.hooks.onCreateRoute(routeData);
-        }
-
-        return routeData;
-      },
-      onPrepareConfig: prepareConfig,
-      onFormatRouteName: formatRouteName,
-    },
-  });
+    });
+  } catch (e) {
+    if (String(e).includes('error while fetching data from URL')) {
+      throw new Error(
+        `⛔ failed to load swagger schema based on input ${'spec' in input ? '<API Spec>' : input.input}`,
+        { cause: e },
+      );
+    } else {
+      throw new Error('⛔ failed to generate swagger schema', { cause: e });
+    }
+  }
 
   //#endregion
 

@@ -5,7 +5,7 @@ import { defineConfig } from '../../src/cli/utils/define-config.js';
 import { generateApi } from '../../src/codegen/index.js';
 import type { GenerateQueryApiParams } from '../../src/codegen/types/generate-query-api-params.js';
 
-const INPUT_DIR = path.resolve(__dirname, './generate-from-yaml.test.yaml');
+const INPUT_DIR = path.resolve(__dirname, './fixtures/generate-from-yaml.test.yaml');
 const OUTPUT_DIR = path.resolve(__dirname, './__generated__/zod');
 const ENDPOINT_FILE = path.resolve(
   OUTPUT_DIR,

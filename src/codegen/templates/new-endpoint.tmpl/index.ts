@@ -1,6 +1,7 @@
 import { camelCase, compact, uniq, upperCase, upperFirst } from 'es-toolkit';
 import type { ParsedRoute } from 'swagger-typescript-api';
 import { callFunction } from 'yummies/common';
+import { parser } from 'yummies/parser';
 import type { AnyObject, Maybe } from 'yummies/types';
 import type { BaseTmplParams } from '../../types/base-tmpl-params.js';
 import type {
@@ -430,7 +431,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     .map((it: AnyObject) => {
       return [
         it.description && `/** ${it.description} */`,
-        `${it.status}: ${it.type};`,
+        `${parser.number(it.status, { fallback: `"${it.status}"` })}: ${it.type};`,
       ]
         .filter(Boolean)
         .join('\n');

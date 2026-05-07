@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { defineConfig } from '../../src/cli/utils/define-config.js';
 import { generateApi } from '../../src/codegen/index.js';
 
-const INPUT_FILE = path.resolve(__dirname, './server-variables.openapi.yaml');
+const INPUT_FILE = path.resolve(__dirname, './fixtures/server-variables.openapi.yaml');
 const OUTPUT_DIR = path.resolve(__dirname, './__generated__/server-variables');
 const ENDPOINT_FILE = path.resolve(
   OUTPUT_DIR,

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { defineConfig } from '../../src/cli/utils/define-config.js';
 import { generateApi } from '../../src/codegen/index.js';
 
-const MEMORY_LEAK_INPUT = path.resolve(__dirname, './get-memory-leak.swagger2.json');
+const MEMORY_LEAK_INPUT = path.resolve(__dirname, './fixtures/get-memory-leak.swagger2.json');
 const MEMORY_LEAK_OUTPUT = path.resolve(
   __dirname,
   './__generated__/endpoint-export-types-memory-leak',
@@ -17,7 +17,7 @@ const MEMORY_LEAK_ENDPOINT = path.resolve(
 
 const FOO_BAR_INPUT = path.resolve(
   __dirname,
-  './foo-bar-duplicate-data-types.openapi3.json',
+  './fixtures/foo-bar-duplicate-data-types.openapi3.json',
 );
 const FOO_BAR_OUTPUT = path.resolve(
   __dirname,

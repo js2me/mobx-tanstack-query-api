@@ -6,7 +6,7 @@ import { generateApi } from '../../src/codegen/index.js';
 
 const INPUT_FILE = path.resolve(
   __dirname,
-  './operation-servers-override.openapi.yaml',
+  './fixtures/operation-servers-override.openapi.yaml',
 );
 const OUTPUT_DIR = path.resolve(
   __dirname,
