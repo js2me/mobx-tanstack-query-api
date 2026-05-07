@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.52.6
+
+### Patch Changes
+
+- [`b0b4d53`](https://github.com/js2me/mobx-tanstack-query-api/commit/b0b4d537b254def3926eaa61773f435b205478c0) Thanks [@js2me](https://github.com/js2me)! - passing `endpointMeta` to `EndpointQueryMeta` type
+
+- [`f655231`](https://github.com/js2me/mobx-tanstack-query-api/commit/f6552319f88d8d889d4c474826e9b99255afa821) Thanks [@js2me](https://github.com/js2me)! - update swagger-typescript-api to 13.9.0 local fragment ref partial support
+
 ## 0.52.5
 
 ### Patch Changes
