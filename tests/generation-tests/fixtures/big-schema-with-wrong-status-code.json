@@ -700,8 +700,8 @@
         "tags": [
           "tg07"
         ],
-        "summary": "Quos paulatim tactus templum aestas cogito summisse careo totam armarium.",
-        "operationId": "op0050",
+        "summary" : "dklsajfl;dskf kl;dsafkl;dsaj fkl;dsalfk;jdsal;fj dsal;fjl;ds afl;dsa djal;fja sdkfj adsfo dsaf8i9odsf89  /// / ** /* **/ */ *?// */",
+        "operationId": "longWrongSummary",
         "parameters": [
           {
             "name": "submissive_calculus_225",
@@ -736,8 +736,8 @@
         "tags": [
           "tg07"
         ],
-        "summary": "Derideo sed creptio facere agnosco terminatio pecus tenuis.",
-        "operationId": "op0010",
+        "summary" : "Log wdsklafdsalfk dsajf dsaflkjdsafljk dsaklfj  / sadfff / sadf sdf dsaf ssd FFFF",
+        "operationId": "summaryWithSlashes",
         "requestBody": {
           "content": {
             "application/json": {

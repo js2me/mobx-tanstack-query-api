@@ -1393,6 +1393,65 @@ export interface SchWorthwhileTarragon5DC {
 
 
 /* --- endpoints/**/*.ts --- */
+/* --- endpoints/long-wrong-summary.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Tag } from "../meta-info";
+
+import { SchRoughLox85DC } from "../data-contracts";
+export type LongWrongSummaryErrorDC = any;
+
+export type LongWrongSummaryDataDC = SchRoughLox85DC[];
+
+export type LongWrongSummaryParams = {
+  query: {
+    /**
+     * Amitto defungo quod magni corrumpo depereo conitor tibi.
+     * @format int32
+     */
+    submissive_calculus_225: number;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * **dklsajfl;dskf kl;dsafkl;dsaj fkl;dsalfk;jdsal;fj dsal;fjl;ds**
+ * **afl;dsa djal;fja sdkfj adsfo dsaf8i9odsf89 /// / ** /* **\\/**
+ * ***\\/ *?// *\\/**
+ *
+ * @operationId longWrongSummary
+ * @tags tg07
+ * @request **GET:/r/15**
+ * @produces application/json
+ * @responses
+ * @**200** LongWrongSummaryDataDC Illo sonitus desolo utpote cauda arguo alveus.
+ */
+export const longWrongSummary = new Endpoint<
+  HttpResponse<LongWrongSummaryDataDC, LongWrongSummaryErrorDC>,
+  LongWrongSummaryParams,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/r/15\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["query"],
+    operationId: "longWrongSummary",
+    path: ["r", "15"],
+    tags: [Tag.Tg07],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+
 /* --- endpoints/op-0001.ts --- */
 /* eslint-disable */
 /* tslint:disable */
@@ -1958,74 +2017,6 @@ export const op0009 = new Endpoint<
     operationId: "op0009",
     path: ["r", "3"],
     tags: [Tag.Tg28],
-    meta: {},
-  },
-  queryClient,
-  http,
-);
-
-
-/* --- endpoints/op-0010.ts --- */
-/* eslint-disable */
-/* tslint:disable */
-import {
-  Endpoint,
-  HttpMultistatusResponse,
-  RequestParams,
-} from "mobx-tanstack-query-api";
-import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-import { Tag } from "../meta-info";
-
-import { SchIllPantyhose7DC, SchPoshArmoire32DC, SchUniformPiglet38DC } from "../data-contracts";
-
-export type Op0010DataDC = SchIllPantyhose7DC;
-
-export type Op0010ErrorDC = SchUniformPiglet38DC;
-
-export type Op0010Params = {
-  data: SchPoshArmoire32DC;
-  requestParams?: RequestParams;
-};
-
-/**
- * **Derideo sed creptio facere agnosco terminatio pecus tenuis.**
- *
- * @operationId op0010
- * @tags tg07
- * @request **POST:/r/16**
- * @produces application/json
- * @consumes application/json
- * @responses
- * @**200** Op0010DataDC Crudelis clam amiculum vis demum corrupti valeo ubi ventus cicuta.
- * @**400** SchUniformPiglet38DC Taceo tersus bellicus sto celo.
- */
-export const op0010 = new Endpoint<
-  HttpMultistatusResponse<
-    {
-      /** Crudelis clam amiculum vis demum corrupti valeo ubi ventus cicuta. */
-      200: Op0010DataDC;
-      /** Taceo tersus bellicus sto celo. */
-      400: SchUniformPiglet38DC;
-    },
-    Op0010DataDC,
-    Op0010ErrorDC
-  >,
-  Op0010Params,
-  any
->(
-  {
-    params: ({ data, requestParams }) => ({
-      path: \`/r/16\`,
-      method: "POST",
-      body: data,
-      contentType: "application/json",
-      format: "json",
-      ...requestParams,
-    }),
-    requiredParams: ["data"],
-    operationId: "op0010",
-    path: ["r", "16"],
-    tags: [Tag.Tg07],
     meta: {},
   },
   queryClient,
@@ -4337,64 +4328,6 @@ export const op0049 = new Endpoint<
     operationId: "op0049",
     path: ["r", "57", "{trustworthyBrace452}"],
     tags: [Tag.Tg21],
-    meta: {},
-  },
-  queryClient,
-  http,
-);
-
-
-/* --- endpoints/op-0050.ts --- */
-/* eslint-disable */
-/* tslint:disable */
-import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
-import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-import { Tag } from "../meta-info";
-
-import { SchRoughLox85DC } from "../data-contracts";
-export type Op0050ErrorDC = any;
-
-export type Op0050DataDC = SchRoughLox85DC[];
-
-export type Op0050Params = {
-  query: {
-    /**
-     * Amitto defungo quod magni corrumpo depereo conitor tibi.
-     * @format int32
-     */
-    submissive_calculus_225: number;
-  };
-  requestParams?: RequestParams;
-};
-
-/**
- * **Quos paulatim tactus templum aestas cogito summisse careo**
- * **totam armarium.**
- *
- * @operationId op0050
- * @tags tg07
- * @request **GET:/r/15**
- * @produces application/json
- * @responses
- * @**200** Op0050DataDC Illo sonitus desolo utpote cauda arguo alveus.
- */
-export const op0050 = new Endpoint<
-  HttpResponse<Op0050DataDC, Op0050ErrorDC>,
-  Op0050Params,
-  any
->(
-  {
-    params: ({ query, requestParams }) => ({
-      path: \`/r/15\`,
-      method: "GET",
-      query: query,
-      format: "json",
-      ...requestParams,
-    }),
-    requiredParams: ["query"],
-    operationId: "op0050",
-    path: ["r", "15"],
-    tags: [Tag.Tg07],
     meta: {},
   },
   queryClient,
@@ -10008,6 +9941,75 @@ export const op0143 = new Endpoint<
     operationId: "op0143",
     path: ["r", "11", "{urbanWidow595}"],
     tags: [Tag.Tg01],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- endpoints/summary-with-slashes.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Tag } from "../meta-info";
+
+import { SchIllPantyhose7DC, SchPoshArmoire32DC, SchUniformPiglet38DC } from "../data-contracts";
+
+export type SummaryWithSlashesDataDC = SchIllPantyhose7DC;
+
+export type SummaryWithSlashesErrorDC = SchUniformPiglet38DC;
+
+export type SummaryWithSlashesParams = {
+  data: SchPoshArmoire32DC;
+  requestParams?: RequestParams;
+};
+
+/**
+ * **Log wdsklafdsalfk dsajf dsaflkjdsafljk dsaklfj / sadfff /**
+ * **sadf sdf dsaf ssd FFFF**
+ *
+ * @operationId summaryWithSlashes
+ * @tags tg07
+ * @request **POST:/r/16**
+ * @produces application/json
+ * @consumes application/json
+ * @responses
+ * @**200** SummaryWithSlashesDataDC Crudelis clam amiculum vis demum corrupti valeo ubi ventus cicuta.
+ * @**400** SchUniformPiglet38DC Taceo tersus bellicus sto celo.
+ */
+export const summaryWithSlashes = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Crudelis clam amiculum vis demum corrupti valeo ubi ventus cicuta. */
+      200: SummaryWithSlashesDataDC;
+      /** Taceo tersus bellicus sto celo. */
+      400: SchUniformPiglet38DC;
+    },
+    SummaryWithSlashesDataDC,
+    SummaryWithSlashesErrorDC
+  >,
+  SummaryWithSlashesParams,
+  any
+>(
+  {
+    params: ({ data, requestParams }) => ({
+      path: \`/r/16\`,
+      method: "POST",
+      body: data,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["data"],
+    operationId: "summaryWithSlashes",
+    path: ["r", "16"],
+    tags: [Tag.Tg07],
     meta: {},
   },
   queryClient,

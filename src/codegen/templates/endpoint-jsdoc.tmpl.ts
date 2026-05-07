@@ -200,21 +200,26 @@ export const endpointJSDocTmpl = (params: EndpointJSDocTmplParams) => {
     });
   }
 
-  const jsdocContent = jsDocLines.map((it) => {
-    let line: string = ' * ';
+  const jsdocContent = jsDocLines
+    .map((it) => {
+      let line: string = ' * ';
 
-    if (it.name) {
-      line += `@${it.name} `;
-    }
+      if (it.name) {
+        line += `@${it.name} `;
+      }
 
-    const content = (it.content ?? '').trimEnd();
+      const content = (it.content ?? '').trimEnd();
 
-    if (content) {
-      line += content;
-    }
+      if (content) {
+        line += content;
+      }
 
-    return line;
-  });
+      return line;
+    })
+    .map((line) => {
+      // this fixes bugs with '*/' inside comments
+      return line.replace(/\*\//g, '*\\/');
+    });
 
   const result = `
 /**
