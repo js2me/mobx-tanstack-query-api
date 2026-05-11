@@ -1,5 +1,17 @@
 # mobx-tanstack-query-api
 
+## 0.53.0
+
+### Minor Changes
+
+- [`b57b661`](https://github.com/js2me/mobx-tanstack-query-api/commit/b57b6616c19ef8c73cc959c83a1a955823235a90) Thanks [@js2me](https://github.com/js2me)! - added `'skip'` for `queryClient` and `httpClient` codegen
+
+### Patch Changes
+
+- [`63b58e2`](https://github.com/js2me/mobx-tanstack-query-api/commit/63b58e260450c3af47a9847f6a5c6295b1c7de72) Thanks [@js2me](https://github.com/js2me)! - sanitizing input param names for request to fix codegen
+
+- [`63b58e2`](https://github.com/js2me/mobx-tanstack-query-api/commit/63b58e260450c3af47a9847f6a5c6295b1c7de72) Thanks [@js2me](https://github.com/js2me)! - support type: text in openapi
+
 ## 0.52.9
 
 ### Patch Changes
