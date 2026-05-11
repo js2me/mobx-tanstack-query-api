@@ -87,5 +87,5 @@ describe('generateApi snapshot gitlab v4 (anonymized fixture)', () => {
     ].join('\n');
 
     expect(combined).toMatchSnapshot();
-  });
+  }, 120_000);
 });

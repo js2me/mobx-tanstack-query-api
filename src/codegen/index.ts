@@ -197,6 +197,8 @@ const generateApiSingle = async (
         ...(constructs as any),
         object: () => `Record<string, any>`,
         float: () => `number`,
+        /** GitLab / some specs use OpenAPI 2-style `type: text` for strings */
+        text: () => `string`,
       };
 
       if (params.otherCodegenParams?.primitiveTypeConstructs) {

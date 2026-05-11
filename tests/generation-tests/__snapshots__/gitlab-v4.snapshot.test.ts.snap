@@ -4199,7 +4199,7 @@ export interface APIEntitiesMemberRoleDC {
    */
   base_access_level: 5 | 10 | 15 | 20 | 30 | 40;
   /** @example "Guest user who can also read_code" */
-  description: text;
+  description: string;
   /**
    * @format int32
    * @example 2
@@ -4217,7 +4217,7 @@ export interface APIEntitiesMemberRoleDC {
   manage_protected_tags: boolean;
   manage_security_policy_link: boolean;
   /** @example "Custom guest" */
-  name: text;
+  name: string;
   read_admin_cicd: boolean;
   read_admin_groups: boolean;
   read_admin_monitoring: boolean;
@@ -89114,82 +89114,96 @@ export const postApiV4ProjectsIdProtectedTags = new Endpoint<
 /* --- endpoints/post-api-v-4-projects-id-ref-ref-trigger-pipeline.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { APIEntitiesCiPipelineDC, PostApiV4ProjectsIdRefRefTriggerPipelineDC } from "../data-contracts";
-      export type PostApiV4ProjectsIdRefRefTriggerPipelineErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PostApiV4ProjectsIdRefRefTriggerPipelineDataDC = APIEntitiesCiPipelineDC
+import { Tag } from "../meta-info";
 
-      export type PostApiV4ProjectsIdRefRefTriggerPipelineParams = {
-    id:string, ref:string, postApiV4ProjectsId(refRef)triggerPipeline:PostApiV4ProjectsIdRefRefTriggerPipelineDC, requestParams?:RequestParams
-  }
-      
-      
+import { APIEntitiesCiPipelineDC, PostApiV4ProjectsIdRefRefTriggerPipelineDC } from "../data-contracts";
+export type PostApiV4ProjectsIdRefRefTriggerPipelineErrorDC = any;
+
+export type PostApiV4ProjectsIdRefRefTriggerPipelineDataDC =
+  APIEntitiesCiPipelineDC;
+
+export type PostApiV4ProjectsIdRefRefTriggerPipelineParams = {
+  id: string;
+  ref: string;
+  postApiV4ProjectsIdRefRefTriggerPipeline: PostApiV4ProjectsIdRefRefTriggerPipelineDC;
+  requestParams?: RequestParams;
+};
+
 /**
  * Trigger a GitLab project pipeline
- * 
+ *
  * @operationId postApiV4ProjectsId(refRef)triggerPipeline
  * @tags ci_triggers
  * @request **POST:/api/v4/projects/{id}/(ref/{ref}/)trigger/pipeline**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**201** PostApiV4ProjectsIdRefRefTriggerPipelineDataDC Trigger a GitLab project pipeline
  * @**400** void Bad request
  * @**401** void Unauthorized
  * @**403** void Forbidden
  * @**404** void Not found
  */
-      export const postApiV4ProjectsIdRefRefTriggerPipeline = new Endpoint<
-HttpMultistatusResponse<{
-/** Trigger a GitLab project pipeline */
-201: PostApiV4ProjectsIdRefRefTriggerPipelineDataDC;
-/** Bad request */
-400: void;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not found */
-404: void;
-},
-PostApiV4ProjectsIdRefRefTriggerPipelineDataDC,
-any
->,
-PostApiV4ProjectsIdRefRefTriggerPipelineParams,
-any
+export const postApiV4ProjectsIdRefRefTriggerPipeline = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Trigger a GitLab project pipeline */
+      201: PostApiV4ProjectsIdRefRefTriggerPipelineDataDC;
+      /** Bad request */
+      400: void;
+      /** Unauthorized */
+      401: void;
+      /** Forbidden */
+      403: void;
+      /** Not found */
+      404: void;
+    },
+    PostApiV4ProjectsIdRefRefTriggerPipelineDataDC,
+    any
+  >,
+  PostApiV4ProjectsIdRefRefTriggerPipelineParams,
+  any
 >(
-{
-params: ({
-id,ref,postApiV4ProjectsId(refRef)triggerPipeline,requestParams
-}) => ({
-path: \`/api/v4/projects/\${id}/(ref/\${ref}/)trigger/pipeline\`,
-method: 'POST',
-body: postApiV4ProjectsId(refRef)triggerPipeline,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","ref","postApiV4ProjectsId(refRef)triggerPipeline"],
-operationId: "postApiV4ProjectsId(refRef)triggerPipeline",
-path: ["api","v4","projects","{id}","(ref","{ref}",")trigger","pipeline"],
-tags: [Tag.CiTriggers],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+  {
+    params: ({
+      id,
+      ref,
+      postApiV4ProjectsIdRefRefTriggerPipeline,
+      requestParams,
+    }) => ({
+      path: \`/api/v4/projects/\${id}/(ref/\${ref}/)trigger/pipeline\`,
+      method: "POST",
+      body: postApiV4ProjectsIdRefRefTriggerPipeline,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["id", "ref", "postApiV4ProjectsIdRefRefTriggerPipeline"],
+    operationId: "postApiV4ProjectsId(refRef)triggerPipeline",
+    path: [
+      "api",
+      "v4",
+      "projects",
+      "{id}",
+      "(ref",
+      "{ref}",
+      ")trigger",
+      "pipeline",
+    ],
+    tags: [Tag.CiTriggers],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
 
 /* --- endpoints/post-api-v-4-projects-id-registry-protection-repository-rules.ts --- */
 /* eslint-disable */
@@ -100195,85 +100209,109 @@ export const putApiV4GroupsIdMembersUserId = new Endpoint<
 /* --- endpoints/put-api-v-4-groups-id-packages-npm-package-package-name-dist-tags-tag.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDC } from "../data-contracts";
-      export type PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagParams = {
-    id:string, tag:string, putApiV4GroupsIdPackagesNpmPackage*packageNameDistTagsTag:PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDC } from "../data-contracts";
+export type PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagErrorDC =
+  any;
+
+export type PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDataDC =
+  any;
+
+export type PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagParams = {
+  id: string;
+  tag: string;
+  putApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTag: PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDC;
+  requestParams?: RequestParams;
+};
+
 /**
  * **Create or Update the given tag for the given NPM package and**
  * **version**
- * 
+ *
  * This feature was introduced in GitLab 12.7
- * 
+ *
  * @operationId putApiV4GroupsIdPackagesNpmPackage*packageNameDistTagsTag
  * @tags packages
  * @request **PUT:/api/v4/groups/{id}/-/packages/npm/-/package/*package_name/dist-tags/{tag}**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**204** PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDataDC Create or Update the given tag for the given NPM package and version
  * @**400** void Bad Request
  * @**401** void Unauthorized
  * @**403** void Forbidden
  * @**404** void Not Found
  */
-      export const putApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTag = new Endpoint<
-HttpMultistatusResponse<{
-/** Create or Update the given tag for the given NPM package and version */
-204: PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDataDC;
-/** Bad Request */
-400: void;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not Found */
-404: void;
-},
-PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDataDC,
-any
->,
-PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagParams,
-any
->(
-{
-params: ({
-id,tag,putApiV4GroupsIdPackagesNpmPackage*packageNameDistTagsTag,requestParams
-}) => ({
-path: \`/api/v4/groups/\${id}/-/packages/npm/-/package/*package_name/dist-tags/\${tag}\`,
-method: 'PUT',
-body: putApiV4GroupsIdPackagesNpmPackage*packageNameDistTagsTag,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","tag","putApiV4GroupsIdPackagesNpmPackage*packageNameDistTagsTag"],
-operationId: "putApiV4GroupsIdPackagesNpmPackage*packageNameDistTagsTag",
-path: ["api","v4","groups","{id}","-","packages","npm","-","package","*package_name","dist-tags","{tag}"],
-tags: [Tag.Packages],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+export const putApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTag =
+  new Endpoint<
+    HttpMultistatusResponse<
+      {
+        /** Create or Update the given tag for the given NPM package and version */
+        204: PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDataDC;
+        /** Bad Request */
+        400: void;
+        /** Unauthorized */
+        401: void;
+        /** Forbidden */
+        403: void;
+        /** Not Found */
+        404: void;
+      },
+      PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagDataDC,
+      any
+    >,
+    PutApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTagParams,
+    any
+  >(
+    {
+      params: ({
+        id,
+        tag,
+        putApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTag,
+        requestParams,
+      }) => ({
+        path: \`/api/v4/groups/\${id}/-/packages/npm/-/package/*package_name/dist-tags/\${tag}\`,
+        method: "PUT",
+        body: putApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTag,
+        contentType: "application/json",
+        format: "json",
+        ...requestParams,
+      }),
+      requiredParams: [
+        "id",
+        "tag",
+        "putApiV4GroupsIdPackagesNpmPackagePackageNameDistTagsTag",
+      ],
+      operationId: "putApiV4GroupsIdPackagesNpmPackage*packageNameDistTagsTag",
+      path: [
+        "api",
+        "v4",
+        "groups",
+        "{id}",
+        "-",
+        "packages",
+        "npm",
+        "-",
+        "package",
+        "*package_name",
+        "dist-tags",
+        "{tag}",
+      ],
+      tags: [Tag.Packages],
+      meta: {},
+    },
+    queryClient,
+    http,
+  );
+
 
 /* --- endpoints/put-api-v-4-groups-id-variables-key.ts --- */
 /* eslint-disable */
@@ -101348,85 +101386,97 @@ export const putApiV4PackagesConanV1FilesPackageNamePackageVersionPackageUsernam
 /* --- endpoints/put-api-v-4-packages-npm-package-package-name-dist-tags-tag.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4PackagesNpmPackagePackageNameDistTagsTagDC } from "../data-contracts";
-      export type PutApiV4PackagesNpmPackagePackageNameDistTagsTagErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4PackagesNpmPackagePackageNameDistTagsTagDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4PackagesNpmPackagePackageNameDistTagsTagParams = {
-    tag:string, putApiV4PackagesNpmPackage*packageNameDistTagsTag:PutApiV4PackagesNpmPackagePackageNameDistTagsTagDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4PackagesNpmPackagePackageNameDistTagsTagDC } from "../data-contracts";
+export type PutApiV4PackagesNpmPackagePackageNameDistTagsTagErrorDC = any;
+
+export type PutApiV4PackagesNpmPackagePackageNameDistTagsTagDataDC = any;
+
+export type PutApiV4PackagesNpmPackagePackageNameDistTagsTagParams = {
+  tag: string;
+  putApiV4PackagesNpmPackagePackageNameDistTagsTag: PutApiV4PackagesNpmPackagePackageNameDistTagsTagDC;
+  requestParams?: RequestParams;
+};
+
 /**
  * **Create or Update the given tag for the given NPM package and**
  * **version**
- * 
+ *
  * This feature was introduced in GitLab 12.7
- * 
+ *
  * @operationId putApiV4PackagesNpmPackage*packageNameDistTagsTag
  * @tags packages
  * @request **PUT:/api/v4/packages/npm/-/package/*package_name/dist-tags/{tag}**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**204** PutApiV4PackagesNpmPackagePackageNameDistTagsTagDataDC Create or Update the given tag for the given NPM package and version
  * @**400** void Bad Request
  * @**401** void Unauthorized
  * @**403** void Forbidden
  * @**404** void Not Found
  */
-      export const putApiV4PackagesNpmPackagePackageNameDistTagsTag = new Endpoint<
-HttpMultistatusResponse<{
-/** Create or Update the given tag for the given NPM package and version */
-204: PutApiV4PackagesNpmPackagePackageNameDistTagsTagDataDC;
-/** Bad Request */
-400: void;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not Found */
-404: void;
-},
-PutApiV4PackagesNpmPackagePackageNameDistTagsTagDataDC,
-any
->,
-PutApiV4PackagesNpmPackagePackageNameDistTagsTagParams,
-any
+export const putApiV4PackagesNpmPackagePackageNameDistTagsTag = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Create or Update the given tag for the given NPM package and version */
+      204: PutApiV4PackagesNpmPackagePackageNameDistTagsTagDataDC;
+      /** Bad Request */
+      400: void;
+      /** Unauthorized */
+      401: void;
+      /** Forbidden */
+      403: void;
+      /** Not Found */
+      404: void;
+    },
+    PutApiV4PackagesNpmPackagePackageNameDistTagsTagDataDC,
+    any
+  >,
+  PutApiV4PackagesNpmPackagePackageNameDistTagsTagParams,
+  any
 >(
-{
-params: ({
-tag,putApiV4PackagesNpmPackage*packageNameDistTagsTag,requestParams
-}) => ({
-path: \`/api/v4/packages/npm/-/package/*package_name/dist-tags/\${tag}\`,
-method: 'PUT',
-body: putApiV4PackagesNpmPackage*packageNameDistTagsTag,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["tag","putApiV4PackagesNpmPackage*packageNameDistTagsTag"],
-operationId: "putApiV4PackagesNpmPackage*packageNameDistTagsTag",
-path: ["api","v4","packages","npm","-","package","*package_name","dist-tags","{tag}"],
-tags: [Tag.Packages],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+  {
+    params: ({
+      tag,
+      putApiV4PackagesNpmPackagePackageNameDistTagsTag,
+      requestParams,
+    }) => ({
+      path: \`/api/v4/packages/npm/-/package/*package_name/dist-tags/\${tag}\`,
+      method: "PUT",
+      body: putApiV4PackagesNpmPackagePackageNameDistTagsTag,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["tag", "putApiV4PackagesNpmPackagePackageNameDistTagsTag"],
+    operationId: "putApiV4PackagesNpmPackage*packageNameDistTagsTag",
+    path: [
+      "api",
+      "v4",
+      "packages",
+      "npm",
+      "-",
+      "package",
+      "*package_name",
+      "dist-tags",
+      "{tag}",
+    ],
+    tags: [Tag.Packages],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
 
 /* --- endpoints/put-api-v-4-projects-id-access-requests-user-id-approve.ts --- */
 /* eslint-disable */
@@ -109310,117 +109360,149 @@ export const putApiV4ProjectsIdPackagesDebianFileName = new Endpoint<
 /* --- endpoints/put-api-v-4-projects-id-packages-generic-package-name-package-version-path-file-name-authorize.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDC } from "../data-contracts";
-      export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeParams = {
-    id:string, packageName:string, fileName:string, putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileNameAuthorize:PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDC } from "../data-contracts";
+export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeErrorDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDataDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeParams =
+  {
+    id: string;
+    packageName: string;
+    fileName: string;
+    putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorize: PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDC;
+    requestParams?: RequestParams;
+  };
+
 /**
  * **Workhorse authorize generic package file**
- * 
+ *
  * This feature was introduced in GitLab 13.5
- * 
+ *
  * @operationId putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileNameAuthorize
  * @tags packages
  * @request **PUT:/api/v4/projects/{id}/packages/generic/{package_name}/*package_version/(*path/){file_name}/authorize**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**200** PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDataDC Workhorse authorize generic package file
  * @**401** void Unauthorized
  * @**403** void Forbidden
  * @**404** void Not Found
  */
-      export const putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorize = new Endpoint<
-HttpMultistatusResponse<{
-/** Workhorse authorize generic package file */
-200: PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDataDC;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not Found */
-404: void;
-},
-PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDataDC,
-any
->,
-PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeParams,
-any
->(
-{
-params: ({
-id,packageName,fileName,putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileNameAuthorize,requestParams
-}) => ({
-path: \`/api/v4/projects/\${id}/packages/generic/\${packageName}/*package_version/(*path/)\${fileName}/authorize\`,
-method: 'PUT',
-body: putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileNameAuthorize,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","packageName","fileName","putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileNameAuthorize"],
-operationId: "putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileNameAuthorize",
-path: ["api","v4","projects","{id}","packages","generic","{packageName}","*package_version","(*path","){fileName}","authorize"],
-tags: [Tag.Packages],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+export const putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorize =
+  new Endpoint<
+    HttpMultistatusResponse<
+      {
+        /** Workhorse authorize generic package file */
+        200: PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDataDC;
+        /** Unauthorized */
+        401: void;
+        /** Forbidden */
+        403: void;
+        /** Not Found */
+        404: void;
+      },
+      PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeDataDC,
+      any
+    >,
+    PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorizeParams,
+    any
+  >(
+    {
+      params: ({
+        id,
+        packageName,
+        fileName,
+        putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorize,
+        requestParams,
+      }) => ({
+        path: \`/api/v4/projects/\${id}/packages/generic/\${packageName}/*package_version/(*path/)\${fileName}/authorize\`,
+        method: "PUT",
+        body: putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorize,
+        contentType: "application/json",
+        format: "json",
+        ...requestParams,
+      }),
+      requiredParams: [
+        "id",
+        "packageName",
+        "fileName",
+        "putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameAuthorize",
+      ],
+      operationId:
+        "putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileNameAuthorize",
+      path: [
+        "api",
+        "v4",
+        "projects",
+        "{id}",
+        "packages",
+        "generic",
+        "{packageName}",
+        "*package_version",
+        "(*path",
+        "){fileName}",
+        "authorize",
+      ],
+      tags: [Tag.Packages],
+      meta: {},
+    },
+    queryClient,
+    http,
+  );
+
 
 /* --- endpoints/put-api-v-4-projects-id-packages-generic-package-name-package-version-path-file-name.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDC } from "../data-contracts";
-      export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameParams = {
-    id:string, packageName:string, fileName:string, putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileName:PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDC } from "../data-contracts";
+export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameErrorDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDataDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameParams =
+  {
+    id: string;
+    packageName: string;
+    fileName: string;
+    putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileName: PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDC;
+    requestParams?: RequestParams;
+  };
+
 /**
  * **Upload package file**
- * 
+ *
  * This feature was introduced in GitLab 13.5
- * 
+ *
  * @operationId putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileName
  * @tags packages
  * @request **PUT:/api/v4/projects/{id}/packages/generic/{package_name}/*package_version/(*path/){file_name}**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**200** PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDataDC Upload package file
  * @**201** PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDataDC Upload package file
  * @**400** void Bad Request
@@ -109428,166 +109510,208 @@ http,
  * @**403** void Forbidden
  * @**404** void Not Found
  */
-      export const putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileName = new Endpoint<
-HttpMultistatusResponse<{
-/** Upload package file */
-200: PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDataDC;
-/** Upload package file */
-201: void;
-/** Bad Request */
-400: void;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not Found */
-404: void;
-},
-PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDataDC,
-any
->,
-PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameParams,
-any
->(
-{
-params: ({
-id,packageName,fileName,putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileName,requestParams
-}) => ({
-path: \`/api/v4/projects/\${id}/packages/generic/\${packageName}/*package_version/(*path/)\${fileName}\`,
-method: 'PUT',
-body: putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileName,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","packageName","fileName","putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileName"],
-operationId: "putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileName",
-path: ["api","v4","projects","{id}","packages","generic","{packageName}","*package_version","(*path","){fileName}"],
-tags: [Tag.Packages],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+export const putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileName =
+  new Endpoint<
+    HttpMultistatusResponse<
+      {
+        /** Upload package file */
+        200: PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDataDC;
+        /** Upload package file */
+        201: void;
+        /** Bad Request */
+        400: void;
+        /** Unauthorized */
+        401: void;
+        /** Forbidden */
+        403: void;
+        /** Not Found */
+        404: void;
+      },
+      PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameDataDC,
+      any
+    >,
+    PutApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileNameParams,
+    any
+  >(
+    {
+      params: ({
+        id,
+        packageName,
+        fileName,
+        putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileName,
+        requestParams,
+      }) => ({
+        path: \`/api/v4/projects/\${id}/packages/generic/\${packageName}/*package_version/(*path/)\${fileName}\`,
+        method: "PUT",
+        body: putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileName,
+        contentType: "application/json",
+        format: "json",
+        ...requestParams,
+      }),
+      requiredParams: [
+        "id",
+        "packageName",
+        "fileName",
+        "putApiV4ProjectsIdPackagesGenericPackageNamePackageVersionPathFileName",
+      ],
+      operationId:
+        "putApiV4ProjectsIdPackagesGenericPackageName*packageVersion(*path)FileName",
+      path: [
+        "api",
+        "v4",
+        "projects",
+        "{id}",
+        "packages",
+        "generic",
+        "{packageName}",
+        "*package_version",
+        "(*path",
+        "){fileName}",
+      ],
+      tags: [Tag.Packages],
+      meta: {},
+    },
+    queryClient,
+    http,
+  );
+
 
 /* --- endpoints/put-api-v-4-projects-id-packages-maven-path-file-name-authorize.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDC } from "../data-contracts";
-      export type PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeParams = {
-    id:string, fileName:string, putApiV4ProjectsIdPackagesMaven*pathFileNameAuthorize:PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDC } from "../data-contracts";
+export type PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeErrorDC = any;
+
+export type PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDataDC = any;
+
+export type PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeParams = {
+  id: string;
+  fileName: string;
+  putApiV4ProjectsIdPackagesMavenPathFileNameAuthorize: PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDC;
+  requestParams?: RequestParams;
+};
+
 /**
  * **Workhorse authorize the maven package file upload**
- * 
+ *
  * This feature was introduced in GitLab 11.3
- * 
+ *
  * @operationId putApiV4ProjectsIdPackagesMaven*pathFileNameAuthorize
  * @tags packages
  * @request **PUT:/api/v4/projects/{id}/packages/maven/*path/{file_name}/authorize**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**200** PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDataDC Workhorse authorize the maven package file upload
  * @**400** void Bad Request
  * @**401** void Unauthorized
  * @**403** void Forbidden
  * @**404** void Not Found
  */
-      export const putApiV4ProjectsIdPackagesMavenPathFileNameAuthorize = new Endpoint<
-HttpMultistatusResponse<{
-/** Workhorse authorize the maven package file upload */
-200: PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDataDC;
-/** Bad Request */
-400: void;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not Found */
-404: void;
-},
-PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDataDC,
-any
->,
-PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeParams,
-any
->(
-{
-params: ({
-id,fileName,putApiV4ProjectsIdPackagesMaven*pathFileNameAuthorize,requestParams
-}) => ({
-path: \`/api/v4/projects/\${id}/packages/maven/*path/\${fileName}/authorize\`,
-method: 'PUT',
-body: putApiV4ProjectsIdPackagesMaven*pathFileNameAuthorize,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","fileName","putApiV4ProjectsIdPackagesMaven*pathFileNameAuthorize"],
-operationId: "putApiV4ProjectsIdPackagesMaven*pathFileNameAuthorize",
-path: ["api","v4","projects","{id}","packages","maven","*path","{fileName}","authorize"],
-tags: [Tag.Packages],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+export const putApiV4ProjectsIdPackagesMavenPathFileNameAuthorize =
+  new Endpoint<
+    HttpMultistatusResponse<
+      {
+        /** Workhorse authorize the maven package file upload */
+        200: PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDataDC;
+        /** Bad Request */
+        400: void;
+        /** Unauthorized */
+        401: void;
+        /** Forbidden */
+        403: void;
+        /** Not Found */
+        404: void;
+      },
+      PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeDataDC,
+      any
+    >,
+    PutApiV4ProjectsIdPackagesMavenPathFileNameAuthorizeParams,
+    any
+  >(
+    {
+      params: ({
+        id,
+        fileName,
+        putApiV4ProjectsIdPackagesMavenPathFileNameAuthorize,
+        requestParams,
+      }) => ({
+        path: \`/api/v4/projects/\${id}/packages/maven/*path/\${fileName}/authorize\`,
+        method: "PUT",
+        body: putApiV4ProjectsIdPackagesMavenPathFileNameAuthorize,
+        contentType: "application/json",
+        format: "json",
+        ...requestParams,
+      }),
+      requiredParams: [
+        "id",
+        "fileName",
+        "putApiV4ProjectsIdPackagesMavenPathFileNameAuthorize",
+      ],
+      operationId: "putApiV4ProjectsIdPackagesMaven*pathFileNameAuthorize",
+      path: [
+        "api",
+        "v4",
+        "projects",
+        "{id}",
+        "packages",
+        "maven",
+        "*path",
+        "{fileName}",
+        "authorize",
+      ],
+      tags: [Tag.Packages],
+      meta: {},
+    },
+    queryClient,
+    http,
+  );
+
 
 /* --- endpoints/put-api-v-4-projects-id-packages-maven-path-file-name.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4ProjectsIdPackagesMavenPathFileNameDC } from "../data-contracts";
-      export type PutApiV4ProjectsIdPackagesMavenPathFileNameErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4ProjectsIdPackagesMavenPathFileNameDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4ProjectsIdPackagesMavenPathFileNameParams = {
-    id:string, fileName:string, putApiV4ProjectsIdPackagesMaven*pathFileName:PutApiV4ProjectsIdPackagesMavenPathFileNameDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4ProjectsIdPackagesMavenPathFileNameDC } from "../data-contracts";
+export type PutApiV4ProjectsIdPackagesMavenPathFileNameErrorDC = any;
+
+export type PutApiV4ProjectsIdPackagesMavenPathFileNameDataDC = any;
+
+export type PutApiV4ProjectsIdPackagesMavenPathFileNameParams = {
+  id: string;
+  fileName: string;
+  putApiV4ProjectsIdPackagesMavenPathFileName: PutApiV4ProjectsIdPackagesMavenPathFileNameDC;
+  requestParams?: RequestParams;
+};
+
 /**
  * **Upload the maven package file**
- * 
+ *
  * This feature was introduced in GitLab 11.3
- * 
+ *
  * @operationId putApiV4ProjectsIdPackagesMaven*pathFileName
  * @tags packages
  * @request **PUT:/api/v4/projects/{id}/packages/maven/*path/{file_name}**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**200** PutApiV4ProjectsIdPackagesMavenPathFileNameDataDC Upload the maven package file
  * @**400** void Bad Request
  * @**401** void Unauthorized
@@ -109595,206 +109719,278 @@ http,
  * @**404** void Not Found
  * @**422** void Unprocessable Entity
  */
-      export const putApiV4ProjectsIdPackagesMavenPathFileName = new Endpoint<
-HttpMultistatusResponse<{
-/** Upload the maven package file */
-200: PutApiV4ProjectsIdPackagesMavenPathFileNameDataDC;
-/** Bad Request */
-400: void;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not Found */
-404: void;
-/** Unprocessable Entity */
-422: void;
-},
-PutApiV4ProjectsIdPackagesMavenPathFileNameDataDC,
-any
->,
-PutApiV4ProjectsIdPackagesMavenPathFileNameParams,
-any
+export const putApiV4ProjectsIdPackagesMavenPathFileName = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Upload the maven package file */
+      200: PutApiV4ProjectsIdPackagesMavenPathFileNameDataDC;
+      /** Bad Request */
+      400: void;
+      /** Unauthorized */
+      401: void;
+      /** Forbidden */
+      403: void;
+      /** Not Found */
+      404: void;
+      /** Unprocessable Entity */
+      422: void;
+    },
+    PutApiV4ProjectsIdPackagesMavenPathFileNameDataDC,
+    any
+  >,
+  PutApiV4ProjectsIdPackagesMavenPathFileNameParams,
+  any
 >(
-{
-params: ({
-id,fileName,putApiV4ProjectsIdPackagesMaven*pathFileName,requestParams
-}) => ({
-path: \`/api/v4/projects/\${id}/packages/maven/*path/\${fileName}\`,
-method: 'PUT',
-body: putApiV4ProjectsIdPackagesMaven*pathFileName,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","fileName","putApiV4ProjectsIdPackagesMaven*pathFileName"],
-operationId: "putApiV4ProjectsIdPackagesMaven*pathFileName",
-path: ["api","v4","projects","{id}","packages","maven","*path","{fileName}"],
-tags: [Tag.Packages],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+  {
+    params: ({
+      id,
+      fileName,
+      putApiV4ProjectsIdPackagesMavenPathFileName,
+      requestParams,
+    }) => ({
+      path: \`/api/v4/projects/\${id}/packages/maven/*path/\${fileName}\`,
+      method: "PUT",
+      body: putApiV4ProjectsIdPackagesMavenPathFileName,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [
+      "id",
+      "fileName",
+      "putApiV4ProjectsIdPackagesMavenPathFileName",
+    ],
+    operationId: "putApiV4ProjectsIdPackagesMaven*pathFileName",
+    path: [
+      "api",
+      "v4",
+      "projects",
+      "{id}",
+      "packages",
+      "maven",
+      "*path",
+      "{fileName}",
+    ],
+    tags: [Tag.Packages],
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+
 
 /* --- endpoints/put-api-v-4-projects-id-packages-ml-models-model-version-id-files-path-file-name-authorize.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDC } from "../data-contracts";
-      export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeParams = {
-    id:string, fileName:string, modelVersionId:string, putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileNameAuthorize:PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDC } from "../data-contracts";
+export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeErrorDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDataDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeParams =
+  {
+    id: string;
+    fileName: string;
+    modelVersionId: string;
+    putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorize: PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDC;
+    requestParams?: RequestParams;
+  };
+
 /**
  * **Workhorse authorize model package file**
- * 
+ *
  * Introduced in GitLab 16.8
- * 
+ *
  * @operationId putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileNameAuthorize
  * @tags ml_model_registry
  * @request **PUT:/api/v4/projects/{id}/packages/ml_models/{model_version_id}/files/(*path/){file_name}/authorize**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**200** PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDataDC Workhorse authorize model package file
  * @**401** void Unauthorized
  * @**403** void Forbidden
  * @**404** void Not Found
  */
-      export const putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorize = new Endpoint<
-HttpMultistatusResponse<{
-/** Workhorse authorize model package file */
-200: PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDataDC;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not Found */
-404: void;
-},
-PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDataDC,
-any
->,
-PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeParams,
-any
->(
-{
-params: ({
-id,fileName,modelVersionId,putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileNameAuthorize,requestParams
-}) => ({
-path: \`/api/v4/projects/\${id}/packages/ml_models/\${modelVersionId}/files/(*path/)\${fileName}/authorize\`,
-method: 'PUT',
-body: putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileNameAuthorize,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","fileName","modelVersionId","putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileNameAuthorize"],
-operationId: "putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileNameAuthorize",
-path: ["api","v4","projects","{id}","packages","ml_models","{modelVersionId}","files","(*path","){fileName}","authorize"],
-tags: [Tag.MlModelRegistry],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+export const putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorize =
+  new Endpoint<
+    HttpMultistatusResponse<
+      {
+        /** Workhorse authorize model package file */
+        200: PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDataDC;
+        /** Unauthorized */
+        401: void;
+        /** Forbidden */
+        403: void;
+        /** Not Found */
+        404: void;
+      },
+      PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeDataDC,
+      any
+    >,
+    PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorizeParams,
+    any
+  >(
+    {
+      params: ({
+        id,
+        fileName,
+        modelVersionId,
+        putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorize,
+        requestParams,
+      }) => ({
+        path: \`/api/v4/projects/\${id}/packages/ml_models/\${modelVersionId}/files/(*path/)\${fileName}/authorize\`,
+        method: "PUT",
+        body: putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorize,
+        contentType: "application/json",
+        format: "json",
+        ...requestParams,
+      }),
+      requiredParams: [
+        "id",
+        "fileName",
+        "modelVersionId",
+        "putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameAuthorize",
+      ],
+      operationId:
+        "putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileNameAuthorize",
+      path: [
+        "api",
+        "v4",
+        "projects",
+        "{id}",
+        "packages",
+        "ml_models",
+        "{modelVersionId}",
+        "files",
+        "(*path",
+        "){fileName}",
+        "authorize",
+      ],
+      tags: [Tag.MlModelRegistry],
+      meta: {},
+    },
+    queryClient,
+    http,
+  );
+
 
 /* --- endpoints/put-api-v-4-projects-id-packages-ml-models-model-version-id-files-path-file-name.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDC } from "../data-contracts";
-      export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameParams = {
-    id:string, fileName:string, modelVersionId:string, putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileName:PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDC } from "../data-contracts";
+export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameErrorDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDataDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameParams =
+  {
+    id: string;
+    fileName: string;
+    modelVersionId: string;
+    putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileName: PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDC;
+    requestParams?: RequestParams;
+  };
+
 /**
  * **Workhorse upload model package file**
- * 
+ *
  * Introduced in GitLab 16.8
- * 
+ *
  * @operationId putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileName
  * @tags ml_model_registry
  * @request **PUT:/api/v4/projects/{id}/packages/ml_models/{model_version_id}/files/(*path/){file_name}**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**201** PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDataDC Workhorse upload model package file
  * @**401** void Unauthorized
  * @**403** void Forbidden
  * @**404** void Not Found
  */
-      export const putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileName = new Endpoint<
-HttpMultistatusResponse<{
-/** Workhorse upload model package file */
-201: PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDataDC;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not Found */
-404: void;
-},
-PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDataDC,
-any
->,
-PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameParams,
-any
->(
-{
-params: ({
-id,fileName,modelVersionId,putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileName,requestParams
-}) => ({
-path: \`/api/v4/projects/\${id}/packages/ml_models/\${modelVersionId}/files/(*path/)\${fileName}\`,
-method: 'PUT',
-body: putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileName,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","fileName","modelVersionId","putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileName"],
-operationId: "putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileName",
-path: ["api","v4","projects","{id}","packages","ml_models","{modelVersionId}","files","(*path","){fileName}"],
-tags: [Tag.MlModelRegistry],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+export const putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileName =
+  new Endpoint<
+    HttpMultistatusResponse<
+      {
+        /** Workhorse upload model package file */
+        201: PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDataDC;
+        /** Unauthorized */
+        401: void;
+        /** Forbidden */
+        403: void;
+        /** Not Found */
+        404: void;
+      },
+      PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameDataDC,
+      any
+    >,
+    PutApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileNameParams,
+    any
+  >(
+    {
+      params: ({
+        id,
+        fileName,
+        modelVersionId,
+        putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileName,
+        requestParams,
+      }) => ({
+        path: \`/api/v4/projects/\${id}/packages/ml_models/\${modelVersionId}/files/(*path/)\${fileName}\`,
+        method: "PUT",
+        body: putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileName,
+        contentType: "application/json",
+        format: "json",
+        ...requestParams,
+      }),
+      requiredParams: [
+        "id",
+        "fileName",
+        "modelVersionId",
+        "putApiV4ProjectsIdPackagesMlModelsModelVersionIdFilesPathFileName",
+      ],
+      operationId:
+        "putApiV4ProjectsIdPackagesMlModelsModelVersionIdFiles(*path)FileName",
+      path: [
+        "api",
+        "v4",
+        "projects",
+        "{id}",
+        "packages",
+        "ml_models",
+        "{modelVersionId}",
+        "files",
+        "(*path",
+        "){fileName}",
+      ],
+      tags: [Tag.MlModelRegistry],
+      meta: {},
+    },
+    queryClient,
+    http,
+  );
+
 
 /* --- endpoints/put-api-v-4-projects-id-packages-npm-package-name.ts --- */
 /* eslint-disable */
@@ -109890,85 +110086,109 @@ export const putApiV4ProjectsIdPackagesNpmPackageName = new Endpoint<
 /* --- endpoints/put-api-v-4-projects-id-packages-npm-package-package-name-dist-tags-tag.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDC } from "../data-contracts";
-      export type PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagParams = {
-    id:string, tag:string, putApiV4ProjectsIdPackagesNpmPackage*packageNameDistTagsTag:PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDC } from "../data-contracts";
+export type PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagErrorDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDataDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagParams = {
+  id: string;
+  tag: string;
+  putApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTag: PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDC;
+  requestParams?: RequestParams;
+};
+
 /**
  * **Create or Update the given tag for the given NPM package and**
  * **version**
- * 
+ *
  * This feature was introduced in GitLab 12.7
- * 
+ *
  * @operationId putApiV4ProjectsIdPackagesNpmPackage*packageNameDistTagsTag
  * @tags packages
  * @request **PUT:/api/v4/projects/{id}/packages/npm/-/package/*package_name/dist-tags/{tag}**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**204** PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDataDC Create or Update the given tag for the given NPM package and version
  * @**400** void Bad Request
  * @**401** void Unauthorized
  * @**403** void Forbidden
  * @**404** void Not Found
  */
-      export const putApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTag = new Endpoint<
-HttpMultistatusResponse<{
-/** Create or Update the given tag for the given NPM package and version */
-204: PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDataDC;
-/** Bad Request */
-400: void;
-/** Unauthorized */
-401: void;
-/** Forbidden */
-403: void;
-/** Not Found */
-404: void;
-},
-PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDataDC,
-any
->,
-PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagParams,
-any
->(
-{
-params: ({
-id,tag,putApiV4ProjectsIdPackagesNpmPackage*packageNameDistTagsTag,requestParams
-}) => ({
-path: \`/api/v4/projects/\${id}/packages/npm/-/package/*package_name/dist-tags/\${tag}\`,
-method: 'PUT',
-body: putApiV4ProjectsIdPackagesNpmPackage*packageNameDistTagsTag,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","tag","putApiV4ProjectsIdPackagesNpmPackage*packageNameDistTagsTag"],
-operationId: "putApiV4ProjectsIdPackagesNpmPackage*packageNameDistTagsTag",
-path: ["api","v4","projects","{id}","packages","npm","-","package","*package_name","dist-tags","{tag}"],
-tags: [Tag.Packages],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+export const putApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTag =
+  new Endpoint<
+    HttpMultistatusResponse<
+      {
+        /** Create or Update the given tag for the given NPM package and version */
+        204: PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDataDC;
+        /** Bad Request */
+        400: void;
+        /** Unauthorized */
+        401: void;
+        /** Forbidden */
+        403: void;
+        /** Not Found */
+        404: void;
+      },
+      PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagDataDC,
+      any
+    >,
+    PutApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTagParams,
+    any
+  >(
+    {
+      params: ({
+        id,
+        tag,
+        putApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTag,
+        requestParams,
+      }) => ({
+        path: \`/api/v4/projects/\${id}/packages/npm/-/package/*package_name/dist-tags/\${tag}\`,
+        method: "PUT",
+        body: putApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTag,
+        contentType: "application/json",
+        format: "json",
+        ...requestParams,
+      }),
+      requiredParams: [
+        "id",
+        "tag",
+        "putApiV4ProjectsIdPackagesNpmPackagePackageNameDistTagsTag",
+      ],
+      operationId:
+        "putApiV4ProjectsIdPackagesNpmPackage*packageNameDistTagsTag",
+      path: [
+        "api",
+        "v4",
+        "projects",
+        "{id}",
+        "packages",
+        "npm",
+        "-",
+        "package",
+        "*package_name",
+        "dist-tags",
+        "{tag}",
+      ],
+      tags: [Tag.Packages],
+      meta: {},
+    },
+    queryClient,
+    http,
+  );
+
 
 /* --- endpoints/put-api-v-4-projects-id-packages-nuget-authorize.ts --- */
 /* eslint-disable */
@@ -110469,75 +110689,104 @@ export const putApiV4ProjectsIdPackagesNuget = new Endpoint<
 /* --- endpoints/put-api-v-4-projects-id-packages-terraform-modules-module-name-module-system-module-version-file-authorize.ts --- */
 /* eslint-disable */
 /* tslint:disable */
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "mobx-tanstack-query-api";
-      import { Endpoint } from "mobx-tanstack-query-api";
-      import { http } from "mobx-tanstack-query-api/builtin";
-      import { queryClient } from "mobx-tanstack-query-api/builtin";
-      
-      import { Tag } from "../meta-info";
-      
-      import { PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDC } from "../data-contracts";
-      export type PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeErrorDC = any;
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-      export type PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDataDC = any
+import { Tag } from "../meta-info";
 
-      export type PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeParams = {
-    id:string, moduleName:string, moduleSystem:string, putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystem*moduleVersionFileAuthorize:PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDC, requestParams?:RequestParams
-  }
-      
-      
+import { PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDC } from "../data-contracts";
+export type PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeErrorDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDataDC =
+  any;
+
+export type PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeParams =
+  {
+    id: string;
+    moduleName: string;
+    moduleSystem: string;
+    putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorize: PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDC;
+    requestParams?: RequestParams;
+  };
+
 /**
  * **Workhorse authorize Terraform Module package file**
- * 
+ *
  * This feature was introduced in GitLab 13.11
- * 
+ *
  * @operationId putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystem*moduleVersionFileAuthorize
  * @tags terraform
  * @request **PUT:/api/v4/projects/{id}/packages/terraform/modules/{module_name}/{module_system}/*module_version/file/authorize**
  * @produces application/json
  * @consumes application/json
- * @responses 
+ * @responses
  * @**200** PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDataDC Workhorse authorize Terraform Module package file
  * @**403** void Forbidden
  */
-      export const putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorize = new Endpoint<
-HttpMultistatusResponse<{
-/** Workhorse authorize Terraform Module package file */
-200: PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDataDC;
-/** Forbidden */
-403: void;
-},
-PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDataDC,
-any
->,
-PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeParams,
-any
->(
-{
-params: ({
-id,moduleName,moduleSystem,putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystem*moduleVersionFileAuthorize,requestParams
-}) => ({
-path: \`/api/v4/projects/\${id}/packages/terraform/modules/\${moduleName}/\${moduleSystem}/*module_version/file/authorize\`,
-method: 'PUT',
-body: putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystem*moduleVersionFileAuthorize,
-contentType: "application/json",
-format: "json",
-...requestParams,
-}),
-requiredParams: ["id","moduleName","moduleSystem","putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystem*moduleVersionFileAuthorize"],
-operationId: "putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystem*moduleVersionFileAuthorize",
-path: ["api","v4","projects","{id}","packages","terraform","modules","{moduleName}","{moduleSystem}","*module_version","file","authorize"],
-tags: [Tag.Terraform],
-meta: {},
-},
-queryClient,
-http,
-)
-      
+export const putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorize =
+  new Endpoint<
+    HttpMultistatusResponse<
+      {
+        /** Workhorse authorize Terraform Module package file */
+        200: PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDataDC;
+        /** Forbidden */
+        403: void;
+      },
+      PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeDataDC,
+      any
+    >,
+    PutApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorizeParams,
+    any
+  >(
+    {
+      params: ({
+        id,
+        moduleName,
+        moduleSystem,
+        putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorize,
+        requestParams,
+      }) => ({
+        path: \`/api/v4/projects/\${id}/packages/terraform/modules/\${moduleName}/\${moduleSystem}/*module_version/file/authorize\`,
+        method: "PUT",
+        body: putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorize,
+        contentType: "application/json",
+        format: "json",
+        ...requestParams,
+      }),
+      requiredParams: [
+        "id",
+        "moduleName",
+        "moduleSystem",
+        "putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystemModuleVersionFileAuthorize",
+      ],
+      operationId:
+        "putApiV4ProjectsIdPackagesTerraformModulesModuleNameModuleSystem*moduleVersionFileAuthorize",
+      path: [
+        "api",
+        "v4",
+        "projects",
+        "{id}",
+        "packages",
+        "terraform",
+        "modules",
+        "{moduleName}",
+        "{moduleSystem}",
+        "*module_version",
+        "file",
+        "authorize",
+      ],
+      tags: [Tag.Terraform],
+      meta: {},
+    },
+    queryClient,
+    http,
+  );
+
 
 /* --- endpoints/put-api-v-4-projects-id-packages-terraform-modules-module-name-module-system-module-version-file.ts --- */
 /* eslint-disable */

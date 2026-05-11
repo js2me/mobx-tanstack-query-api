@@ -52,6 +52,28 @@ export interface NewEndpointTmplParams extends BaseTmplParams {
   relativePathZodSchemas?: string | null;
 }
 
+type InputParam = {
+  name: string;
+  optional?: boolean;
+  type: string;
+  defaultValue?: string;
+};
+
+/**
+ * OpenAPI specs (e.g. GitLab) may use `*segment`, `(group)`, etc. in paths or
+ * operationIds; upstream may mirror those into param names, which must be valid
+ * JS identifiers in generated TS.
+ */
+const sanitizeInputParam = (inputParam: AnyObject): InputParam => {
+  if (inputParam.name) {
+    inputParam.name = /^[A-Za-z_$][\w$]*$/.test(inputParam.name)
+      ? inputParam.name
+      : camelCase(inputParam.name.replace(/[^A-Za-z0-9_$]+/g, ' '));
+  }
+
+  return inputParam as InputParam;
+};
+
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: template builder with many conditional branches
 export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   const {
@@ -83,29 +105,25 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   );
 
   const { requestBodyInfo, responseBodyInfo } = route as AnyObject;
-  const routeRequest = route.request as AnyObject;
+  const routeRequest = route.request;
   const routeResponse = route.response;
 
-  const { parameters, path, method, payload, query, requestParams, security } =
-    routeRequest;
+  const { parameters, requestParams, security } = routeRequest;
+
+  const path = routeRequest.path || '';
+  const method = routeRequest.method || 'GET';
+
   const { raw } = route;
-  const queryName = query?.name || 'query';
-  const pathParams = Object.values(parameters ?? {}) as Array<{
-    name: string;
-    optional?: boolean;
-    type: string;
-    defaultValue?: string;
-  }>;
+
+  const pathParams = Object.values(parameters ?? {}).map(sanitizeInputParam);
+  const payload =
+    routeRequest.payload && sanitizeInputParam(routeRequest.payload);
+  const query = routeRequest.query && sanitizeInputParam(routeRequest.query);
+
   const pathParamsNames = pathParams.map((pathParam) => pathParam.name);
+  const queryName = query?.name || 'query';
 
-  type RequestParam = {
-    name: string;
-    optional?: boolean;
-    type: string;
-    defaultValue?: string;
-  };
-
-  const requestConfigParam: RequestParam = {
+  const requestConfigParam: InputParam = {
     name: 'requestParams',
     optional: true,
     type: 'RequestParams',
@@ -117,7 +135,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     payload,
     query,
     requestConfigParam,
-  ].filter(Boolean);
+  ].filter((it): it is InputParam => !!it);
 
   const defaultOkResponse = positiveResponseTypes?.[0]?.type || 'unknown';
   const hasDefaultOkResponseTypeData = Boolean(
@@ -236,7 +254,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   }: {
     withPayload?: boolean;
     withRequestConfigParam?: boolean;
-  }): RequestParam[] => {
+  }): InputParam[] => {
     const args = compact([
       ...(requestParams
         ? [
@@ -252,7 +270,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
         : pathParams),
       withPayload && payload,
       withRequestConfigParam && requestConfigParam,
-    ]) as RequestParam[];
+    ]) as InputParam[];
 
     return [...args].sort(
       (left, right) =>
@@ -275,15 +293,12 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
 
   let lastDynamicStructPos = 0;
 
-  const queryParamStruct =
-    query == null
-      ? null
-      : {
-          type: 'dynamic',
-          key: 'params',
-          i: pathParamsToInline.length,
-          param: lastDynamicStructPos > 0 ? lastDynamicStructPos - 1 : 0,
-        };
+  const queryParamStruct = !query && {
+    type: 'dynamic',
+    key: 'params',
+    i: pathParamsToInline.length,
+    param: lastDynamicStructPos > 0 ? lastDynamicStructPos - 1 : 0,
+  };
 
   if (queryParamStruct && !lastDynamicStructPos) {
     lastDynamicStructPos++;
@@ -597,7 +612,7 @@ new ${importFileParams.endpoint.exportName}<
             path: \`${resultPath}\`,
             method: '${upperCase(method)}',
             ${requestMeta?.tmplData ? `meta: ${tmplDataToSourceExpr(requestMeta.tmplData)},` : ''}
-            ${query == null ? '' : `query: ${query.name},`}
+            ${query == null ? '' : `query: ${queryName},`}
             ${payload?.name ? `body: ${payload.name},` : ''}
             ${security ? 'secure: true,' : ''}
             ${bodyContentType ? `contentType: ${bodyContentType},` : ''}
