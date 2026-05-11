@@ -6,7 +6,7 @@ The return value is a normal MSW **`HttpHandler`** with the same **`endpoint`** 
 
 The **resolver** is the same function MSW expects for **`http.*`** handlers. Returning a **plain value** (not a **`Response`**) always builds a **successful** reply (typed like the endpoint’s success **`data`**). For **errors**, non-OK statuses, or extra headers, return a **`Response`** — typically [`mswEndpointErrorResponse`](./msw-endpoint-response.html) / [`mswEndpointResponse`](./msw-endpoint-response.html) or MSW’s helpers. Default status codes for the package-built responses come from [`testingDefaults`](./testing-defaults.html).
 
-Requires the **`msw`** peer dependency. Setup and lifecycle are in the [MSW recipe](./recipes/msw.html).
+Requires the **`msw`** peer dependency. Setup and lifecycle are in [Connect MSW](/recipes/connect-msw.html).
 
 **Example**
 

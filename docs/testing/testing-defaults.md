@@ -13,4 +13,4 @@ Used by [`MockHttpResponse`](./low-level/mock-http-response.html), [`mswEndpoint
 ## See also
 
 - [Testing overview](./index.html)
-- [MSW recipe](./recipes/msw.html)
+- [Connect MSW](/recipes/connect-msw.html)

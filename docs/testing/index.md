@@ -6,7 +6,7 @@
 
 Optional helpers for unit-testing code that uses [`HttpClient`](/http-client/index.html) and generated **endpoints**. They stub `HttpClient.request` or install short-lived client stubs around `endpoint.request`, so tests avoid the network while still receiving **`HttpResponse`** instances consistent with the runtime package.
 
-For **integration-style** tests that keep the real `fetch` path and mock at the HTTP layer, see the [MSW recipe](/testing/recipes/msw.html).
+For **integration-style** tests that keep the real `fetch` path and mock at the HTTP layer, see [Connect MSW](/recipes/connect-msw.html).
 
 Default HTTP statuses for mocks are **200** / **500** and live on [**`testingDefaults`**](./testing-defaults.html); change that object if you want one global override.
 

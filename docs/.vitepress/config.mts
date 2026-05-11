@@ -79,6 +79,19 @@ export default defineDocsVitepressConfig(configs, {
         ]
       },
       {
+        text: 'Recipes 🍳',
+        items: [
+          {
+            text: 'Codegen without queries and mutations',
+            link: '/recipes/codegen-without-queries-and-mutations.html',
+          },
+          {
+            text: 'Connect MSW',
+            link: '/recipes/connect-msw.html',
+          },
+        ],
+      },
+      {
         text: 'Testing 🧪',
         link: '/testing/index.html',
         items: [
@@ -104,12 +117,6 @@ export default defineDocsVitepressConfig(configs, {
                 text: 'createMockHttpClientRequestHandler',
                 link: '/testing/low-level/create-mock-http-client-request-handler.html',
               },
-            ],
-          },
-          {
-            text: 'Recipes 📜',
-            items: [
-              { text: 'MSW', link: '/testing/recipes/msw.html' },
             ],
           },
         ],

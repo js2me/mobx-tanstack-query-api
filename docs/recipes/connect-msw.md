@@ -1,4 +1,4 @@
-# MSW (Mock Service Worker)
+# Connect MSW
 
 [MSW](https://mswjs.io/) intercepts HTTP at the network boundary. Your [`HttpClient`](/http-client/index.html) uses the [`Fetch API`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), so **no code changes are required** in the client: point `baseUrl` (and paths) at URLs your handlers match, and `fetch` is satisfied by MSW instead of a real server.
 
@@ -20,13 +20,19 @@ yarn add msw -D
 
 :::
 
+## When it needs
+
+- You want the **real** `HttpClient` / `fetch` path in tests (URL building, headers, formatters, interceptors), not a stubbed client.
+- You want **one set of handlers** for Node and for the browser (or Cypress / Playwright), with the same URL rules.
+- Your project **already uses MSW** for HTTP mocking and you want generated endpoints to plug into that setup.
+
 ## Node.js (`setupServer`)
 
 Use [`setupServer`](https://mswjs.io/docs/api/setup-server) from `msw/node` so **Node’s `globalThis.fetch`** (and therefore `HttpClient`) is intercepted in the test process.
 
 1. **Handlers** — match the **full URL** the client will request (`baseUrl` + path, including query if you use it).
 
-**`mswEndpointHandler`** wires an endpoint to MSW in one call; see [`mswEndpointHandler`](../msw-endpoint-handler.html), [`mswEndpointResponse`](../msw-endpoint-response.html), and [`mswPathPattern`](../msw-path-pattern.html) if you build handlers by hand.
+**`mswEndpointHandler`** wires an endpoint to MSW in one call; see [`mswEndpointHandler`](/testing/msw-endpoint-handler.html), [`mswEndpointResponse`](/testing/msw-endpoint-response.html), and [`mswPathPattern`](/testing/msw-path-pattern.html) if you build handlers by hand.
 
 ```ts
 import {
@@ -90,7 +96,7 @@ Generated **endpoints** call the same `HttpClient.request` path, so `endpoint.re
 
 ### Tips
 
-- **Default status codes** — see [**`testingDefaults`**](../testing-defaults.html); override per response with **`init.status`** where applicable.
+- **Default status codes** — see [**`testingDefaults`**](/testing/testing-defaults.html); override per response with **`init.status`** where applicable.
 - **Absolute URLs** — MSW matches the URL `fetch` receives. If `baseUrl` is `https://api.example.com` and the path is `/users/1`, the handler pattern should be `https://api.example.com/users/1` (or use a [path predicate](https://mswjs.io/docs/http/intercepting-requests#path-parameters) / `new URL(request.url)` inside the resolver for flexibility).
 - **Unhandled requests** — `onUnhandledRequest: "error"` catches typos in `baseUrl` or paths early; relax to `"warn"` while migrating.
 - **Per-test overrides** — `server.use(http.get(...))` after `setupServer` adds or replaces handlers for a single test; `resetHandlers()` clears them in `afterEach`.
