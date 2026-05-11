@@ -709,6 +709,58 @@ describe('EndpointQuery imperative params vs static options input', () => {
     query.destroy();
   });
 
+  it('keeps null imperative params when static options still supply params', async () => {
+    const endpoint = createEndpointForQueryTests();
+    const query = endpoint.toQuery({
+      enableOnDemand: true,
+      params: { id: 1 },
+    });
+
+    const dispose = reaction(() => query.result, noop, {
+      fireImmediately: true,
+    });
+
+    await sleep();
+
+    expect(query.params).toEqual({ id: 1 });
+
+    query.update({ params: null });
+
+    await sleep();
+
+    expect(query.params).toBeNull();
+    expect(query.options.enabled).toBe(false);
+
+    dispose();
+    query.destroy();
+  });
+
+  it('keeps undefined imperative params when static options still supply params', async () => {
+    const endpoint = createEndpointForQueryTests();
+    const query = endpoint.toQuery({
+      enableOnDemand: true,
+      params: { id: 1 },
+    });
+
+    const dispose = reaction(() => query.result, noop, {
+      fireImmediately: true,
+    });
+
+    await sleep();
+
+    expect(query.params).toEqual({ id: 1 });
+
+    query.update({ params: undefined });
+
+    await sleep();
+
+    expect(query.params).toBeUndefined();
+    expect(query.options.enabled).toBe(false);
+
+    dispose();
+    query.destroy();
+  });
+
   it('keeps start() params when options are re-evaluated with static function input', async () => {
     const endpoint = createEndpointForQueryTests();
     const query = endpoint.toQuery(() => ({

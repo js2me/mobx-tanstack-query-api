@@ -197,7 +197,7 @@ export function createInternalQueryState<TParams extends AnyObject>(
             imperativeOverride = false;
             resolvedParams = inputResolved;
           } else {
-            resolvedParams = state.params ?? inputResolved;
+            resolvedParams = state.params;
           }
           lastInputResolved = inputResolved;
         }
