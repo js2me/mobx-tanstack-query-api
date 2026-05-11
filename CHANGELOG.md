@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.52.9
+
+### Patch Changes
+
+- [`940f509`](https://github.com/js2me/mobx-tanstack-query-api/commit/940f509061a6f56a6a66c25052774d8b261d3780) Thanks [@js2me](https://github.com/js2me)! - fixed wrong enum keys formatting for groups
+
+- [`940f509`](https://github.com/js2me/mobx-tanstack-query-api/commit/940f509061a6f56a6a66c25052774d8b261d3780) Thanks [@js2me](https://github.com/js2me)! - fixed zod contracts (imports)
+
 ## 0.52.8
 
 ### Patch Changes
