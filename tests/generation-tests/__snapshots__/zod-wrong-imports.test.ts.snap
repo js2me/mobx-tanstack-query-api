@@ -1,0 +1,1500 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`zod wrong imports test > emits parseable TS: Group enum for numeric path segments and zod imports for query $ref 1`] = `
+"/* --- 1/endpoints/get-tg-01.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import { schFlusteredViability55Dc } from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchEvilOctave14DC, SchFlusteredViability55DC } from "../../data-contracts";
+export type GetTg01ErrorDC = SchEvilOctave14DC;
+
+export type GetTg01DataDC = SchFlusteredViability55DC;
+
+export type GetTg01Params = {
+  inexperiencedChops556: number;
+  query?: {
+    /** Illo vigor est. */
+    rough_lox_857?: string;
+  };
+  requestParams?: RequestParams;
+};
+
+export const getTg01Contract = {
+  params: z.object({
+    inexperiencedChops556: z.number(),
+    query: z
+      .object({
+        rough_lox_857: z.string().optional(),
+      })
+      .optional(),
+    requestParams: z.any().optional(),
+  }),
+  data: schFlusteredViability55Dc,
+};
+
+/**
+ * No description
+ * @tags tg01
+ * @request **GET:/r/1/{inexperienced_chops_556}**
+ * @produces application/json
+ * @responses
+ * @**200** GetTg01DataDC Tamisium ait venia.
+ * @**400** SchEvilOctave14DC
+ * @**404** SchEvilOctave14DC
+ */
+export const getTg01 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Tamisium ait venia. */
+      200: GetTg01DataDC;
+      400: SchEvilOctave14DC;
+      404: SchEvilOctave14DC;
+    },
+    GetTg01DataDC,
+    SchEvilOctave14DC
+  >,
+  GetTg01Params,
+  any
+>(
+  {
+    params: ({ inexperiencedChops556, query, requestParams }) => ({
+      path: \`/r/1/\${inexperiencedChops556}\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["inexperiencedChops556"],
+    operationId: "getTg01",
+    path: ["r", "1", "{inexperiencedChops556}"],
+    tags: [Tag.Tg01],
+    group: Group._1,
+    meta: {},
+    contract: getTg01Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 10/endpoints/op-0001.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import { schJauntyGerbil80Dc } from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchEvilOctave14DC, SchJauntyGerbil80DC } from "../../data-contracts";
+export type Op0001ErrorDC = SchEvilOctave14DC;
+
+export type Op0001DataDC = SchJauntyGerbil80DC;
+
+export type Op0001Params = {
+  requestParams?: RequestParams;
+};
+
+export const op0001Contract = {
+  params: z.object({
+    requestParams: z.any().optional(),
+  }),
+  data: schJauntyGerbil80Dc,
+};
+
+/**
+ * **Cupiditate corona teres sublime speculum uberrime crux.**
+ *
+ * Arceo caput soleo.
+ *
+ * @operationId op0001
+ * @tags tg05
+ * @request **GET:/r/10**
+ * @produces application/json
+ * @secure
+ * @security sec1
+ * @responses
+ * @**200** Op0001DataDC Talio atavus culpo comis natus bonus sui cum torrens.
+ * @**401** SchEvilOctave14DC
+ */
+export const op0001 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Talio atavus culpo comis natus bonus sui cum torrens. */
+      200: Op0001DataDC;
+      401: SchEvilOctave14DC;
+    },
+    Op0001DataDC,
+    SchEvilOctave14DC
+  >,
+  Op0001Params,
+  any
+>(
+  {
+    params: ({ requestParams }) => ({
+      path: \`/r/10\`,
+      method: "GET",
+      secure: true,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "op0001",
+    path: ["r", "10"],
+    tags: [Tag.Tg05],
+    group: Group._10,
+    meta: {},
+    contract: op0001Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 2/endpoints/post-tg-01.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import {
+  schAssuredMobility63Dc,
+  schContentHusband24Dc,
+  schUnwillingFort36Dc,
+} from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchConfusedPetticoat74DC, SchContentHusband24DC, SchEvilOctave14DC } from "../../data-contracts";
+export type PostTg01ErrorDC = SchEvilOctave14DC;
+
+export type PostTg01DataDC = SchContentHusband24DC;
+
+export type PostTg01Params = {
+  inexperiencedChops556: number;
+  data: SchConfusedPetticoat74DC;
+  requestParams?: RequestParams;
+};
+
+export const postTg01Contract = {
+  params: z.object({
+    inexperiencedChops556: z.number(),
+    data: z.object({
+      delete: z.array(z.string()).optional(),
+      adolescent_cinder_156: z
+        .array(z.lazy(() => schUnwillingFort36Dc))
+        .optional(),
+      waterlogged_amendment_650: z
+        .array(z.lazy(() => schAssuredMobility63Dc))
+        .optional(),
+    }),
+    requestParams: z.any().optional(),
+  }),
+  data: schContentHusband24Dc,
+};
+
+/**
+ * No description
+ * @tags tg01
+ * @request **POST:/r/2/{inexperienced_chops_556}**
+ * @produces application/json
+ * @consumes application/json
+ * @responses
+ * @**200** PostTg01DataDC Valens vociferor benevolentia copiose subnecto.
+ * @**400** SchEvilOctave14DC
+ * @**404** SchEvilOctave14DC
+ */
+export const postTg01 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Valens vociferor benevolentia copiose subnecto. */
+      200: PostTg01DataDC;
+      400: SchEvilOctave14DC;
+      404: SchEvilOctave14DC;
+    },
+    PostTg01DataDC,
+    SchEvilOctave14DC
+  >,
+  PostTg01Params,
+  any
+>(
+  {
+    params: ({ inexperiencedChops556, data, requestParams }) => ({
+      path: \`/r/2/\${inexperiencedChops556}\`,
+      method: "POST",
+      body: data,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["inexperiencedChops556", "data"],
+    operationId: "postTg01",
+    path: ["r", "2", "{inexperiencedChops556}"],
+    tags: [Tag.Tg01],
+    group: Group._2,
+    meta: {},
+    contract: postTg01Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 3/endpoints/get-tg-012.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import { schFlusteredViability55Dc } from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchEvilOctave14DC, SchFlusteredViability55DC } from "../../data-contracts";
+export type GetTg012ErrorDC = SchEvilOctave14DC;
+
+export type GetTg012DataDC = SchFlusteredViability55DC;
+
+export type GetTg012Params = {
+  inexperiencedChops556: number;
+  query?: {
+    /**
+     * Libero vetus itaque vita alius.
+     * @default false
+     * @example "correptius nulla harum neque ratione"
+     */
+    rough_lox_857?: string;
+  };
+  requestParams?: RequestParams;
+};
+
+export const getTg012Contract = {
+  params: z.object({
+    inexperiencedChops556: z.number(),
+    query: z
+      .object({
+        rough_lox_857: z.string().optional(),
+      })
+      .optional(),
+    requestParams: z.any().optional(),
+  }),
+  data: schFlusteredViability55Dc,
+};
+
+/**
+ * No description
+ * @tags tg01
+ * @request **GET:/r/3/{inexperienced_chops_556}**
+ * @produces application/json
+ * @duplicate
+ * @originalName getTg01
+ * @responses
+ * @**200** GetTg012DataDC Subiungo earum amissio corona adeptio.
+ * @**400** SchEvilOctave14DC
+ * @**404** SchEvilOctave14DC
+ */
+export const getTg012 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Subiungo earum amissio corona adeptio. */
+      200: GetTg012DataDC;
+      400: SchEvilOctave14DC;
+      404: SchEvilOctave14DC;
+    },
+    GetTg012DataDC,
+    SchEvilOctave14DC
+  >,
+  GetTg012Params,
+  any
+>(
+  {
+    params: ({ inexperiencedChops556, query, requestParams }) => ({
+      path: \`/r/3/\${inexperiencedChops556}\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["inexperiencedChops556"],
+    operationId: "getTg012",
+    path: ["r", "3", "{inexperiencedChops556}"],
+    tags: [Tag.Tg01],
+    group: Group._3,
+    meta: {},
+    contract: getTg012Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 4/endpoints/get-tg-013.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import { schUnlawfulConsistency14Dc } from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchEvilOctave14DC, SchUnlawfulConsistency14DC } from "../../data-contracts";
+export type GetTg013ErrorDC = SchEvilOctave14DC;
+
+export type GetTg013DataDC = SchUnlawfulConsistency14DC;
+
+export type GetTg013Params = {
+  inexperiencedChops556: number;
+  requestParams?: RequestParams;
+};
+
+export const getTg013Contract = {
+  params: z.object({
+    inexperiencedChops556: z.number(),
+    requestParams: z.any().optional(),
+  }),
+  data: schUnlawfulConsistency14Dc,
+};
+
+/**
+ * No description
+ * @tags tg01
+ * @request **GET:/r/4/{inexperienced_chops_556}**
+ * @produces application/json
+ * @duplicate
+ * @originalName getTg01
+ * @responses
+ * @**200** GetTg013DataDC Utrimque vulticulus tollo solitudo cado contigo aspernatur uterque.
+ * @**400** SchEvilOctave14DC
+ * @**404** SchEvilOctave14DC
+ */
+export const getTg013 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Utrimque vulticulus tollo solitudo cado contigo aspernatur uterque. */
+      200: GetTg013DataDC;
+      400: SchEvilOctave14DC;
+      404: SchEvilOctave14DC;
+    },
+    GetTg013DataDC,
+    SchEvilOctave14DC
+  >,
+  GetTg013Params,
+  any
+>(
+  {
+    params: ({ inexperiencedChops556, requestParams }) => ({
+      path: \`/r/4/\${inexperiencedChops556}\`,
+      method: "GET",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["inexperiencedChops556"],
+    operationId: "getTg013",
+    path: ["r", "4", "{inexperiencedChops556}"],
+    tags: [Tag.Tg01],
+    group: Group._4,
+    meta: {},
+    contract: getTg013Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 5/endpoints/post-tg-012.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import { schAptIndependence78Dc, schContentHusband24Dc } from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchContentHusband24DC, SchEvilOctave14DC, SchOrderlyPine22DC } from "../../data-contracts";
+export type PostTg012ErrorDC = SchEvilOctave14DC;
+
+export type PostTg012DataDC = SchContentHusband24DC;
+
+export type PostTg012Params = {
+  inexperiencedChops556: number;
+  data: SchOrderlyPine22DC;
+  requestParams?: RequestParams;
+};
+
+export const postTg012Contract = {
+  params: z.object({
+    inexperiencedChops556: z.number(),
+    data: z.object({
+      spotless_equal_503: z
+        .array(z.lazy(() => schAptIndependence78Dc))
+        .optional(),
+    }),
+    requestParams: z.any().optional(),
+  }),
+  data: schContentHusband24Dc,
+};
+
+/**
+ * No description
+ * @tags tg01
+ * @request **POST:/r/5/{inexperienced_chops_556}**
+ * @produces application/json
+ * @consumes application/json
+ * @duplicate
+ * @originalName postTg01
+ * @responses
+ * @**200** PostTg012DataDC Illo sonitus desolo utpote cauda arguo alveus.
+ * @**400** SchEvilOctave14DC
+ * @**404** SchEvilOctave14DC
+ */
+export const postTg012 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Illo sonitus desolo utpote cauda arguo alveus. */
+      200: PostTg012DataDC;
+      400: SchEvilOctave14DC;
+      404: SchEvilOctave14DC;
+    },
+    PostTg012DataDC,
+    SchEvilOctave14DC
+  >,
+  PostTg012Params,
+  any
+>(
+  {
+    params: ({ inexperiencedChops556, data, requestParams }) => ({
+      path: \`/r/5/\${inexperiencedChops556}\`,
+      method: "POST",
+      body: data,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["inexperiencedChops556", "data"],
+    operationId: "postTg012",
+    path: ["r", "5", "{inexperiencedChops556}"],
+    tags: [Tag.Tg01],
+    group: Group._5,
+    meta: {},
+    contract: postTg012Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 6/endpoints/post-tg-013.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import {
+  schAssuredMobility63Dc,
+  schContentHusband24Dc,
+  schUnwillingFort36Dc,
+} from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchConfusedPetticoat74DC, SchContentHusband24DC, SchEvilOctave14DC } from "../../data-contracts";
+export type PostTg013ErrorDC = SchEvilOctave14DC;
+
+export type PostTg013DataDC = SchContentHusband24DC;
+
+export type PostTg013Params = {
+  inexperiencedChops556: number;
+  data: SchConfusedPetticoat74DC;
+  requestParams?: RequestParams;
+};
+
+export const postTg013Contract = {
+  params: z.object({
+    inexperiencedChops556: z.number(),
+    data: z.object({
+      delete: z.array(z.string()).optional(),
+      adolescent_cinder_156: z
+        .array(z.lazy(() => schUnwillingFort36Dc))
+        .optional(),
+      waterlogged_amendment_650: z
+        .array(z.lazy(() => schAssuredMobility63Dc))
+        .optional(),
+    }),
+    requestParams: z.any().optional(),
+  }),
+  data: schContentHusband24Dc,
+};
+
+/**
+ * No description
+ * @tags tg01
+ * @request **POST:/r/6/{inexperienced_chops_556}**
+ * @produces application/json
+ * @consumes application/json
+ * @duplicate
+ * @originalName postTg01
+ * @responses
+ * @**200** PostTg013DataDC Taceo tersus bellicus sto celo.
+ * @**400** SchEvilOctave14DC
+ * @**404** SchEvilOctave14DC
+ */
+export const postTg013 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Taceo tersus bellicus sto celo. */
+      200: PostTg013DataDC;
+      400: SchEvilOctave14DC;
+      404: SchEvilOctave14DC;
+    },
+    PostTg013DataDC,
+    SchEvilOctave14DC
+  >,
+  PostTg013Params,
+  any
+>(
+  {
+    params: ({ inexperiencedChops556, data, requestParams }) => ({
+      path: \`/r/6/\${inexperiencedChops556}\`,
+      method: "POST",
+      body: data,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["inexperiencedChops556", "data"],
+    operationId: "postTg013",
+    path: ["r", "6", "{inexperiencedChops556}"],
+    tags: [Tag.Tg01],
+    group: Group._6,
+    meta: {},
+    contract: postTg013Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 7/endpoints/get-tg-04.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import { schUnselfishChiffonier82Dc } from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchEvilOctave14DC, SchUnselfishChiffonier82DC } from "../../data-contracts";
+export type GetTg04ErrorDC = SchEvilOctave14DC;
+
+export type GetTg04DataDC = SchUnselfishChiffonier82DC;
+
+export type GetTg04Params = {
+  query: {
+    /** Paens vilitas sto capillus. */
+    troubled_editor_611: number;
+  };
+  requestParams?: RequestParams;
+};
+
+export const getTg04Contract = {
+  params: z.object({
+    query: z.object({
+      troubled_editor_611: z.number().int(),
+    }),
+    requestParams: z.any().optional(),
+  }),
+  data: schUnselfishChiffonier82Dc,
+};
+
+/**
+ * **Deserunt contego damno confero atqui facere studio vix**
+ * **decor.**
+ *
+ * @tags tg04
+ * @request **GET:/r/7**
+ * @produces application/json
+ * @responses
+ * @**200** GetTg04DataDC Demergo abeo calamitas.
+ * @**404** SchEvilOctave14DC
+ * @**500** SchEvilOctave14DC
+ */
+export const getTg04 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Demergo abeo calamitas. */
+      200: GetTg04DataDC;
+      404: SchEvilOctave14DC;
+      500: SchEvilOctave14DC;
+    },
+    GetTg04DataDC,
+    SchEvilOctave14DC
+  >,
+  GetTg04Params,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/r/7\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["query"],
+    operationId: "getTg04",
+    path: ["r", "7"],
+    tags: [Tag.Tg04],
+    group: Group._7,
+    meta: {},
+    contract: getTg04Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 7/endpoints/post-tg-04.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import { schUnselfishChiffonier82Dc } from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchCrazyJet13DC, SchEvilOctave14DC, SchUnselfishChiffonier82DC } from "../../data-contracts";
+export type PostTg04ErrorDC = SchEvilOctave14DC;
+
+export type PostTg04DataDC = SchUnselfishChiffonier82DC;
+
+export type PostTg04Params = {
+  data: SchCrazyJet13DC;
+  requestParams?: RequestParams;
+};
+
+export const postTg04Contract = {
+  params: z.object({
+    data: z.object({
+      splendid_cannon_109: z.number().int().optional(),
+      official_chops_77: z.string().optional(),
+      secondhand_copout_862: z.string().optional(),
+      noxious_nucleotidase_45: z.array(z.string()).optional(),
+      troubled_editor_611: z.number().int().optional(),
+      political_toaster_538: z.string().optional(),
+    }),
+    requestParams: z.any().optional(),
+  }),
+  data: schUnselfishChiffonier82Dc,
+};
+
+/**
+ * **Argentum vinculum usitas defungo aufero demoror.**
+ *
+ * @tags tg04
+ * @request **POST:/r/7**
+ * @produces application/json
+ * @consumes application/json
+ * @responses
+ * @**200** PostTg04DataDC Eveniet coma angustus taedium antepono adipisci.
+ * @**400** SchEvilOctave14DC
+ * @**500** SchEvilOctave14DC Corrupti amor asperiores consequatur vulgo sursum tergo acquiro clibanus.
+ */
+export const postTg04 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Eveniet coma angustus taedium antepono adipisci. */
+      200: PostTg04DataDC;
+      400: SchEvilOctave14DC;
+      /** Corrupti amor asperiores consequatur vulgo sursum tergo acquiro clibanus. */
+      500: SchEvilOctave14DC;
+    },
+    PostTg04DataDC,
+    SchEvilOctave14DC
+  >,
+  PostTg04Params,
+  any
+>(
+  {
+    params: ({ data, requestParams }) => ({
+      path: \`/r/7\`,
+      method: "POST",
+      body: data,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["data"],
+    operationId: "postTg04",
+    path: ["r", "7"],
+    tags: [Tag.Tg04],
+    group: Group._7,
+    meta: {},
+    contract: postTg04Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 8/endpoints/get-tg-042.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import {
+  schGraciousAwareness53Dc,
+  schRightReporter95Dc,
+} from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchEvilOctave14DC, SchGraciousAwareness53DC, SchRightReporter95DC } from "../../data-contracts";
+export type GetTg042ErrorDC = SchEvilOctave14DC;
+
+export type GetTg042DataDC = SchGraciousAwareness53DC;
+
+export type GetTg042Params = {
+  query: {
+    /** Ara amet supellex. */
+    happygolucky_grandson_166?: SchRightReporter95DC;
+    /** Demens inflammatio tergum apud depulso varietas virga ceno curtus. */
+    troubled_editor_611: number;
+  };
+  requestParams?: RequestParams;
+};
+
+export const getTg042Contract = {
+  params: z.object({
+    query: z.object({
+      troubled_editor_611: z.number().int(),
+      happygolucky_grandson_166: z.lazy(() => schRightReporter95Dc).optional(),
+    }),
+    requestParams: z.any().optional(),
+  }),
+  data: schGraciousAwareness53Dc,
+};
+
+/**
+ * **Avarus reiciendis adamo degusto.**
+ *
+ * @tags tg04
+ * @request **GET:/r/8**
+ * @produces application/json
+ * @duplicate
+ * @originalName getTg04
+ * @responses
+ * @**200** GetTg042DataDC Viriliter caterva validus civitas utique.
+ * @**404** SchEvilOctave14DC
+ * @**500** SchEvilOctave14DC
+ */
+export const getTg042 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Viriliter caterva validus civitas utique. */
+      200: GetTg042DataDC;
+      404: SchEvilOctave14DC;
+      500: SchEvilOctave14DC;
+    },
+    GetTg042DataDC,
+    SchEvilOctave14DC
+  >,
+  GetTg042Params,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/r/8\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["query"],
+    operationId: "getTg042",
+    path: ["r", "8"],
+    tags: [Tag.Tg04],
+    group: Group._8,
+    meta: {},
+    contract: getTg042Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 9/endpoints/delete-tg-04.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import { schContentHusband24Dc } from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchContentHusband24DC, SchEvilOctave14DC } from "../../data-contracts";
+export type DeleteTg04ErrorDC = SchEvilOctave14DC;
+
+export type DeleteTg04DataDC = SchContentHusband24DC;
+
+export type DeleteTg04Params = {
+  query: {
+    /** Basium quaerat carmen calcar cunctatio ventus quasi. */
+    troubled_editor_611: number;
+  };
+  requestParams?: RequestParams;
+};
+
+export const deleteTg04Contract = {
+  params: z.object({
+    query: z.object({
+      troubled_editor_611: z.number().int(),
+    }),
+    requestParams: z.any().optional(),
+  }),
+  data: schContentHusband24Dc,
+};
+
+/**
+ * **Utrimque valetudo vinum tondeo.**
+ *
+ * @tags tg04
+ * @request **DELETE:/r/9**
+ * @produces application/json
+ * @responses
+ * @**200** DeleteTg04DataDC Color dicta toties.
+ * @**404** SchEvilOctave14DC
+ * @**500** SchEvilOctave14DC Tantum cibo accusator trado cimentarius comburo trucido suffoco ipsam.
+ */
+export const deleteTg04 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Color dicta toties. */
+      200: DeleteTg04DataDC;
+      404: SchEvilOctave14DC;
+      /** Tantum cibo accusator trado cimentarius comburo trucido suffoco ipsam. */
+      500: SchEvilOctave14DC;
+    },
+    DeleteTg04DataDC,
+    SchEvilOctave14DC
+  >,
+  DeleteTg04Params,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/r/9\`,
+      method: "DELETE",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["query"],
+    operationId: "deleteTg04",
+    path: ["r", "9"],
+    tags: [Tag.Tg04],
+    group: Group._9,
+    meta: {},
+    contract: deleteTg04Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- 9/endpoints/post-tg-042.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import {
+  Endpoint,
+  HttpMultistatusResponse,
+  RequestParams,
+} from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import * as z from "zod";
+import { schUnselfishChiffonier82Dc } from "../../contracts";
+import { Group, Tag } from "../../meta-info";
+import { SchEvilOctave14DC, SchSerpentineNudge69DC, SchUnselfishChiffonier82DC } from "../../data-contracts";
+export type PostTg042ErrorDC = SchEvilOctave14DC;
+
+export type PostTg042DataDC = SchUnselfishChiffonier82DC;
+
+export type PostTg042Params = {
+  data: SchSerpentineNudge69DC;
+  requestParams?: RequestParams;
+};
+
+export const postTg042Contract = {
+  params: z.object({
+    data: z.object({
+      splendid_cannon_109: z.number().int().optional(),
+      official_chops_77: z.string().optional(),
+      secondhand_copout_862: z.string().optional(),
+      noxious_nucleotidase_45: z.array(z.string()).optional(),
+      damp_lyre_166: z.number().int().optional(),
+      troubled_editor_611: z.number().int().optional(),
+    }),
+    requestParams: z.any().optional(),
+  }),
+  data: schUnselfishChiffonier82Dc,
+};
+
+/**
+ * **Totam clibanus bibo cum.**
+ *
+ * @tags tg04
+ * @request **POST:/r/9**
+ * @produces application/json
+ * @consumes application/json
+ * @duplicate
+ * @originalName postTg04
+ * @responses
+ * @**200** PostTg042DataDC Cicuta creo bellum adfero anser tabernus sollers.
+ * @**400** SchEvilOctave14DC
+ * @**500** SchEvilOctave14DC Vulgivagus advenio laboriosam rerum abscido adflicto solio.
+ */
+export const postTg042 = new Endpoint<
+  HttpMultistatusResponse<
+    {
+      /** Cicuta creo bellum adfero anser tabernus sollers. */
+      200: PostTg042DataDC;
+      400: SchEvilOctave14DC;
+      /** Vulgivagus advenio laboriosam rerum abscido adflicto solio. */
+      500: SchEvilOctave14DC;
+    },
+    PostTg042DataDC,
+    SchEvilOctave14DC
+  >,
+  PostTg042Params,
+  any
+>(
+  {
+    params: ({ data, requestParams }) => ({
+      path: \`/r/9\`,
+      method: "POST",
+      body: data,
+      contentType: "application/json",
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: ["data"],
+    operationId: "postTg042",
+    path: ["r", "9"],
+    tags: [Tag.Tg04],
+    group: Group._9,
+    meta: {},
+    contract: postTg042Contract,
+    validateContract: true,
+  },
+  queryClient,
+  http,
+);
+
+
+/* --- contracts.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+import * as z from "zod";
+
+export const schCrazyJet13Dc = z.object({
+  splendid_cannon_109: z.number().int().optional(),
+  official_chops_77: z.string().optional(),
+  secondhand_copout_862: z.string().optional(),
+  noxious_nucleotidase_45: z.array(z.string()).optional(),
+  troubled_editor_611: z.number().int().optional(),
+  political_toaster_538: z.string().optional(),
+});
+
+export const schBonyEditor45Dc = z.object({
+  name: z.string(),
+  shiny_flint_619: z.boolean(),
+  wee_roundabout_451: z.string(),
+});
+
+export const schAptIndependence78Dc = z.object({
+  shiny_flint_619: z.boolean(),
+  wee_roundabout_451: z.string(),
+});
+
+export const schFavorableReservation40Dc = z.object({
+  name: z.string(),
+  parallel_synergy_47: z.boolean(),
+  victorious_appliance_743: z.string(),
+});
+
+export const schEmptyPants75Dc = z.object({
+  name: z.string(),
+  inexperienced_chops_556: z.string(),
+  victorious_appliance_743: z.string(),
+});
+
+export const schAssuredMobility63Dc = z.object({
+  name: z.string(),
+  inexperienced_chops_556: z.string(),
+  ill_pantyhose_71: z.number().int().optional(),
+  victorious_appliance_743: z.string(),
+});
+
+export const schUnwillingFort36Dc = z.object({
+  name: z.string(),
+  ill_pantyhose_71: z.number().int().optional(),
+  victorious_appliance_743: z.string(),
+});
+
+export const schEvilOctave14Dc = z.object({
+  acidic_outset_265: z.string(),
+});
+
+export const schUnlawfulConsistency14Dc = z.object({
+  spotless_equal_503: z.array(z.lazy(() => schBonyEditor45Dc)),
+});
+
+export const schFlusteredViability55Dc = z.object({
+  frightened_partridge_888: z.array(z.lazy(() => schFavorableReservation40Dc)),
+  educated_discourse_995: z.array(z.lazy(() => schEmptyPants75Dc)),
+});
+
+export const schSerpentineNudge69Dc = z.object({
+  splendid_cannon_109: z.number().int().optional(),
+  official_chops_77: z.string().optional(),
+  secondhand_copout_862: z.string().optional(),
+  noxious_nucleotidase_45: z.array(z.string()).optional(),
+  damp_lyre_166: z.number().int().optional(),
+  troubled_editor_611: z.number().int().optional(),
+});
+
+export const schContentHusband24Dc = z.object({
+  orange_intent_574: z.string(),
+});
+
+export const schDampSushi82Dc = z.object({
+  scared_crest_373: z.number().int().optional(),
+  which_collaboration_491: z.number().int().optional(),
+});
+
+export const schGraciousAwareness53Dc = z.object({
+  items: z.array(z.lazy(() => schDampSushi82Dc)).optional(),
+  scared_crest_373: z.number().int().optional(),
+});
+
+export const schRightReporter95Dc = z.enum([
+  "ev0",
+  "ev1",
+  "ev2",
+  "ev3",
+  "ev4",
+  "ev5",
+  "ev6",
+  "ev7",
+  "ev8",
+  "ev9",
+]);
+
+export const schUnselfishChiffonier82Dc = z.object({
+  name: z.string().optional(),
+  inexperienced_chops_556: z.number().int().optional(),
+  elegant_solution_97: z.string().optional(),
+  posh_armoire_314: z.number().int().optional(),
+  welldocumented_repeat_694: z.string().optional(),
+});
+
+export const schOrderlyPine22Dc = z.object({
+  spotless_equal_503: z.array(z.lazy(() => schAptIndependence78Dc)).optional(),
+});
+
+export const schConfusedPetticoat74Dc = z.object({
+  delete: z.array(z.string()).optional(),
+  adolescent_cinder_156: z.array(z.lazy(() => schUnwillingFort36Dc)).optional(),
+  waterlogged_amendment_650: z
+    .array(z.lazy(() => schAssuredMobility63Dc))
+    .optional(),
+});
+
+export const schJauntyGerbil80Dc = z.object({
+  remorseful_skeleton_504: z.string().optional(),
+  worthwhile_tarragon_43: z.string(),
+  woeful_following_984: z.string(),
+  spotless_equal_503: z.array(z.string()).optional(),
+  inexperienced_chops_556: z.string(),
+  uniform_piglet_383: z.string(),
+  selfreliant_forgery_596: z.string(),
+});
+
+
+/* --- data-contracts.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+
+/**
+ * Ratione quis vulgo trepide suscipio.
+ */
+export type ResGiganticSticker78DC = SchEvilOctave14DC;
+
+/**
+ * Cinis amplus curso.
+ */
+export type ResHauntingHabit47DC = SchEvilOctave14DC;
+
+/**
+ * Tripudio vobis vergo.
+ */
+export type ResNoteworthyBrook16DC = SchEvilOctave14DC;
+
+/**
+ * Comedo comburo vesco verumtamen sto triumphus argumentum.
+ */
+export type ResPitifulHabit20DC = SchEvilOctave14DC;
+
+/**
+ * Debitis suus ad cimentarius stabilis aspicio cito attero.
+ */
+export type ResPrivateMentor76DC = SchEvilOctave14DC;
+
+/**
+ * Crur vulnero hic desino admoveo adinventitias umerus uterque.
+ */
+export type ResRectangularKielbasa80DC = SchEvilOctave14DC;
+
+/**
+ * Infit celebrer succurro cultura arguo vomer.
+ */
+export type ResStrangePeony23DC = SchEvilOctave14DC;
+
+/**
+ * Aspernatur arguo audacia dolorum defaeco.
+ */
+export type ResSuburbanFinger44DC = SchEvilOctave14DC;
+
+export interface SchAptIndependence78DC {
+  /** @example true */
+  shiny_flint_619: boolean;
+  /**
+   * Templum adficio votum condico depulso creptio subseco.
+   * @example "substantia thesis copiose"
+   */
+  wee_roundabout_451: string;
+}
+
+export interface SchAssuredMobility63DC {
+  /** Deludo capillus sustineo appono vorago solvo maxime. */
+  ill_pantyhose_71?: number;
+  /**
+   * Molestiae accedo aggredior libero stabilis chirographum decens baiulus summisse.
+   * @format uuid
+   * @example "949ab876-bdcc-485a-a1a3-38bd8912db35"
+   */
+  inexperienced_chops_556: string;
+  /**
+   * Suffragium cauda basium terreo amissio admiratio deinde theca victus atavus.
+   * @format uri
+   * @example "https://improbable-programme.name"
+   */
+  victorious_appliance_743: string;
+  /**
+   * Tener quis dolor stillicidium in termes curatio vinculum textor.
+   * @example "architecto vir catena"
+   */
+  name: string;
+}
+
+export interface SchBonyEditor45DC {
+  /** @example false */
+  shiny_flint_619: boolean;
+  /**
+   * Titulus tenuis tribuo.
+   * @example "vestrum caries adficio tum"
+   */
+  wee_roundabout_451: string;
+  /**
+   * Victoria thesaurus ut alii corrumpo canis calculus amor toties caput.
+   * @example "cum tripudio beatus"
+   */
+  name: string;
+}
+
+export interface SchConfusedPetticoat74DC {
+  /** Ventito peior cura delicate eveniet cedo aggredior atrocitas. */
+  adolescent_cinder_156?: SchUnwillingFort36DC[];
+  /** Nam acervus coniecto sequi deleo triduana admoneo tactus verumtamen. */
+  waterlogged_amendment_650?: SchAssuredMobility63DC[];
+  /**
+   * Agnitio thesis nihil.
+   * @example ["contigo vigor delibero","harum ara vesper natus"]
+   */
+  delete?: string[];
+}
+
+export interface SchContentHusband24DC {
+  /**
+   * Terebro tribuo nostrum cubitum excepturi creo.
+   * @example "cursus vergo aggredior currus ascit"
+   */
+  orange_intent_574: string;
+}
+
+export interface SchCrazyJet13DC {
+  /** Denique conturbo thorax. */
+  noxious_nucleotidase_45?: string[];
+  /** Deporto celer crustulum itaque spargo carcer audacia demo molestiae strenuus. */
+  official_chops_77?: string;
+  /** Pel doloremque capio vilicus cultura comparo talio. */
+  political_toaster_538?: string;
+  /** Ducimus ubi crustulum clementia desparatus culpo alter bestia. */
+  secondhand_copout_862?: string;
+  /** Accedo paulatim aduro demergo delicate tamen. */
+  splendid_cannon_109?: number;
+  /** Testimonium tandem celo conatus varius voluptate sed audentia aegrus. */
+  troubled_editor_611?: number;
+}
+
+/**
+ * Rem defleo universe tardus harum tempora tempore sordeo abscido.
+ */
+export interface SchDampSushi82DC {
+  /** Acerbitas admoveo sufficio chirographum ascisco tempore. */
+  scared_crest_373?: number;
+  /** Teres sortitus assumenda calcar voluptas nostrum calamitas conscendo derideo cruentus. */
+  which_collaboration_491?: number;
+}
+
+export interface SchEmptyPants75DC {
+  /**
+   * Alveus calamitas corporis thesis adaugeo spectaculum degero aiunt colligo.
+   * @format uuid
+   * @example "b89b69a1-7f32-45c9-b7cc-1e7adb118373"
+   */
+  inexperienced_chops_556: string;
+  /**
+   * Virtus textor curis attollo.
+   * @format uri
+   * @example "https://ironclad-abacus.org"
+   */
+  victorious_appliance_743: string;
+  /**
+   * Derideo tenus super nemo damno casso auxilium.
+   * @example "varietas absorbeo administratio avarus arcesso"
+   */
+  name: string;
+}
+
+export interface SchEvilOctave14DC {
+  /**
+   * Pectus corrumpo patior campana aperiam.
+   * @example "catena vel audentia adsum"
+   */
+  acidic_outset_265: string;
+}
+
+export interface SchFavorableReservation40DC {
+  /**
+   * Tempus cunabula abundans verumtamen templum demoror acer.
+   * @default false
+   * @example false
+   */
+  parallel_synergy_47: boolean;
+  /**
+   * Capitulus alo adulescens.
+   * @example "cito debitis ab spes"
+   */
+  victorious_appliance_743: string;
+  /**
+   * Vinum maiores corpus supplanto suus aggredior summisse cotidie terminatio vitiosus.
+   * @example "conicio theatrum magnam"
+   */
+  name: string;
+}
+
+export interface SchFlusteredViability55DC {
+  /** Sodalitas suadeo utor est curtus amaritudo tantillus comedo. */
+  educated_discourse_995: SchEmptyPants75DC[];
+  /** Uterque tumultus annus enim amitto caput thalassinus vado tenax cena. */
+  frightened_partridge_888: SchFavorableReservation40DC[];
+}
+
+export interface SchGraciousAwareness53DC {
+  /** Patrocinor cupiditate stips quae adstringo vinum. */
+  scared_crest_373?: number;
+  items?: SchDampSushi82DC[];
+}
+
+export interface SchJauntyGerbil80DC {
+  /**
+   * Suggero apparatus deleniti vapulus tergeo.
+   * @example "attonbitus verbera asperiores spero bardus"
+   */
+  inexperienced_chops_556: string;
+  /**
+   * Aequus demitto cubo thymbra ad cribro astrum compello.
+   * @format uri
+   * @example "https://monthly-pile.net/"
+   */
+  remorseful_skeleton_504?: string;
+  /**
+   * Valens absconditus cado crustulum censura anser causa curia cimentarius villa.
+   * @example "arca artificiose canis defaeco expedita"
+   */
+  selfreliant_forgery_596: string;
+  /**
+   * Sursum totam adicio ventus contabesco.
+   * @example ["vulariter usque aedificium congregatio","sol dignissimos vero combibo"]
+   */
+  spotless_equal_503?: string[];
+  /**
+   * Optio avaritia benevolentia.
+   * @example "unus condico carpo tempore capitulus"
+   */
+  uniform_piglet_383: string;
+  /**
+   * Terra caput velum avarus defero trucido assumenda compono calamitas aurum.
+   * @example "adimpleo talis ambitus corpus"
+   */
+  woeful_following_984: string;
+  /**
+   * Vapulus expedita conicio comparo comedo ara audeo amaritudo.
+   * @format email
+   * @example "Claire.Rice@yahoo.com"
+   */
+  worthwhile_tarragon_43: string;
+}
+
+export interface SchOrderlyPine22DC {
+  /** Curriculum strues via cetera illo administratio demulceo supplanto. */
+  spotless_equal_503?: SchAptIndependence78DC[];
+}
+
+export enum SchRightReporter95DC {
+  Ev0 = "ev0",
+  Ev1 = "ev1",
+  Ev2 = "ev2",
+  Ev3 = "ev3",
+  Ev4 = "ev4",
+  Ev5 = "ev5",
+  Ev6 = "ev6",
+  Ev7 = "ev7",
+  Ev8 = "ev8",
+  Ev9 = "ev9",
+}
+
+export interface SchSerpentineNudge69DC {
+  /** Apostolus autus adaugeo tandem recusandae demonstro. */
+  damp_lyre_166?: number;
+  /** Creta attollo armarium delego. */
+  noxious_nucleotidase_45?: string[];
+  /** Triumphus depromo subseco custodia auditor cognomen ademptio verto. */
+  official_chops_77?: string;
+  /** Vero odit denego pauper sodalitas socius quis stillicidium. */
+  secondhand_copout_862?: string;
+  /** Capillus debilito stips. */
+  splendid_cannon_109?: number;
+  /** Comburo curvo ago adinventitias crapula ullam. */
+  troubled_editor_611?: number;
+}
+
+export interface SchUnlawfulConsistency14DC {
+  /** Et angulus correptius crebro compono maxime corrupti trucido thema. */
+  spotless_equal_503: SchBonyEditor45DC[];
+}
+
+export interface SchUnselfishChiffonier82DC {
+  /** Subnecto territo sumptus patrocinor peior votum calamitas. */
+  elegant_solution_97?: string;
+  /** Cura officia texo ter aperio. */
+  inexperienced_chops_556?: number;
+  /** Aureus porro tonsor uterque villa. */
+  posh_armoire_314?: number;
+  /** Versus torqueo dapifer deprimo ocer curia copiose. */
+  welldocumented_repeat_694?: string;
+  /** Laudantium sponte tremo taceo. */
+  name?: string;
+}
+
+export interface SchUnwillingFort36DC {
+  /** Campana coma clementia tricesimus velociter ulterius utor. */
+  ill_pantyhose_71?: number;
+  /**
+   * Odit cenaculum caries magni vorax adhaero.
+   * @format uri
+   * @example "https://burdensome-follower.net"
+   */
+  victorious_appliance_743: string;
+  /**
+   * Ambitus despecto adopto volaticus vulgivagus vestigium illum territo utpote circumvenio.
+   * @example "non correptius contigo consequuntur vestrum"
+   */
+  name: string;
+}
+
+
+/* --- meta-info.ts --- */
+/* eslint-disable */
+/* tslint:disable */
+
+export const enum Group {
+  _1 = "1",
+  _3 = "3",
+  _4 = "4",
+  _2 = "2",
+  _5 = "5",
+  _6 = "6",
+  _9 = "9",
+  _7 = "7",
+  _8 = "8",
+  _10 = "10",
+}
+
+export const enum Tag {
+  /** Verecundia vulgaris tandem contabesco. */
+  Tg01 = "tg01",
+  /** tg 04 */
+  Tg04 = "tg04",
+  /** Bardus amicitia correptius corona averto umquam uxor turpis dicta benevolentia. */
+  Tg05 = "tg05",
+}
+
+"
+`;

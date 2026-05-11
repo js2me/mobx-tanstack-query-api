@@ -1,25 +1,13 @@
 import type { AnyObject, Maybe } from 'yummies/types';
-import type {
-  BaseTmplParams,
-  CodegenDataUtils,
-  MetaInfo,
-} from '../types/index.js';
+import type { BaseTmplParams, MetaInfo } from '../types/index.js';
 
 import { LINTERS_IGNORE } from './constants.js';
+import { formatGroupNameEnumKey } from './utils/format-group-name-enum-key.js';
+import { formatTagNameEnumKey } from './utils/format-tag-name-enum-key.js';
 
 export interface MetaInfoTmplParams extends BaseTmplParams {
   metaInfo: Maybe<MetaInfo>;
 }
-
-export const formatGroupNameEnumKey = (
-  groupName: string,
-  { _ }: CodegenDataUtils,
-) => _.upperFirst(_.camelCase(groupName));
-
-export const formatTagNameEnumKey = (
-  tagName: string,
-  utils: CodegenDataUtils,
-) => formatGroupNameEnumKey(tagName, utils);
 
 export const metaInfoTmpl = async ({
   metaInfo,

@@ -16,10 +16,8 @@ import {
   callRequestMeta,
 } from '../../utils/resolve-codegen-meta.js';
 import { typeNameToSchemaKey } from '../../utils/zod/build-endpoint-zod-contracts-code.js';
-import {
-  formatGroupNameEnumKey,
-  formatTagNameEnumKey,
-} from '../meta-info.tmpl.js';
+import { formatGroupNameEnumKey } from '../utils/format-group-name-enum-key.js';
+import { formatTagNameEnumKey } from '../utils/format-tag-name-enum-key.js';
 import { buildZodEndpointData } from './utils/build-zod-endpoint-data.js';
 import { chooseOpenApiServer } from './utils/choose-open-api-server.js';
 import { getRequestBodyContentType } from './utils/get-request-body-content-type.js';

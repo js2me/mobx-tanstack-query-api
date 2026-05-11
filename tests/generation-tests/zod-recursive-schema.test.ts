@@ -169,6 +169,42 @@ describe('zod params schema — query object from OpenAPI operation parameters',
     expect(result.zodContractImportNames).toContain('treeNodeDcValidator');
     expect(result.content).toContain('data: treeNodeDcValidator');
   });
+
+  it('buildEndpointZodContractsCode lists zodContractImportNames for $ref inside query parameters', () => {
+    const componentsSchemas: Record<string, OpenAPISchema> = {
+      MyEnum: { type: 'string', enum: ['a', 'b'] },
+    };
+    const operation = {
+      parameters: [
+        {
+          in: 'query' as const,
+          name: 'status',
+          required: false,
+          schema: { $ref: '#/components/schemas/MyEnum' },
+        },
+      ],
+    };
+    const inputParams = [
+      { name: 'query', optional: true, type: '{ status?: MyEnumDC }' },
+      { name: 'requestParams', optional: true, type: 'RequestParams' },
+    ];
+
+    const result = buildEndpointZodContractsCode({
+      routeNameUsage: 'getX',
+      inputParams,
+      responseDataTypeName: 'unknown',
+      contractVarName: 'getXContract',
+      componentsSchemas,
+      // @ts-expect-error partial operation shape
+      openApiOperation: operation,
+      useExternalZodSchemas: true,
+      openApiComponentsParameters: null,
+      queryParamName: 'query',
+    });
+
+    expect(result.zodContractImportNames).toContain('myEnumDc');
+    expect(result.content).toContain('myEnumDc');
+  });
 });
 
 describe('zod central schemas — no ZodTypeAny for non-cyclic refs', () => {

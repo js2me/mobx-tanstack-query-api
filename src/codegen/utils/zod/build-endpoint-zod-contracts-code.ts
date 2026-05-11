@@ -418,6 +418,11 @@ export function buildEndpointZodContractsCode(params: {
         componentsSchemas,
         schemaKeyToContractVarNameFn,
       );
+      const queryRefs = new Set<string>();
+      for (const qp of resolvedQueryParams) {
+        collectRefs(qp.schema, componentsSchemas, queryRefs);
+      }
+      refKeys = [...queryRefs];
     } else {
       const result = typeToZodSchemaWithSchema(
         p.type,
