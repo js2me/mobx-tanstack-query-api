@@ -9,7 +9,7 @@
   "produces": ["application/json"],
   "schemes": ["https", "http"],
   "paths": {
-    "/api/v1/resources/{id}/actions/combine": {
+    "/foma-back/api/v1/fluffies/{id}/actions/combine": {
       "get": {
         "operationId": "getFluffiesToMerge",
         "summary": "Возвращает данные по параметрам запроса",
@@ -65,6 +65,136 @@
             "schema": { "$ref": "#/definitions/ErrorPayload" }
           }
         }
+      }
+    },
+    "/foma-back/api/v1/foo/bar": {
+      "get": {
+        "operationId": "getFooBar",
+        "summary": "Возвращает данные по параметрам запроса",
+        "tags": ["Acme", "Fluffy"],
+        "parameters": [
+          {
+            "format": "int32",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешное завершение запроса.",
+            "schema": {
+              "$ref": "#/definitions/GetFluffiesToMergeResponse"
+            }
+          },
+          "default": {
+            "description": "Ошибка при обработке запроса.",
+            "schema": { "$ref": "#/definitions/ErrorPayload" }
+          }
+        }
+      },
+      "post": {
+        "operationId": "mergeFooBar",
+        "summary": "Принимает тело запроса и возвращает результат обработки",
+        "tags": ["Acme", "Fluffy"],
+        "parameters": [
+          {
+            "format": "int32",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/MergeFluffyBody" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешное завершение запроса.",
+            "schema": { "$ref": "#/definitions/MergeFluffyResponse" }
+          },
+          "default": {
+            "description": "Ошибка при обработке запроса.",
+            "schema": { "$ref": "#/definitions/ErrorPayload" }
+          }
+        }
+      }
+    },
+    "/foma-back/api/v1/memes": {
+      "get": {
+        "operationId": "getMeme",
+        "summary": "Возвращает данные по параметрам запроса",
+        "tags": ["Acme", "Fluffy"],
+        "parameters": [
+          {
+            "format": "int32",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешное завершение запроса.",
+            "schema": {
+              "$ref": "#/definitions/GetFluffiesToMergeResponse"
+            }
+          },
+          "default": {
+            "description": "Ошибка при обработке запроса.",
+            "schema": { "$ref": "#/definitions/ErrorPayload" }
+          }
+        }
+      },
+      "post": {
+        "operationId": "mergeMeme",
+        "summary": "Принимает тело запроса и возвращает результат обработки",
+        "tags": ["Acme", "Fluffy"],
+        "parameters": [
+          {
+            "format": "int32",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/MergeFluffyBody" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешное завершение запроса.",
+            "schema": { "$ref": "#/definitions/MergeFluffyResponse" }
+          },
+          "default": {
+            "description": "Ошибка при обработке запроса.",
+            "schema": { "$ref": "#/definitions/ErrorPayload" }
+          }
+        }
+      }
+    },
+    "/foma-back/api/v1/user": {
+      "get": {
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "oki"
+          }
+        },
+        "tags": [
+          "foma-back",
+          "users"
+        ]
       }
     }
   },
