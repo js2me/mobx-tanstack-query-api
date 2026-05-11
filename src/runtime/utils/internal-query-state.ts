@@ -131,9 +131,10 @@ export function createInternalQueryState<TParams extends AnyObject>(
         );
 
         if (isQueryOptionsInputFn) {
-          const result = isMobxQueryInitialized
-            ? (queryOptionsInput as () => any)()
-            : unpackedQueryOptionsInput;
+          const result: EndpointInfiniteQueryOptions<any, any> =
+            isMobxQueryInitialized
+              ? (queryOptionsInput as () => any)()
+              : unpackedQueryOptionsInput;
           const {
             params,
             abortSignal,
@@ -145,6 +146,12 @@ export function createInternalQueryState<TParams extends AnyObject>(
             meta,
             uniqKey,
             mergePageParam,
+            getPreviousPageParam,
+            getNextPageParam,
+            transform,
+            transformError,
+            dynamicOptionsComparer,
+            notifyOnChangeProps,
             ...rest
           } = result;
           resolvedUniqKey = uniqKey;
