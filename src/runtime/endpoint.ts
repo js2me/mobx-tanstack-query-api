@@ -42,6 +42,40 @@ function isContractOptionEnabled(
   );
 }
 
+function warnContractValidationFailure(
+  label: 'Params' | 'Data',
+  operationId: string,
+  parseError: unknown,
+  payload: unknown,
+): void {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      `[mobx-tanstack-query-api] ${label} contract validation failed for "${operationId}"`,
+      parseError,
+      payload,
+    );
+  } else {
+    console.warn('[mobx-tanstack-query-api] minified warning #1');
+  }
+}
+
+function warnContractValidationThrew(
+  label: 'Params' | 'Data',
+  operationId: string,
+  error: unknown,
+  payload: unknown,
+): void {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      `[mobx-tanstack-query-api] ${label} contract validation threw for "${operationId}"`,
+      error,
+      payload,
+    );
+  } else {
+    console.warn('[mobx-tanstack-query-api] minified warning #2');
+  }
+}
+
 export interface Endpoint<
   TResponse extends AnyResponse,
   TParams extends AnyObject,
@@ -310,8 +344,9 @@ export class Endpoint<
         if (shouldThrow) {
           throw result?.error;
         } else {
-          console.warn(
-            `[mobx-tanstack-query-api] ${label} contract validation failed for "${this.operationId}"`,
+          warnContractValidationFailure(
+            label,
+            this.operationId,
             result?.error,
             payload,
           );
@@ -323,11 +358,7 @@ export class Endpoint<
       if (shouldThrow) {
         throw error;
       } else {
-        console.warn(
-          `[mobx-tanstack-query-api] ${label} contract validation threw for "${this.operationId}"`,
-          error,
-          payload,
-        );
+        warnContractValidationThrew(label, this.operationId, error, payload);
         return;
       }
     }

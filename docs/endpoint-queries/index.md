@@ -182,6 +182,44 @@ Any **`meta`** you pass is merged with the payload from **`endpoint.toQueryMeta(
 
 If you pass a **plain object** (not the factory form) with **`enabled: false`**, the query stays **disabled** even when `params` would otherwise satisfy `requiredParams`. (Reactive/factory forms rely on merged dynamic options; use the same pattern as a normal `Query` if you need `enabled` to flip from observables.)
 
+## Warnings
+
+These come from **`Endpoint`** contract validation when **`validateContract`** is enabled for **`params`** or **`data`**, but **`throwContracts`** does **not** force a throw for that part—so invalid input is reported with **`console.warn`** instead of aborting the request.
+
+### `#1` contract validation failed (`safeParse` unsuccessful)
+
+Full warning (non-production builds print **`operationId`**, the parse **`error`**, and the **`payload`**):
+
+```txt
+[mobx-tanstack-query-api] Params contract validation failed for "<operationId>"
+```
+
+(or **`Data`** instead of **`Params`** when the body/schema step fails.)
+
+Minified warning:
+
+```txt
+[mobx-tanstack-query-api] minified warning #1
+```
+
+The contract’s **`safeParseAsync`** completed, but **`success`** was **`false`**—for example the runtime **`params`** or **`data`** object did not match the generated Zod schema. Fix the shapes you pass into **`Endpoint.request`** / **`toQuery`** / mutations, or relax the contract.
+
+### `#2` contract validation threw
+
+Full warning (non-production builds include **`operationId`**, the thrown value, and **`payload`**):
+
+```txt
+[mobx-tanstack-query-api] Params contract validation threw for "<operationId>"
+```
+
+Minified warning:
+
+```txt
+[mobx-tanstack-query-api] minified warning #2
+```
+
+Something threw **during** validation (for example a bug in a custom refine, or an unexpected input type). Unlike **`#1`**, this is not a normal schema mismatch—it indicates an exception while running the parser.
+
 ## Other API
 
 :::: tip What stays on `Query`
