@@ -118,11 +118,13 @@ fetchSchemaRequestOptions: {
 
 ### `httpClient`   
 
-This is an important property configuration for all your generated endpoints.   
-Default value: `'builtin'` which means use built-in http client.  
-You can override it to use your own http client.   
+This is an important property configuration for all your generated endpoints.
+Default value: `'builtin'` which means use built-in http client.
+You can override it to use your own http client.
 
-Sometimes this is useful if you need to customize fetch api behavior or add your own initialization for `HttpClient`.   
+**`'skip'`** turns off the default HTTP client import.
+
+Sometimes this is useful if you need to customize fetch api behavior or add your own initialization for `HttpClient`.
 
 Example:  
 
@@ -183,11 +185,13 @@ export const getMyData = new Endpoint<
 
 Same as [`httpClient`](#httpclient) but for `queryClient`.   
 
-This is an important property configuration for all your generated endpoints.   
-Default value: `'builtin'` which means use built-in Tanstack's query client.  
-You can override it to use your own query client.   
+This is an important property configuration for all your generated endpoints.
+Default value: `'builtin'` which means use built-in Tanstack's query client.
+You can override it to use your own query client.
 
-Sometimes this is useful if you need to add configuration for `EndpointQueryClient`  
+**`'skip'`** turns off the default query client import.
+
+Sometimes this is useful if you need to add configuration for `EndpointQueryClient`
 
 Example:  
 
@@ -336,6 +340,30 @@ This option is used to filter endpoint groups.
 You can pass string or array of strings or regular expression which will be compared with the group name.   
 You can also pass a function to manually filter endpoint groups.   
 
+
+### `libImports`
+
+Override the **module specifier** (the string in `from "…"`) used when generated **endpoint** files import runtime types from this package.
+
+By default those files contain:
+
+```ts
+import {
+  RequestParams,
+  HttpResponse,
+  HttpMultistatusResponse,
+} from "mobx-tanstack-query-api";
+```
+
+Set `libImports['mobx-tanstack-query-api']` to a different path when your bundler or monorepo resolves the library under an alias (for example a TypeScript `paths` mapping or a re-export barrel).
+
+Example:
+
+```ts
+libImports: {
+  'mobx-tanstack-query-api': '@/shared/lib/mobx-tanstack-query-api',
+},
+```
 
 ### `namespace`   
 
@@ -969,6 +997,40 @@ export const getFruits = new Endpoint<
 
 
 getFruits.meta.somedata; // '123'
+```
+
+### `transforms`
+
+Optional hooks that customize the **string literal values** (the right-hand side after `=`) of the `Group` and `Tag` `const enum`s in generated `meta-info.ts`.
+
+Codegen still derives **enum member names** (the identifiers on the left) from OpenAPI group/tag names using its built-in key formatting. These callbacks only change the **quoted runtime string** stored on each member, which is what you compare against or serialize when you use `Tag.*` / `Group.*` as values.
+
+| Property | Signature (conceptually) | Purpose |
+| --- | --- | --- |
+| `groupEnumValue` | `(group: string, namespace?: string \| null \| undefined) => string` | Map each OpenAPI **group** name to the enum **value** string for `Group`. |
+| `tagEnumValue` | `(tag: string, namespace?: string \| null \| undefined) => string` | Map each OpenAPI **tag** name to the enum **value** string for `Tag`. |
+
+If a callback is omitted for a given member, the value defaults to the raw OpenAPI group or tag string (same as today without `transforms`).
+
+**When this is useful:** keep stable or normalized string values (for example URL- or header-friendly tokens) while leaving enum **identifiers** readable, or align enum values with an external contract without renaming tags in the spec.
+
+**Note on `namespace`:** the type allows an optional second argument so configs can branch on the active [`namespace`](#namespace) if the emitter passes it in the future. The current generator invokes `groupEnumValue` and `tagEnumValue` with **only** the first argument (`group` / `tag`).
+
+Example:
+
+```ts
+transforms: {
+  tagEnumValue: (tag) => tag.toLowerCase().replace(/\s+/g, '-'),
+  groupEnumValue: (group) => group,
+},
+```
+
+_generated excerpt (`meta-info.ts`):_
+
+```ts
+export const enum Tag {
+  /** My Tag */ MyTag = "my-tag",
+}
 ```
 
 ### `noMetaInfo`  

@@ -28,6 +28,24 @@ const FOO_BAR_ENDPOINT = path.resolve(
   'endpoints',
   'get-foo-bar.ts',
 );
+const FOO_BAR_OUTPUT_SKIP_HTTP = path.resolve(
+  __dirname,
+  './__generated__/endpoint-export-types-foo-bar-skip-http',
+);
+const FOO_BAR_ENDPOINT_SKIP_HTTP = path.resolve(
+  FOO_BAR_OUTPUT_SKIP_HTTP,
+  'endpoints',
+  'get-foo-bar.ts',
+);
+const FOO_BAR_OUTPUT_SKIP_QUERY = path.resolve(
+  __dirname,
+  './__generated__/endpoint-export-types-foo-bar-skip-query',
+);
+const FOO_BAR_ENDPOINT_SKIP_QUERY = path.resolve(
+  FOO_BAR_OUTPUT_SKIP_QUERY,
+  'endpoints',
+  'get-foo-bar.ts',
+);
 
 const normalize = (content: string): string => content.replaceAll('\r\n', '\n');
 
@@ -35,8 +53,12 @@ describe('endpoint exported Data/Params/Error types', () => {
   beforeEach(async () => {
     await fs.rm(MEMORY_LEAK_OUTPUT, { recursive: true, force: true });
     await fs.rm(FOO_BAR_OUTPUT, { recursive: true, force: true });
+    await fs.rm(FOO_BAR_OUTPUT_SKIP_HTTP, { recursive: true, force: true });
+    await fs.rm(FOO_BAR_OUTPUT_SKIP_QUERY, { recursive: true, force: true });
     await fs.mkdir(path.dirname(MEMORY_LEAK_OUTPUT), { recursive: true });
     await fs.mkdir(path.dirname(FOO_BAR_OUTPUT), { recursive: true });
+    await fs.mkdir(path.dirname(FOO_BAR_OUTPUT_SKIP_HTTP), { recursive: true });
+    await fs.mkdir(path.dirname(FOO_BAR_OUTPUT_SKIP_QUERY), { recursive: true });
   });
 
   it('exports DataDC, Params and ErrorDC for blob response endpoint', async () => {
@@ -90,5 +112,49 @@ describe('endpoint exported Data/Params/Error types', () => {
       'HttpResponse<GetFooBarResultDC, GetFooBarErrorDC>',
     );
     expect(endpoint).toContain('@**200** GetFooBarResultDC OK');
+  });
+
+  it('httpClient skip omits http import and passes undefined as any', async () => {
+    await generateApi(
+      defineConfig({
+        input: FOO_BAR_INPUT,
+        output: FOO_BAR_OUTPUT_SKIP_HTTP,
+        noBarrelFiles: true,
+        removeUnusedTypes: true,
+        outputType: 'one-endpoint-per-file',
+        filterEndpoints: [/^getFooBar$/i],
+        httpClient: 'skip',
+      }),
+    );
+
+    const endpoint = normalize(await fs.readFile(FOO_BAR_ENDPOINT_SKIP_HTTP, 'utf-8'));
+
+    expect(endpoint).toContain('undefined as any');
+    expect(endpoint).not.toMatch(/import\s*\{[^}]*\bhttp\b[^}]*\}\s*from/);
+    expect(endpoint).toMatch(
+      /import\s*\{\s*queryClient\s*\}\s*from\s*["']mobx-tanstack-query-api\/builtin["']/,
+    );
+  });
+
+  it('queryClient skip omits queryClient import and passes undefined as any', async () => {
+    await generateApi(
+      defineConfig({
+        input: FOO_BAR_INPUT,
+        output: FOO_BAR_OUTPUT_SKIP_QUERY,
+        noBarrelFiles: true,
+        removeUnusedTypes: true,
+        outputType: 'one-endpoint-per-file',
+        filterEndpoints: [/^getFooBar$/i],
+        queryClient: 'skip',
+      }),
+    );
+
+    const endpoint = normalize(await fs.readFile(FOO_BAR_ENDPOINT_SKIP_QUERY, 'utf-8'));
+
+    expect(endpoint).toContain('undefined as any');
+    expect(endpoint).not.toMatch(/import\s*\{[^}]*\bqueryClient\b[^}]*\}\s*from/);
+    expect(endpoint).toMatch(
+      /import\s*\{\s*http\s*\}\s*from\s*["']mobx-tanstack-query-api\/builtin["']/,
+    );
   });
 });

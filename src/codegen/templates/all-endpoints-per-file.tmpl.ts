@@ -191,8 +191,7 @@ export const allEndpointPerFileTmpl = async (
         HttpMultistatusResponse,
       } from "${codegenParams.libImports?.['mobx-tanstack-query-api'] ?? 'mobx-tanstack-query-api'}";
       import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
-      import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";
-      import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";
+      ${importFileParams.skipHttpClient ? '' : `import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";\n      `}${importFileParams.skipQueryClient ? '' : `import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";\n      `}
       ${extraImportLines.join('\n')}
       ${[zodImportLine, zodSchemasImportLine].filter(Boolean).join('\n')}
       ${dataContractImportToken}

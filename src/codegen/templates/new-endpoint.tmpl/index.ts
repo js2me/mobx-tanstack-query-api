@@ -624,8 +624,8 @@ new ${importFileParams.endpoint.exportName}<
         ${validateContractLine}
         ${throwContractsLine}
     },
-    ${importFileParams.queryClient.exportName},
-    ${importFileParams.httpClient.exportName},
+    ${importFileParams.skipQueryClient ? 'undefined as any' : importFileParams.queryClient.exportName},
+    ${importFileParams.skipHttpClient ? 'undefined as any' : importFileParams.httpClient.exportName},
 )  
 `
       .split('\n')
