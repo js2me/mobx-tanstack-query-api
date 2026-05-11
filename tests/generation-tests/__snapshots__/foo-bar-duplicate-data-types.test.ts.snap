@@ -5,6 +5,7 @@ exports[`generateApi foo-bar-duplicate-data-types OpenAPI 3 (components.schemas.
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+
 import { Tag } from "../meta-info";
 
 import { GetFooBarDataDC } from "../data-contracts";

@@ -249,7 +249,7 @@ export interface GenerateQueryApiParams {
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#queryclient)
    */
-  queryClient?: 'builtin' | ImportFileParams;
+  queryClient?: 'builtin' | 'skip' | ImportFileParams;
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#endpoint)
    */
@@ -257,7 +257,7 @@ export interface GenerateQueryApiParams {
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#httpclient)
    */
-  httpClient?: 'builtin' | ImportFileParams;
+  httpClient?: 'builtin' | 'skip' | ImportFileParams;
 
   /**
    * Object with `tmplData`, or a function `(route, utils) => { tmplData, ... }` per endpoint.
@@ -317,12 +317,25 @@ export interface GenerateQueryApiParams {
     (groupName: string, swaggerSchema: AnyObject) => boolean
   >;
 
+  /**
+   * Override the `from "…"` module path for `RequestParams`, `HttpResponse`, and `HttpMultistatusResponse` in generated endpoint files.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#libimports)
+   */
   libImports?: {
     'mobx-tanstack-query-api'?: string;
   };
 
+  /**
+   * @deprecated will be removed in release
+   */
   tsconfigPath?: string;
 
+  /**
+   * Customize string values of generated `Group` / `Tag` enums in `meta-info.ts` (not the enum member identifiers).
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#transforms)
+   */
   transforms?: {
     groupEnumValue?: (group: string, namespace?: Maybe<string>) => string;
     tagEnumValue?: (tag: string, namespace?: Maybe<string>) => string;

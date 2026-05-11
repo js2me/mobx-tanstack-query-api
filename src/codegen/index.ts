@@ -117,12 +117,17 @@ const generateApiSingle = async (
 ): Promise<void> => {
   const importFileParams: AllImportFileParams = {
     queryClient:
-      !params.queryClient || typeof params.queryClient === 'string'
+      params.queryClient === 'skip'
         ? {
             exportName: 'queryClient',
             path: 'mobx-tanstack-query-api/builtin',
           }
-        : params.queryClient,
+        : !params.queryClient || typeof params.queryClient === 'string'
+          ? {
+              exportName: 'queryClient',
+              path: 'mobx-tanstack-query-api/builtin',
+            }
+          : params.queryClient,
     endpoint:
       !params.endpoint || typeof params.endpoint === 'string'
         ? {
@@ -131,12 +136,21 @@ const generateApiSingle = async (
           }
         : params.endpoint,
     httpClient:
-      !params.httpClient || typeof params.httpClient === 'string'
+      params.httpClient === 'skip'
         ? {
             exportName: 'http',
             path: 'mobx-tanstack-query-api/builtin',
           }
-        : params.httpClient,
+        : !params.httpClient || typeof params.httpClient === 'string'
+          ? {
+              exportName: 'http',
+              path: 'mobx-tanstack-query-api/builtin',
+            }
+          : params.httpClient,
+    ...(params.httpClient === 'skip' ? { skipHttpClient: true as const } : {}),
+    ...(params.queryClient === 'skip'
+      ? { skipQueryClient: true as const }
+      : {}),
   };
 
   const paths = {
@@ -183,6 +197,8 @@ const generateApiSingle = async (
         ...(constructs as any),
         object: () => `Record<string, any>`,
         float: () => `number`,
+        /** GitLab / some specs use OpenAPI 2-style `type: text` for strings */
+        text: () => `string`,
       };
 
       if (params.otherCodegenParams?.primitiveTypeConstructs) {

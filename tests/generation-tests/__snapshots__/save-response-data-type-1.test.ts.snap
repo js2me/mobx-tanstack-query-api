@@ -5,6 +5,7 @@ exports[`generateApi saveResponseDataType1 Swagger 2 (definitions.*) > keeps req
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+
 import { Tag } from "../meta-info";
 
 import { SaveResponseDataType1ErrorDC, SaveResponseDataType1RequestDC, SaveResponseDataType1ResponseDC } from "../data-contracts";
