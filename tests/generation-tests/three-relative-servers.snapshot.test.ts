@@ -6,7 +6,7 @@ import { generateApi } from '../../src/codegen/index.js';
 
 const INPUT_FILE = path.resolve(
   __dirname,
-  './three-relative-servers.openapi.yaml',
+  './fixtures/three-relative-servers.openapi.yaml',
 );
 const OUTPUT_DIR = path.resolve(__dirname, './__generated__/three-relative-servers');
 const ENDPOINT_FILE = path.resolve(

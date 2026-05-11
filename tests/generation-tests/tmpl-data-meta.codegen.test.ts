@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineConfig } from '../../src/cli/utils/define-config.js';
 import { generateApi } from '../../src/codegen/index.js';
 
-const INPUT_FILE = path.resolve(__dirname, './tmpl-data-meta.openapi.json');
+const INPUT_FILE = path.resolve(__dirname, './fixtures/tmpl-data-meta.openapi.json');
 const OUTPUT_DIR = path.resolve(__dirname, './__generated__/tmpl-data-meta');
 const ENDPOINT_FILE = path.resolve(
   OUTPUT_DIR,

@@ -205,7 +205,6 @@ export const endpointPerFileTmpl = async (
         modelTypeName !==
           requestInfoTemplateResult.staResponseAliasReplacesContractName &&
         !dataContractNamesInThisFile.includes(modelTypeName) &&
-        dataContactNames.has(modelTypeName) &&
         new RegExp(`\\b${escapeRegExp(modelTypeName)}\\b`).test(
           contentWithImportToken,
         ),

@@ -1,5 +1,45 @@
 # mobx-tanstack-query-api
 
+## 0.52.9
+
+### Patch Changes
+
+- [`940f509`](https://github.com/js2me/mobx-tanstack-query-api/commit/940f509061a6f56a6a66c25052774d8b261d3780) Thanks [@js2me](https://github.com/js2me)! - fixed wrong enum keys formatting for groups
+
+- [`940f509`](https://github.com/js2me/mobx-tanstack-query-api/commit/940f509061a6f56a6a66c25052774d8b261d3780) Thanks [@js2me](https://github.com/js2me)! - fixed zod contracts (imports)
+
+## 0.52.8
+
+### Patch Changes
+
+- [`80c7800`](https://github.com/js2me/mobx-tanstack-query-api/commit/80c78009b0d489f6fe465dcaf20143edfbecb4af) Thanks [@js2me](https://github.com/js2me)! - fixed jsdoc wrong lines
+
+## 0.52.7
+
+### Patch Changes
+
+- [`7e2ebb2`](https://github.com/js2me/mobx-tanstack-query-api/commit/7e2ebb2367bda3fc95cc5c23ac17e9605996fa8f) Thanks [@js2me](https://github.com/js2me)! - fixed codegen with wrong http status codes for HttpMultistatusResponse
+
+## 0.52.6
+
+### Patch Changes
+
+- [`b0b4d53`](https://github.com/js2me/mobx-tanstack-query-api/commit/b0b4d537b254def3926eaa61773f435b205478c0) Thanks [@js2me](https://github.com/js2me)! - passing `endpointMeta` to `EndpointQueryMeta` type
+
+- [`f655231`](https://github.com/js2me/mobx-tanstack-query-api/commit/f6552319f88d8d889d4c474826e9b99255afa821) Thanks [@js2me](https://github.com/js2me)! - update swagger-typescript-api to 13.9.0 local fragment ref partial support
+
+## 0.52.5
+
+### Patch Changes
+
+- [`f9a267a`](https://github.com/js2me/mobx-tanstack-query-api/commit/f9a267aa8d357eddfbb6a48bc879d213109da4df) Thanks [@js2me](https://github.com/js2me)! - fixed external refs usage (e.g. gitlab refs)
+
+## 0.52.4
+
+### Patch Changes
+
+- [`3def9fa`](https://github.com/js2me/mobx-tanstack-query-api/commit/3def9fa2966d02b60cae4ca9d60b7a3c8417e9e5) Thanks [@js2me](https://github.com/js2me)! - update all deps to mihor latest + swagger-typescript-api to 13.8.0
+
 ## 0.52.3
 
 ### Patch Changes

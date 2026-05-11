@@ -1,12 +1,10 @@
 import type { Maybe } from 'yummies/types';
-import type {
-  BaseTmplParams,
-  CodegenDataUtils,
-  MetaInfo,
-} from '../types/index.js';
+import type { BaseTmplParams, MetaInfo } from '../types/index.js';
 import { generateExport } from '../utils/generate-export.js';
 
 import { LINTERS_IGNORE } from './constants.js';
+
+export { formatGroupNameEnumKey } from './utils/format-group-name-enum-key.js';
 
 export interface AllExportsTmplParams extends BaseTmplParams {
   collectedExportFiles: string[];
@@ -14,11 +12,6 @@ export interface AllExportsTmplParams extends BaseTmplParams {
   /** When true, add export * from './contracts' (shared Zod contracts from zodContracts) */
   exportSchemas?: boolean;
 }
-
-export const formatGroupNameEnumKey = (
-  groupName: string,
-  { _ }: CodegenDataUtils,
-) => _.upperFirst(_.camelCase(groupName));
 
 export const allExportsTmpl = async ({
   collectedExportFiles,

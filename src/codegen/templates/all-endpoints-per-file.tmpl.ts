@@ -233,7 +233,6 @@ export const allEndpointPerFileTmpl = async (
       (modelTypeName) =>
         !endpointAliasTypeNamesInFile.has(modelTypeName) &&
         !dataContractNamesInThisFile.has(modelTypeName) &&
-        dataContactNames.has(modelTypeName) &&
         new RegExp(`\\b${escapeRegExp(modelTypeName)}\\b`).test(
           contentWithImportToken,
         ),

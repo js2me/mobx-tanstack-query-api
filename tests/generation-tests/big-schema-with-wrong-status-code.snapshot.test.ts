@@ -6,10 +6,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { defineConfig } from '../../src/cli/utils/define-config.js';
 import { generateApi } from '../../src/codegen/index.js';
 
-const INPUT_FILE = path.resolve(__dirname, './fixtures/big-schema-2.swagger.json');
+const INPUT_FILE = path.resolve(__dirname, './fixtures/big-schema-with-wrong-status-code.json');
 const OUTPUT_DIR = path.resolve(
   __dirname,
-  './__generated__/big-schema-2-snapshot',
+  './__generated__/big-schema-with-wrong-status-code-snapshot',
 );
 
 const normalizeNewlines = (value: string) => value.replaceAll('\r\n', '\n');
@@ -41,7 +41,7 @@ async function collectEndpointTsFiles(rootDir: string): Promise<
   return results;
 }
 
-describe('generateApi snapshot big-schema-2 (anonymized fixture)', () => {
+describe('generateApi snapshot big-schema-with-wrong-status-code (anonymized fixture)', () => {
   beforeEach(async () => {
     await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
     await fs.mkdir(path.dirname(OUTPUT_DIR), { recursive: true });

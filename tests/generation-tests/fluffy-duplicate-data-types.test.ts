@@ -6,7 +6,7 @@ import { generateApi } from '../../src/codegen/index.js';
 
 const INPUT_FILE = path.resolve(
   __dirname,
-  './fluffy-duplicate-data-types.swagger2.json',
+  './fixtures/fluffy-duplicate-data-types.swagger2.json',
 );
 const OUTPUT_DIR = path.resolve(
   __dirname,

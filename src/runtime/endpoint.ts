@@ -387,7 +387,7 @@ export class Endpoint<
    *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#toquerymeta)
    */
-  toQueryMeta = (meta?: AnyObject) =>
+  toQueryMeta = <TMetaData extends AnyObject = AnyObject>(meta?: AnyObject) =>
     ({
       ...meta,
       tags: this.tags,
@@ -396,7 +396,8 @@ export class Endpoint<
       pathDeclaration: this.pathDeclaration,
       endpointId: this.endpointId,
       endpointQuery: true,
-    }) satisfies EndpointQueryMeta;
+      endpointMeta: this.configuration.meta!,
+    }) satisfies EndpointQueryMeta<TMetaData>;
 
   /**
    * Builds a stable TanStack Query key for a regular query.

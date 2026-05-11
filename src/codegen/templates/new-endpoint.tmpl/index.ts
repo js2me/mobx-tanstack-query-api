@@ -1,6 +1,7 @@
 import { camelCase, compact, uniq, upperCase, upperFirst } from 'es-toolkit';
 import type { ParsedRoute } from 'swagger-typescript-api';
 import { callFunction } from 'yummies/common';
+import { parser } from 'yummies/parser';
 import type { AnyObject, Maybe } from 'yummies/types';
 import type { BaseTmplParams } from '../../types/base-tmpl-params.js';
 import type {
@@ -15,10 +16,8 @@ import {
   callRequestMeta,
 } from '../../utils/resolve-codegen-meta.js';
 import { typeNameToSchemaKey } from '../../utils/zod/build-endpoint-zod-contracts-code.js';
-import {
-  formatGroupNameEnumKey,
-  formatTagNameEnumKey,
-} from '../meta-info.tmpl.js';
+import { formatGroupNameEnumKey } from '../utils/format-group-name-enum-key.js';
+import { formatTagNameEnumKey } from '../utils/format-tag-name-enum-key.js';
 import { buildZodEndpointData } from './utils/build-zod-endpoint-data.js';
 import { chooseOpenApiServer } from './utils/choose-open-api-server.js';
 import { getRequestBodyContentType } from './utils/get-request-body-content-type.js';
@@ -430,7 +429,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     .map((it: AnyObject) => {
       return [
         it.description && `/** ${it.description} */`,
-        `${it.status}: ${it.type};`,
+        `${parser.number(it.status, { fallback: `"${it.status}"` })}: ${it.type};`,
       ]
         .filter(Boolean)
         .join('\n');

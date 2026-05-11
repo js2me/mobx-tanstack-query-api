@@ -6,7 +6,7 @@ import { generateApi } from '../../src/codegen/index.js';
 
 const INPUT_FILE = path.resolve(
   __dirname,
-  './result-priority-with-explicit-data-error.swagger2.json',
+  './fixtures/result-priority-with-explicit-data-error.swagger2.json',
 );
 const OUTPUT_DIR = path.resolve(
   __dirname,

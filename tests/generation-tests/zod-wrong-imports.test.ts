@@ -1,20 +1,20 @@
 /** @vitest-environment node */
 
+import { beforeEach, describe, expect, it } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { defineConfig } from '../../src/cli/utils/define-config.js';
 import { generateApi } from '../../src/codegen/index.js';
+import { defineConfig } from '../../src/cli/utils/define-config.js';
 
-const INPUT_FILE = path.resolve(__dirname, './fixtures/big-schema-2.swagger.json');
+const INPUT_FILE = path.resolve(__dirname, './fixtures/zod-wrong-imports.yaml');
 const OUTPUT_DIR = path.resolve(
   __dirname,
-  './__generated__/big-schema-2-snapshot',
+  './__generated__/zod-wrong-imports',
 );
 
 const normalizeNewlines = (value: string) => value.replaceAll('\r\n', '\n');
 
-async function collectEndpointTsFiles(rootDir: string): Promise<
+async function collectAllTsFiles(rootDir: string): Promise<
   { relativePath: string; content: string }[]
 > {
   const results: { relativePath: string; content: string }[] = [];
@@ -41,13 +41,14 @@ async function collectEndpointTsFiles(rootDir: string): Promise<
   return results;
 }
 
-describe('generateApi snapshot big-schema-2 (anonymized fixture)', () => {
+describe('zod wrong imports test', () => {
   beforeEach(async () => {
     await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
     await fs.mkdir(path.dirname(OUTPUT_DIR), { recursive: true });
   });
 
-  it('generates data-contracts and API client in one snapshot bundle', async () => {
+
+  it('emits parseable TS: Group enum for numeric path segments and zod imports for query $ref', async () => {
     await generateApi(
       defineConfig({
         cleanOutput: true,
@@ -58,34 +59,46 @@ describe('generateApi snapshot big-schema-2 (anonymized fixture)', () => {
         output: OUTPUT_DIR,
         chooseServer: () => false,
         endpoint: 'builtin',
+        groupBy: 'path-segment-1',
+        zodContracts: true,
       }),
     );
 
-    const dataContracts = normalizeNewlines(
-      await fs.readFile(path.resolve(OUTPUT_DIR, 'data-contracts.ts'), 'utf-8'),
+    const meta = await fs.readFile(
+      path.join(OUTPUT_DIR, 'meta-info.ts'),
+      'utf8',
+    );
+    expect(meta).toContain('_1 = "1"');
+    expect(meta).toContain('_10 = "10"');
+    expect(meta).not.toMatch(/^\s+\d+\s*=/m);
+
+    const getTg01 = await fs.readFile(
+      path.join(OUTPUT_DIR, '1', 'endpoints', 'get-tg-01.ts'),
+      'utf8',
+    );
+    expect(getTg01).toMatch(/group:\s*Group\._1\b/);
+
+    const getTg042 = await fs.readFile(
+      path.join(OUTPUT_DIR, '8', 'endpoints', 'get-tg-042.ts'),
+      'utf8',
+    );
+    expect(getTg042).toMatch(/group:\s*Group\._8\b/);
+    expect(getTg042).toContain('schRightReporter95Dc');
+    expect(getTg042).toMatch(
+      /import\s*\{[^}]*\bschRightReporter95Dc\b[^}]*\}\s*from\s*["']\.\.\/\.\.\/contracts["']/,
     );
 
-    const endpointsDir = path.resolve(OUTPUT_DIR, 'endpoints');
-    const endpointFiles = await collectEndpointTsFiles(endpointsDir);
-    const endpointsBundle = endpointFiles
-      .map(
-        (file) =>
-          [
-            `/* --- endpoints/${file.relativePath} --- */`,
-            normalizeNewlines(file.content),
-            '',
-          ].join('\n'),
+    const tsFiles = await collectAllTsFiles(OUTPUT_DIR);
+    const bundle = tsFiles
+      .map((file) =>
+        [
+          `/* --- ${file.relativePath} --- */`,
+          normalizeNewlines(file.content),
+          '',
+        ].join('\n'),
       )
       .join('\n');
 
-    const combined = [
-      '/* --- data-contracts.ts --- */',
-      dataContracts,
-      '',
-      '/* --- endpoints/**/*.ts --- */',
-      endpointsBundle,
-    ].join('\n');
-
-    expect(combined).toMatchSnapshot();
+    expect(bundle).toMatchSnapshot();
   });
 });
