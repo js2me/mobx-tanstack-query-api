@@ -1,5 +1,17 @@
 # mobx-tanstack-query-api
 
+## 0.54.0
+
+### Minor Changes
+
+- [#81](https://github.com/js2me/mobx-tanstack-query-api/pull/81) [`c819c75`](https://github.com/js2me/mobx-tanstack-query-api/commit/c819c75588e407751590ae620a80d9bb3231c99e) Thanks [@js2me](https://github.com/js2me)! - Refactor endpoint query runtime: remove internal MobX `reaction` / `lazyObserve` from `EndpointQuery` and `EndpointInfiniteQuery`. State (`params`, `uniqKey`, dynamic options, response) is synced via a compact `_sync` model inside the `options` callback; the public `response` field is updated directly—fewer redundant writes and reaction-loop risk, and more reliable initialization order in derived classes (including function `queryOptions` and structural comparers).
+
+- [#81](https://github.com/js2me/mobx-tanstack-query-api/pull/81) [`c819c75`](https://github.com/js2me/mobx-tanstack-query-api/commit/c819c75588e407751590ae620a80d9bb3231c99e) Thanks [@js2me](https://github.com/js2me)! - Infinite queries: when `mergePageParam` is a string shortcut (`'params' | 'body' | 'query' | 'headers'`), `pageParam` must be an object; otherwise a documented error is thrown (minified `#1` in production). Infinite-query docs now include an errors section with examples; tests expanded.
+
+### Patch Changes
+
+- [`0b769ce`](https://github.com/js2me/mobx-tanstack-query-api/commit/0b769cec58a8e60a19ae7e5afb75306cdb871883) Thanks [@js2me](https://github.com/js2me)! - minify query warnings
+
 ## 0.53.0
 
 ### Minor Changes
