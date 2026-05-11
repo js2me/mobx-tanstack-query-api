@@ -20,7 +20,35 @@ API codegen from swagger for `mobx-tanstack-query`
 
 
 ```ts
-import { getFruits } from "@/shared/api";
+import { reaction, observable } from "mobx";
+import { getFruits, getFruit } from "@/shared/api";
+
+const selectedFruitId = observable.box(null);
 
 export const fruitsQuery = getFruits.toQuery({});
+
+reaction(
+  () => fruitsQuery.isLoading,
+  (isLoading) => {
+    if (!isLoading) {
+      console.log("🥝 🍓 🥭 fruits loaded!");
+    }
+  }
+);
+
+
+export const fruitQuery = getFruit.toQuery({
+  params: () => { // reactive
+    const fruitId = selectedFruitId.get();
+
+    if (!fruitId) return;
+
+    return {
+      fruitId,
+    }
+  }
+});
+
+
+selectedFruitId.set(1);
 ```
