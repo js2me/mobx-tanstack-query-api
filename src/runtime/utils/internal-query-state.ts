@@ -29,7 +29,7 @@ export interface InternalQueryState<TParams extends AnyObject = AnyObject> {
   query: EndpointQuery<any, any> | EndpointInfiniteQuery<any, any>;
   transformResponse: any;
   initialQueryParams: any;
-  isFinite?: boolean;
+  isInfinite?: boolean;
   buildOptions(
     params: MaybeFalsy<TParams>,
     uniqKey?: any,
@@ -50,11 +50,11 @@ export interface InternalQueryState<TParams extends AnyObject = AnyObject> {
 export function createInternalQueryState<TParams extends AnyObject>(
   endpoint: AnyEndpoint,
   {
-    isFinite,
+    isInfinite,
     endpointQueryClient,
     queryOptionsInput,
   }: {
-    isFinite: boolean;
+    isInfinite: boolean;
     endpointQueryClient: EndpointQueryClient;
     queryOptionsInput:
       | EndpointInfiniteQueryOptions<any, any>
@@ -83,7 +83,7 @@ export function createInternalQueryState<TParams extends AnyObject>(
   const state: InternalQueryState<TParams> = {
     query: null as any,
     transformResponse,
-    isFinite,
+    isInfinite,
     params: null,
     uniqKey: unpackedQueryOptionsInput.uniqKey,
     mergePageParam,
@@ -93,7 +93,7 @@ export function createInternalQueryState<TParams extends AnyObject>(
         this.endpoint,
         params,
         uniqKey ?? this.uniqKey,
-        isFinite,
+        isInfinite,
       );
     },
     setParamsImperative(params) {
@@ -173,50 +173,40 @@ export function createInternalQueryState<TParams extends AnyObject>(
         inputParamsSampled = true;
 
         let resolvedParams: MaybeFalsy<AnyObject>;
+
         if (!imperativeOverride) {
           lastInputResolved = inputResolved;
           resolvedParams = inputResolved;
         } else if (
           hadPriorInputSample &&
           inputResolved !== lastInputResolved &&
-          !comparer.structural(inputResolved, lastInputResolved)
+          !comparer.shallow(inputResolved, lastInputResolved)
         ) {
           imperativeOverride = false;
           resolvedParams = inputResolved;
           lastInputResolved = inputResolved;
         } else {
-          const sameAsCurrentParams =
-            inputResolved === state.params ||
-            comparer.structural(inputResolved, state.params);
-          if (!sameAsCurrentParams) {
-            resolvedParams = state.params ?? inputResolved;
-          } else {
+          if (comparer.shallow(inputResolved, state.params)) {
             imperativeOverride = false;
             resolvedParams = inputResolved;
+          } else {
+            resolvedParams = state.params ?? inputResolved;
           }
           lastInputResolved = inputResolved;
         }
 
         runInAction(() => {
-          if (
-            resolvedParams !== state.params &&
-            !comparer.structural(state.params, resolvedParams)
-          ) {
+          if (!comparer.shallow(state.params, resolvedParams)) {
             state.params = resolvedParams;
           }
-          if (
-            resolvedUniqKey !== state.uniqKey &&
-            !comparer.structural(state.uniqKey, resolvedUniqKey)
-          ) {
+          if (!comparer.shallow(state.uniqKey, resolvedUniqKey)) {
             state.uniqKey = resolvedUniqKey;
           }
-          if (!isFinite) {
-            if (
-              resolvedMergePageParam !== state.mergePageParam &&
-              !comparer.structural(state.mergePageParam, resolvedMergePageParam)
-            ) {
-              state.mergePageParam = resolvedMergePageParam;
-            }
+          if (
+            isInfinite &&
+            !comparer.shallow(state.mergePageParam, resolvedMergePageParam)
+          ) {
+            state.mergePageParam = resolvedMergePageParam;
           }
         });
 

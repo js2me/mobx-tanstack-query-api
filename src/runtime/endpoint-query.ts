@@ -63,7 +63,6 @@ export class EndpointQuery<
         >),
   ) {
     const internal = createInternalQueryState(endpoint, {
-      isFinite: true,
       endpointQueryClient,
       // @ts-expect-error
       queryOptionsInput,

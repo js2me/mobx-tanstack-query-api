@@ -6,7 +6,7 @@ export const buildOptionsFromParams = (
   endpoint: AnyEndpoint,
   params: MaybeFalsy<AnyObject>,
   uniqKey: Maybe<EndpointQueryUniqKey>,
-  isFinite?: boolean,
+  isInfinite?: boolean,
 ): { enabled: boolean; queryKey: any[] } => {
   const { requiredParams } = endpoint.configuration;
   let hasRequiredParams = false;
@@ -20,8 +20,8 @@ export const buildOptionsFromParams = (
 
   return {
     enabled: hasRequiredParams,
-    queryKey: isFinite
-      ? endpoint.toQueryKey(params || {}, uniqKey)
-      : endpoint.toInfiniteQueryKey(params || {}, uniqKey),
+    queryKey: isInfinite
+      ? endpoint.toInfiniteQueryKey(params || {}, uniqKey)
+      : endpoint.toQueryKey(params || {}, uniqKey),
   };
 };
