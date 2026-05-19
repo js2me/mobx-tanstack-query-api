@@ -372,6 +372,10 @@ const generateApiSingle = async (
               ) || '';
 
             routeData.request.path = prefix + routeData.request.path + suffix;
+
+            if (typeof routeData.raw.route === 'string') {
+              routeData.raw.route = prefix + routeData.raw.route + suffix;
+            }
           }
 
           if (params.otherCodegenParams?.hooks?.onCreateRoute) {

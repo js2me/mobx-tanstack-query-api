@@ -7,7 +7,7 @@ import type { GenerateQueryApiParams } from '../../src/codegen/types/index.js';
 
 const INPUT_FILE = path.resolve(
   __dirname,
-  './fixtures/request-path-prefix-suffix.openapi.json',
+  './fixtures/big-schema-2.swagger.json',
 );
 const OUTPUT_DIR = path.resolve(
   __dirname,
@@ -42,16 +42,16 @@ describe('requestPathPrefix and requestPathSuffix', () => {
       defineConfig({
         ...baseConfig,
         requestPathPrefix: '/__STATIC_PREFIX__',
-        filterEndpoints: (ep) => ep.raw.operationId === 'listWidgets',
       }),
     );
 
     const content = await fs.readFile(
-      path.resolve(OUTPUT_DIR, 'endpoints', 'list-widgets.ts'),
+      path.resolve(OUTPUT_DIR, 'endpoints', 'op-0001.ts'),
       'utf-8',
     );
 
-    expect(content).toContain('path: `/__STATIC_PREFIX__/widgets`');
+    expect(content).toContain('path: `/__STATIC_PREFIX__/r/95/${frugalLegging446}`');
+    expect(content).toContain('@request **POST:/__STATIC_PREFIX__/r/95/{frugal_legging_446}**');
   });
 
   it('requestPathPrefix: function runs at codegen and result is emitted in path', async () => {
@@ -59,19 +59,19 @@ describe('requestPathPrefix and requestPathSuffix', () => {
       defineConfig({
         ...baseConfig,
         requestPathPrefix: (ep): string =>
-          ep.operationId === 'createGadget'
+          ep.operationId === 'op0001'
             ? '/gadget-service'
             : '/default-service',
-        filterEndpoints: (ep) => ep.raw.operationId === 'createGadget',
       }),
     );
 
     const content = await fs.readFile(
-      path.resolve(OUTPUT_DIR, 'endpoints', 'create-gadget.ts'),
+      path.resolve(OUTPUT_DIR, 'endpoints', 'op-0001.ts'),
       'utf-8',
     );
 
-    expect(content).toContain('path: `/gadget-service/gadgets`');
+    expect(content).toContain('path: `/gadget-service/r/95/${frugalLegging446}`');
+    expect(content).toContain('@request **POST:/gadget-service/r/95/{frugal_legging_446}**');
     expect(content).not.toContain('/default-service');
   });
 
@@ -80,16 +80,16 @@ describe('requestPathPrefix and requestPathSuffix', () => {
       defineConfig({
         ...baseConfig,
         requestPathSuffix: '/__STATIC_SUFFIX__',
-        filterEndpoints: (ep) => ep.raw.operationId === 'listWidgets',
       }),
     );
 
     const content = await fs.readFile(
-      path.resolve(OUTPUT_DIR, 'endpoints', 'list-widgets.ts'),
+      path.resolve(OUTPUT_DIR, 'endpoints', 'op-0001.ts'),
       'utf-8',
     );
 
-    expect(content).toContain('path: `/widgets/__STATIC_SUFFIX__`');
+    expect(content).toContain('path: `/r/95/${frugalLegging446}/__STATIC_SUFFIX__`');
+    expect(content).toContain('@request **POST:/r/95/{frugal_legging_446}/__STATIC_SUFFIX__**');
   });
 
   it('requestPathSuffix: function runs at codegen and result is emitted in path', async () => {
@@ -98,17 +98,17 @@ describe('requestPathPrefix and requestPathSuffix', () => {
         ...baseConfig,
         requestPathSuffix: (ep): string =>
           ep.method.toLowerCase() === 'post' ? '/after-post' : '/after-get',
-        filterEndpoints: (ep) => ep.raw.operationId === 'createGadget',
+        // filterEndpoints: (ep) => ep.raw.operationId === 'createGadget',
       }),
     );
 
     const content = await fs.readFile(
-      path.resolve(OUTPUT_DIR, 'endpoints', 'create-gadget.ts'),
+      path.resolve(OUTPUT_DIR, 'endpoints', 'op-0001.ts'),
       'utf-8',
     );
 
-    expect(content).toContain('path: `/gadgets/after-post`');
+    expect(content).toContain('path: `/r/95/${frugalLegging446}/after-post`');
+    expect(content).toContain('@request **POST:/r/95/{frugal_legging_446}/after-post**');
     expect(content).not.toContain('after-get');
-    expect(content).toContain('* @request **POST:/gadgets**');
   });
 });
