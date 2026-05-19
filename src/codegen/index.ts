@@ -188,6 +188,11 @@ const generateApiSingle = async (
       ? ''
       : (params.dataContractTypeSuffix ?? DEFAULT_DATA_CONTRACT_TYPE_SUFFIX);
 
+  const inputLogLabel =
+    typeof params.input === 'string' ? params.input : '<inline OpenAPI spec>';
+
+  console.log('⏳ Preparing codegen...', 'input:', inputLogLabel);
+
   //#region swagger-typescript-api
   const swaggerTypescriptApiCodegenBaseParams = {
     httpClientType: 'fetch',
@@ -441,11 +446,7 @@ const generateApiSingle = async (
       filterTypes(modelType, swaggerSchema),
     );
 
-  console.log(
-    '📦 Generating api...',
-    'input:',
-    typeof params.input === 'string' ? params.input : '<inline OpenAPI spec>',
-  );
+  console.log('📦 Generating api...', 'input:', inputLogLabel);
 
   const allRoutes = Object.values(generated.configuration.routes)
     .flat()
