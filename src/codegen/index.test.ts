@@ -385,3 +385,64 @@ describe('cleanOutputDirectoriesOnDiskBeforeCodegen (via generateApi)', () => {
     expect(fsMocks.rmSync).not.toHaveBeenCalled();
   });
 });
+
+describe('generateApi input errors and batch resilience', () => {
+  const defaultSwaggerCodegenImpl = vi
+    .mocked(swaggerCodegen)
+    .getMockImplementation()!;
+
+  beforeEach(() => {
+    mocks.createDir.mockClear();
+    vi.mocked(swaggerCodegen).mockClear();
+    vi.mocked(swaggerCodegen).mockImplementation(defaultSwaggerCodegenImpl);
+  });
+
+  it('several codegen configs should process all even if any one was throwed exception', async () => {
+    const out1 = './batch-ok-1';
+    const outFail = './batch-fail';
+    const out3 = './batch-ok-3';
+    const absOut1 = path.resolve(process.cwd(), out1);
+    const absOut3 = path.resolve(process.cwd(), out3);
+
+    vi.mocked(swaggerCodegen)
+      .mockImplementationOnce(defaultSwaggerCodegenImpl)
+      .mockRejectedValueOnce(
+        new Error('simulated codegen failure for config 2'),
+      )
+      .mockImplementationOnce(defaultSwaggerCodegenImpl);
+
+    await expect(
+      generateApi([
+        {
+          ...minimalCodegenOptions,
+          input: minimalOpenApi,
+          output: out1,
+        },
+        {
+          ...minimalCodegenOptions,
+          input: minimalOpenApi,
+          output: outFail,
+        },
+        {
+          ...minimalCodegenOptions,
+          input: minimalOpenApi,
+          output: out3,
+        },
+      ]),
+    ).rejects.toMatchObject({
+      message: '⛔ failed to generate swagger schema',
+      cause: expect.objectContaining({
+        message: 'simulated codegen failure for config 2',
+      }),
+    });
+
+    expect(swaggerCodegen).toHaveBeenCalledTimes(3);
+    expect(mocks.createDir).toHaveBeenCalledWith(absOut1);
+    expect(mocks.createDir).toHaveBeenCalledWith(absOut3);
+    expect(
+      mocks.createDir.mock.calls.some(
+        ([dir]) => dir === path.resolve(process.cwd(), outFail),
+      ),
+    ).toBe(false);
+  });
+});

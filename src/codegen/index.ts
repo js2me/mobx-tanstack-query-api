@@ -32,6 +32,7 @@ import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-su
 import { generateExport } from './utils/generate-export.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { collectComponentContractNames } from './utils/swagger/collect-component-names.js';
+import { throwSwaggerCodegenError } from './utils/swagger/throw-swagger-codegen-error.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
 import { buildCentralZodContractsFile } from './utils/zod/build-endpoint-zod-contracts-code.js';
 import { getZodContractSuffix } from './utils/zod/contract-suffix.js';
@@ -105,9 +106,25 @@ export const generateApi = async (
 
   cleanOutputDirectoriesOnDiskBeforeCodegen(params);
 
+  const failures: Error[] = [];
+
   for await (const param of params) {
-    await generateApiSingle(param);
-    console.log('');
+    try {
+      await generateApiSingle(param);
+      console.log('');
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      failures.push(err);
+      console.error(err.message);
+      console.log('');
+    }
+  }
+
+  if (failures.length === 1) {
+    throw failures[0];
+  }
+  if (failures.length > 1) {
+    throw new AggregateError(failures, '⛔ One or more codegen configs failed');
   }
 };
 
@@ -312,92 +329,79 @@ const generateApiSingle = async (
     });
   }
 
-  let generated: Awaited<ReturnType<typeof generateApiFromSwagger>>;
-
   const input = inputToCodegenInput(params.input);
 
-  try {
-    generated = await generateApiFromSwagger({
-      ...(swaggerTypescriptApiCodegenBaseParams as any),
-      ...input,
-      hooks: {
-        ...params.otherCodegenParams?.hooks,
-        onInit: (configuration, codeGenProcessFromInit) => {
-          codegenProcess = codeGenProcessFromInit;
+  const generated = await generateApiFromSwagger({
+    ...(swaggerTypescriptApiCodegenBaseParams as any),
+    ...input,
+    hooks: {
+      ...params.otherCodegenParams?.hooks,
+      onInit: (configuration, codeGenProcessFromInit) => {
+        codegenProcess = codeGenProcessFromInit;
 
-          const resultSwaggerSchema = configuration.swaggerSchema as AnyObject;
+        const resultSwaggerSchema = configuration.swaggerSchema as AnyObject;
 
-          resultSwaggerSchema.components = resultSwaggerSchema.components || {};
-          resultSwaggerSchema.components.schemas =
-            resultSwaggerSchema.components.schemas || {};
+        resultSwaggerSchema.components = resultSwaggerSchema.components || {};
+        resultSwaggerSchema.components.schemas =
+          resultSwaggerSchema.components.schemas || {};
 
-          resultSwaggerSchema.paths = {
-            ...resultSwaggerSchema.paths,
-            ...mixinSwaggerSchema?.paths,
-          };
+        resultSwaggerSchema.paths = {
+          ...resultSwaggerSchema.paths,
+          ...mixinSwaggerSchema?.paths,
+        };
 
-          resultSwaggerSchema.components.schemas = {
-            ...resultSwaggerSchema.components.schemas,
-            ...mixinSwaggerSchema?.components?.schemas,
-          };
+        resultSwaggerSchema.components.schemas = {
+          ...resultSwaggerSchema.components.schemas,
+          ...mixinSwaggerSchema?.components?.schemas,
+        };
 
-          swaggerSchemaRefForHooks = resultSwaggerSchema as AnyObject;
+        swaggerSchemaRefForHooks = resultSwaggerSchema as AnyObject;
 
-          return swaggerTypescriptApiCodegenBaseParams?.hooks?.onInit?.(
-            configuration,
-            codeGenProcessFromInit,
-          );
-        },
-        onCreateRoute: (routeData) => {
-          const routeBaseInfo: RouteBaseInfo = {
-            operationId: routeData.raw.operationId,
-            path: routeData.request.path!,
-            method: routeData.request.method!,
-            contractName: null,
-            parsed: routeData,
-          };
-
-          if (routeData.request.path !== undefined) {
-            const prefix =
-              callFunction(
-                params.requestPathPrefix,
-                routeBaseInfo,
-                swaggerSchemaRefForHooks,
-              ) || '';
-            const suffix =
-              callFunction(
-                params.requestPathSuffix,
-                routeBaseInfo,
-                swaggerSchemaRefForHooks,
-              ) || '';
-
-            routeData.request.path = prefix + routeData.request.path + suffix;
-
-            if (typeof routeData.raw.route === 'string') {
-              routeData.raw.route = prefix + routeData.raw.route + suffix;
-            }
-          }
-
-          if (params.otherCodegenParams?.hooks?.onCreateRoute) {
-            return params.otherCodegenParams.hooks.onCreateRoute(routeData);
-          }
-
-          return routeData;
-        },
-        onPrepareConfig: prepareConfig,
-        onFormatRouteName: formatRouteName,
+        return swaggerTypescriptApiCodegenBaseParams?.hooks?.onInit?.(
+          configuration,
+          codeGenProcessFromInit,
+        );
       },
-    });
-  } catch (e) {
-    if (String(e).includes('error while fetching data from URL')) {
-      throw new Error(
-        `⛔ failed to load swagger schema based on input ${'spec' in input ? '<API Spec>' : input.input}`,
-        { cause: e },
-      );
-    } else {
-      throw new Error('⛔ failed to generate swagger schema', { cause: e });
-    }
-  }
+      onCreateRoute: (routeData) => {
+        const routeBaseInfo: RouteBaseInfo = {
+          operationId: routeData.raw.operationId,
+          path: routeData.request.path!,
+          method: routeData.request.method!,
+          contractName: null,
+          parsed: routeData,
+        };
+
+        if (routeData.request.path !== undefined) {
+          const prefix =
+            callFunction(
+              params.requestPathPrefix,
+              routeBaseInfo,
+              swaggerSchemaRefForHooks,
+            ) || '';
+          const suffix =
+            callFunction(
+              params.requestPathSuffix,
+              routeBaseInfo,
+              swaggerSchemaRefForHooks,
+            ) || '';
+
+          routeData.request.path = prefix + routeData.request.path + suffix;
+
+          if (typeof routeData.raw.route === 'string') {
+            routeData.raw.route = prefix + routeData.raw.route + suffix;
+          }
+        }
+
+        if (params.otherCodegenParams?.hooks?.onCreateRoute) {
+          return params.otherCodegenParams.hooks.onCreateRoute(routeData);
+        }
+
+        return routeData;
+      },
+      onPrepareConfig: prepareConfig,
+      onFormatRouteName: formatRouteName,
+    },
+  }).catch((e): never => throwSwaggerCodegenError(e, input));
 
   //#endregion
 
