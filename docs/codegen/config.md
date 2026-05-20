@@ -882,7 +882,7 @@ Example without groups:
 
 ### `requestMeta`   
 This option allows to add some meta information for endpoint request.   
-Can be helpful if you need to customize the base URL for http request.  
+Can be helpful if you need to customize the base URL for http request.
 
 The `tmplData` field may be either a **string** or a **plain object** (`Record<string, unknown>`-style):
 

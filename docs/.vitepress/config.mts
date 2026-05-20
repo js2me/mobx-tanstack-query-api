@@ -76,6 +76,10 @@ export default defineDocsVitepressConfig(configs, {
             text: 'HttpClient',
             link: '/http-client/index.html',
           },
+          {
+            text: 'Definements',
+            link: '/definements/index.html',
+          },
         ]
       },
       {

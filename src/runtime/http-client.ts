@@ -2,6 +2,7 @@ import { action, observable } from 'mobx';
 import { type BooleanOptional, type IStringifyOptions, stringify } from 'qs';
 import { applyObservable } from 'yummies/mobx';
 import type { AnyObject, Class, Defined, Maybe } from 'yummies/types';
+import type { PickDefinement } from './definements.js';
 import type { AnyEndpoint } from './endpoint.types.js';
 import {
   type AnyHttpResponse,
@@ -49,13 +50,17 @@ export interface FullRequestParams extends Omit<RequestInit, 'body'> {
   baseUrl?: string;
   /**
    * Arbitrary request-level metadata passed through runtime hooks.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/definements/)
    */
-  meta?: Record<string, any>;
+  meta?: PickDefinement<'requestParamsMeta', AnyObject | undefined>;
   /**
    * Values for OpenAPI server URL template variables.
    * Example: baseUrl "https://{env}.api.com/{version}" + { env: "prod", version: "v1" }.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/definements/)
    */
-  serverVars?: AnyObject;
+  serverVars?: PickDefinement<'requestParamsServerVars', AnyObject | undefined>;
 }
 
 export const ContentType = {
