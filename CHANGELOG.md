@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.54.1
+
+### Patch Changes
+
+- [`47e516c`](https://github.com/js2me/mobx-tanstack-query-api/commit/47e516c1a3df91fc852c0cbef9eb00f609f163df) Thanks [@js2me](https://github.com/js2me)! - fixed codegen path prefix suffix (jsdoc comment)
+
+- [`4cba0e7`](https://github.com/js2me/mobx-tanstack-query-api/commit/4cba0e73e2a5c0892742b3840b80ae8b677d5fcd) Thanks [@js2me](https://github.com/js2me)! - update swagger-typescript-api to 13.9.3
+
+- [`a80d875`](https://github.com/js2me/mobx-tanstack-query-api/commit/a80d8754c6155e1886043b7499d706091c28f8a8) Thanks [@js2me](https://github.com/js2me)! - more user friendly catch exception during codegne
+
 ## 0.54.0
 
 ### Minor Changes
