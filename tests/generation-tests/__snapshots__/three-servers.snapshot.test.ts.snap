@@ -6,7 +6,6 @@ exports[`generateApi snapshot three OpenAPI servers > generates endpoint matchin
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-
 export type GetMultiServerWeatherErrorDC = any;
 
 export interface GetMultiServerWeatherDataDC {

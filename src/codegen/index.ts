@@ -461,7 +461,15 @@ const generateApiSingle = async (
 
   const baseTmplParams: BaseTmplParams = {
     ...generated,
-    codegenParams: params,
+    codegenParams: {
+      ...params,
+      libImports: {
+        ...params.libImports,
+        'mobx-tanstack-query-api':
+          params.libImports?.['mobx-tanstack-query-api'] ??
+          'mobx-tanstack-query-api',
+      },
+    },
     configuration: generated.configuration as GenerateApiConfiguration,
     formatTSContent: generated.formatTSContent,
     codegenProcess,

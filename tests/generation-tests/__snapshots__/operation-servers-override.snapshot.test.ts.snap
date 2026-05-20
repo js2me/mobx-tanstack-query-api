@@ -6,7 +6,6 @@ exports[`generateApi operation-level servers override > uses last url from opera
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-
 export type GetOperationServersOverrideErrorDC = any;
 
 export interface GetOperationServersOverrideDataDC {

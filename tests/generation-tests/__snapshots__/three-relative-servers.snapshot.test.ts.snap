@@ -6,7 +6,6 @@ exports[`generateApi snapshot three relative OpenAPI servers > generates endpoin
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-
 export type GetRelativeServersPingErrorDC = any;
 
 export interface GetRelativeServersPingDataDC {

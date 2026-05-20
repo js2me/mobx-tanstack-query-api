@@ -5,9 +5,7 @@ exports[`generateApi fluffy-duplicate-data-types > generates GET getFluffiesToMe
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { ErrorPayloadDC, GetFluffiesToMergeResponseDC } from "../data-contracts";
 
 export type GetFluffiesToMergeResultDC = GetFluffiesToMergeResponseDC;
@@ -59,9 +57,7 @@ exports[`generateApi fluffy-duplicate-data-types > generates GET getFluffiesToMe
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { ErrorPayloadDC, MergeFluffyBodyDC, MergeFluffyResponseDC } from "../data-contracts";
 
 export type MergeFluffyResultDC = MergeFluffyResponseDC;

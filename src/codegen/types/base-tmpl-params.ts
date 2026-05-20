@@ -8,10 +8,16 @@ import type { AllImportFileParams } from './all-import-file-params.js';
 import type { CodegenDataUtils } from './codegen-data-utils.js';
 import type { GenerateQueryApiParams } from './generate-query-api-params.js';
 
+type DefinedCodegenParams = Omit<GenerateQueryApiParams, 'libImports'> & {
+  libImports: Required<
+    Exclude<GenerateQueryApiParams['libImports'], undefined>
+  >;
+};
+
 export interface BaseTmplParams {
   formatTSContent: (content: string) => Promise<string>;
   configuration: GenerateApiConfiguration;
-  codegenParams: GenerateQueryApiParams;
+  codegenParams: DefinedCodegenParams;
   codegenProcess: Parameters<
     Defined<Defined<GenerateApiParams['hooks']>['onInit']>
   >['1'];

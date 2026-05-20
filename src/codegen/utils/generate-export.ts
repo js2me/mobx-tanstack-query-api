@@ -15,10 +15,7 @@ export function generateExport(
   from: string,
   codegenParams: GenerateQueryApiParams,
 ): string {
-  const resolved = resolveGeneratedModuleSpecifier(
-    from,
-    codegenParams.moduleResolution,
-  );
+  const resolved = resolveGeneratedModuleSpecifier(from, codegenParams);
   if ('asteriksAt' in variants) {
     return `export * as ${variants.asteriksAt} from '${resolved}';`;
   }

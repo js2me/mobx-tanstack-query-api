@@ -2843,9 +2843,7 @@ export interface SchZanyDiversity70DC {
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "./meta-info";
-
 import { SchCrowdedSkyline34DC, SchDiscretePetticoat89DC, SchSubduedHamburger5DC } from "./data-contracts";
 
 export type Op0035DataDC = any;

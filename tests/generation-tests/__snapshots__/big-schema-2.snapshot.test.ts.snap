@@ -3657,9 +3657,7 @@ import {
   RequestParams,
 } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchAssuredMobility63DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0001DataDC = Record<string, any>;
@@ -3725,9 +3723,7 @@ export const op0001 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchUnwillingFort36DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0002DataDC = Record<string, any>;
@@ -3782,9 +3778,7 @@ export const op0002 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchJauntyGerbil80DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0003DataDC = Record<string, any>;
@@ -3838,9 +3832,7 @@ export const op0003 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchNoteworthyBrook16DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0004DataDC = SchNoteworthyBrook16DC;
@@ -3896,9 +3888,7 @@ export const op0004 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSuburbanFinger44DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0005DataDC = SchSuburbanFinger44DC;
@@ -3953,9 +3943,7 @@ export const op0005 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchGiganticSticker78DC, SchRectangularKielbasa80DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0006DataDC = SchRectangularKielbasa80DC;
@@ -4010,9 +3998,7 @@ export const op0006 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchCrazyJet13DC, SchPitifulHabit20DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0007DataDC = SchCrazyJet13DC;
@@ -4067,9 +4053,7 @@ export const op0007 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchInexperiencedChops56DC, SchVividAddress97DC, SchWeeRoundabout45DC } from "../data-contracts";
 
 export type Op0008DataDC = SchWeeRoundabout45DC;
@@ -4124,9 +4108,7 @@ export const op0008 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchAdolescentCinder16DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0009DataDC = Record<string, any>;
@@ -4181,9 +4163,7 @@ export const op0009 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFavoriteGrass73DC, SchSecondhandCopout86DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0010DataDC = SchFavoriteGrass73DC;
@@ -4238,9 +4218,7 @@ export const op0010 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchAdolescentCinder16DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0011DataDC = Record<string, any>;
@@ -4295,9 +4273,7 @@ export const op0011 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchPricklyPantyhose63DC, SchUniformPiglet38DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0012DataDC = SchPricklyPantyhose63DC;
@@ -4352,9 +4328,7 @@ export const op0012 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchOrangeIntent57DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0013DataDC = Record<string, any>;
@@ -4408,9 +4382,7 @@ export const op0013 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchNoxiousNucleotidase5DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0014DataDC = Record<string, any>;
@@ -4464,9 +4436,7 @@ export const op0014 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchAnnualGloom46DC, SchIllPantyhose7DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0015DataDC = SchAnnualGloom46DC;
@@ -4521,9 +4491,7 @@ export const op0015 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchHomelyMeadow34DC, SchPoshArmoire32DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0016DataDC = SchPoshArmoire32DC;
@@ -4580,9 +4548,7 @@ export const op0016 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchElderlyYin75DC, SchFlimsyVision27DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0017DataDC = SchFlimsyVision27DC;
@@ -4639,9 +4605,7 @@ export const op0017 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchRoughLox85DC, SchVividAddress97DC, SchWorstSeal64DC } from "../data-contracts";
 
 export type Op0018DataDC = SchWorstSeal64DC;
@@ -4696,9 +4660,7 @@ export const op0018 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchHappygoluckyGrandson17DC, SchRobustBackbone86DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0019DataDC = SchRobustBackbone86DC;
@@ -4752,9 +4714,7 @@ export const op0019 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchDampLyre17DC, SchTrustworthyBrace45DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0020DataDC = SchTrustworthyBrace45DC;
@@ -4809,9 +4769,7 @@ export const op0020 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC, SchWelldocumentedRepeat69DC } from "../data-contracts";
 
 export type Op0021DataDC = Record<string, any>;
@@ -4866,9 +4824,7 @@ export const op0021 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchTroubledEditor61DC, SchTrustworthyBrace45DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0022DataDC = SchTrustworthyBrace45DC;
@@ -4922,9 +4878,7 @@ export const op0022 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 
 export type Op0023DataDC = Record<string, any>;
@@ -4987,9 +4941,7 @@ export const op0023 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 
 export type Op0024DataDC = Record<string, any>;
@@ -5040,9 +4992,7 @@ export const op0024 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 
 export type Op0025DataDC = Record<string, any>;
@@ -5098,9 +5048,7 @@ export const op0025 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 
 export type Op0026DataDC = Record<string, any>;
@@ -5151,9 +5099,7 @@ export const op0026 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVariablePillow29DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0027DataDC = SchVariablePillow29DC;
@@ -5204,9 +5150,7 @@ export const op0027 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 
 export type Op0028DataDC = Record<string, any>;
@@ -5261,9 +5205,7 @@ export const op0028 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchHurtfulSchedule86DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0029DataDC = SchHurtfulSchedule86DC;
@@ -5321,9 +5263,7 @@ export const op0029 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 
 export type Op0030DataDC = Record<string, any>;
@@ -5378,9 +5318,7 @@ export const op0030 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchDarlingValentine94DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0031DataDC = Record<string, any>;
@@ -5436,9 +5374,7 @@ export const op0031 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFixedBathhouse98DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0032DataDC = SchFixedBathhouse98DC;
@@ -5489,9 +5425,7 @@ export const op0032 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSerpentineCase37DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0033DataDC = SchSerpentineCase37DC;
@@ -5547,9 +5481,7 @@ export const op0033 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchUnselfishChiffonier82DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0034DataDC = SchUnselfishChiffonier82DC;
@@ -5634,9 +5566,7 @@ export const op0034 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 export type Op0035DataDC = Blob;
 
@@ -5691,9 +5621,7 @@ export const op0035 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFuzzyHorst5DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0036DataDC = SchFuzzyHorst5DC;
@@ -5743,9 +5671,7 @@ export const op0036 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSandyPopularity99DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0037DataDC = SchSandyPopularity99DC;
@@ -5799,9 +5725,7 @@ export const op0037 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchStrangePeony23DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0038DataDC = SchStrangePeony23DC;
@@ -5856,9 +5780,7 @@ export const op0038 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFatalPresume55DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0039DataDC = SchFatalPresume55DC;
@@ -5908,9 +5830,7 @@ export const op0039 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchMildLay65DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0040DataDC = SchMildLay65DC;
@@ -5990,9 +5910,7 @@ export const op0040 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFailingHumidity14DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0041DataDC = SchFailingHumidity14DC;
@@ -6044,9 +5962,7 @@ export const op0041 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchCourageousOptimal91DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0042DataDC = SchCourageousOptimal91DC;
@@ -6101,9 +6017,7 @@ export const op0042 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFaintPublicity93DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0043DataDC = SchFaintPublicity93DC;
@@ -6158,9 +6072,7 @@ export const op0043 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchRowdyBend48DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0044DataDC = SchRowdyBend48DC;
@@ -6216,9 +6128,7 @@ export const op0044 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchPleasingNoon78DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0045DataDC = SchPleasingNoon78DC;
@@ -6272,9 +6182,7 @@ export const op0045 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 
 export type Op0046DataDC = Record<string, any>;
@@ -6337,9 +6245,7 @@ export const op0046 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchRawMaestro23DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0047DataDC = SchRawMaestro23DC;
@@ -6407,9 +6313,7 @@ export const op0047 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchTemptingCleaner59DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0048DataDC = SchTemptingCleaner59DC;
@@ -6461,9 +6365,7 @@ export const op0048 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchCriticalEyebrow36DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0049DataDC = SchCriticalEyebrow36DC;
@@ -6514,9 +6416,7 @@ export const op0049 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchPureDuster72DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0050DataDC = SchPureDuster72DC;
@@ -6574,9 +6474,7 @@ export const op0050 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchQuixoticTechnician66DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0051DataDC = SchQuixoticTechnician66DC;
@@ -6626,9 +6524,7 @@ export const op0051 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC, SchWealthyHorst98DC } from "../data-contracts";
 
 export type Op0052DataDC = SchWealthyHorst98DC;
@@ -6684,9 +6580,7 @@ export const op0052 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchScientificBend24DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0053DataDC = SchScientificBend24DC;
@@ -6738,9 +6632,7 @@ export const op0053 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchAfraidCheese81DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0054DataDC = SchAfraidCheese81DC;
@@ -6795,9 +6687,7 @@ export const op0054 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchTintedDecision33DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0055DataDC = SchTintedDecision33DC;
@@ -6849,9 +6739,7 @@ export const op0055 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchImpureApparatus44DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0056DataDC = SchImpureApparatus44DC;
@@ -6909,9 +6797,7 @@ export const op0056 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFrequentFort96DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0057DataDC = SchFrequentFort96DC;
@@ -6978,9 +6864,7 @@ export const op0057 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchNegativeCasement50DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0058DataDC = SchNegativeCasement50DC;
@@ -7031,9 +6915,7 @@ export const op0058 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchHollowTraditionalism22DC, SchTalkativeJury79DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0059DataDC = SchHollowTraditionalism22DC;
@@ -7087,9 +6969,7 @@ export const op0059 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchUnfitChiffonier40DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0060DataDC = SchUnfitChiffonier40DC;
@@ -7149,9 +7029,7 @@ export const op0060 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchPricklyPantyhose63DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0061DataDC = SchPricklyPantyhose63DC;
@@ -7202,9 +7080,7 @@ export const op0061 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchShorttermSanity38DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0062DataDC = SchShorttermSanity38DC;
@@ -7255,9 +7131,7 @@ export const op0062 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFormalRecovery45DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0063DataDC = SchFormalRecovery45DC;
@@ -7308,9 +7182,7 @@ export const op0063 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchEducatedGrass71DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0064DataDC = SchEducatedGrass71DC;
@@ -7363,9 +7235,7 @@ export const op0064 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchUltimateColiseum48DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0065DataDC = SchUltimateColiseum48DC;
@@ -7416,9 +7286,7 @@ export const op0065 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchGrubbyDoorpost21DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0066DataDC = SchGrubbyDoorpost21DC;
@@ -7468,9 +7336,7 @@ export const op0066 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchPointlessCork53DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0067DataDC = SchPointlessCork53DC;
@@ -7525,9 +7391,7 @@ export const op0067 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC, SchWrongArchaeology53DC } from "../data-contracts";
 
 export type Op0068DataDC = SchWrongArchaeology53DC;
@@ -7577,9 +7441,7 @@ export const op0068 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchBlindMobility35DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0069DataDC = SchBlindMobility35DC;
@@ -7629,9 +7491,7 @@ export const op0069 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFrequentSummer12DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0070DataDC = SchFrequentSummer12DC;
@@ -7681,9 +7541,7 @@ export const op0070 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchQuestionableSubsidy67DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0071DataDC = SchQuestionableSubsidy67DC;
@@ -7744,9 +7602,7 @@ export const op0071 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchQuestionableSubsidy67DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0072DataDC = SchQuestionableSubsidy67DC;
@@ -7809,9 +7665,7 @@ export const op0072 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchQuestionableSubsidy67DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0073DataDC = SchQuestionableSubsidy67DC;
@@ -7878,9 +7732,7 @@ export const op0073 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchCriminalNetsuke98DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0074DataDC = SchCriminalNetsuke98DC;
@@ -7936,9 +7788,7 @@ export const op0074 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchHuskyLicense5DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0075DataDC = SchHuskyLicense5DC;
@@ -7990,9 +7840,7 @@ export const op0075 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSoulfulOmelet29DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0076DataDC = SchSoulfulOmelet29DC;
@@ -8052,9 +7900,7 @@ export const op0076 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchIcyTypewriter32DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0077DataDC = SchIcyTypewriter32DC;
@@ -8106,9 +7952,7 @@ export const op0077 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchPreciousLongboat55DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0078DataDC = SchPreciousLongboat55DC;
@@ -8160,9 +8004,7 @@ export const op0078 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFrightenedTechnician77DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0079DataDC = SchFrightenedTechnician77DC;
@@ -8213,9 +8055,7 @@ export const op0079 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC, SchVoluminousPronoun49DC } from "../data-contracts";
 
 export type Op0080DataDC = SchVoluminousPronoun49DC;
@@ -8266,9 +8106,7 @@ export const op0080 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSickMakeover67DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0081DataDC = SchSickMakeover67DC;
@@ -8323,9 +8161,7 @@ export const op0081 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFrequentThunderbolt3DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0082DataDC = SchFrequentThunderbolt3DC;
@@ -8382,9 +8218,7 @@ export const op0082 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchRosyImpostor42DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0083DataDC = SchRosyImpostor42DC;
@@ -8439,9 +8273,7 @@ export const op0083 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchGrippingLox69DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0084DataDC = SchGrippingLox69DC;
@@ -8500,9 +8332,7 @@ export const op0084 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchMessySweatshop41DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0085DataDC = SchMessySweatshop41DC;
@@ -8553,9 +8383,7 @@ export const op0085 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchUglyBug62DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0086DataDC = SchUglyBug62DC;
@@ -8610,9 +8438,7 @@ export const op0086 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSmugHunt88DC, SchVividAddress97DC, SchWastefulJury70DC } from "../data-contracts";
 
 export type Op0087DataDC = SchWastefulJury70DC;
@@ -8666,9 +8492,7 @@ export const op0087 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFinishedOrchid8DC, SchSpecificUnibody7DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0088DataDC = SchSpecificUnibody7DC;
@@ -8725,9 +8549,7 @@ export const op0088 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchCrowdedContrail40DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0089DataDC = SchCrowdedContrail40DC;
@@ -8787,9 +8609,7 @@ export const op0089 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC, SchWhoppingProgramme68DC } from "../data-contracts";
 
 export type Op0090DataDC = SchWhoppingProgramme68DC;
@@ -8840,9 +8660,7 @@ export const op0090 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchArtisticOpera24DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0091DataDC = SchArtisticOpera24DC;
@@ -8894,9 +8712,7 @@ export const op0091 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchPaltryInsolence55DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0092DataDC = SchPaltryInsolence55DC;
@@ -8950,9 +8766,7 @@ export const op0092 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchBoilingTribe88DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0093DataDC = SchBoilingTribe88DC;
@@ -9008,9 +8822,7 @@ export const op0093 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 export type Op0094DataDC = Blob;
 
@@ -9062,9 +8874,7 @@ export const op0094 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchTotalPear54DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0095DataDC = SchTotalPear54DC;
@@ -9115,9 +8925,7 @@ export const op0095 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchUnsungProvision88DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0096DataDC = SchUnsungProvision88DC;
@@ -9168,9 +8976,7 @@ export const op0096 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSentimentalMedian30DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0097DataDC = SchSentimentalMedian30DC;
@@ -9221,9 +9027,7 @@ export const op0097 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchLimpingBracelet33DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0098DataDC = SchLimpingBracelet33DC;
@@ -9278,9 +9082,7 @@ export const op0098 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchCultivatedRiser24DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0099DataDC = SchCultivatedRiser24DC;
@@ -9344,9 +9146,7 @@ export const op0099 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSilverIntellect47DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0100DataDC = SchSilverIntellect47DC;
@@ -9409,9 +9209,7 @@ export const op0100 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFarflungTenant28DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0101DataDC = SchFarflungTenant28DC;
@@ -9473,9 +9271,7 @@ export const op0101 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVengefulMonocle3DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0102DataDC = SchVengefulMonocle3DC;
@@ -9536,9 +9332,7 @@ export const op0102 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchUnsightlyYak92DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0103DataDC = SchUnsightlyYak92DC;
@@ -9592,9 +9386,7 @@ export const op0103 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchCheerfulHepatitis65DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0104DataDC = SchCheerfulHepatitis65DC;
@@ -9646,9 +9438,7 @@ export const op0104 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchClumsyScaffold8DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0105DataDC = SchClumsyScaffold8DC;
@@ -9704,9 +9494,7 @@ export const op0105 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchEnchantedExpansion99DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0106DataDC = SchEnchantedExpansion99DC;
@@ -9761,9 +9549,7 @@ export const op0106 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchParallelSynergy5DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0107DataDC = SchParallelSynergy5DC;
@@ -9818,9 +9604,7 @@ export const op0107 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchNecessaryCharacter35DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0108DataDC = SchNecessaryCharacter35DC;
@@ -9871,9 +9655,7 @@ export const op0108 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFaroffGift9DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0109DataDC = SchFaroffGift9DC;
@@ -9924,9 +9706,7 @@ export const op0109 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchRobustBackbone86DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0110DataDC = SchRobustBackbone86DC;
@@ -9977,9 +9757,7 @@ export const op0110 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchThinMakeover20DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0111DataDC = SchThinMakeover20DC;
@@ -10035,9 +9813,7 @@ export const op0111 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchExpertCopout4DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0112DataDC = SchExpertCopout4DC;
@@ -10092,9 +9868,7 @@ export const op0112 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchTrustworthyBrace45DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0113DataDC = SchTrustworthyBrace45DC;
@@ -10149,9 +9923,7 @@ export const op0113 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchBreakableWhack70DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0114DataDC = SchBreakableWhack70DC;
@@ -10209,9 +9981,7 @@ export const op0114 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchInformalFit74DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0115DataDC = SchInformalFit74DC;
@@ -10267,9 +10037,7 @@ export const op0115 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC, SchWorthwhileExterior10DC } from "../data-contracts";
 
 export type Op0116DataDC = SchWorthwhileExterior10DC;
@@ -10325,9 +10093,7 @@ export const op0116 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchArtisticRepeat6DC, SchSelfishJellyfish51DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0117DataDC = SchArtisticRepeat6DC;
@@ -10383,9 +10149,7 @@ export const op0117 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchGullibleSunbeam5DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0118DataDC = SchGullibleSunbeam5DC;
@@ -10441,9 +10205,7 @@ export const op0118 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchStormyBaseboard63DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0119DataDC = SchStormyBaseboard63DC;
@@ -10500,9 +10262,7 @@ export const op0119 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchNeatDescendant38DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0120DataDC = SchNeatDescendant38DC;
@@ -10560,9 +10320,7 @@ export const op0120 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchHastyBaritone70DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0121DataDC = SchHastyBaritone70DC;
@@ -10613,9 +10371,7 @@ export const op0121 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchAppropriateExhaust89DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0122DataDC = SchAppropriateExhaust89DC;
@@ -10677,9 +10433,7 @@ export const op0122 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchCrookedCuckoo25DC, SchStaleGripper71DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0123DataDC = SchStaleGripper71DC;
@@ -10733,9 +10487,7 @@ export const op0123 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchMediocrePatroller31DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0124DataDC = SchMediocrePatroller31DC;
@@ -10792,9 +10544,7 @@ export const op0124 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFavorableDish35DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0125DataDC = SchFavorableDish35DC;
@@ -10857,9 +10607,7 @@ export const op0125 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchToughJump64DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0126DataDC = SchToughJump64DC;
@@ -10916,9 +10664,7 @@ export const op0126 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC, SchWhoppingProgramme68DC } from "../data-contracts";
 
 export type Op0127DataDC = SchWhoppingProgramme68DC;
@@ -10973,9 +10719,7 @@ export const op0127 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchBlushingKit67DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0128DataDC = SchBlushingKit67DC;
@@ -11029,9 +10773,7 @@ export const op0128 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchHappyDeduction88DC, SchVividAddress97DC, SchWiltedWheel88DC } from "../data-contracts";
 
 export type Op0129DataDC = SchWiltedWheel88DC;
@@ -11085,9 +10827,7 @@ export const op0129 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchUnsteadySediment56DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0130DataDC = SchUnsteadySediment56DC;
@@ -11137,9 +10877,7 @@ export const op0130 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchStableChasuble92DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0131DataDC = SchStableChasuble92DC;
@@ -11193,9 +10931,7 @@ export const op0131 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFocusedRibbon79DC, SchVividAddress97DC, SchZanyAlmighty76DC } from "../data-contracts";
 
 export type Op0132DataDC = SchZanyAlmighty76DC;
@@ -11250,9 +10986,7 @@ export const op0132 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchProperAccelerator20DC, SchRapidCellar39DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0133DataDC = SchProperAccelerator20DC;
@@ -11308,9 +11042,7 @@ export const op0133 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchLastingCharlatan87DC, SchTrustingFog73DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0134DataDC = SchTrustingFog73DC;
@@ -11365,9 +11097,7 @@ export const op0134 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchOilyDredger88DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0135DataDC = SchOilyDredger88DC;
@@ -11417,9 +11147,7 @@ export const op0135 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSereneDetective22DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0136DataDC = SchSereneDetective22DC;
@@ -11468,9 +11196,7 @@ export const op0136 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchAnimatedDime28DC, SchVividAddress97DC, SchWeeklyDream73DC } from "../data-contracts";
 
 export type Op0137DataDC = SchWeeklyDream73DC;
@@ -11524,9 +11250,7 @@ export const op0137 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC } from "../data-contracts";
 
 export type Op0138DataDC = Record<string, any>;
@@ -11577,9 +11301,7 @@ export const op0138 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchGiftedProgramme86DC, SchInternationalOverload71DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0139DataDC = SchGiftedProgramme86DC;
@@ -11634,9 +11356,7 @@ export const op0139 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchOptimisticShoulder31DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0140DataDC = Record<string, any>;
@@ -11691,9 +11411,7 @@ export const op0140 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchOfficialSediment31DC, SchSubmissiveCalculus23DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0141DataDC = SchOfficialSediment31DC;
@@ -11751,9 +11469,7 @@ export const op0141 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchBrownPliers89DC, SchSubduedTrolley75DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0142DataDC = SchBrownPliers89DC;
@@ -11808,9 +11524,7 @@ export const op0142 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchAdolescentTeriyaki92DC, SchIdolizedObject4DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0143DataDC = SchAdolescentTeriyaki92DC;
@@ -11865,9 +11579,7 @@ export const op0143 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchSimpleFestival69DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0144DataDC = Record<string, any>;
@@ -11925,9 +11637,7 @@ export const op0144 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchGummyThread5DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0145DataDC = Record<string, any>;
@@ -11985,9 +11695,7 @@ export const op0145 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchTautAccelerator30DC, SchTerribleDiver42DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0146DataDC = SchTautAccelerator30DC;
@@ -12042,9 +11750,7 @@ export const op0146 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchMagnificentRequest84DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0147DataDC = SchMagnificentRequest84DC;
@@ -12099,9 +11805,7 @@ export const op0147 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchAllBlowgun29DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0148DataDC = SchAllBlowgun29DC;
@@ -12156,9 +11860,7 @@ export const op0148 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchBlueBell47DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0149DataDC = SchBlueBell47DC;
@@ -12216,9 +11918,7 @@ export const op0149 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchBlindLoyalty54DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0150DataDC = SchBlindLoyalty54DC;
@@ -12277,9 +11977,7 @@ export const op0150 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchUnfinishedResponsibility12DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0151DataDC = SchUnfinishedResponsibility12DC;
@@ -12333,9 +12031,7 @@ export const op0151 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC, SchWeeTusk11DC, SchWellwornFort90DC } from "../data-contracts";
 
 export type Op0152DataDC = SchWellwornFort90DC;
@@ -12393,9 +12089,7 @@ export const op0152 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFrontTesting50DC, SchGroundedConfiguration37DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0153DataDC = SchFrontTesting50DC;
@@ -12451,9 +12145,7 @@ export const op0153 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFarflungLegging55DC, SchShinyPorter56DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0154DataDC = SchFarflungLegging55DC;
@@ -12511,9 +12203,7 @@ export const op0154 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchEnragedCope58DC, SchVividAddress97DC, SchWastefulFundraising86DC } from "../data-contracts";
 
 export type Op0155DataDC = SchEnragedCope58DC;
@@ -12569,9 +12259,7 @@ export const op0155 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchGloomyChap70DC, SchVividAddress97DC } from "../data-contracts";
 
 export interface Op0156DataDC {
@@ -12653,9 +12341,7 @@ export const op0156 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchGloomyTaxicab97DC, SchRepentantWilderness94DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0157DataDC = SchRepentantWilderness94DC;
@@ -12713,9 +12399,7 @@ export const op0157 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchCornyVanadyl21DC, SchSecondaryGripper53DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0158DataDC = SchCornyVanadyl21DC;
@@ -12773,9 +12457,7 @@ export const op0158 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchPeacefulNephew17DC, SchScaryBrochure99DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0159DataDC = SchScaryBrochure99DC;
@@ -12832,9 +12514,7 @@ export const op0159 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchDefenselessStarboard77DC, SchPerfumedEmbarrassment75DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0160DataDC = SchDefenselessStarboard77DC;
@@ -12889,9 +12569,7 @@ export const op0160 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchRedSchedule93DC, SchVelvetyOnset19DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0161DataDC = SchVelvetyOnset19DC;
@@ -12946,9 +12624,7 @@ export const op0161 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchVividAddress97DC, SchYouthfulCelsius60DC } from "../data-contracts";
 
 export type Op0162DataDC = Record<string, any>;
@@ -13004,9 +12680,7 @@ export const op0162 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchFavoriteGrass73DC, SchPrimeKit67DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0163DataDC = SchFavoriteGrass73DC;
@@ -13062,9 +12736,7 @@ export const op0163 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchMeatyRoundabout49DC, SchOldChallenge82DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0164DataDC = SchMeatyRoundabout49DC;
@@ -13120,9 +12792,7 @@ export const op0164 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchArtisticOpera24DC, SchIndelibleNougat36DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0165DataDC = SchArtisticOpera24DC;
@@ -13178,9 +12848,7 @@ export const op0165 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchBigDerby91DC, SchSphericalUnibody78DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0166DataDC = SchBigDerby91DC;
@@ -13238,9 +12906,7 @@ export const op0166 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchElegantMetabolite64DC, SchVividAddress97DC, SchWorstSeal64DC } from "../data-contracts";
 
 export type Op0167DataDC = SchWorstSeal64DC;
@@ -13295,9 +12961,7 @@ export const op0167 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchThatSoliloquy61DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0168DataDC = Record<string, any>;
@@ -13351,9 +13015,7 @@ export const op0168 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchChubbyBump88DC, SchRobustBackbone86DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0169DataDC = SchRobustBackbone86DC;
@@ -13409,9 +13071,7 @@ export const op0169 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchDifferentImpact37DC, SchUrbanWidow59DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0170DataDC = SchDifferentImpact37DC;
@@ -13466,9 +13126,7 @@ export const op0170 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchRustyChiffonier72DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0171DataDC = Record<string, any>;
@@ -13524,9 +13182,7 @@ export const op0171 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchTintedFit80DC, SchVividAddress97DC, SchZealousParade81DC } from "../data-contracts";
 
 export type Op0172DataDC = SchTintedFit80DC;
@@ -13593,9 +13249,7 @@ export const op0172 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchBogusLender87DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0173DataDC = Record<string, any>;
@@ -13663,9 +13317,7 @@ export const op0173 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchElectricMinion5DC, SchJuniorLanguage8DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0174DataDC = SchElectricMinion5DC;
@@ -13719,9 +13371,7 @@ export const op0174 = new Endpoint<
 /* tslint:disable */
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
-
 import { Tag } from "../meta-info";
-
 import { SchLeadingAnticodon27DC, SchTrueMassage22DC, SchVividAddress97DC } from "../data-contracts";
 
 export type Op0175DataDC = SchLeadingAnticodon27DC;

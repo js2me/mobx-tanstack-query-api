@@ -6,7 +6,6 @@ exports[`generateApi path-item-level servers > uses last url from path item serv
 import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 
-
 export type GetPathItemServersErrorDC = any;
 
 export interface GetPathItemServersDataDC {

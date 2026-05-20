@@ -1,22 +1,24 @@
 import type { MaybeFalsy } from 'yummies/types';
 
-import type {
-  CodegenModuleResolution,
-  GenerateQueryApiParams,
-} from '../types/generate-query-api-params.js';
+import type { GenerateQueryApiParams } from '../types/generate-query-api-params.js';
 
 /** Relative module specifier for generated TS (optional `.js` for `node16` / `nodenext`). */
 export function resolveGeneratedModuleSpecifier(
   from: string,
-  moduleResolution: CodegenModuleResolution | undefined,
+  params: Pick<GenerateQueryApiParams, 'moduleResolution'>,
 ): string {
   if (!from.startsWith('.')) {
     return from;
   }
   const root = from.endsWith('.js') ? from.slice(0, -3) : from;
-  if (moduleResolution === 'node16' || moduleResolution === 'nodenext') {
+
+  if (
+    params.moduleResolution === 'node16' ||
+    params.moduleResolution === 'nodenext'
+  ) {
     return `${root}.js`;
   }
+
   return root;
 }
 
@@ -31,9 +33,6 @@ export function generateImport(
   codegenParams: GenerateQueryApiParams,
 ): string {
   const bindings = what.filter((x): x is string => Boolean(x)).join(', ');
-  const resolved = resolveGeneratedModuleSpecifier(
-    from,
-    codegenParams.moduleResolution,
-  );
+  const resolved = resolveGeneratedModuleSpecifier(from, codegenParams);
   return `import { ${bindings} } from "${resolved}";`;
 }

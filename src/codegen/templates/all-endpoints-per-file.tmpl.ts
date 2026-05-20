@@ -1,12 +1,20 @@
 import type { ParsedRoute } from 'swagger-typescript-api';
 import type { AnyObject, Maybe } from 'yummies/types';
 import type { BaseTmplParams, MetaInfo } from '../types/index.js';
-import { generateImport } from '../utils/generate-import.js';
+import {
+  generateImport,
+  resolveGeneratedModuleSpecifier,
+} from '../utils/generate-import.js';
 import { callEndpointMeta } from '../utils/resolve-codegen-meta.js';
 import { collectComponentContractNames } from '../utils/swagger/collect-component-names.js';
 import { LINTERS_IGNORE } from './constants.js';
 import { dataContractTmpl } from './data-contract.tmpl.js';
 import { endpointJSDocTmpl } from './endpoint-jsdoc.tmpl.js';
+import {
+  DATA_CONTRACT_IMPORT_TOKEN,
+  type ImportTmplEntry,
+  importsTmpl,
+} from './imports.tmpl.js';
 import { newEndpointTmpl } from './new-endpoint.tmpl/index.js';
 
 export interface AllEndpointPerFileTmplParams extends BaseTmplParams {
@@ -73,7 +81,7 @@ export const allEndpointPerFileTmpl = async (
     });
   });
 
-  const extraImportLines: string[] = [];
+  const endpointMetaTypeImports: ImportTmplEntry[] = [];
 
   const hasAnyZodContracts = newEndpointTemplates.some(
     (t) => t.contractsCode != null,
@@ -91,16 +99,6 @@ export const allEndpointPerFileTmpl = async (
       }
     }
   });
-  const zodImportLine = hasAnyZodContracts ? 'import * as z from "zod";' : '';
-  const zodSchemasImportLine =
-    allZodContractImportNames.size && relativePathZodSchemas
-      ? generateImport(
-          [...allZodContractImportNames].sort(),
-          relativePathZodSchemas,
-          codegenParams,
-        )
-      : '';
-
   const endpointTemplates = await Promise.all(
     newEndpointTemplates.map(
       async ({
@@ -121,13 +119,10 @@ export const allEndpointPerFileTmpl = async (
         );
 
         if (requestInfoMeta?.typeNameImportPath && requestInfoMeta.typeName) {
-          extraImportLines.push(
-            generateImport(
-              [requestInfoMeta.typeName],
-              requestInfoMeta.typeNameImportPath,
-              codegenParams,
-            ),
-          );
+          endpointMetaTypeImports.push({
+            what: requestInfoMeta.typeName,
+            from: requestInfoMeta.typeNameImportPath,
+          });
         }
 
         const contractsResult =
@@ -172,29 +167,68 @@ export const allEndpointPerFileTmpl = async (
     .filter(Boolean)
     .join('\n\n');
 
-  if (metaInfo) {
-    const metaFrom = groupName ? '../meta-info' : './meta-info';
-    extraImportLines.push(
-      generateImport(
-        [groupName && 'Group', metaInfo.namespace && 'namespace', 'Tag'],
-        metaFrom,
-        codegenParams,
-      ),
-    );
-  }
-
-  const dataContractImportToken = '/*__DATA_CONTRACT_IMPORTS__*/';
+  const importsBlock = importsTmpl({
+    imports: [
+      {
+        what: ['RequestParams', 'HttpResponse', 'HttpMultistatusResponse'],
+        from: codegenParams.libImports['mobx-tanstack-query-api'],
+      },
+      {
+        what: importFileParams.endpoint.exportName,
+        from: resolveGeneratedModuleSpecifier(
+          importFileParams.endpoint.path,
+          codegenParams,
+        ),
+      },
+      !importFileParams.skipHttpClient && {
+        what: importFileParams.httpClient.exportName,
+        from: resolveGeneratedModuleSpecifier(
+          importFileParams.httpClient.path,
+          codegenParams,
+        ),
+      },
+      !importFileParams.skipQueryClient && {
+        what: importFileParams.queryClient.exportName,
+        from: resolveGeneratedModuleSpecifier(
+          importFileParams.queryClient.path,
+          codegenParams,
+        ),
+      },
+      ...endpointMetaTypeImports.map(({ what, from }) => ({
+        what,
+        from: from && resolveGeneratedModuleSpecifier(from, codegenParams),
+      })),
+      {
+        what: metaInfo && [
+          groupName && 'Group',
+          metaInfo.namespace && 'namespace',
+          'Tag',
+        ],
+        from:
+          metaInfo &&
+          resolveGeneratedModuleSpecifier(
+            groupName ? '../meta-info' : './meta-info',
+            codegenParams,
+          ),
+      },
+      {
+        what: hasAnyZodContracts && '* as z',
+        from: hasAnyZodContracts && 'zod',
+      },
+      {
+        what: [...allZodContractImportNames].sort(),
+        from:
+          relativePathZodSchemas &&
+          resolveGeneratedModuleSpecifier(
+            relativePathZodSchemas,
+            codegenParams,
+          ),
+      },
+      DATA_CONTRACT_IMPORT_TOKEN,
+    ],
+  });
   const contentWithImportToken = await formatTSContent(`${LINTERS_IGNORE}
-      import {
-        RequestParams,
-        HttpResponse,
-        HttpMultistatusResponse,
-      } from "${codegenParams.libImports?.['mobx-tanstack-query-api'] ?? 'mobx-tanstack-query-api'}";
-      import { ${importFileParams.endpoint.exportName} } from "${importFileParams.endpoint.path}";
-      ${importFileParams.skipHttpClient ? '' : `import { ${importFileParams.httpClient.exportName} } from "${importFileParams.httpClient.path}";\n      `}${importFileParams.skipQueryClient ? '' : `import { ${importFileParams.queryClient.exportName} } from "${importFileParams.queryClient.path}";\n      `}
-      ${extraImportLines.join('\n')}
-      ${[zodImportLine, zodSchemasImportLine].filter(Boolean).join('\n')}
-      ${dataContractImportToken}
+      ${importsBlock}
 
       ${(
         await Promise.all(
@@ -249,7 +283,7 @@ export const allEndpointPerFileTmpl = async (
   return {
     reservedDataContractNames: [...reservedDataContractNamesInFile],
     content: contentWithImportToken.replace(
-      dataContractImportToken,
+      DATA_CONTRACT_IMPORT_TOKEN,
       dataContractImportLine,
     ),
   };
