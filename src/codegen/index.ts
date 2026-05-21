@@ -194,14 +194,15 @@ const generateApiSingle = async (
   console.log('⏳ Preparing codegen...', 'input:', inputLogLabel);
 
   //#region swagger-typescript-api
-  const swaggerTypescriptApiCodegenBaseParams = {
+  const swaggerTypescriptApiCodegenBaseParams: Parameters<
+    typeof generateApiFromSwagger
+  >[0] = {
     httpClientType: 'fetch',
     // Output cleanup is handled here (batch rm + codegenFs.cleanDir); avoid swagger doing it too.
     cleanOutput: false,
     modular: false,
     patch: true,
     typeSuffix: dataContractTypeSuffix,
-    disableStrictSSL: false,
     singleHttpClient: true,
     extractRequestBody: true,
     extractRequestParams: false,
