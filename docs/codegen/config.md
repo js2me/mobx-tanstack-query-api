@@ -318,7 +318,7 @@ export const v1GetById = new Endpoint<...>
 ### `otherCodegenParams`   
 
 Other codegen params for `swagger-typescript-api` codegen.   
-See [swagger-typescript-api](https://github.com/acacode/swagger-typescript-api) for more info.   
+See [swagger-typescript-api docs](https://acacode.github.io/swagger-typescript-api/interfaces/GenerateApiConfiguration.html) for more info.   
 
 ### `filterTypes`   
 

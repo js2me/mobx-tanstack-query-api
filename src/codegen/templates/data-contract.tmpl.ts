@@ -27,25 +27,43 @@ const buildGenerics = (contract: any) => {
   );
 };
 
-export const dataContractTmpl = async ({
-  contract,
-  configuration,
-  addExportKeyword,
-}: DataContractTmplParams) => {
+const dataContractTemplates: Record<
+  string,
+  (params: DataContractTmplParams) => string
+> = {
+  const: ({ contract, addExportKeyword }) => {
+    const entries = (contract.$content ?? contract.rawContent ?? [])
+      .map(
+        ({ key, value }: { key: string; value: string }) =>
+          `  ${key}: ${value}`,
+      )
+      .join(',\n');
+
+    const export_ = addExportKeyword ? 'export ' : '';
+
+    return (
+      `${export_}const ${contract.name} = {\n${entries},\n} as const;\n` +
+      `${export_}type ${contract.name} = (typeof ${contract.name})[keyof typeof ${contract.name}]`
+    );
+  },
+  enum: ({ contract, addExportKeyword }) => {
+    const export_ = addExportKeyword ? 'export ' : '';
+    return `${export_}enum ${contract.name} {\r\n${contract.content}\r\n}`;
+  },
+  interface: ({ contract, addExportKeyword }) => {
+    const export_ = addExportKeyword ? 'export ' : '';
+    return `${export_}interface ${contract.name}${buildGenerics(contract)} {\r\n${contract.content}}`;
+  },
+  type: ({ contract, addExportKeyword }) => {
+    const export_ = addExportKeyword ? 'export ' : '';
+    return `${export_}type ${contract.name}${buildGenerics(contract)} = ${contract.content === contract.name ? 'any' : contract.content}`;
+  },
+};
+
+export const dataContractTmpl = async (params: DataContractTmplParams) => {
+  const { contract, configuration } = params;
   const { utils } = configuration;
   const { formatDescription } = utils;
-
-  const dataContractTemplates: Record<string, (contract: any) => string> = {
-    enum: (contract: any) => {
-      return `enum ${contract.name} {\r\n${contract.content}\r\n}`;
-    },
-    interface: (contract: any) => {
-      return `interface ${contract.name}${buildGenerics(contract)} {\r\n${contract.content}}`;
-    },
-    type: (contract: any) => {
-      return `type ${contract.name}${buildGenerics(contract)} = ${contract.content === contract.name ? 'any' : contract.content}`;
-    },
-  };
 
   let result: string = '';
 
@@ -63,7 +81,7 @@ export const dataContractTmpl = async ({
     dataContractTemplates[contract.typeIdentifier] ||
     dataContractTemplates.type;
 
-  const contractType = `${addExportKeyword ? 'export ' : ''}${templateFn(contract)}`;
+  const contractType = templateFn(params);
 
   return result + contractType;
 };
