@@ -1,0 +1,110 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generateApi snapshot enumStyle (otherCodegenParams) > generates data-contracts with otherCodegenParams.enumStyle: const 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+
+export interface PetDC {
+  id?: number;
+  kind?: PetKindDC;
+  name: string;
+  status: PetStatusDC;
+}
+
+export const PetKindDC = {
+  Cat: 0,
+  Dog: 1,
+  Bird: 2,
+} as const;
+export type PetKindDC = (typeof PetKindDC)[keyof typeof PetKindDC];
+
+export const PetStatusDC = {
+  Available: "available",
+  Pending: "pending",
+  Sold: "sold",
+} as const;
+export type PetStatusDC = (typeof PetStatusDC)[keyof typeof PetStatusDC];
+
+/**
+ * Fixture field.
+ */
+export const SchBustlingTypeface38DC = {
+  Ev0: "ev0",
+  Ev1: "ev1",
+  Ev2: "ev2",
+  Ev3: "ev3",
+  Ev4: "ev4",
+  Ev5: "ev5",
+  Ev6: "ev6",
+} as const;
+export type SchBustlingTypeface38DC =
+  (typeof SchBustlingTypeface38DC)[keyof typeof SchBustlingTypeface38DC];
+"
+`;
+
+exports[`generateApi snapshot enumStyle (otherCodegenParams) > generates data-contracts with otherCodegenParams.enumStyle: enum 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+
+export interface PetDC {
+  id?: number;
+  kind?: PetKindDC;
+  name: string;
+  status: PetStatusDC;
+}
+
+export enum PetKindDC {
+  Cat = 0,
+  Dog = 1,
+  Bird = 2,
+}
+
+export enum PetStatusDC {
+  Available = "available",
+  Pending = "pending",
+  Sold = "sold",
+}
+
+/**
+ * Fixture field.
+ */
+export enum SchBustlingTypeface38DC {
+  Ev0 = "ev0",
+  Ev1 = "ev1",
+  Ev2 = "ev2",
+  Ev3 = "ev3",
+  Ev4 = "ev4",
+  Ev5 = "ev5",
+  Ev6 = "ev6",
+}
+"
+`;
+
+exports[`generateApi snapshot enumStyle (otherCodegenParams) > generates data-contracts with otherCodegenParams.enumStyle: union 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+
+export interface PetDC {
+  id?: number;
+  kind?: PetKindDC;
+  name: string;
+  status: PetStatusDC;
+}
+
+export type PetKindDC = 0 | 1 | 2;
+
+export type PetStatusDC = "available" | "pending" | "sold";
+
+/**
+ * Fixture field.
+ */
+export type SchBustlingTypeface38DC =
+  | "ev0"
+  | "ev1"
+  | "ev2"
+  | "ev3"
+  | "ev4"
+  | "ev5"
+  | "ev6";
+"
+`;
