@@ -1,5 +1,19 @@
 # mobx-tanstack-query-api
 
+## 0.55.0
+
+### Minor Changes
+
+- [`8454694`](https://github.com/js2me/mobx-tanstack-query-api/commit/84546947cd1712d6b15803f180bdc48f79ea7ad3) Thanks [@js2me](https://github.com/js2me)! - add `Definements` type to enhance internal typings by user
+
+- [`e63677b`](https://github.com/js2me/mobx-tanstack-query-api/commit/e63677b479023b4687a2db5108ed0e53fa1ec3c3) Thanks [@js2me](https://github.com/js2me)! - support `enumStyle` from `swagger-typescript-api` for internal codegen
+
+### Patch Changes
+
+- [`d07ecc3`](https://github.com/js2me/mobx-tanstack-query-api/commit/d07ecc3b201fb401797c7bb4d754dc65714421b4) Thanks [@js2me](https://github.com/js2me)! - update swagger-typescript-api to 13.10.0
+
+- [`7975c17`](https://github.com/js2me/mobx-tanstack-query-api/commit/7975c17159510ab50d0d326a11af90063851c9d9) Thanks [@js2me](https://github.com/js2me)! - better import template codegen
+
 ## 0.54.1
 
 ### Patch Changes
