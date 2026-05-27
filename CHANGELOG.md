@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.56.0
+
+### Minor Changes
+
+- [`e63677b`](https://github.com/js2me/mobx-tanstack-query-api/commit/e63677b479023b4687a2db5108ed0e53fa1ec3c3) Thanks [@js2me](https://github.com/js2me)! - Add top-level `enumStyle` codegen option (`enum`, `union`, `const`) forwarded to `swagger-typescript-api` for data contracts, and apply the same styles to `Group` / `Tag` in `meta-info.ts` with matching endpoint references.
+
+### Patch Changes
+
+- [`6b73c4d`](https://github.com/js2me/mobx-tanstack-query-api/commit/6b73c4d0594c0dd23afdeadeee5251444a8a57e1) Thanks [@js2me](https://github.com/js2me)! - Return the promise from `Endpoint.invalidateQuery()` so callers can `await` invalidation like with `queryClient.invalidateQueries()`.
+
 ## 0.55.0
 
 ### Minor Changes
