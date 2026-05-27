@@ -100,10 +100,12 @@ export const listPets = new Endpoint<
 exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: const > meta-info 1`] = `
 "/* eslint-disable */
 /* tslint:disable */
+
 export const Group = {
   Pets: "pets",
 } as const;
 export type Group = (typeof Group)[keyof typeof Group];
+
 export const Tag = {
   Pets: "pets",
 } as const;
@@ -207,9 +209,11 @@ export const listPets = new Endpoint<
 exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: enum > meta-info 1`] = `
 "/* eslint-disable */
 /* tslint:disable */
+
 export const enum Group {
   Pets = "pets",
 }
+
 export const enum Tag {
   /** pets */
   Pets = "pets",
@@ -303,7 +307,9 @@ export const listPets = new Endpoint<
 exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: union > meta-info 1`] = `
 "/* eslint-disable */
 /* tslint:disable */
+
 export type Group = "pets";
+
 export type Tag = "pets";
 "
 `;

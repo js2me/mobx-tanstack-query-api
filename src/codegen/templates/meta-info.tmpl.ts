@@ -71,35 +71,38 @@ export const apiServers = [
 ];
 `,
     metaInfo?.groupNames?.length &&
-      renderStyledStringEnumDeclaration(
-        'Group',
-        metaInfo.groupNames.map((groupName) => ({
-          key: formatGroupNameEnumKey(groupName, utils),
-          value:
-            codegenParams.transforms?.groupEnumValue?.(groupName) ?? groupName,
-        })),
-        codegenParams.enumStyle,
-      ),
+      `
+${renderStyledStringEnumDeclaration(
+  'Group',
+  metaInfo.groupNames.map((groupName) => ({
+    key: formatGroupNameEnumKey(groupName, utils),
+    value: codegenParams.transforms?.groupEnumValue?.(groupName) ?? groupName,
+  })),
+  codegenParams.enumStyle,
+)}
+`,
     metaInfo?.tags?.length &&
-      renderStyledStringEnumDeclaration(
-        'Tag',
-        metaInfo.tags.map((tagName) => {
-          const tagData = tagsMap.get(tagName);
+      `
+${renderStyledStringEnumDeclaration(
+  'Tag',
+  metaInfo.tags.map((tagName) => {
+    const tagData = tagsMap.get(tagName);
 
-          let description = tagData?.description;
+    let description = tagData?.description;
 
-          if (!description) {
-            description = utils._.words(tagName).join(' ');
-          }
+    if (!description) {
+      description = utils._.words(tagName).join(' ');
+    }
 
-          return {
-            key: formatTagNameEnumKey(tagName, utils),
-            value: codegenParams.transforms?.tagEnumValue?.(tagName) ?? tagName,
-            description,
-          };
-        }),
-        codegenParams.enumStyle,
-      ),
+    return {
+      key: formatTagNameEnumKey(tagName, utils),
+      value: codegenParams.transforms?.tagEnumValue?.(tagName) ?? tagName,
+      description,
+    };
+  }),
+  codegenParams.enumStyle,
+)}
+`,
   ]
     .filter(Boolean)
     .join('\n')}
