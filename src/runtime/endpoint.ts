@@ -480,7 +480,7 @@ export class Endpoint<
           options?: InvalidateOptions,
         ]
   ) {
-    this.queryClient.invalidateQueries(
+    return this.queryClient.invalidateQueries(
       {
         queryKey: this.toQueryKey(args[0], args[1]?.uniqKey),
         exact: true,
