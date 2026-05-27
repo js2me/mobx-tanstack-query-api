@@ -294,7 +294,17 @@ export interface GenerateQueryApiParams {
    */
   fetchSchemaRequestOptions?: RequestInit;
 
-  otherCodegenParams?: Partial<GenerateApiConfiguration['config']>;
+  /**
+   * How OpenAPI enum schemas are emitted in `data-contracts` (`enum`, `union`, or `const`).
+   * Forwarded to `swagger-typescript-api` codegen.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#enumstyle)
+   */
+  enumStyle?: GenerateApiConfiguration['config']['enumStyle'];
+
+  otherCodegenParams?: Partial<
+    Omit<GenerateApiConfiguration['config'], 'enumStyle'>
+  >;
 
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#filterendpoints)

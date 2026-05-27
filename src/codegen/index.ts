@@ -245,6 +245,7 @@ const generateApiSingle = async (
     },
     requestOptions: params.fetchSchemaRequestOptions,
     ...params.otherCodegenParams,
+    ...(params.enumStyle !== undefined && { enumStyle: params.enumStyle }),
   };
 
   let codegenProcess!: any;

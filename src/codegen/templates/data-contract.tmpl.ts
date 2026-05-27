@@ -1,5 +1,6 @@
 import type { AnyObject } from 'yummies/types';
 import type { BaseTmplParams } from '../types/index.js';
+import { renderConstObjectTypeDeclaration } from './utils/render-styled-string-enum.js';
 
 export interface DataContractTmplParams extends BaseTmplParams {
   contract: AnyObject;
@@ -32,19 +33,16 @@ const dataContractTemplates: Record<
   (params: DataContractTmplParams) => string
 > = {
   const: ({ contract, addExportKeyword }) => {
-    const entries = (contract.$content ?? contract.rawContent ?? [])
+    const propertiesBody = (contract.$content ?? contract.rawContent ?? [])
       .map(
         ({ key, value }: { key: string; value: string }) =>
           `  ${key}: ${value}`,
       )
       .join(',\n');
 
-    const export_ = addExportKeyword ? 'export ' : '';
-
-    return (
-      `${export_}const ${contract.name} = {\n${entries},\n} as const;\n` +
-      `${export_}type ${contract.name} = (typeof ${contract.name})[keyof typeof ${contract.name}]`
-    );
+    return renderConstObjectTypeDeclaration(contract.name, propertiesBody, {
+      export: !!addExportKeyword,
+    });
   },
   enum: ({ contract, addExportKeyword }) => {
     const export_ = addExportKeyword ? 'export ' : '';

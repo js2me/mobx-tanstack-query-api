@@ -18,6 +18,7 @@ import {
 import { typeNameToSchemaKey } from '../../utils/zod/build-endpoint-zod-contracts-code.js';
 import { formatGroupNameEnumKey } from '../utils/format-group-name-enum-key.js';
 import { formatTagNameEnumKey } from '../utils/format-tag-name-enum-key.js';
+import { formatStyledStringEnumMemberRef } from '../utils/render-styled-string-enum.js';
 import { buildZodEndpointData } from './utils/build-zod-endpoint-data.js';
 import { chooseOpenApiServer } from './utils/choose-open-api-server.js';
 import { getRequestBodyContentType } from './utils/get-request-body-content-type.js';
@@ -628,11 +629,36 @@ new ${importFileParams.endpoint.exportName}<
           .map((it) => `"${it}"`)}],
         tags: [${tags.map((tag: string) => {
           if (metaInfo) {
-            return `Tag.${formatTagNameEnumKey(tag, utils)}`;
+            return formatStyledStringEnumMemberRef(
+              'Tag',
+              {
+                key: formatTagNameEnumKey(tag, utils),
+                value: codegenParams.transforms?.tagEnumValue?.(tag) ?? tag,
+              },
+              codegenParams.enumStyle,
+            );
           }
           return `"${tag}"`;
         })}],
-        ${groupName ? `group: ${metaInfo ? `Group.${formatGroupNameEnumKey(groupName, utils)}` : `"${groupName}"`},` : ''}
+        ${
+          groupName
+            ? `group: ${
+                metaInfo
+                  ? formatStyledStringEnumMemberRef(
+                      'Group',
+                      {
+                        key: formatGroupNameEnumKey(groupName, utils),
+                        value:
+                          codegenParams.transforms?.groupEnumValue?.(
+                            groupName,
+                          ) ?? groupName,
+                      },
+                      codegenParams.enumStyle,
+                    )
+                  : `"${groupName}"`
+              },`
+            : ''
+        }
         ${metaInfo?.namespace ? `namespace,` : ''}
         meta: ${tmplDataToSourceExpr(requestInfoMeta?.tmplData)},
         ${contractLine}

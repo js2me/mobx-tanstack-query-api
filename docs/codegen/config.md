@@ -315,9 +315,23 @@ export const v1GetById = new Endpoint<...>
 ::: tip If you need to format route name better to use [`formatEndpointName`](#formatendpointname)
 :::
 
+### `enumStyle`
+
+How OpenAPI enum schemas are emitted in generated `data-contracts.ts`, and how `Group` / `Tag` in `meta-info.ts` are emitted (same three styles). Forwarded to [`swagger-typescript-api`](https://acacode.github.io/swagger-typescript-api/interfaces/GenerateApiConfiguration.html) for data contracts.
+
+Type: `"enum" | "union" | "const"`
+
+- `"enum"` — TypeScript `enum` (default in `swagger-typescript-api`)
+- `"union"` — string literal union type
+- `"const"` — `as const` object plus derived union type
+
+```ts
+enumStyle: 'union',
+```
+
 ### `otherCodegenParams`   
 
-Other codegen params for `swagger-typescript-api` codegen.   
+Other codegen params for `swagger-typescript-api` codegen. Use top-level [`enumStyle`](#enumstyle) instead of passing it here.   
 See [swagger-typescript-api docs](https://acacode.github.io/swagger-typescript-api/interfaces/GenerateApiConfiguration.html) for more info.   
 
 ### `filterTypes`   

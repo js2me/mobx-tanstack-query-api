@@ -12,6 +12,7 @@ import { dataContractTmpl } from './data-contract.tmpl.js';
 import { endpointJSDocTmpl } from './endpoint-jsdoc.tmpl.js';
 import { DATA_CONTRACT_IMPORT_TOKEN, importsTmpl } from './imports.tmpl.js';
 import { newEndpointTmpl } from './new-endpoint.tmpl/index.js';
+import { usesRuntimeEnumExports } from './utils/render-styled-string-enum.js';
 
 export interface EndpointPerFileTmplParams extends BaseTmplParams {
   route: ParsedRoute;
@@ -123,11 +124,15 @@ export const endpointPerFileTmpl = async (
         ),
       },
       {
-        what: metaInfo && [
-          groupName && 'Group',
-          metaInfo.namespace && 'namespace',
-          'Tag',
-        ],
+        what:
+          metaInfo &&
+          [
+            usesRuntimeEnumExports(codegenParams.enumStyle) &&
+              groupName &&
+              'Group',
+            metaInfo.namespace && 'namespace',
+            usesRuntimeEnumExports(codegenParams.enumStyle) && 'Tag',
+          ].filter(Boolean),
         from:
           metaInfo &&
           resolveGeneratedModuleSpecifier(

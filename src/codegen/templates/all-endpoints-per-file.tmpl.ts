@@ -16,6 +16,7 @@ import {
   importsTmpl,
 } from './imports.tmpl.js';
 import { newEndpointTmpl } from './new-endpoint.tmpl/index.js';
+import { usesRuntimeEnumExports } from './utils/render-styled-string-enum.js';
 
 export interface AllEndpointPerFileTmplParams extends BaseTmplParams {
   routes: ParsedRoute[];
@@ -199,11 +200,15 @@ export const allEndpointPerFileTmpl = async (
         from: from && resolveGeneratedModuleSpecifier(from, codegenParams),
       })),
       {
-        what: metaInfo && [
-          groupName && 'Group',
-          metaInfo.namespace && 'namespace',
-          'Tag',
-        ],
+        what:
+          metaInfo &&
+          [
+            usesRuntimeEnumExports(codegenParams.enumStyle) &&
+              groupName &&
+              'Group',
+            metaInfo.namespace && 'namespace',
+            usesRuntimeEnumExports(codegenParams.enumStyle) && 'Tag',
+          ].filter(Boolean),
         from:
           metaInfo &&
           resolveGeneratedModuleSpecifier(

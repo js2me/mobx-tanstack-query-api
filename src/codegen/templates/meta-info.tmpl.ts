@@ -4,6 +4,7 @@ import type { BaseTmplParams, MetaInfo } from '../types/index.js';
 import { LINTERS_IGNORE } from './constants.js';
 import { formatGroupNameEnumKey } from './utils/format-group-name-enum-key.js';
 import { formatTagNameEnumKey } from './utils/format-tag-name-enum-key.js';
+import { renderStyledStringEnumDeclaration } from './utils/render-styled-string-enum.js';
 
 export interface MetaInfoTmplParams extends BaseTmplParams {
   metaInfo: Maybe<MetaInfo>;
@@ -70,34 +71,35 @@ export const apiServers = [
 ];
 `,
     metaInfo?.groupNames?.length &&
-      `
-export const enum Group {
-  ${metaInfo?.groupNames.map((groupName) => `${formatGroupNameEnumKey(groupName, utils)} = "${codegenParams.transforms?.groupEnumValue?.(groupName) ?? groupName}"`).join(',\n')}
-}
-`,
+      renderStyledStringEnumDeclaration(
+        'Group',
+        metaInfo.groupNames.map((groupName) => ({
+          key: formatGroupNameEnumKey(groupName, utils),
+          value:
+            codegenParams.transforms?.groupEnumValue?.(groupName) ?? groupName,
+        })),
+        codegenParams.enumStyle,
+      ),
     metaInfo?.tags?.length &&
-      `
-export const enum Tag {
-  ${metaInfo?.tags
-    .map((tagName) => {
-      const tagData = tagsMap.get(tagName);
+      renderStyledStringEnumDeclaration(
+        'Tag',
+        metaInfo.tags.map((tagName) => {
+          const tagData = tagsMap.get(tagName);
 
-      let description = tagData?.description;
+          let description = tagData?.description;
 
-      if (!description) {
-        description = utils._.words(tagName).join(' ');
-      }
+          if (!description) {
+            description = utils._.words(tagName).join(' ');
+          }
 
-      return [
-        description && `/** ${description} */`,
-        `${formatTagNameEnumKey(tagName, utils)} = "${codegenParams.transforms?.tagEnumValue?.(tagName) ?? tagName}"`,
-      ]
-        .filter(Boolean)
-        .join('\n');
-    })
-    .join(',\n')}
-}
-`,
+          return {
+            key: formatTagNameEnumKey(tagName, utils),
+            value: codegenParams.transforms?.tagEnumValue?.(tagName) ?? tagName,
+            description,
+          };
+        }),
+        codegenParams.enumStyle,
+      ),
   ]
     .filter(Boolean)
     .join('\n')}

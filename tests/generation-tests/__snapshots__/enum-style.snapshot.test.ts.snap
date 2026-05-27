@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`generateApi snapshot enumStyle (otherCodegenParams) > generates data-contracts with otherCodegenParams.enumStyle: const 1`] = `
+exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: const > data-contracts 1`] = `
 "/* eslint-disable */
 /* tslint:disable */
 
@@ -42,7 +42,76 @@ export type SchBustlingTypeface38DC =
 "
 `;
 
-exports[`generateApi snapshot enumStyle (otherCodegenParams) > generates data-contracts with otherCodegenParams.enumStyle: enum 1`] = `
+exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: const > endpoint 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Group, Tag } from "../../meta-info";
+import { PetDC, PetStatusDC, SchBustlingTypeface38DC } from "../../data-contracts";
+export type ListPetsErrorDC = any;
+
+export type ListPetsDataDC = PetDC[];
+
+export type ListPetsParams = {
+  query?: {
+    /** Fixture field. */
+    fixture?: SchBustlingTypeface38DC;
+    status?: PetStatusDC;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId listPets
+ * @tags pets
+ * @request **GET:/pets**
+ * @produces application/json
+ * @responses
+ * @**200** ListPetsDataDC OK
+ */
+export const listPets = new Endpoint<
+  HttpResponse<ListPetsDataDC, ListPetsErrorDC>,
+  ListPetsParams,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/pets\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "listPets",
+    path: ["pets"],
+    tags: [Tag.Pets],
+    group: Group.Pets,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;
+
+exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: const > meta-info 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+export const Group = {
+  Pets: "pets",
+} as const;
+export type Group = (typeof Group)[keyof typeof Group];
+export const Tag = {
+  Pets: "pets",
+} as const;
+export type Tag = (typeof Tag)[keyof typeof Tag];
+"
+`;
+
+exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: enum > data-contracts 1`] = `
 "/* eslint-disable */
 /* tslint:disable */
 
@@ -80,7 +149,75 @@ export enum SchBustlingTypeface38DC {
 "
 `;
 
-exports[`generateApi snapshot enumStyle (otherCodegenParams) > generates data-contracts with otherCodegenParams.enumStyle: union 1`] = `
+exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: enum > endpoint 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { Group, Tag } from "../../meta-info";
+import { PetDC, PetStatusDC, SchBustlingTypeface38DC } from "../../data-contracts";
+export type ListPetsErrorDC = any;
+
+export type ListPetsDataDC = PetDC[];
+
+export type ListPetsParams = {
+  query?: {
+    /** Fixture field. */
+    fixture?: SchBustlingTypeface38DC;
+    status?: PetStatusDC;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId listPets
+ * @tags pets
+ * @request **GET:/pets**
+ * @produces application/json
+ * @responses
+ * @**200** ListPetsDataDC OK
+ */
+export const listPets = new Endpoint<
+  HttpResponse<ListPetsDataDC, ListPetsErrorDC>,
+  ListPetsParams,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/pets\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "listPets",
+    path: ["pets"],
+    tags: [Tag.Pets],
+    group: Group.Pets,
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;
+
+exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: enum > meta-info 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+export const enum Group {
+  Pets = "pets",
+}
+export const enum Tag {
+  /** pets */
+  Pets = "pets",
+}
+"
+`;
+
+exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: union > data-contracts 1`] = `
 "/* eslint-disable */
 /* tslint:disable */
 
@@ -106,5 +243,67 @@ export type SchBustlingTypeface38DC =
   | "ev4"
   | "ev5"
   | "ev6";
+"
+`;
+
+exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: union > endpoint 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+import { Endpoint, HttpResponse, RequestParams } from "mobx-tanstack-query-api";
+import { http, queryClient } from "mobx-tanstack-query-api/builtin";
+import { PetDC, PetStatusDC, SchBustlingTypeface38DC } from "../../data-contracts";
+export type ListPetsErrorDC = any;
+
+export type ListPetsDataDC = PetDC[];
+
+export type ListPetsParams = {
+  query?: {
+    /** Fixture field. */
+    fixture?: SchBustlingTypeface38DC;
+    status?: PetStatusDC;
+  };
+  requestParams?: RequestParams;
+};
+
+/**
+ * No description
+ * @operationId listPets
+ * @tags pets
+ * @request **GET:/pets**
+ * @produces application/json
+ * @responses
+ * @**200** ListPetsDataDC OK
+ */
+export const listPets = new Endpoint<
+  HttpResponse<ListPetsDataDC, ListPetsErrorDC>,
+  ListPetsParams,
+  any
+>(
+  {
+    params: ({ query, requestParams }) => ({
+      path: \`/pets\`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...requestParams,
+    }),
+    requiredParams: [],
+    operationId: "listPets",
+    path: ["pets"],
+    tags: ["pets"],
+    group: "pets",
+    meta: {},
+  },
+  queryClient,
+  http,
+);
+"
+`;
+
+exports[`generateApi snapshot enumStyle > generates data-contracts with enumStyle: union > meta-info 1`] = `
+"/* eslint-disable */
+/* tslint:disable */
+export type Group = "pets";
+export type Tag = "pets";
 "
 `;
