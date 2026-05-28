@@ -36,8 +36,8 @@ importers:
         specifier: ^6.15.2
         version: 6.15.2
       swagger-typescript-api:
-        specifier: ^13.11.0
-        version: 13.11.0(magicast@0.5.3)(mobx@6.15.4)
+        specifier: ^13.11.1
+        version: 13.11.1(magicast@0.5.3)(mobx@6.15.4)
       ts-morph:
         specifier: ^28.0.0
         version: 28.0.0
@@ -3783,8 +3783,8 @@ packages:
   swagger-schema-official@2.0.0-bab6bed:
     resolution: {integrity: sha512-rCC0NWGKr/IJhtRuPq/t37qvZHI/mH4I4sxflVM+qgVe5Z2uOCivzWaVbuioJaB61kvm5UvB7b49E+oBY0M8jA==}
 
-  swagger-typescript-api@13.11.0:
-    resolution: {integrity: sha512-blZvAoDfA61xGPsTp5eTvnbFwhvoRMo1TXa/eq/Lb7gnks2jOIlDM5fx2LiRCXl9WwHVOczHbbAPI+vbwOpuAg==}
+  swagger-typescript-api@13.11.1:
+    resolution: {integrity: sha512-+PKEoGHUC1zBd7M21lscOMqMlTPYRMTCAPbhyPMD1q59R/pn3bao/IECNpmG0dIYpVx6wFloqiwZZN9F11QiBw==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -8327,7 +8327,7 @@ snapshots:
 
   swagger-schema-official@2.0.0-bab6bed: {}
 
-  swagger-typescript-api@13.11.0(magicast@0.5.3)(mobx@6.15.4):
+  swagger-typescript-api@13.11.1(magicast@0.5.3)(mobx@6.15.4):
     dependencies:
       '@apidevtools/swagger-parser': 12.1.0(openapi-types@12.1.3)
       '@biomejs/js-api': 4.0.0(@biomejs/wasm-nodejs@2.4.16)
