@@ -48,6 +48,10 @@ const dataContractTemplates: Record<
     const export_ = addExportKeyword ? 'export ' : '';
     return `${export_}enum ${contract.name} {\r\n${contract.content}\r\n}`;
   },
+  'const enum': ({ contract, addExportKeyword }) => {
+    const export_ = addExportKeyword ? 'export ' : '';
+    return `${export_}const enum ${contract.name} {\r\n${contract.content}\r\n}`;
+  },
   interface: ({ contract, addExportKeyword }) => {
     const export_ = addExportKeyword ? 'export ' : '';
     return `${export_}interface ${contract.name}${buildGenerics(contract)} {\r\n${contract.content}}`;

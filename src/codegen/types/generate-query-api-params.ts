@@ -295,7 +295,7 @@ export interface GenerateQueryApiParams {
   fetchSchemaRequestOptions?: RequestInit;
 
   /**
-   * How OpenAPI enum schemas are emitted in `data-contracts` (`enum`, `union`, or `const`).
+   * How OpenAPI enum schemas are emitted in `data-contracts` (`enum`, `union`, `const`, or `const-enum`).
    * Forwarded to `swagger-typescript-api` codegen.
    *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#enumstyle)

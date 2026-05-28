@@ -317,16 +317,21 @@ export const v1GetById = new Endpoint<...>
 
 ### `enumStyle`
 
-How OpenAPI enum schemas are emitted in generated `data-contracts.ts`, and how `Group` / `Tag` in `meta-info.ts` are emitted (same three styles). Forwarded to [`swagger-typescript-api`](https://acacode.github.io/swagger-typescript-api/interfaces/GenerateApiConfiguration.html) for data contracts.
+Type: `"enum" | "union" | "const" | "const-enum"`
 
-Type: `"enum" | "union" | "const"`
+How enums from the OpenAPI spec are emitted in `data-contracts.ts`, and how `Group` / `Tag` are emitted in `meta-info.ts`. Schema enums are handled by [`swagger-typescript-api`](https://acacode.github.io/swagger-typescript-api/interfaces/GenerateApiConfiguration.html); `Group` / `Tag` follow the same setting in this generator.
 
-- `"enum"` — TypeScript `enum` (default in `swagger-typescript-api`)
-- `"union"` — string literal union type
-- `"const"` — `as const` object plus derived union type
+- **`enum`** — TypeScript `enum`.
+- **`const-enum`** — `const enum`.
+- **`union`** — union of literals (`type X = "a" | "b"`).
+- **`const`** — `as const` object and a type alias from its values.
+
+If the option is not set, `data-contracts.ts` uses the swagger-typescript-api default (`enum`), while `meta-info.ts` still uses `const-enum` for `Group` and `Tag`. Pass `enumStyle` in config when you need the same style in both files.
+
+With **`union`**, endpoints do not import `Group` / `Tag` (there is nothing to reference at runtime). With the other values, `tags` and `group` use members like `Tag.Pets`.
 
 ```ts
-enumStyle: 'union',
+enumStyle: 'const-enum',
 ```
 
 ### `otherCodegenParams`   
@@ -1015,7 +1020,7 @@ getFruits.meta.somedata; // '123'
 
 ### `transforms`
 
-Optional hooks that customize the **string literal values** (the right-hand side after `=`) of the `Group` and `Tag` `const enum`s in generated `meta-info.ts`.
+Optional hooks that customize the **string literal values** (the right-hand side after `=`) of the `Group` and `Tag` enums in generated `meta-info.ts`. Member names and the declaration form come from codegen and [`enumStyle`](#enumstyle); these callbacks only override the value string.
 
 Codegen still derives **enum member names** (the identifiers on the left) from OpenAPI group/tag names using its built-in key formatting. These callbacks only change the **quoted runtime string** stored on each member, which is what you compare against or serialize when you use `Tag.*` / `Group.*` as values.
 

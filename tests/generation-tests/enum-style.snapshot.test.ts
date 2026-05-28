@@ -10,7 +10,7 @@ const INPUT_FILE = path.resolve(__dirname, './fixtures/enum-style.openapi.json')
 
 const normalizeNewlines = (value: string) => value.replaceAll('\r\n', '\n');
 
-async function generateEnumStyleOutput(enumStyle: 'union' | 'const' | 'enum') {
+async function generateEnumStyleOutput(enumStyle?: 'union' | 'const' | 'enum' | 'const-enum') {
   const outputDir = path.resolve(
     __dirname,
     `./__generated__/enum-style-${enumStyle}`,
@@ -67,6 +67,24 @@ describe('generateApi snapshot enumStyle', () => {
       force: true,
     });
   });
+
+
+  it('generates data-contracts with enumStyle: <not defined>', async () => {
+    const output = await generateEnumStyleOutput();
+    expect(output.dataContracts).toMatchSnapshot('data-contracts');
+    expect(output.metaInfo).toMatchSnapshot('meta-info');
+    expect(output.endpoint).toMatchSnapshot('endpoint');
+  });
+
+
+
+  it('generates data-contracts with enumStyle: const-enum', async () => {
+    const output = await generateEnumStyleOutput('const-enum');
+    expect(output.dataContracts).toMatchSnapshot('data-contracts');
+    expect(output.metaInfo).toMatchSnapshot('meta-info');
+    expect(output.endpoint).toMatchSnapshot('endpoint');
+  });
+
 
   it('generates data-contracts with enumStyle: union', async () => {
     const output = await generateEnumStyleOutput('union');

@@ -18,6 +18,8 @@ export const metaInfoTmpl = async ({
   codegenParams,
   ...other
 }: MetaInfoTmplParams) => {
+  const metaInfoEnumStyle = codegenParams.enumStyle ?? 'const-enum';
+
   const tagsMap = new Map<string, AnyObject>(
     (other as any).configuration?.apiConfig?.tags?.map((it: AnyObject) => [
       it.name,
@@ -90,7 +92,7 @@ ${renderStyledStringEnumDeclaration(
         return true;
       });
   })(),
-  codegenParams.enumStyle,
+  metaInfoEnumStyle,
 )}
 `,
     metaInfo?.tags?.length &&
@@ -123,7 +125,7 @@ ${renderStyledStringEnumDeclaration(
         return true;
       });
   })(),
-  codegenParams.enumStyle,
+  metaInfoEnumStyle,
 )}
 `,
   ]

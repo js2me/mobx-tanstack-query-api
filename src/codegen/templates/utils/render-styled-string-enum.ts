@@ -65,6 +65,10 @@ export const renderStyledStringEnumDeclaration = (
     ({ key, value }) => `${key} = ${JSON.stringify(value)}`,
   );
 
+  if (enumStyle === 'enum') {
+    return `export enum ${typeName} {\n  ${body}\n}`;
+  }
+
   return `export const enum ${typeName} {\n  ${body}\n}`;
 };
 
