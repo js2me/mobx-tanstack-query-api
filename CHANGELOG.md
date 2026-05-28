@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.56.1
+
+### Patch Changes
+
+- [`05c0be2`](https://github.com/js2me/mobx-tanstack-query-api/commit/05c0be27040d0899ad65c3793155f48ae1f034e9) Thanks [@js2me](https://github.com/js2me)! - fixed bug with nested yaml schemas
+
 ## 0.56.0
 
 ### Minor Changes
