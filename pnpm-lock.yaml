@@ -30,8 +30,8 @@ importers:
         specifier: ^6.13.6
         version: 6.15.4
       mobx-tanstack-query:
-        specifier: ^6.16.1
-        version: 6.16.1(@tanstack/query-core@5.100.14)(mobx@6.15.4)
+        specifier: ^7.1.1
+        version: 7.1.1(@tanstack/query-core@5.100.14)(mobx@6.15.4)
       qs:
         specifier: ^6.15.2
         version: 6.15.2
@@ -3094,8 +3094,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  mobx-tanstack-query@6.16.1:
-    resolution: {integrity: sha512-PhKVKX+uUiIwEnjSmgoz6++0vKI11gDnBNxSpf+ROGtO2zkKEA3vC163YW8qRPC6QXrDNvAolg1gEXV4Cm75Gg==}
+  mobx-tanstack-query@7.1.1:
+    resolution: {integrity: sha512-wKuAHiwoX+O8tPi6DrcBfzsQJeLSg1hH7ck4r6SGXw2rE49LSUUpE3hsqzL/r9Z66xBoZGHgWMfpW9mVdyabAQ==}
     peerDependencies:
       '@tanstack/query-core': ^5.90.2
       mobx: ^6.12.4
@@ -7470,7 +7470,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  mobx-tanstack-query@6.16.1(@tanstack/query-core@5.100.14)(mobx@6.15.4):
+  mobx-tanstack-query@7.1.1(@tanstack/query-core@5.100.14)(mobx@6.15.4):
     dependencies:
       '@tanstack/query-core': 5.100.14
       linked-abort-controller: 1.1.1
