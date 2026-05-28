@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.56.3
+
+### Patch Changes
+
+- [`52d1000`](https://github.com/js2me/mobx-tanstack-query-api/commit/52d10003b244a1a7943151c95463026f81bb78f6) Thanks [@js2me](https://github.com/js2me)! - Fix data-contracts exclusion for externally-aliased types referenced from shared contracts
+
+  Types with external prefixes (e.g. `Openapi*DC`) that are referenced by other shared contracts were incorrectly excluded from `data-contracts.ts`, causing import errors. The exclusion logic now iteratively checks cross-references and keeps such types in data-contracts. The logic was also extracted into a dedicated `data-contract-exclusion` utility with support for both string and array content types.
+
+- [`3bb5a9e`](https://github.com/js2me/mobx-tanstack-query-api/commit/3bb5a9e792fad1ae28ed89e82378fdf8fc4c6052) Thanks [@js2me](https://github.com/js2me)! - Update mobx-tanstack-query to ^7.1.1
+
 ## 0.56.2
 
 ### Patch Changes
