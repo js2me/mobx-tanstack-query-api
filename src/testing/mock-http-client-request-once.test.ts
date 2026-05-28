@@ -49,7 +49,7 @@ describe('mockHttpClientRequestOnce', () => {
     const p = httpClient.request<{ d: number }, null>(baseFullParams);
     await vi.advanceTimersByTimeAsync(499);
     let settled = false;
-    p.then(() => {
+    void p.then(() => {
       settled = true;
     });
     await Promise.resolve();

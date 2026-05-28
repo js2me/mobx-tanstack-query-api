@@ -209,6 +209,7 @@ const generateApiSingle = async (
     extractResponseBody: true,
     extractResponseError: true,
     extractResponses: true,
+    preferExistingSchemaNamesForExternalRefs: true,
     generateResponses: true,
     generateClient: false,
     addReadonly: true,

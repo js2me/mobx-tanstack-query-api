@@ -50,7 +50,7 @@ describe('mockEndpointRequestOnce', () => {
     const p = endpoint.request({ id: 1 });
     await vi.advanceTimersByTimeAsync(299);
     let done = false;
-    p.then(() => {
+    void p.then(() => {
       done = true;
     });
     await Promise.resolve();

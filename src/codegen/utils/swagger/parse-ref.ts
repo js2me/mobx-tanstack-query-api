@@ -4,6 +4,6 @@ export const REF_PREFIX = '#/components/schemas/';
 
 export function parseRef(ref: string): string | null {
   const parsed = parseComponentRef(ref);
-  if (!parsed || parsed.section !== 'schemas') return null;
+  if (parsed?.section !== 'schemas') return null;
   return parsed.name;
 }

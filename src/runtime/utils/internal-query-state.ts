@@ -115,7 +115,6 @@ export function createInternalQueryState<TParams extends AnyObject>(
       onDone,
       queryClient: overridedQueryClient ?? endpointQueryClient,
       meta: endpoint.toQueryMeta(queryOptions.meta),
-      // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: TanStack `options()` bundles unpack + imperative merge
       options: (queryArg: any) => {
         state.query = queryArg as any;
 
