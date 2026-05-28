@@ -1,6 +1,7 @@
 import type { ParsedRoute } from 'swagger-typescript-api';
 import type { AnyObject, Maybe } from 'yummies/types';
 import type { BaseTmplParams, MetaInfo } from '../types/index.js';
+import { collectEndpointLocalDataContractNames } from '../utils/data-contract-exclusion.js';
 import {
   generateImport,
   resolveGeneratedModuleSpecifier,
@@ -65,13 +66,15 @@ export const allEndpointPerFileTmpl = async (
 
     reservedDataContractNames.forEach((reservedDataContractName) => {
       reservedDataContractNamesInFile.add(reservedDataContractName);
-      if (endpointAliasTypeNames?.includes(reservedDataContractName)) {
-        return;
-      }
-      if (!dataContactNames.has(reservedDataContractName)) {
-        dataContractNamesInThisFile.add(reservedDataContractName);
-      }
     });
+
+    for (const localName of collectEndpointLocalDataContractNames({
+      dataContactNames: dataContactNames,
+      reservedDataContractNames,
+      endpointAliasTypeNames,
+    })) {
+      dataContractNamesInThisFile.add(localName);
+    }
 
     return { ...newEndpointTemplateData, route };
   });

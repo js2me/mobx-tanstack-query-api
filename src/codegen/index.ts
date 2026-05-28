@@ -28,6 +28,7 @@ import type {
   MetaInfo,
   RouteBaseInfo,
 } from './types/index.js';
+import { computeExcludedDataContractNames } from './utils/data-contract-exclusion.js';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-suffix.js';
 import { generateExport } from './utils/generate-export.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
@@ -947,16 +948,11 @@ export * as ${exportGroupName} from './endpoints';
     utils.formatModelName,
   );
 
-  const excludedDataContractNames = Array.from(
-    reservedDataContractNamesMap.entries(),
-  )
-    .filter(([name, count]) => {
-      if (count !== 1) {
-        return false;
-      }
-      return !componentsContractNames.has(name);
-    })
-    .map(([name]) => name);
+  const excludedDataContractNames = computeExcludedDataContractNames({
+    reservedDataContractNamesMap,
+    componentsContractNames,
+    modelTypes: generated.configuration.modelTypes as AnyObject[],
+  });
 
   const dataContractsContent = await dataContractsFileTmpl({
     ...baseTmplParams,
