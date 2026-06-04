@@ -30,14 +30,14 @@ importers:
         specifier: ^6.13.6
         version: 6.15.4
       mobx-tanstack-query:
-        specifier: ^7.1.1
-        version: 7.1.1(@tanstack/query-core@5.100.14)(mobx@6.15.4)
+        specifier: ^7.2.0
+        version: 7.2.0(@tanstack/query-core@5.100.14)(mobx@6.15.4)
       qs:
         specifier: ^6.15.2
         version: 6.15.2
       swagger-typescript-api:
-        specifier: ^13.12.0
-        version: 13.12.0(magicast@0.5.3)(mobx@6.15.4)
+        specifier: ^13.12.1
+        version: 13.12.1(magicast@0.5.3)(mobx@6.15.4)
       ts-morph:
         specifier: ^28.0.0
         version: 28.0.0
@@ -3094,8 +3094,8 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  mobx-tanstack-query@7.1.1:
-    resolution: {integrity: sha512-wKuAHiwoX+O8tPi6DrcBfzsQJeLSg1hH7ck4r6SGXw2rE49LSUUpE3hsqzL/r9Z66xBoZGHgWMfpW9mVdyabAQ==}
+  mobx-tanstack-query@7.2.0:
+    resolution: {integrity: sha512-RFIb6e/7ZHxlWSTDuVT1ghSgVEBh2N5H1HF7pIp40UOeIX189aNIpIBmfdpdY2MtpPYS+cEDL+4Nnyb8PIzxOg==}
     peerDependencies:
       '@tanstack/query-core': ^5.90.2
       mobx: ^6.12.4
@@ -3783,8 +3783,8 @@ packages:
   swagger-schema-official@2.0.0-bab6bed:
     resolution: {integrity: sha512-rCC0NWGKr/IJhtRuPq/t37qvZHI/mH4I4sxflVM+qgVe5Z2uOCivzWaVbuioJaB61kvm5UvB7b49E+oBY0M8jA==}
 
-  swagger-typescript-api@13.12.0:
-    resolution: {integrity: sha512-tE9bHjN3luZeVJEitha7R7PSgYRjPa7+G1491MMVZxkmnUaOZspHg/G9+++OsY3+S6pz4v1aiLPt4mwsyRjZgg==}
+  swagger-typescript-api@13.12.1:
+    resolution: {integrity: sha512-Qvf1mylQPavRJIQ6D1bupW28H7IUxApCWlUIut/VbvYHlQd0IDL3ocERVpZj3yewANHBEZEJz6s84ck7G+lVAw==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -3898,6 +3898,10 @@ packages:
 
   type-fest@5.6.0:
     resolution: {integrity: sha512-8ZiHFm91orbSAe2PSAiSVBVko18pbhbiB3U9GglSzF/zCGkR+rxpHx6sEMCUm4kxY4LjDIUGgCfUMtwfZfjfUA==}
+    engines: {node: '>=20'}
+
+  type-fest@5.7.0:
+    resolution: {integrity: sha512-1URUxUqfHFM1c+zfSPsa3gnkO7Aq21qyH75SIduNYz4SzY964rn1X2vCMQaHSHhktiw+0kPa2iyb6PUpXqB6Vg==}
     engines: {node: '>=20'}
 
   type-level-regexp@0.1.17:
@@ -7470,7 +7474,7 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  mobx-tanstack-query@7.1.1(@tanstack/query-core@5.100.14)(mobx@6.15.4):
+  mobx-tanstack-query@7.2.0(@tanstack/query-core@5.100.14)(mobx@6.15.4):
     dependencies:
       '@tanstack/query-core': 5.100.14
       linked-abort-controller: 1.1.1
@@ -8327,7 +8331,7 @@ snapshots:
 
   swagger-schema-official@2.0.0-bab6bed: {}
 
-  swagger-typescript-api@13.12.0(magicast@0.5.3)(mobx@6.15.4):
+  swagger-typescript-api@13.12.1(magicast@0.5.3)(mobx@6.15.4):
     dependencies:
       '@apidevtools/swagger-parser': 12.1.0(openapi-types@12.1.3)
       '@biomejs/js-api': 4.0.0(@biomejs/wasm-nodejs@2.4.16)
@@ -8342,7 +8346,7 @@ snapshots:
       openapi-types: 12.1.3
       swagger-schema-official: 2.0.0-bab6bed
       swagger2openapi: 7.0.8
-      type-fest: 5.6.0
+      type-fest: 5.7.0
       typescript: 6.0.3
       yaml: 2.9.0
       yummies: 7.19.4(mobx@6.15.4)
@@ -8451,6 +8455,10 @@ snapshots:
   type-fest@0.6.0: {}
 
   type-fest@5.6.0:
+    dependencies:
+      tagged-tag: 1.0.0
+
+  type-fest@5.7.0:
     dependencies:
       tagged-tag: 1.0.0
 
