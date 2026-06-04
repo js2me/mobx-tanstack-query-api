@@ -45,44 +45,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const __execdirname = process.cwd();
 
-/**
- * Clears each distinct `output` directory on disk once before any `generateApiSingle`
- * run. Grouped by resolved path so multiple configs sharing one output only delete
- * once; skips paths where any config uses `cleanOutput: false`.
- */
-function cleanOutputDirectoriesOnDiskBeforeCodegen(
-  params: GenerateQueryApiParamsWithInput[],
-): void {
-  const absPathMap = new Map<string, GenerateQueryApiParams[]>();
-  for (const param of params) {
-    if (!param.output || typeof param.output !== 'string') {
-      continue;
-    }
-    const absPath = path.resolve(__execdirname, param.output);
-    const apiGenerateParams = absPathMap.get(absPath) ?? [];
-    apiGenerateParams.push(param);
-    absPathMap.set(absPath, apiGenerateParams);
-  }
-
-  for (const [absPath, apiGenerateParams] of absPathMap) {
-    if (!apiGenerateParams.every((c) => c.cleanOutput !== false)) {
-      continue;
-    }
-    try {
-      const statInfo = statSync(absPath);
-      if (!statInfo.isDirectory()) {
-        continue;
-      }
-      rmSync(absPath, { recursive: true, force: true });
-    } catch (err) {
-      const code = (err as NodeJS.ErrnoException).code;
-      if (code !== 'ENOENT') {
-        throw err;
-      }
-    }
-  }
-}
-
 export const generateApi = async (
   paramOrParams: GenerateQueryApiParams | GenerateQueryApiParams[],
 ): Promise<void> => {
@@ -105,13 +67,23 @@ export const generateApi = async (
     },
   );
 
-  cleanOutputDirectoriesOnDiskBeforeCodegen(params);
+  // Precompute vetoed paths: if any config with the same output has cleanOutput: false,
+  // that output path should never be cleaned.
+  const vetoedPaths = new Set<string>();
+  for (const param of params) {
+    if (!param.output || typeof param.output !== 'string') continue;
+    if (param.cleanOutput === false) {
+      vetoedPaths.add(path.resolve(__execdirname, param.output));
+    }
+  }
+
+  const cleanedPaths = new Set<string>();
 
   const failures: Error[] = [];
 
   for await (const param of params) {
     try {
-      await generateApiSingle(param);
+      await generateApiSingle(param, cleanedPaths, vetoedPaths);
       console.log('');
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -131,6 +103,8 @@ export const generateApi = async (
 
 const generateApiSingle = async (
   params: GenerateQueryApiParamsWithInput,
+  cleanedPaths: Set<string>,
+  vetoedPaths: Set<string>,
   // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: orchestration with many code paths
 ): Promise<void> => {
   const importFileParams: AllImportFileParams = {
@@ -413,6 +387,24 @@ const generateApiSingle = async (
   }).catch((e): never => throwSwaggerCodegenError(e, input));
 
   //#endregion
+
+  // Clean output directory after input validation but before writing files.
+  // This ensures old files are only deleted when we know new ones will be written.
+  const absOutputPath = path.resolve(__execdirname, params.output);
+  if (!vetoedPaths.has(absOutputPath) && !cleanedPaths.has(absOutputPath)) {
+    try {
+      const statInfo = statSync(absOutputPath);
+      if (statInfo.isDirectory()) {
+        rmSync(absOutputPath, { recursive: true, force: true });
+      }
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code;
+      if (code !== 'ENOENT') {
+        throw err;
+      }
+    }
+    cleanedPaths.add(absOutputPath);
+  }
 
   const swaggerSchema = ((generated.configuration as GenerateApiConfiguration)
     .config?.swaggerSchema ??

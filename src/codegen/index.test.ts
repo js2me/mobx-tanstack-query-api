@@ -384,6 +384,26 @@ describe('cleanOutputDirectoriesOnDiskBeforeCodegen (via generateApi)', () => {
 
     expect(fsMocks.rmSync).not.toHaveBeenCalled();
   });
+
+  it('does not delete output directory when swagger input fetch fails', async () => {
+    fsMocks.statSync.mockImplementation(
+      () => ({ isDirectory: () => true }) as Stats,
+    );
+
+    vi.mocked(swaggerCodegen).mockRejectedValueOnce(
+      new Error('error while fetching data from URL'),
+    );
+
+    await expect(
+      generateApi({
+        ...minimalCodegenOptions,
+        input: 'http://unreachable/swagger.json',
+        output: './api-out-fetch-fail',
+      }),
+    ).rejects.toThrow();
+
+    expect(fsMocks.rmSync).not.toHaveBeenCalled();
+  });
 });
 
 describe('generateApi input errors and batch resilience', () => {
