@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.57.0
+
+### Minor Changes
+
+- [`7bcb665`](https://github.com/js2me/mobx-tanstack-query-api/commit/7bcb6656e4a991712218c68c40f0485946e03be0) Thanks [@js2me](https://github.com/js2me)! - added option `enumStyle` `const-enum`
+
+### Patch Changes
+
+- [`2844ca3`](https://github.com/js2me/mobx-tanstack-query-api/commit/2844ca3677569b22ccae3fe49dceab92c403320a) Thanks [@js2me](https://github.com/js2me)! - Fix duplicate enum keys in Tag/Group when tag names differ only by casing or separators
+
 ## 0.56.3
 
 ### Patch Changes
