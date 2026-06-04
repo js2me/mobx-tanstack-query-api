@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.57.1
+
+### Patch Changes
+
+- [`9845537`](https://github.com/js2me/mobx-tanstack-query-api/commit/9845537f155b7e3a54df8333aba039450e5c2fdd) Thanks [@js2me](https://github.com/js2me)! - Do not wipe `output` when OpenAPI parsing fails; run `cleanOutput` cleanup only after swagger succeeds.
+
 ## 0.57.0
 
 ### Minor Changes
