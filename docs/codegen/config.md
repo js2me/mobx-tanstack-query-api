@@ -1074,3 +1074,15 @@ Example without groups, `one-endpoint-per-file`:
 *    get-endpoint-n.ts
 *  data-contracts.ts
 ```
+
+### `debug`
+
+Show full error details (stack trace, cause chain) when codegen fails.
+Default: `false` (only the error message is shown)
+
+Example:
+```ts
+debug: true
+```
+
+Useful for debugging when investigating why a schema fails to load.

@@ -33,7 +33,10 @@ import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from './utils/data-contract-type-su
 import { generateExport } from './utils/generate-export.js';
 import { removeUnusedTypes } from './utils/remove-unused-types.js';
 import { collectComponentContractNames } from './utils/swagger/collect-component-names.js';
-import { throwSwaggerCodegenError } from './utils/swagger/throw-swagger-codegen-error.js';
+import {
+  createAggregateUserError,
+  throwSwaggerCodegenError,
+} from './utils/swagger/throw-swagger-codegen-error.js';
 import { unpackFilterOption } from './utils/unpack-filter-option.js';
 import { buildCentralZodContractsFile } from './utils/zod/build-endpoint-zod-contracts-code.js';
 import { getZodContractSuffix } from './utils/zod/contract-suffix.js';
@@ -79,6 +82,9 @@ export const generateApi = async (
 
   const cleanedPaths = new Set<string>();
 
+  // Check if any config has debug enabled (used for error output)
+  const debug = params.some((p) => p.debug === true);
+
   const failures: Error[] = [];
 
   for await (const param of params) {
@@ -97,7 +103,11 @@ export const generateApi = async (
     throw failures[0];
   }
   if (failures.length > 1) {
-    throw new AggregateError(failures, '⛔ One or more codegen configs failed');
+    throw createAggregateUserError(
+      failures,
+      '⛔ One or more codegen configs failed',
+      debug,
+    );
   }
 };
 
@@ -384,7 +394,7 @@ const generateApiSingle = async (
       onPrepareConfig: prepareConfig,
       onFormatRouteName: formatRouteName,
     },
-  }).catch((e): never => throwSwaggerCodegenError(e, input));
+  }).catch((e): never => throwSwaggerCodegenError(e, input, params.debug));
 
   //#endregion
 

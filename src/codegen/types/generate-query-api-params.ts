@@ -422,6 +422,14 @@ export interface GenerateQueryApiParams {
         /** Suffix for generated shared Zod schema variables. Default: "". */
         suffix?: string;
       };
+
+  /**
+   * Show full error details (stack trace, cause chain) when codegen fails.
+   * By default (false), only the error message is shown.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#debug)
+   */
+  debug?: boolean;
 }
 
 /** Config with a truthy {@link GenerateQueryApiParams.input} (actually runs codegen). */

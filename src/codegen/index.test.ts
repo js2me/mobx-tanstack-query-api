@@ -406,6 +406,258 @@ describe('cleanOutputDirectoriesOnDiskBeforeCodegen (via generateApi)', () => {
   });
 });
 
+describe('debug option for error output', () => {
+  const defaultSwaggerCodegenImpl = vi
+    .mocked(swaggerCodegen)
+    .getMockImplementation()!;
+
+  beforeEach(() => {
+    vi.mocked(swaggerCodegen).mockClear();
+    vi.mocked(swaggerCodegen).mockImplementation(defaultSwaggerCodegenImpl);
+  });
+
+  it('hides stack trace by default (debug: false)', async () => {
+    vi.mocked(swaggerCodegen).mockRejectedValueOnce(
+      new Error('error while fetching data from URL'),
+    );
+
+    const badUrl = 'http://unreachable/swagger.json';
+
+    try {
+      await generateApi({
+        input: badUrl,
+        output: './debug-test-out',
+        noBarrelFiles: true,
+        noMetaInfo: true,
+      });
+      expect.fail('Expected error to be thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toBe(
+        `⛔ failed to load swagger schema based on input ${badUrl}`,
+      );
+      // Stack should only contain the message (not a full call stack)
+      expect((error as Error).stack).toBe(
+        `⛔ failed to load swagger schema based on input ${badUrl}`,
+      );
+    }
+  });
+
+  it('shows full stack trace when debug: true', async () => {
+    vi.mocked(swaggerCodegen).mockRejectedValueOnce(
+      new Error('error while fetching data from URL'),
+    );
+
+    const badUrl = 'http://unreachable/swagger.json';
+
+    try {
+      await generateApi({
+        input: badUrl,
+        output: './debug-test-out',
+        noBarrelFiles: true,
+        noMetaInfo: true,
+        debug: true,
+      });
+      expect.fail('Expected error to be thrown');
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toBe(
+        `⛔ failed to load swagger schema based on input ${badUrl}`,
+      );
+      // Stack should contain the full call stack (including file paths)
+      expect((error as Error).stack).toContain('throw-swagger-codegen-error');
+    }
+  });
+
+  it('AggregateError hides stack traces by default for multiple failures', async () => {
+    vi.mocked(swaggerCodegen)
+      .mockRejectedValueOnce(new Error('error while fetching data from URL'))
+      .mockRejectedValueOnce(new Error('error while fetching data from URL'));
+
+    try {
+      await generateApi([
+        {
+          input: 'http://fail1/swagger.json',
+          output: './out1',
+          noBarrelFiles: true,
+        },
+        {
+          input: 'http://fail2/swagger.json',
+          output: './out2',
+          noBarrelFiles: true,
+        },
+      ]);
+      expect.fail('Expected error to be thrown');
+    } catch (error) {
+      // Should be a regular Error (not AggregateError) for clean output
+      expect(error).toBeInstanceOf(Error);
+      expect(error).not.toBeInstanceOf(AggregateError);
+      const err = error as Error;
+      // Message should contain summary, not full stack traces
+      expect(err.message).toContain('⛔ One or more codegen configs failed');
+      expect(err.message).toContain('failed to load swagger schema');
+      // Should NOT contain file paths or stack trace
+      expect(err.message).not.toContain('throw-swagger-codegen-error');
+      expect(err.message).not.toContain('.ts:');
+    }
+  });
+
+  it('AggregateError with debug: true returns real AggregateError with stack traces', async () => {
+    vi.mocked(swaggerCodegen)
+      .mockRejectedValueOnce(new Error('error while fetching data from URL'))
+      .mockRejectedValueOnce(new Error('error while fetching data from URL'));
+
+    try {
+      await generateApi([
+        {
+          input: 'http://fail1/swagger.json',
+          output: './out1',
+          noBarrelFiles: true,
+          debug: true,
+        },
+        {
+          input: 'http://fail2/swagger.json',
+          output: './out2',
+          noBarrelFiles: true,
+        },
+      ]);
+      expect.fail('Expected error to be thrown');
+    } catch (error) {
+      // Should be a real AggregateError with full details
+      expect(error).toBeInstanceOf(AggregateError);
+      const aggregate = error as AggregateError;
+      expect(aggregate.errors).toHaveLength(2);
+      // Stack should contain file paths
+      expect(aggregate.stack).toContain('createAggregateUserError');
+    }
+  });
+
+  it('stack property equals message for clean output (single error)', async () => {
+    vi.mocked(swaggerCodegen).mockRejectedValueOnce(
+      new Error('error while fetching data from URL'),
+    );
+
+    const badUrl = 'http://test-stack/swagger.json';
+
+    try {
+      await generateApi({
+        input: badUrl,
+        output: './out',
+        noBarrelFiles: true,
+        noMetaInfo: true,
+      });
+      expect.fail('Expected error to be thrown');
+    } catch (error) {
+      const err = error as Error;
+      // Stack should be exactly equal to message (no file paths)
+      expect(err.stack).toBe(err.message);
+      expect(err.stack).not.toContain('.ts');
+      expect(err.stack).not.toContain('at ');
+    }
+  });
+
+  it('stack property equals message for clean output (multiple errors)', async () => {
+    vi.mocked(swaggerCodegen)
+      .mockRejectedValueOnce(new Error('error while fetching data from URL'))
+      .mockRejectedValueOnce(new Error('error while fetching data from URL'));
+
+    try {
+      await generateApi([
+        {
+          input: 'http://fail1/swagger.json',
+          output: './out1',
+          noBarrelFiles: true,
+        },
+        {
+          input: 'http://fail2/swagger.json',
+          output: './out2',
+          noBarrelFiles: true,
+        },
+      ]);
+      expect.fail('Expected error to be thrown');
+    } catch (error) {
+      const err = error as Error;
+      // Stack should be exactly equal to message (no file paths)
+      expect(err.stack).toBe(err.message);
+      expect(err.stack).not.toContain('.ts');
+      expect(err.stack).not.toContain('at ');
+      // Stack should contain numbered list
+      expect(err.stack).toContain('1. ⛔');
+      expect(err.stack).toContain('2. ⛔');
+    }
+  });
+
+  it('handles non-swagger-input errors with debug: false', async () => {
+    vi.mocked(swaggerCodegen).mockRejectedValueOnce(
+      new Error('Some unexpected internal error'),
+    );
+
+    try {
+      await generateApi({
+        input: 'http://test/swagger.json',
+        output: './out',
+        noBarrelFiles: true,
+        noMetaInfo: true,
+      });
+      expect.fail('Expected error to be thrown');
+    } catch (error) {
+      const err = error as Error;
+      // Should still have clean error message
+      expect(err.message).toBe('⛔ failed to generate swagger schema');
+      expect(err.stack).toBe('⛔ failed to generate swagger schema');
+    }
+  });
+
+  it('debug: true shows full stack for non-swagger-input errors', async () => {
+    vi.mocked(swaggerCodegen).mockRejectedValueOnce(
+      new Error('Some unexpected internal error'),
+    );
+
+    try {
+      await generateApi({
+        input: 'http://test/swagger.json',
+        output: './out',
+        noBarrelFiles: true,
+        noMetaInfo: true,
+        debug: true,
+      });
+      expect.fail('Expected error to be thrown');
+    } catch (error) {
+      const err = error as Error;
+      expect(err.message).toBe('⛔ failed to generate swagger schema');
+      // Stack should contain file paths
+      expect(err.stack).toContain('throw-swagger-codegen-error');
+    }
+  });
+
+  it('enumerates errors with correct numbering in aggregate', async () => {
+    vi.mocked(swaggerCodegen)
+      .mockRejectedValueOnce(new Error('error while fetching data from URL'))
+      .mockRejectedValueOnce(new Error('error while fetching data from URL'))
+      .mockRejectedValueOnce(new Error('error while fetching data from URL'));
+
+    try {
+      await generateApi([
+        { input: 'http://a/swagger.json', output: './a', noBarrelFiles: true },
+        { input: 'http://b/swagger.json', output: './b', noBarrelFiles: true },
+        { input: 'http://c/swagger.json', output: './c', noBarrelFiles: true },
+      ]);
+      expect.fail('Expected error to be thrown');
+    } catch (error) {
+      const err = error as Error;
+      expect(err.message).toContain(
+        '1. ⛔ failed to load swagger schema based on input http://a/swagger.json',
+      );
+      expect(err.message).toContain(
+        '2. ⛔ failed to load swagger schema based on input http://b/swagger.json',
+      );
+      expect(err.message).toContain(
+        '3. ⛔ failed to load swagger schema based on input http://c/swagger.json',
+      );
+    }
+  });
+});
+
 describe('generateApi input errors and batch resilience', () => {
   const defaultSwaggerCodegenImpl = vi
     .mocked(swaggerCodegen)

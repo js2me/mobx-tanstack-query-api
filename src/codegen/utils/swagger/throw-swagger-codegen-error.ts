@@ -31,12 +31,53 @@ export const isInvalidSwaggerInputError = (error: unknown): boolean => {
   return INVALID_SWAGGER_INPUT_MARKERS.some((marker) => text.includes(marker));
 };
 
+export const createUserError = (
+  message: string,
+  options?: { cause?: Error | undefined; debug?: boolean },
+): Error => {
+  const { cause, debug = false } = options ?? {};
+  const error = new Error(message, cause ? { cause } : undefined);
+
+  if (!debug) {
+    Object.defineProperty(error, 'stack', {
+      value: message,
+      writable: false,
+      configurable: false,
+    });
+  }
+
+  return error;
+};
+
+export const createAggregateUserError = (
+  errors: Error[],
+  message: string,
+  debug = false,
+): Error | AggregateError => {
+  const summary = errors.map((e, i) => `  ${i + 1}. ${e.message}`).join('\n');
+  const fullMessage = `${message}\n${summary}`;
+
+  if (debug) {
+    return new AggregateError(errors, message);
+  }
+
+  const error = new Error(fullMessage);
+  Object.defineProperty(error, 'stack', {
+    value: fullMessage,
+    writable: false,
+    configurable: false,
+  });
+
+  return error;
+};
+
 const FRIENDLY_LOAD_ERROR_PREFIX =
   '⛔ failed to load swagger schema based on input';
 
 export const throwSwaggerCodegenError = (
   error: unknown,
   input: AnyObject,
+  debug = false,
 ): never => {
   if (
     error instanceof Error &&
@@ -52,11 +93,14 @@ export const throwSwaggerCodegenError = (
     error instanceof Error ? error : new Error(String(error), { cause: error });
 
   if (isInvalidSwaggerInputError(error)) {
-    throw new Error(
+    throw createUserError(
       `⛔ failed to load swagger schema based on input ${inputLabel}`,
-      { cause },
+      { cause, debug },
     );
   }
 
-  throw new Error('⛔ failed to generate swagger schema', { cause });
+  throw createUserError('⛔ failed to generate swagger schema', {
+    cause,
+    debug,
+  });
 };
