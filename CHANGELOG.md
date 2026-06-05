@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.57.2
+
+### Patch Changes
+
+- [`bd62a2e`](https://github.com/js2me/mobx-tanstack-query-api/commit/bd62a2e749a760c2be6f831fe811b0f4504c835c) Thanks [@js2me](https://github.com/js2me)! - Fix cleanOutput wiping files when swagger fetch fails, add debug option
+
+  - `cleanOutput` now runs after swagger fetch succeeds, preventing data loss when input URL is unreachable
+  - Add `debug` option to show full error details (stack trace, cause chain) for troubleshooting
+  - Error messages are now user-friendly and compact by default (no stack trace in output)
+
 ## 0.57.1
 
 ### Patch Changes
