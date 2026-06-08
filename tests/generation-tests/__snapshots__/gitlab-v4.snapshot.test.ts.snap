@@ -69897,7 +69897,7 @@ export const getApiV4ProjectsProjectIdPackagesNugetV2Findpackagesbyid =
   >(
     {
       params: ({ projectId, query, requestParams }) => ({
-        path: \`/api/v4/projects/\${projectId}/packages/nuget/v2/FindPackagesById\\(\\)\`,
+        path: \`/api/v4/projects/\${projectId}/packages/nuget/v2/FindPackagesById\\\\(\\\\)\`,
         method: "GET",
         query: query,
         format: "json",
@@ -69914,7 +69914,7 @@ export const getApiV4ProjectsProjectIdPackagesNugetV2Findpackagesbyid =
         "packages",
         "nuget",
         "v2",
-        "FindPackagesById\\(\\)",
+        "FindPackagesById\\\\(\\\\)",
       ],
       tags: [Tag.Packages],
       meta: {},
@@ -69992,7 +69992,7 @@ export const getApiV4ProjectsProjectIdPackagesNugetV2PackagesIdPackageNameVersio
   >(
     {
       params: ({ projectId, query, requestParams }) => ({
-        path: \`/api/v4/projects/\${projectId}/packages/nuget/v2/Packages\\(Id='*package_name',Version='*package_version'\\)\`,
+        path: \`/api/v4/projects/\${projectId}/packages/nuget/v2/Packages\\\\(Id='*package_name',Version='*package_version'\\\\)\`,
         method: "GET",
         query: query,
         format: "json",
@@ -70009,7 +70009,7 @@ export const getApiV4ProjectsProjectIdPackagesNugetV2PackagesIdPackageNameVersio
         "packages",
         "nuget",
         "v2",
-        "Packages\\(Id='*package_name',Version='*package_version'\\)",
+        "Packages\\\\(Id='*package_name',Version='*package_version'\\\\)",
       ],
       tags: [Tag.Packages],
       meta: {},
@@ -70078,7 +70078,7 @@ export const getApiV4ProjectsProjectIdPackagesNugetV2Packages = new Endpoint<
 >(
   {
     params: ({ projectId, query, requestParams }) => ({
-      path: \`/api/v4/projects/\${projectId}/packages/nuget/v2/Packages\\(\\)\`,
+      path: \`/api/v4/projects/\${projectId}/packages/nuget/v2/Packages\\\\(\\\\)\`,
       method: "GET",
       query: query,
       format: "json",
@@ -70094,7 +70094,7 @@ export const getApiV4ProjectsProjectIdPackagesNugetV2Packages = new Endpoint<
       "packages",
       "nuget",
       "v2",
-      "Packages\\(\\)",
+      "Packages\\\\(\\\\)",
     ],
     tags: [Tag.Packages],
     meta: {},
