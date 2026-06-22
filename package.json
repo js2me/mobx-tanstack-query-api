@@ -12,6 +12,7 @@
     "build:watch": "pnpm build && nodemon --delay 0.5 --watch src --ext ts,tsx --exec \"pnpm build\"",
     "build": "vite build",
     "pub": "pnpm build && sborshik publish --useDistDir",
+    "changeset:version": "bash scripts/changeset-version.sh",
     "pub:patch": "PUBLISH_VERSION=patch pnpm run build",
     "pub:minor": "PUBLISH_VERSION=minor pnpm run build",
     "pub:major": "PUBLISH_VERSION=major pnpm run build",
@@ -44,7 +45,7 @@
   "homepage": "https://github.com/js2me/mobx-tanstack-query-api",
   "repository": {
     "type": "git",
-    "url": "git://github.com/js2me/mobx-tanstack-query-api"
+    "url": "https://github.com/js2me/mobx-tanstack-query-api"
   },
   "peerDependencies": {
     "mobx": "^6.13.6",
