@@ -1,5 +1,19 @@
 # mobx-tanstack-query-api
 
+## 0.57.4
+
+### Patch Changes
+
+- [`147e7c4`](https://github.com/js2me/mobx-tanstack-query-api/commit/147e7c4078c83eb21f9035b573eac122bb03e833) Thanks [@js2me](https://github.com/js2me)! - update deps to latest
+
+- [`147e7c4`](https://github.com/js2me/mobx-tanstack-query-api/commit/147e7c4078c83eb21f9035b573eac122bb03e833) Thanks [@js2me](https://github.com/js2me)! - migrate to new fresh documentation (docusite)
+
+- [`e09d85c`](https://github.com/js2me/mobx-tanstack-query-api/commit/e09d85c7aabfab0774d2d8addb57a874e8f66e6f) Thanks [@js2me](https://github.com/js2me)! - fix intercepting requests from mockEndpointRequest and stubEndpointThrow when endpoint is calling as function
+
+- [`6c985e6`](https://github.com/js2me/mobx-tanstack-query-api/commit/6c985e63154e4c98745e88d181c2e1678d632ad5) Thanks [@js2me](https://github.com/js2me)! - fix type guards for http response (cross realm)
+
+- [`72e7644`](https://github.com/js2me/mobx-tanstack-query-api/commit/72e7644b19c430eb57438fae008f8c8b8fb3cbe1) Thanks [@js2me](https://github.com/js2me)! - migration npm publish to trusted gh actions
+
 ## 0.57.3
 
 ### Patch Changes
