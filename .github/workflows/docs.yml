@@ -34,7 +34,7 @@ jobs:
 
       - run: corepack enable
 
-      - run: pnpm docs:install
+      - run: pnpm install --frozen-lockfile
 
       - run: pnpm docs:build
 

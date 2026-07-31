@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: '{packageJson.name}'
-  text: '{packageJson.description}'
+  name: '@{packageJson.name}'
+  text: '@{packageJson.description}'
   image:
     src: /logo.png
   actions:
@@ -13,5 +13,5 @@ hero:
       link: /introduction/overview.md
     - theme: alt
       text: View on GitHub
-      link: https://github.com/{packageJson.author}/{packageJson.name}
+      link: https://github.com/@{packageJson.author}/@{packageJson.name}
 ---

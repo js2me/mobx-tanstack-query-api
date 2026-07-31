@@ -3,7 +3,7 @@ dist
 coverage
 playground
 unit-tests-coverage
-docs/.vitepress/cache
+docs/.vitepress/
 tmp
 **/__generated__/
 .pnpm-store/

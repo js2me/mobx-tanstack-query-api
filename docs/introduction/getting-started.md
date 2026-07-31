@@ -16,15 +16,15 @@ This package is using `mobx-tanstack-query`, `@tanstack/query-core` under the ho
 ::: code-group
 
 ```bash [npm]
-npm install {packageJson.name}
+npm install @{packageJson.name}
 ```
 
 ```bash [pnpm]
-pnpm add {packageJson.name}
+pnpm add @{packageJson.name}
 ```
 
 ```bash [yarn]
-yarn add {packageJson.name}
+yarn add @{packageJson.name}
 ```
 
 :::
