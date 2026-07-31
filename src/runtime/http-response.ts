@@ -4,6 +4,9 @@ import type {
 } from 'http-status-code-types';
 import type { ValueOf } from 'yummies/types';
 
+/** Cross-realm stable brand so isHttpResponse works across duplicate package copies. */
+const httpResponseBrand = Symbol.for('mtqa.HttpResponse');
+
 export const emptyStatusCodesSet = new Set([204, 205, 304]);
 
 export interface RequestInfo {
@@ -78,6 +81,9 @@ export class HttpResponse<
   error: TError;
   status: TStatus;
 
+  /** Cross-realm brand marker for isHttpResponse. */
+  declare readonly [httpResponseBrand]: true;
+
   constructor(
     public originalResponse: Response,
     public request: RequestInfo,
@@ -92,6 +98,7 @@ export class HttpResponse<
     this.url = originalResponse.url;
     this.data = null as any;
     this.error = null as any;
+    (this as any)[httpResponseBrand] = true;
   }
 
   clone(): HttpResponse<TData, TError, TStatus> {
@@ -139,9 +146,9 @@ export const isHttpResponse = <
   status?: TStatus,
 ): response is HttpResponse<TData, TError, TStatus> =>
   typeof response === 'object' &&
-  response instanceof HttpResponse &&
-  'data' in response &&
-  (!status || response.status === status);
+  response !== null &&
+  httpResponseBrand in response &&
+  (!status || (response as any).status === status);
 
 export const isHttpBadResponse = <
   TError = any,

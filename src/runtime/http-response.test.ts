@@ -202,4 +202,76 @@ describe('HttpResponse', () => {
       expect(unknownResponse.error).toEqual({ message: 'bad request' });
     }
   });
+
+  describe('cross-realm brand detection', () => {
+    // Simulate a second copy of the package by using the same Symbol.for brand
+    const CROSS_REALM_BRAND = Symbol.for('mtqa.HttpResponse');
+
+    /** Mimics a HttpResponse constructed by another copy of the package. */
+    function createCrossRealmResponse(
+      status: number,
+      ok: boolean,
+      data: unknown,
+      error: unknown,
+    ) {
+      const obj = {
+        ok,
+        status,
+        statusText: '',
+        data,
+        error,
+        headers: new Headers(),
+        body: null,
+        redirected: false,
+        type: 'basic' as ResponseType,
+        url: 'https://example.com/api',
+        originalResponse: null,
+        request: null,
+        [CROSS_REALM_BRAND]: true,
+      };
+      return obj;
+    }
+
+    it('isHttpResponse accepts a branded cross-realm response', () => {
+      const crossRealm = createCrossRealmResponse(401, false, null, {
+        message: 'Unauthorized',
+      });
+      const unknownResponse: unknown = crossRealm;
+
+      expect(isHttpResponse(unknownResponse)).toBe(true);
+      expect(isHttpResponse(unknownResponse, 401)).toBe(true);
+      expect(isHttpResponse(unknownResponse, 200)).toBe(false);
+
+      if (isHttpResponse(unknownResponse, 401)) {
+        expectTypeOf(unknownResponse.status).toEqualTypeOf<401>();
+      }
+    });
+
+    it('isHttpBadResponse accepts a branded cross-realm 401 response', () => {
+      const crossRealm = createCrossRealmResponse(401, false, null, {
+        message: 'Unauthorized',
+      });
+      const unknownResponse: unknown = crossRealm;
+
+      expect(isHttpBadResponse(unknownResponse, 401)).toBe(true);
+      expect(isHttpBadResponse(unknownResponse, 200)).toBe(false);
+    });
+
+    it('isHttpResponse rejects a plain object without the brand', () => {
+      const plain = { status: 401, ok: false, data: null, error: 'fail' };
+      expect(isHttpResponse(plain)).toBe(false);
+    });
+
+    it('same-module instanceof still works (fast path)', () => {
+      const request = createRequestInfo();
+      const response = new HttpResponse(
+        new Response(null, { status: 200 }),
+        request,
+      );
+      const unknownResponse: unknown = response;
+
+      expect(isHttpResponse(unknownResponse)).toBe(true);
+      expect(isHttpResponse(unknownResponse, 200)).toBe(true);
+    });
+  });
 });
