@@ -184,8 +184,6 @@ export class Endpoint<
     const tc = configuration.throwContracts;
     this.throwParams = isContractOptionEnabled(tc, 'params');
     this.throwData = isContractOptionEnabled(tc, 'data');
-    // Сохраняем оригинальный инстанс
-    const instance = this;
 
     // Создаем функцию-обертку
     const callable = function (
@@ -194,19 +192,19 @@ export class Endpoint<
         ? [params?: Maybe<TParams>]
         : [params: TParams]
     ) {
-      return instance.request.apply(instance, args);
+      return callable.request.apply(callable, args);
     } as unknown as Endpoint<TResponse, TParams, TMetaData>;
 
     // Копируем прототип
     Object.setPrototypeOf(callable, new.target.prototype);
 
     // Копируем методы из оригинального инстанса
-    Object.getOwnPropertyNames(instance)
+    Object.getOwnPropertyNames(this)
       .concat(Object.getOwnPropertyNames(new.target.prototype))
       .forEach((key) => {
         if (key === 'constructor') return;
         const desc =
-          Object.getOwnPropertyDescriptor(instance, key) ||
+          Object.getOwnPropertyDescriptor(this, key) ||
           Object.getOwnPropertyDescriptor(new.target.prototype, key);
         if (desc) Object.defineProperty(callable, key, desc);
       });
