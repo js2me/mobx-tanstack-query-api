@@ -17,7 +17,10 @@ import { mockEndpointRequestWhen } from './mock-endpoint-request-when.js';
 import { mockHttpClientRequest } from './mock-http-client-request.js';
 import { mockHttpClientRequestOnce } from './mock-http-client-request-once.js';
 import { mockHttpClientRequestSequence } from './mock-http-client-request-sequence.js';
-import { createMockHttpResponse } from './mock-http-response.js';
+import {
+  createMockHttpResponse,
+  MockHttpResponse,
+} from './mock-http-response.js';
 import { mswPathPattern } from './msw-path-pattern.js';
 import { stubEndpointThrow } from './stub-endpoint-throw.js';
 import { createMockHttpClientRequestHandler } from './utils/mock-http-client-request-handler.js';
@@ -200,6 +203,19 @@ describe('docs/testing examples', () => {
       requestParams: { path: '/users', method: 'GET', format: 'json' },
       data: { name: 'Ada' },
     });
+    expect(response.data).toEqual({ name: 'Ada' });
+  });
+
+  it('MockHttpResponse.fromEndpoint example', async () => {
+    const { httpClient } = createHttpClientWithGuardFetch();
+    const getUser = createGetUserLike(httpClient);
+
+    const response = MockHttpResponse.fromEndpoint(getUser, {
+      input: { id: 1 },
+      data: { name: 'Ada' },
+    });
+    expect(response.request.url).toBe('https://api.test/users/1');
+    await response.resolveBody('json');
     expect(response.data).toEqual({ name: 'Ada' });
   });
 

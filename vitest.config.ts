@@ -28,6 +28,7 @@ export default defineConfig({
     coverage: {
       provider: 'istanbul', // or 'v8'
       include: ['src'],
+      exclude: ['src/**/*.bench.ts'],
       reporter: ['text', 'text-summary', 'html'],
       reportsDirectory: './coverage',
     },

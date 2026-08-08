@@ -1,10 +1,11 @@
 import './vitest-test-helpers.js';
 import { describe, expect, it } from 'vitest';
+import { EndpointQueryClient } from '../runtime/endpoint-query-client.js';
 import {
   createMockHttpResponse,
   MockHttpResponse,
 } from './mock-http-response.js';
-import { baseFullParams } from './vitest-test-helpers.js';
+import { baseFullParams, createTestEndpoint } from './vitest-test-helpers.js';
 
 describe('MockHttpResponse', () => {
   it('createMockHttpResponse applies data from params when data is truthy', async () => {
@@ -70,5 +71,60 @@ describe('MockHttpResponse', () => {
     });
     await r.resolveBody('json');
     expect(r.error).toEqual({ msg: 'e' });
+  });
+
+  describe('fromEndpoint', () => {
+    it('derives requestParams and url from endpoint + input; data applies after resolveBody', async () => {
+      const queryClient = new EndpointQueryClient();
+      const { endpoint } = createTestEndpoint({ queryClient });
+
+      const r = MockHttpResponse.fromEndpoint(endpoint, {
+        input: { id: 7 },
+        data: { value: 'ok' },
+      });
+
+      expect(r.request.url).toBe('https://api.test/items/7');
+      expect(r.request.params).toMatchObject({
+        path: '/items/7',
+        method: 'GET',
+      });
+      expect(r.status).toBe(200);
+      expect(r.ok).toBe(true);
+      expect(r.data).toBeNull();
+
+      await r.resolveBody('json');
+      expect(r.data).toEqual({ value: 'ok' });
+    });
+
+    it('builds an error response typed from the endpoint', async () => {
+      const queryClient = new EndpointQueryClient();
+      const { endpoint } = createTestEndpoint({ queryClient });
+
+      const r = MockHttpResponse.fromEndpoint(endpoint, {
+        input: { id: 3 },
+        error: { code: 'boom' },
+        status: 409,
+      });
+
+      expect(r.request.url).toBe('https://api.test/items/3');
+      expect(r.status).toBe(409);
+      expect(r.ok).toBe(false);
+
+      await r.resolveBody('json');
+      expect(r.error).toEqual({ code: 'boom' });
+    });
+
+    it('works without input', async () => {
+      const queryClient = new EndpointQueryClient();
+      const { endpoint } = createTestEndpoint({ queryClient });
+
+      const r = MockHttpResponse.fromEndpoint(endpoint, {
+        data: { value: 'x' },
+      });
+
+      expect(r.request.url).toBe('https://api.test/items/undefined');
+      await r.resolveBody('json');
+      expect(r.data).toEqual({ value: 'x' });
+    });
   });
 });

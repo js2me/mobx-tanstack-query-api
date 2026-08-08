@@ -1,0 +1,148 @@
+{
+  "benchmarks": [
+    {
+      "name": "endpoint.toMutation and destroy",
+      "mean": 0.0844630741554053
+    },
+    {
+      "name": "endpoint.toMutation with invalidateEndpoints",
+      "mean": 0.07065248424473684
+    },
+    {
+      "name": "endpoint.toMutation with transform",
+      "mean": 0.06864432789337883
+    },
+    {
+      "name": "endpoint.toQuery and destroy",
+      "mean": 0.16568702451955025
+    },
+    {
+      "name": "endpoint.toQuery with function input",
+      "mean": 0.159796976766091
+    },
+    {
+      "name": "query.params read",
+      "mean": 0.15603586209047596
+    },
+    {
+      "name": "endpoint.toInfiniteQuery and destroy",
+      "mean": 0.1491714246943023
+    },
+    {
+      "name": "endpoint.toInfiniteQuery with function input",
+      "mean": 0.1512162476564873
+    },
+    {
+      "name": "create Endpoint (callable)",
+      "mean": 0.04184286158995914
+    },
+    {
+      "name": "getFullUrl",
+      "mean": 0.03899162983468614
+    },
+    {
+      "name": "getPath",
+      "mean": 0.03844423289251025
+    },
+    {
+      "name": "toQueryKey",
+      "mean": 0.036745369194589976
+    },
+    {
+      "name": "toQueryKey with uniqKey",
+      "mean": 0.04258711277196946
+    },
+    {
+      "name": "toInfiniteQueryKey",
+      "mean": 0.03969260216572472
+    },
+    {
+      "name": "toQueryMeta",
+      "mean": 0.04068364589097348
+    },
+    {
+      "name": "checkResponse",
+      "mean": 0.06100177555500982
+    },
+    {
+      "name": "request",
+      "mean": 0.07728699629057786
+    },
+    {
+      "name": "callable invocation",
+      "mean": 0.07822324624530705
+    },
+    {
+      "name": "invalidateQuery",
+      "mean": 0.0388894224158096
+    },
+    {
+      "name": "getParamsFromContext",
+      "mean": 0.03716580704623283
+    },
+    {
+      "name": "buildUrl via endpoint configuration params",
+      "mean": 0.06876998143308598
+    },
+    {
+      "name": "create HttpClient",
+      "mean": 0.044181994786605186
+    },
+    {
+      "name": "buildUrl",
+      "mean": 0.043608634310134634
+    },
+    {
+      "name": "buildUrl with serverVars",
+      "mean": 0.016855196966122532
+    },
+    {
+      "name": "getBaseUrl",
+      "mean": 0.03258142496904885
+    },
+    {
+      "name": "mergeRequestParams",
+      "mean": 0.035027240070053436
+    },
+    {
+      "name": "request (json)",
+      "mean": 0.08568186274845846
+    },
+    {
+      "name": "request with body (json contentType)",
+      "mean": 0.05290861633690131
+    },
+    {
+      "name": "toQueryString",
+      "mean": 0.04473100939344432
+    },
+    {
+      "name": "create HttpResponse",
+      "mean": 0.00469344513385644
+    },
+    {
+      "name": "isEmpty",
+      "mean": 0.004624075538703401
+    },
+    {
+      "name": "isEmpty with 204 status",
+      "mean": 0.0005678684397025858
+    },
+    {
+      "name": "clone",
+      "mean": 0.00932428338057571
+    },
+    {
+      "name": "resolveBody (json)",
+      "mean": 0.010038427653636106
+    },
+    {
+      "name": "isHttpResponse",
+      "mean": 0.005356452113641718
+    },
+    {
+      "name": "isHttpBadResponse",
+      "mean": 0.005310764203548885
+    }
+  ]
+}

@@ -17,6 +17,8 @@
     "pub:minor": "PUBLISH_VERSION=minor pnpm run build",
     "pub:major": "PUBLISH_VERSION=major pnpm run build",
     "test": "vitest run --config vitest.config.ts",
+    "profile:bench": "vitest bench --config vitest.config.ts --run",
+    "profile:bench:update-baseline": "pnpm profile:bench --outputJson=benchmark-current.json && node scripts/update-benchmark-baseline.mjs benchmark-current.json",
     "test:update": "vitest run --config vitest.config.ts --update",
     "test:watch": "vitest watch --config vitest.config.ts",
     "test:coverage": "vitest run --config vitest.config.ts --coverage",

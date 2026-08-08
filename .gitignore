@@ -7,3 +7,5 @@ docs/.vitepress/
 tmp
 **/__generated__/
 .pnpm-store/
+benchmark-current.json
+benchmark-results-*.json

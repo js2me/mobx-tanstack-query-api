@@ -1,7 +1,10 @@
 import {
+  type AnyEndpoint,
   type FullRequestParams,
   HttpClient,
   HttpResponse,
+  type InferEndpointData,
+  type InferEndpointInput,
   type ResponseFormat,
 } from 'mobx-tanstack-query-api';
 
@@ -27,6 +30,27 @@ export type MockHttpResponseSetOptions = {
   status?: number;
   statusText?: string;
 };
+
+/**
+ * Params for {@link MockHttpResponse.fromEndpoint}: same as {@link MockHttpResponseParams}, but
+ * `requestParams` and `httpClient` are derived from the **endpoint**; `data` / `error` / `status`
+ * are typed from the endpoint’s `HttpResponse`.
+ */
+export type MockHttpResponseFromEndpointParams<TEndpoint extends AnyEndpoint> =
+  Omit<
+    MockHttpResponseParams<
+      InferEndpointData<TEndpoint>['data'],
+      InferEndpointData<TEndpoint>['error'],
+      InferEndpointData<TEndpoint>['status']
+    >,
+    'httpClient' | 'requestParams'
+  > & {
+    /**
+     * Endpoint input forwarded to `endpoint.configuration.params(input)` to resolve
+     * `requestParams` (and therefore the response `url`).
+     */
+    input?: Partial<InferEndpointInput<TEndpoint>>;
+  };
 
 const mockParamsHasData = (
   params: MockHttpResponseParams<any, any, any>,
@@ -72,6 +96,34 @@ export class MockHttpResponse<
     if (mockParamsHasError(this.params)) {
       this.error = this.params.error as TError;
     }
+  }
+
+  /**
+   * Constructs a {@link MockHttpResponse} whose `requestParams` and `url` are resolved from a real
+   * **endpoint** (`endpoint.configuration.params(input)` + `endpoint.httpClient`). Body resolution
+   * matches the constructor: call {@link MockHttpResponse.resolveBody} to apply `data` / `error`.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/testing/low-level/mock-http-response.html)
+   */
+  static fromEndpoint<TEndpoint extends AnyEndpoint>(
+    endpoint: TEndpoint,
+    params: MockHttpResponseFromEndpointParams<NoInfer<TEndpoint>> = {},
+  ): MockHttpResponse<
+    InferEndpointData<TEndpoint>['data'],
+    InferEndpointData<TEndpoint>['error'],
+    InferEndpointData<TEndpoint>['status']
+  > {
+    const { input, ...rest } = params;
+
+    return new MockHttpResponse<
+      InferEndpointData<TEndpoint>['data'],
+      InferEndpointData<TEndpoint>['error'],
+      InferEndpointData<TEndpoint>['status']
+    >({
+      ...rest,
+      httpClient: endpoint.httpClient,
+      requestParams: endpoint.configuration.params(input ?? {}),
+    });
   }
 
   setData(data: TData, options?: MockHttpResponseSetOptions): void {
