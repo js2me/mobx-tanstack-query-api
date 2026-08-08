@@ -1,5 +1,15 @@
 # mobx-tanstack-query-api
 
+## 0.58.0
+
+### Minor Changes
+
+- [`c85c803`](https://github.com/js2me/mobx-tanstack-query-api/commit/c85c803126d99634a6798b05f3180d8464be2723) Thanks [@js2me](https://github.com/js2me)! - add MockHttpResponse.fromEndpoint static method
+
+### Patch Changes
+
+- [`c85c803`](https://github.com/js2me/mobx-tanstack-query-api/commit/c85c803126d99634a6798b05f3180d8464be2723) Thanks [@js2me](https://github.com/js2me)! - [internal] add perf benchmarks
+
 ## 0.57.4
 
 ### Patch Changes
