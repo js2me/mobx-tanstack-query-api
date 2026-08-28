@@ -124,6 +124,10 @@ You can override it to use your own http client.
 
 **`'skip'`** turns off the default HTTP client import.
 
+**`'omit'`** removes the HTTP client import and the HTTP client argument from
+the generated `Endpoint` constructor call entirely. Use this when the
+generated endpoint should not be bound to an HTTP client.
+
 Sometimes this is useful if you need to customize fetch api behavior or add your own initialization for `HttpClient`.
 
 Example:  
@@ -190,6 +194,32 @@ Default value: `'builtin'` which means use built-in Tanstack's query client.
 You can override it to use your own query client.
 
 **`'skip'`** turns off the default query client import.
+
+**`'omit'`** removes the query client import and the query client argument from
+the generated `Endpoint` constructor call entirely. Use this when the
+generated endpoint should not be bound to a query client.
+
+For example, to omit both clients:
+
+```ts
+export default defineConfig({
+  // ...
+  queryClient: 'omit',
+  httpClient: 'omit',
+});
+```
+
+The generated endpoint will contain only the endpoint configuration:
+
+```ts
+export const getMyData = new Endpoint<
+  HttpResponse<GetMyDataDC, GetMyDataError>,
+  GetMyDataParams,
+  any
+>({
+  // endpoint configuration
+});
+```
 
 Sometimes this is useful if you need to add configuration for `EndpointQueryClient`
 

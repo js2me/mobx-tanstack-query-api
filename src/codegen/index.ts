@@ -150,8 +150,12 @@ const generateApiSingle = async (
             }
           : params.httpClient,
     ...(params.httpClient === 'skip' ? { skipHttpClient: true as const } : {}),
+    ...(params.httpClient === 'omit' ? { omitHttpClient: true as const } : {}),
     ...(params.queryClient === 'skip'
       ? { skipQueryClient: true as const }
+      : {}),
+    ...(params.queryClient === 'omit'
+      ? { omitQueryClient: true as const }
       : {}),
   };
 

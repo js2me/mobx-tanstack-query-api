@@ -184,20 +184,22 @@ export const allEndpointPerFileTmpl = async (
           codegenParams,
         ),
       },
-      !importFileParams.skipHttpClient && {
-        what: importFileParams.httpClient.exportName,
-        from: resolveGeneratedModuleSpecifier(
-          importFileParams.httpClient.path,
-          codegenParams,
-        ),
-      },
-      !importFileParams.skipQueryClient && {
-        what: importFileParams.queryClient.exportName,
-        from: resolveGeneratedModuleSpecifier(
-          importFileParams.queryClient.path,
-          codegenParams,
-        ),
-      },
+      !importFileParams.skipHttpClient &&
+        !importFileParams.omitHttpClient && {
+          what: importFileParams.httpClient.exportName,
+          from: resolveGeneratedModuleSpecifier(
+            importFileParams.httpClient.path,
+            codegenParams,
+          ),
+        },
+      !importFileParams.skipQueryClient &&
+        !importFileParams.omitQueryClient && {
+          what: importFileParams.queryClient.exportName,
+          from: resolveGeneratedModuleSpecifier(
+            importFileParams.queryClient.path,
+            codegenParams,
+          ),
+        },
       ...endpointMetaTypeImports.map(({ what, from }) => ({
         what,
         from: from && resolveGeneratedModuleSpecifier(from, codegenParams),

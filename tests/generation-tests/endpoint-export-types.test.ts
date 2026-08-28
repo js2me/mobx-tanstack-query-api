@@ -46,6 +46,15 @@ const FOO_BAR_ENDPOINT_SKIP_QUERY = path.resolve(
   'endpoints',
   'get-foo-bar.ts',
 );
+const FOO_BAR_OUTPUT_OMIT_CLIENTS = path.resolve(
+  __dirname,
+  './__generated__/endpoint-export-types-foo-bar-omit-clients',
+);
+const FOO_BAR_ENDPOINT_OMIT_CLIENTS = path.resolve(
+  FOO_BAR_OUTPUT_OMIT_CLIENTS,
+  'endpoints',
+  'get-foo-bar.ts',
+);
 
 const normalize = (content: string): string => content.replaceAll('\r\n', '\n');
 
@@ -55,10 +64,12 @@ describe('endpoint exported Data/Params/Error types', () => {
     await fs.rm(FOO_BAR_OUTPUT, { recursive: true, force: true });
     await fs.rm(FOO_BAR_OUTPUT_SKIP_HTTP, { recursive: true, force: true });
     await fs.rm(FOO_BAR_OUTPUT_SKIP_QUERY, { recursive: true, force: true });
+    await fs.rm(FOO_BAR_OUTPUT_OMIT_CLIENTS, { recursive: true, force: true });
     await fs.mkdir(path.dirname(MEMORY_LEAK_OUTPUT), { recursive: true });
     await fs.mkdir(path.dirname(FOO_BAR_OUTPUT), { recursive: true });
     await fs.mkdir(path.dirname(FOO_BAR_OUTPUT_SKIP_HTTP), { recursive: true });
     await fs.mkdir(path.dirname(FOO_BAR_OUTPUT_SKIP_QUERY), { recursive: true });
+    await fs.mkdir(path.dirname(FOO_BAR_OUTPUT_OMIT_CLIENTS), { recursive: true });
   });
 
   it('exports DataDC, Params and ErrorDC for blob response endpoint', async () => {
@@ -156,5 +167,26 @@ describe('endpoint exported Data/Params/Error types', () => {
     expect(endpoint).toMatch(
       /import\s*\{\s*http\s*\}\s*from\s*["']mobx-tanstack-query-api\/builtin["']/,
     );
+  });
+
+  it('omit clients omits imports and constructor arguments', async () => {
+    await generateApi(
+      defineConfig({
+        input: FOO_BAR_INPUT,
+        output: FOO_BAR_OUTPUT_OMIT_CLIENTS,
+        noBarrelFiles: true,
+        removeUnusedTypes: true,
+        outputType: 'one-endpoint-per-file',
+        filterEndpoints: [/^getFooBar$/i],
+        queryClient: 'omit',
+        httpClient: 'omit',
+      }),
+    );
+
+    const endpoint = normalize(await fs.readFile(FOO_BAR_ENDPOINT_OMIT_CLIENTS, 'utf-8'));
+
+    expect(endpoint).not.toMatch(/import\s*\{[^}]*\bqueryClient\b[^}]*\}\s*from/);
+    expect(endpoint).not.toMatch(/import\s*\{[^}]*\bhttp\b[^}]*\}\s*from/);
+    expect(endpoint).toContain('meta: {},\n});');
   });
 });

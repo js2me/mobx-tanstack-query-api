@@ -2,7 +2,7 @@ import type { KeyOfByValue } from 'yummies/types';
 import type { GenerateQueryApiParams } from './generate-query-api-params.js';
 import type { ImportFileParams } from './import-file-params.js';
 
-type BuiltinOrCustomLib = 'builtin' | 'skip' | ImportFileParams;
+type BuiltinOrCustomLib = 'builtin' | 'skip' | 'omit' | ImportFileParams;
 
 export type AllImportFileParams = Record<
   KeyOfByValue<Required<GenerateQueryApiParams>, BuiltinOrCustomLib>,
@@ -16,4 +16,8 @@ export type AllImportFileParams = Record<
    * When set, omit the query client import and pass `undefined as any` as the `Endpoint` constructor’s query-client argument.
    */
   skipQueryClient?: boolean;
+  /** When set, omit the query-client import and constructor argument entirely. */
+  omitQueryClient?: boolean;
+  /** When set, omit the HTTP-client import and constructor argument entirely. */
+  omitHttpClient?: boolean;
 };

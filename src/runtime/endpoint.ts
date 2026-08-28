@@ -170,12 +170,20 @@ export class Endpoint<
    */
   constructor(
     configuration: EndpointConfiguration<NoInfer<TParams>, TMetaData>,
-    queryClient: EndpointQueryClient,
-    httpClient: HttpClient,
+    queryClientOrHttpClient?: EndpointQueryClient | HttpClient,
+    httpClient?: HttpClient,
   ) {
     this.configuration = configuration;
-    this.queryClient = queryClient;
-    this.httpClient = httpClient;
+    if (
+      queryClientOrHttpClient &&
+      typeof (queryClientOrHttpClient as HttpClient).buildUrl === 'function'
+    ) {
+      this.queryClient = undefined as any;
+      this.httpClient = queryClientOrHttpClient as HttpClient;
+    } else {
+      this.queryClient = queryClientOrHttpClient as EndpointQueryClient;
+      this.httpClient = httpClient as HttpClient;
+    }
     this.endpointId = globalThis.crypto.randomUUID();
     this.meta = configuration.meta ?? ({} as TMetaData);
     const vc = configuration.validateContract;

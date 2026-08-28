@@ -587,6 +587,16 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     }
     return '';
   })();
+  const endpointClientArgs = [
+    !importFileParams.omitQueryClient &&
+      (importFileParams.skipQueryClient
+        ? 'undefined as any'
+        : importFileParams.queryClient.exportName),
+    !importFileParams.omitHttpClient &&
+      (importFileParams.skipHttpClient
+        ? 'undefined as any'
+        : importFileParams.httpClient.exportName),
+  ].filter(Boolean);
 
   return {
     reservedDataContractNames: uniq(reservedDataContractNames),
@@ -665,8 +675,7 @@ new ${importFileParams.endpoint.exportName}<
         ${validateContractLine}
         ${throwContractsLine}
     },
-    ${importFileParams.skipQueryClient ? 'undefined as any' : importFileParams.queryClient.exportName},
-    ${importFileParams.skipHttpClient ? 'undefined as any' : importFileParams.httpClient.exportName},
+    ${endpointClientArgs.length > 0 ? endpointClientArgs.join(',\n    ') : ''}
 )  
 `
       .split('\n')

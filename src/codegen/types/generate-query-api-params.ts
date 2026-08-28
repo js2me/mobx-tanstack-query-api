@@ -249,7 +249,7 @@ export interface GenerateQueryApiParams {
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#queryclient)
    */
-  queryClient?: 'builtin' | 'skip' | ImportFileParams;
+  queryClient?: 'builtin' | 'skip' | 'omit' | ImportFileParams;
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#endpoint)
    */
@@ -257,7 +257,7 @@ export interface GenerateQueryApiParams {
   /**
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/codegen/config#httpclient)
    */
-  httpClient?: 'builtin' | 'skip' | ImportFileParams;
+  httpClient?: 'builtin' | 'skip' | 'omit' | ImportFileParams;
 
   /**
    * Object with `tmplData`, or a function `(route, utils) => { tmplData, ... }` per endpoint.
