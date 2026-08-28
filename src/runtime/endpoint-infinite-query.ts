@@ -205,11 +205,15 @@ function ensureObjectPageParam(
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    throw new Error(
-      `[mobx-tanstack-query-api] "${mergePageParam}" mergePageParam expects an object pageParam. Use a custom mergePageParam function for primitive page params.`,
-    );
+    const errorMessage =
+      `[mobx-tanstack-query-api] "${mergePageParam}" mergePageParam expects an object pageParam. ` +
+      'Use a custom mergePageParam function for primitive page params.\n' +
+      'More info: https://js2me.github.io/mobx-tanstack-query-api/errors/1';
+    throw new Error(`Error #1: ${errorMessage}`);
   }
-  throw new Error('[mobx-tanstack-query-api] minified error #1');
+  throw new Error(
+    'Error #1: https://js2me.github.io/mobx-tanstack-query-api/errors/1',
+  );
 }
 
 export function mergeInfiniteQueryPageParam<

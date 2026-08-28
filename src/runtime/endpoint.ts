@@ -144,24 +144,60 @@ export class Endpoint<
    */
   configuration: EndpointConfiguration<NoInfer<TParams>, TMetaData>;
 
-  /**
-   * Query client used by query and mutation helpers.
-   *
-   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#queryclient)
-   */
-  queryClient: EndpointQueryClient;
+  protected queryClientInstance?: EndpointQueryClient;
+
+  protected httpClientInstance?: HttpClient;
+
+  protected validateParams: boolean = false;
+  protected validateData: boolean = false;
+  protected throwParams: boolean = false;
+  protected throwData: boolean = false;
 
   /**
    * HTTP client used to build URLs and execute requests.
    *
    * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#httpclient)
    */
-  httpClient: HttpClient;
+  get httpClient(): HttpClient {
+    if (!this.httpClientInstance) {
+      if (process.env.NODE_ENV !== 'production') {
+        const errorMessage =
+          '[mobx-tanstack-query-api] Endpoint HTTP client is not configured. ' +
+          'Pass an HttpClient to the Endpoint constructor before making a request.\n' +
+          'More info: https://js2me.github.io/mobx-tanstack-query-api/errors/3';
+        throw new Error(`Error #3: ${errorMessage}`);
+      }
 
-  protected validateParams: boolean = false;
-  protected validateData: boolean = false;
-  protected throwParams: boolean = false;
-  protected throwData: boolean = false;
+      throw new Error(
+        'Error #3: https://js2me.github.io/mobx-tanstack-query-api/errors/3',
+      );
+    }
+
+    return this.httpClientInstance;
+  }
+
+  /**
+   * Query client used by query and mutation helpers.
+   *
+   * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoints/#queryclient)
+   */
+  get queryClient(): EndpointQueryClient {
+    if (!this.queryClientInstance) {
+      if (process.env.NODE_ENV !== 'production') {
+        const errorMessage =
+          '[mobx-tanstack-query-api] Endpoint query client is not configured. ' +
+          'Pass an EndpointQueryClient to the Endpoint constructor before calling query or mutation helpers.\n' +
+          'More info: https://js2me.github.io/mobx-tanstack-query-api/errors/2';
+        throw new Error(`Error #2: ${errorMessage}`);
+      }
+
+      throw new Error(
+        'Error #2: https://js2me.github.io/mobx-tanstack-query-api/errors/2',
+      );
+    }
+
+    return this.queryClientInstance;
+  }
 
   /**
    * Creates a callable `Endpoint` instance.
@@ -178,11 +214,10 @@ export class Endpoint<
       queryClientOrHttpClient &&
       typeof (queryClientOrHttpClient as HttpClient).buildUrl === 'function'
     ) {
-      this.queryClient = undefined as any;
-      this.httpClient = queryClientOrHttpClient as HttpClient;
+      this.httpClientInstance = queryClientOrHttpClient as HttpClient;
     } else {
-      this.queryClient = queryClientOrHttpClient as EndpointQueryClient;
-      this.httpClient = httpClient as HttpClient;
+      this.queryClientInstance = queryClientOrHttpClient as EndpointQueryClient;
+      this.httpClientInstance = httpClient as HttpClient;
     }
     this.endpointId = globalThis.crypto.randomUUID();
     this.meta = configuration.meta ?? ({} as TMetaData);
