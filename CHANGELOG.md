@@ -1,5 +1,13 @@
 # mobx-tanstack-query-api
 
+## 0.58.1
+
+### Patch Changes
+
+- [`36354df`](https://github.com/js2me/mobx-tanstack-query-api/commit/36354df8a8131cc315585073f8303249374578fd) Thanks [@js2me](https://github.com/js2me)! - add getters for http client and query client inside endpoint class
+
+- [`36e129c`](https://github.com/js2me/mobx-tanstack-query-api/commit/36e129c33ae297cb9bc68185c010e6aaa4dfe076) Thanks [@js2me](https://github.com/js2me)! - add 'omit' option for httpClient and queryClient
+
 ## 0.58.0
 
 ### Minor Changes
