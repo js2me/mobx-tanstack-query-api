@@ -55,6 +55,7 @@ export const endpointPerFileTmpl = async (
     content: requestInfoInstanceContent,
     reservedDataContractNames,
     localModelTypes,
+    needsIsPartialImport,
     contractsCode,
   } = requestInfoTemplateResult;
 
@@ -92,6 +93,10 @@ export const endpointPerFileTmpl = async (
     imports: [
       {
         what: ['RequestParams', 'HttpResponse', 'HttpMultistatusResponse'],
+        from: codegenParams.libImports['mobx-tanstack-query-api'],
+      },
+      needsIsPartialImport && {
+        what: 'type IsPartial',
         from: codegenParams.libImports['mobx-tanstack-query-api'],
       },
       {

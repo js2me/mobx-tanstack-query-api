@@ -86,6 +86,9 @@ export const allEndpointPerFileTmpl = async (
   });
 
   const endpointMetaTypeImports: ImportTmplEntry[] = [];
+  const needsIsPartialImport = newEndpointTemplates.some(
+    (template) => template.needsIsPartialImport,
+  );
 
   const hasAnyZodContracts = newEndpointTemplates.some(
     (t) => t.contractsCode != null,
@@ -175,6 +178,10 @@ export const allEndpointPerFileTmpl = async (
     imports: [
       {
         what: ['RequestParams', 'HttpResponse', 'HttpMultistatusResponse'],
+        from: codegenParams.libImports['mobx-tanstack-query-api'],
+      },
+      needsIsPartialImport && {
+        what: 'type IsPartial',
         from: codegenParams.libImports['mobx-tanstack-query-api'],
       },
       {

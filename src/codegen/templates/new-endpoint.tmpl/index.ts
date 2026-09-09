@@ -120,9 +120,27 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
   const payload =
     routeRequest.payload && sanitizeInputParam(routeRequest.payload);
   const query = routeRequest.query && sanitizeInputParam(routeRequest.query);
+  const headers =
+    routeRequest.headers && sanitizeInputParam(routeRequest.headers);
+  const headersTypeName = headers
+    ? `${upperFirst(camelCase(route.routeName.usage))}Headers`
+    : null;
+  const headersType =
+    headers && headersTypeName
+      ? createShortModelType({
+          typeIdentifier: 'type',
+          name: headersTypeName,
+          content: headers.type,
+        })
+      : null;
+  const headersInputParam =
+    headers && headersTypeName
+      ? { ...headers, type: headersTypeName }
+      : headers;
 
   const pathParamsNames = pathParams.map((pathParam) => pathParam.name);
   const queryName = query?.name || 'query';
+  const headersName = headers?.name || 'headers';
 
   const requestConfigParam: InputParam = {
     name: 'requestParams',
@@ -135,6 +153,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     ...pathParams,
     payload,
     query,
+    headersInputParam,
     requestConfigParam,
   ].filter((it): it is InputParam => !!it);
 
@@ -247,6 +266,7 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     dataContractTypeSuffix,
     responseSchemaKey,
     queryName,
+    headersName,
   });
 
   const getArgs = ({
@@ -462,11 +482,18 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
     name: upperFirst(camelCase(`${route.routeName.usage}Params`)),
     content: `{
     ${inputParams
+      .filter((inputParam) => inputParam !== headersInputParam)
       .map(({ name, optional, type }) => {
         return `${name}${optional ? '?' : ''}:${type}`;
       })
       .filter(Boolean)
       .join(', ')}
+  }${
+    headersTypeName
+      ? ` & (IsPartial<${headersTypeName}> extends true
+    ? { headers?: Record<string, any> & ${headersTypeName} }
+    : { headers: Record<string, any> & ${headersTypeName} })`
+      : ''
   }`,
   });
 
@@ -600,7 +627,13 @@ export const newEndpointTmpl = (params: NewEndpointTmplParams) => {
 
   return {
     reservedDataContractNames: uniq(reservedDataContractNames),
-    localModelTypes: isAllowedInputType ? [requestInputTypeDc] : [],
+    localModelTypes: isAllowedInputType
+      ? [headersType, requestInputTypeDc].filter(
+          (modelType): modelType is NonNullable<typeof modelType> =>
+            modelType != null,
+        )
+      : [],
+    needsIsPartialImport: headers != null,
     contractsCode: zodData?.contractsCode ?? undefined,
     contractsVarName: zodData?.contractVarName ?? undefined,
     endpointAliasTypeNames,
@@ -630,6 +663,7 @@ new ${importFileParams.endpoint.exportName}<
             ${responseFormat ? `format: ${responseFormat},` : ''}
             ${overrideRequestParamsSpreadLine ?? ''}
             ...${requestConfigParam.name},
+            ${headers == null ? '' : `headers: { ...${headersName}, ...${requestConfigParam.name}?.headers, }`}
         }),
         requiredParams: [${inputParams.filter((it) => !it.optional).map((it) => `"${it.name}"`)}],
         operationId: "${raw.operationId || camelCase(route.routeName.usage)}",

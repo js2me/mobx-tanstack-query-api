@@ -37374,6 +37374,7 @@ import {
   Endpoint,
   HttpMultistatusResponse,
   RequestParams,
+  type IsPartial,
 } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 import { Tag } from "../meta-info";
@@ -37383,6 +37384,11 @@ export type GetApiV4GroupsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNam
 
 export type GetApiV4GroupsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameDataDC =
   any;
+
+export type GetApiV4GroupsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameHeaders =
+  {
+    Symbolchecksum: string;
+  };
 
 export type GetApiV4GroupsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameParams =
   {
@@ -37402,7 +37408,15 @@ export type GetApiV4GroupsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNam
       signature: string;
     };
     requestParams?: RequestParams;
-  };
+  } & (IsPartial<GetApiV4GroupsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameHeaders> extends true
+    ? {
+        headers?: Record<string, any> &
+          GetApiV4GroupsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameHeaders;
+      }
+    : {
+        headers: Record<string, any> &
+          GetApiV4GroupsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameHeaders;
+      });
 
 /**
  * **The NuGet Symbol File Download Endpoint**
@@ -37439,14 +37453,15 @@ export const getApiV4GroupsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNa
     any
   >(
     {
-      params: ({ id, query, requestParams }) => ({
+      params: ({ id, query, headers, requestParams }) => ({
         path: \`/api/v4/groups/\${id}/-/packages/nuget/symbolfiles/*file_name/*signature/*same_file_name\`,
         method: "GET",
         query: query,
         format: "json",
         ...requestParams,
+        headers: { ...headers, ...requestParams?.headers },
       }),
-      requiredParams: ["id", "query"],
+      requiredParams: ["id", "query", "headers"],
       operationId:
         "getApiV4GroupsIdPackagesNugetSymbolfiles*fileName*signature*sameFileName",
       path: [
@@ -59527,6 +59542,7 @@ import {
   Endpoint,
   HttpMultistatusResponse,
   RequestParams,
+  type IsPartial,
 } from "mobx-tanstack-query-api";
 import { http, queryClient } from "mobx-tanstack-query-api/builtin";
 import { Tag } from "../meta-info";
@@ -59536,6 +59552,11 @@ export type GetApiV4ProjectsIdPackagesNugetSymbolfilesFileNameSignatureSameFileN
 
 export type GetApiV4ProjectsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameDataDC =
   any;
+
+export type GetApiV4ProjectsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameHeaders =
+  {
+    Symbolchecksum: string;
+  };
 
 export type GetApiV4ProjectsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameParams =
   {
@@ -59555,7 +59576,15 @@ export type GetApiV4ProjectsIdPackagesNugetSymbolfilesFileNameSignatureSameFileN
       signature: string;
     };
     requestParams?: RequestParams;
-  };
+  } & (IsPartial<GetApiV4ProjectsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameHeaders> extends true
+    ? {
+        headers?: Record<string, any> &
+          GetApiV4ProjectsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameHeaders;
+      }
+    : {
+        headers: Record<string, any> &
+          GetApiV4ProjectsIdPackagesNugetSymbolfilesFileNameSignatureSameFileNameHeaders;
+      });
 
 /**
  * **The NuGet Symbol File Download Endpoint**
@@ -59592,14 +59621,15 @@ export const getApiV4ProjectsIdPackagesNugetSymbolfilesFileNameSignatureSameFile
     any
   >(
     {
-      params: ({ id, query, requestParams }) => ({
+      params: ({ id, query, headers, requestParams }) => ({
         path: \`/api/v4/projects/\${id}/packages/nuget/symbolfiles/*file_name/*signature/*same_file_name\`,
         method: "GET",
         query: query,
         format: "json",
         ...requestParams,
+        headers: { ...headers, ...requestParams?.headers },
       }),
-      requiredParams: ["id", "query"],
+      requiredParams: ["id", "query", "headers"],
       operationId:
         "getApiV4ProjectsIdPackagesNugetSymbolfiles*fileName*signature*sameFileName",
       path: [

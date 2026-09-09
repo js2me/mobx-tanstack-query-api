@@ -16,12 +16,14 @@ export const buildZodEndpointData = ({
   swaggerSchema,
   responseSchemaKey,
   queryName,
+  headersName,
 }: NewEndpointTmplParams & {
   inputParams: any;
   defaultOkResponse: string;
   dataContractTypeSuffix: string;
   responseSchemaKey?: any;
   queryName?: any;
+  headersName?: any;
 }) => {
   const zodContractsIsObject =
     typeof zodContracts === 'object' && zodContracts !== null;
@@ -50,6 +52,7 @@ export const buildZodEndpointData = ({
     openApiComponentsParameters:
       swaggerSchema.components?.parameters ?? undefined,
     queryParamName: queryName,
+    headerParamName: headersName,
   });
 
   return {

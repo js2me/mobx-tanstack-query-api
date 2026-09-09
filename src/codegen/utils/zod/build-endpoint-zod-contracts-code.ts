@@ -3,6 +3,7 @@ import type { ParsedRoute } from 'swagger-typescript-api';
 import { DEFAULT_DATA_CONTRACT_TYPE_SUFFIX } from '../data-contract-type-suffix.js';
 import { collectRefs } from '../swagger/collect-refs.js';
 import { parseRef } from '../swagger/parse-ref.js';
+import { resolveHeaderParameters } from '../swagger/resolve-header-parameters.js';
 import { resolveQueryParameters } from '../swagger/resolve-query-parameters.js';
 import type { OpenAPIParameter, OpenAPISchema } from '../swagger/types.js';
 import { DEFAULT_ZOD_CONTRACT_SUFFIX } from './contract-suffix.js';
@@ -173,19 +174,20 @@ export function schemaKeyToContractVarName(
 }
 
 /**
- * Build zod object expression string from resolved query parameters.
+ * Build a zod object expression string from resolved request parameters.
  */
-function queryParamsToZodObject(
-  queryParams: Array<{
+function paramsToZodObject(
+  requestParams: Array<{
     name: string;
     required: boolean;
     schema: OpenAPISchema;
   }>,
   schemas: Record<string, OpenAPISchema>,
   schemaKeyToContractVarName: (key: string) => string,
+  allowUnknown = false,
 ): string {
-  if (queryParams.length === 0) return 'z.object({})';
-  const entries = queryParams.map(({ name, required, schema }) => {
+  if (requestParams.length === 0) return 'z.object({})';
+  const entries = requestParams.map(({ name, required, schema }) => {
     const expr = schemaToZodExpr(
       schema,
       schemas,
@@ -195,7 +197,7 @@ function queryParamsToZodObject(
     const field = required ? expr : `${expr}.optional()`;
     return `  ${JSON.stringify(name)}: ${field}`;
   });
-  return `z.object({\n${entries.join(',\n')}\n})`;
+  return `z.object({\n${entries.join(',\n')}\n})${allowUnknown ? '.passthrough()' : ''}`;
 }
 
 /**
@@ -359,6 +361,7 @@ export type OpenAPIOperationForZod = {
   }>;
 };
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: builds several optional contract sections in one deterministic pass
 export function buildEndpointZodContractsCode(params: {
   routeNameUsage: string;
   inputParams: RequestParam[];
@@ -372,12 +375,14 @@ export function buildEndpointZodContractsCode(params: {
   responseSchemaKey?: string | null;
   /** When true, do not emit auxiliary contracts inline; they are expected from a central contracts.ts file (zodContractImportNames will be non-empty) */
   useExternalZodSchemas?: boolean;
-  /** OpenAPI operation (path + method) to build query object schema from parameters with in: 'query' */
+  /** OpenAPI operation (path + method) used to build query/header schemas. */
   openApiOperation?: ParsedRoute['raw'] | null;
   /** OpenAPI components.parameters to resolve $ref in operation.parameters */
   openApiComponentsParameters?: Record<string, OpenAPIParameter> | null;
   /** Name of the input param that holds query (default 'query') */
   queryParamName?: string;
+  /** Name of the input param that holds headers (default 'headers') */
+  headerParamName?: string;
 }): EndpointZodContractsResult {
   const {
     inputParams,
@@ -391,6 +396,7 @@ export function buildEndpointZodContractsCode(params: {
     openApiOperation = null,
     openApiComponentsParameters = null,
     queryParamName = 'query',
+    headerParamName = 'headers',
   } = params;
   const allAuxiliaryKeys = new Set<string>();
   const paramParts: string[] = [];
@@ -399,6 +405,11 @@ export function buildEndpointZodContractsCode(params: {
     openApiOperation &&
     (openApiComponentsParameters || openApiOperation.parameters?.length)
       ? resolveQueryParameters(openApiOperation, openApiComponentsParameters)
+      : [];
+  const resolvedHeaderParams =
+    openApiOperation &&
+    (openApiComponentsParameters || openApiOperation.parameters?.length)
+      ? resolveHeaderParameters(openApiOperation, openApiComponentsParameters)
       : [];
 
   const schemaKeyToContractVarNameFn = (key: string) =>
@@ -413,7 +424,7 @@ export function buildEndpointZodContractsCode(params: {
       resolvedQueryParams.length > 0 &&
       componentsSchemas
     ) {
-      expr = queryParamsToZodObject(
+      expr = paramsToZodObject(
         resolvedQueryParams,
         componentsSchemas,
         schemaKeyToContractVarNameFn,
@@ -423,6 +434,22 @@ export function buildEndpointZodContractsCode(params: {
         collectRefs(qp.schema, componentsSchemas, queryRefs);
       }
       refKeys = [...queryRefs];
+    } else if (
+      p.name === headerParamName &&
+      resolvedHeaderParams.length > 0 &&
+      componentsSchemas
+    ) {
+      expr = paramsToZodObject(
+        resolvedHeaderParams,
+        componentsSchemas,
+        schemaKeyToContractVarNameFn,
+        true,
+      );
+      const headerRefs = new Set<string>();
+      for (const hp of resolvedHeaderParams) {
+        collectRefs(hp.schema, componentsSchemas, headerRefs);
+      }
+      refKeys = [...headerRefs];
     } else {
       const result = typeToZodSchemaWithSchema(
         p.type,

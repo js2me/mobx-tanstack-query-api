@@ -1,7 +1,13 @@
-import type { AnyObject } from 'yummies/types';
+import type {
+  AnyObject,
+  IsPartial as IsPartialFromYummiesTypes,
+} from 'yummies/types';
 import type { Endpoint } from './endpoint.js';
 import type { InvalidateEndpointsFilters } from './endpoint-query-client.types.js';
 import type { FullRequestParams } from './http-client.js';
+
+/** Type-level check for whether all properties of an object are optional. */
+export type IsPartial<T> = IsPartialFromYummiesTypes<T>;
 
 /**
  * Optional Zod (or compatible) contracts for params and response data validation.
