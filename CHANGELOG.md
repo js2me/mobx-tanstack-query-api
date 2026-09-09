@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.58.2
+
+### Patch Changes
+
+- [`c2a9e89`](https://github.com/js2me/mobx-tanstack-query-api/commit/c2a9e891d8bf227a15bafbaf75e2cb88da90e9cd) Thanks [@js2me](https://github.com/js2me)! - add support generate typings for `headers` from swagger schema for endpoints
+
 ## 0.58.1
 
 ### Patch Changes
