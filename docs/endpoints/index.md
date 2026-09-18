@@ -64,7 +64,7 @@ await getShotguns.request({ page: 1 });
 <a id="endpointid"></a>
 ## endpointId
 
-A unique runtime identifier generated per endpoint instance with `crypto.randomUUID()`.
+A unique runtime identifier generated per endpoint instance.  
 Useful when you need to track a concrete endpoint instance in metadata or debugging tools.
 
 <a id="presets"></a>

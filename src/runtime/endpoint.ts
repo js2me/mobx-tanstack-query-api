@@ -31,6 +31,7 @@ import type {
 import type { EndpointQueryClient } from './endpoint-query-client.js';
 import type { HttpClient } from './http-client.js';
 import { type AnyResponse, isHttpResponse } from './http-response.js';
+import { createUniqueId } from './utils/create-unique-id.js';
 
 function isContractOptionEnabled(
   option: boolean | { params?: boolean; data?: boolean } | undefined,
@@ -219,7 +220,7 @@ export class Endpoint<
       this.queryClientInstance = queryClientOrHttpClient as EndpointQueryClient;
       this.httpClientInstance = httpClient as HttpClient;
     }
-    this.endpointId = globalThis.crypto.randomUUID();
+    this.endpointId = createUniqueId();
     this.meta = configuration.meta ?? ({} as TMetaData);
     const vc = configuration.validateContract;
     this.validateParams = isContractOptionEnabled(vc, 'params');
