@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.58.3
+
+### Patch Changes
+
+- [`2869233`](https://github.com/js2me/mobx-tanstack-query-api/commit/286923336b3244e2f0da95a90c063dd69b4b338c) Thanks [@js2me](https://github.com/js2me)! - stop relying on `crypto.randomUUID()` for `endpointId` so endpoints work in insecure contexts (plain HTTP)
+
 ## 0.58.2
 
 ### Patch Changes
