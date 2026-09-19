@@ -34,5 +34,7 @@
     "tests",
     "src/lib"
   ],
-  "exclude": []
+  "exclude": [
+    "tests/generation-tests/__generated__"
+  ]
 }

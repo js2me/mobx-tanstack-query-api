@@ -74,7 +74,7 @@
     "jiti": "^2.7.0",
     "mobx-tanstack-query": "^7.2.2",
     "qs": "^6.15.3",
-    "swagger-typescript-api": "^13.12.6",
+    "swagger-typescript-api": "^13.13.0",
     "ts-morph": "^28.0.0",
     "yummies": "^7.20.1"
   },
