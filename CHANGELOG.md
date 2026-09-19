@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.59.0
+
+### Minor Changes
+
+- [`f0b5854`](https://github.com/js2me/mobx-tanstack-query-api/commit/f0b585444fc287234dc64d8e001115111b9cb293) Thanks [@js2me](https://github.com/js2me)! - Update `swagger-typescript-api` to 13.13.0 and add regression coverage for its schema generation fixes.
+
 ## 0.58.3
 
 ### Patch Changes
