@@ -12,7 +12,6 @@ import {
 import {
   annotation,
   applyObservable,
-  observableMap,
   type ObservableAnnotationsArray,
 } from 'yummies/mobx';
 import { typeGuard } from 'yummies/type-guard';
@@ -31,8 +30,8 @@ import {
 } from './utils/internal-query-state.js';
 
 const annotations: ObservableAnnotationsArray<EndpointInfiniteQuery<any>> = [
-  [annotation.computed('struct'), 'params'],
-  [annotation.observable('ref'), 'response'],
+  [annotation.computedStruct, 'params'],
+  [annotation.observableRef, 'response'],
 ];
 
 /**
@@ -84,7 +83,7 @@ export class EndpointInfiniteQuery<
 
         runInAction(() => {
           internal.query.response = null;
-          if (!observableMap.comparer.structural(params, internal.params)) {
+          if (!annotation.comparer.structural(params, internal.params)) {
             internal.params = params;
           }
         });

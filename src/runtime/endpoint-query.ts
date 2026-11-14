@@ -9,7 +9,6 @@ import { Query, type QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
 import {
   annotation,
   applyObservable,
-  observableMap,
   type ObservableAnnotationsArray,
 } from 'yummies/mobx';
 import type { Maybe, MaybeFalsy } from 'yummies/types';
@@ -32,8 +31,8 @@ export type EndpointQueryInternalSync<TEndpoint extends AnyEndpoint> = Pick<
 >;
 
 const annotations: ObservableAnnotationsArray<EndpointQuery<any>> = [
-  [annotation.computed('struct'), 'params'],
-  [annotation.observable('ref'), 'response'],
+  [annotation.computedStruct, 'params'],
+  [annotation.observableRef, 'response'],
 ];
 
 /**
@@ -80,7 +79,7 @@ export class EndpointQuery<
 
         runInAction(() => {
           internal.query.response = null;
-          if (!observableMap.comparer.structural(params, internal.params)) {
+          if (!annotation.comparer.structural(params, internal.params)) {
             internal.params = params;
           }
         });

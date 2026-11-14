@@ -1,6 +1,6 @@
 import { isComputedProp, isObservableProp, reaction, runInAction } from 'mobx';
 import { describe, expect, it, vi } from 'vitest';
-import { annotation, applyObservable, observableMap } from 'yummies/mobx';
+import { annotation, applyObservable } from 'yummies/mobx';
 
 describe('MobX annotation compatibility', () => {
   it('preserves ref observables and structural computed equality', () => {
@@ -9,8 +9,8 @@ describe('MobX annotation compatibility', () => {
 
       constructor() {
         applyObservable(this, [
-          [annotation.observable('ref'), 'input'],
-          [annotation.computed('struct'), 'snapshot'],
+          [annotation.observableRef, 'input'],
+          [annotation.computedStruct, 'snapshot'],
         ]);
       }
 
@@ -25,7 +25,7 @@ describe('MobX annotation compatibility', () => {
 
     expect(isObservableProp(store, 'input')).toBe(true);
     expect(isComputedProp(store, 'snapshot')).toBe(true);
-    expect(observableMap.comparer.structural({ value: 1 }, { value: 1 })).toBe(
+    expect(annotation.comparer.structural({ value: 1 }, { value: 1 })).toBe(
       true,
     );
 

@@ -3,7 +3,7 @@ import { computed, observable, reaction, runInAction } from 'mobx';
 import { Query } from 'mobx-tanstack-query';
 import { describe, expect, it, vi } from 'vitest';
 import { sleep } from 'yummies/async';
-import { annotation, applyObservable, observableMap } from 'yummies/mobx';
+import { annotation, applyObservable } from 'yummies/mobx';
 import { mockEndpointRequestOnce } from '../testing/mock-endpoint-request-once.js';
 import {
   createHttpClientWithGuardFetch,
@@ -309,7 +309,7 @@ describe('EndpointQuery structural computed recreation loop', () => {
 
       constructor() {
         applyObservable(this, [
-          [annotation.computed('struct'), 'data'],
+          [annotation.computedStruct, 'data'],
           [computed, 'rows'],
         ]);
       }
@@ -374,7 +374,7 @@ describe('EndpointQuery structural computed recreation loop', () => {
 
       constructor() {
         applyObservable(this, [
-          [annotation.computed('struct'), 'data'],
+          [annotation.computedStruct, 'data'],
           [computed, 'rows'],
         ]);
       }
@@ -492,7 +492,7 @@ describe('regression: class field toQuery + structural parent', () => {
 
       constructor(private readonly signal: AbortSignal) {
         applyObservable(this, [
-          [annotation.computed('struct'), 'data'],
+          [annotation.computedStruct, 'data'],
           [computed, 'rows'],
         ]);
       }
@@ -569,7 +569,7 @@ describe('regression: class field toQuery + structural parent', () => {
 
       constructor(private readonly signal: AbortSignal) {
         applyObservable(this, [
-          [annotation.computed('struct'), 'data'],
+          [annotation.computedStruct, 'data'],
           [computed, 'rows'],
         ]);
       }
@@ -901,7 +901,7 @@ describe('derived class constructor order regression', () => {
           },
           retry: false,
           gcTime: 0,
-          dynamicOptionsComparer: observableMap.comparer.structural,
+          dynamicOptionsComparer: annotation.comparer.structural,
         },
         mutations: {
           gcTime: 0,

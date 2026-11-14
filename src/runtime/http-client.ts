@@ -106,7 +106,7 @@ export interface HttpClientConfig<TMeta = unknown> {
 }
 
 const annotations: ObservableAnnotationsArray<HttpClient<any>> = [
-  [annotation.observable('ref'), 'badResponse', 'meta'],
+  [annotation.observableRef, 'badResponse', 'meta'],
   [action, 'setMeta', 'setBadResponse'],
 ];
 

@@ -5,7 +5,6 @@ import { hasEnumerableKeys } from 'yummies/data';
 import {
   annotation,
   applyObservable,
-  observableMap,
   type ObservableAnnotationsArray,
 } from 'yummies/mobx';
 import type { AnyObject, Maybe, MaybeFalsy } from 'yummies/types';
@@ -50,7 +49,7 @@ export interface InternalQueryState<TParams extends AnyObject = AnyObject> {
 const annotations: ObservableAnnotationsArray<
   InternalQueryState<any>
 > = [
-  [annotation.observable('ref'), 'params', 'mergePageParam', 'uniqKey'],
+  [annotation.observableRef, 'params', 'mergePageParam', 'uniqKey'],
   [action, 'setParamsImperative', 'reset'],
 ];
 
@@ -193,13 +192,13 @@ export function createInternalQueryState<TParams extends AnyObject>(
         } else if (
           hadPriorInputSample &&
           inputResolved !== lastInputResolved &&
-          !observableMap.comparer.shallow(inputResolved, lastInputResolved)
+          !annotation.comparer.shallow(inputResolved, lastInputResolved)
         ) {
           imperativeOverride = false;
           resolvedParams = inputResolved;
           lastInputResolved = inputResolved;
         } else {
-          if (observableMap.comparer.shallow(inputResolved, state.params)) {
+          if (annotation.comparer.shallow(inputResolved, state.params)) {
             imperativeOverride = false;
             resolvedParams = inputResolved;
           } else {
@@ -209,15 +208,15 @@ export function createInternalQueryState<TParams extends AnyObject>(
         }
 
         runInAction(() => {
-          if (!observableMap.comparer.shallow(state.params, resolvedParams)) {
+          if (!annotation.comparer.shallow(state.params, resolvedParams)) {
             state.params = resolvedParams;
           }
-          if (!observableMap.comparer.shallow(state.uniqKey, resolvedUniqKey)) {
+          if (!annotation.comparer.shallow(state.uniqKey, resolvedUniqKey)) {
             state.uniqKey = resolvedUniqKey;
           }
           if (
             isInfinite &&
-            !observableMap.comparer.shallow(
+            !annotation.comparer.shallow(
               state.mergePageParam,
               resolvedMergePageParam,
             )

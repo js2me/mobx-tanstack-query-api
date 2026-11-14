@@ -221,7 +221,7 @@ describe('Endpoint generated example', () => {
       });
 
       constructor() {
-        applyObservable(this, [[annotation.computed('struct'), 'data']]);
+        applyObservable(this, [[annotation.computedStruct, 'data']]);
       }
 
       get data(): { foo?: string } | null {
