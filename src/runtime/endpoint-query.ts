@@ -27,10 +27,10 @@ export type EndpointQueryInternalSync<TEndpoint extends AnyEndpoint> = Pick<
   'params' | 'uniqKey'
 >;
 
-const annotations: ObservableAnnotationsArray<EndpointQuery<any>> = [
+const annotations = [
   [annotation.computedStruct, 'params'],
   [annotation.observableRef, 'response'],
-];
+] satisfies ObservableAnnotationsArray<any>;
 
 /**
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/)

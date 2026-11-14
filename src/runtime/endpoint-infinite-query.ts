@@ -26,10 +26,10 @@ import {
   type InternalQueryState,
 } from './utils/internal-query-state.js';
 
-const annotations: ObservableAnnotationsArray<EndpointInfiniteQuery<any>> = [
+const annotations = [
   [annotation.computedStruct, 'params'],
   [annotation.observableRef, 'response'],
-];
+] satisfies ObservableAnnotationsArray<any>;
 
 /**
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/)
