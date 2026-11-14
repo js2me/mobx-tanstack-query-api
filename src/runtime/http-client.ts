@@ -1,10 +1,7 @@
 import { action } from 'mobx';
 import { type BooleanOptional, type IStringifyOptions, stringify } from 'qs';
-import {
-  annotation,
-  applyObservable,
-  type ObservableAnnotationsArray,
-} from 'yummies/mobx';
+import * as annotation from 'yummies/mobx';
+import { applyObservable, type ObservableAnnotationsArray } from 'yummies/mobx';
 import type { AnyObject, Class, Defined, Maybe } from 'yummies/types';
 import type { PickDefinement } from './definements.js';
 import type { AnyEndpoint } from './endpoint.types.js';

@@ -6,11 +6,8 @@ import type {
 } from '@tanstack/query-core';
 import { runInAction } from 'mobx';
 import { Query, type QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
-import {
-  annotation,
-  applyObservable,
-  type ObservableAnnotationsArray,
-} from 'yummies/mobx';
+import * as annotation from 'yummies/mobx';
+import { applyObservable, type ObservableAnnotationsArray } from 'yummies/mobx';
 import type { Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type {

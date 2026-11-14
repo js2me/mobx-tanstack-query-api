@@ -9,11 +9,8 @@ import {
   InfiniteQuery,
   type InfiniteQueryUpdateOptionsAllVariants,
 } from 'mobx-tanstack-query';
-import {
-  annotation,
-  applyObservable,
-  type ObservableAnnotationsArray,
-} from 'yummies/mobx';
+import * as annotation from 'yummies/mobx';
+import { applyObservable, type ObservableAnnotationsArray } from 'yummies/mobx';
 import { typeGuard } from 'yummies/type-guard';
 import type { AnyObject, Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';

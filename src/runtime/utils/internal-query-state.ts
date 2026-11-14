@@ -2,11 +2,8 @@ import { action, runInAction } from 'mobx';
 import type { QueryStartParams } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
 import { hasEnumerableKeys } from 'yummies/data';
-import {
-  annotation,
-  applyObservable,
-  type ObservableAnnotationsArray,
-} from 'yummies/mobx';
+import * as annotation from 'yummies/mobx';
+import { applyObservable, type ObservableAnnotationsArray } from 'yummies/mobx';
 import type { AnyObject, Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from '../endpoint.types.js';
 import type { EndpointInfiniteQuery } from '../endpoint-infinite-query.js';

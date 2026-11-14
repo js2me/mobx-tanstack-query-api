@@ -1,6 +1,7 @@
 import { isComputedProp, isObservableProp, reaction, runInAction } from 'mobx';
 import { describe, expect, it, vi } from 'vitest';
-import { annotation, applyObservable } from 'yummies/mobx';
+import * as annotation from 'yummies/mobx';
+import { applyObservable } from 'yummies/mobx';
 
 describe('MobX annotation compatibility', () => {
   it('preserves ref observables and structural computed equality', () => {
