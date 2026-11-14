@@ -4,14 +4,14 @@ import type {
   QueryObserverResult,
   RefetchOptions,
 } from '@tanstack/query-core';
-import {
-  comparer,
-  computed,
-  makeObservable,
-  observable,
-  runInAction,
-} from 'mobx';
+import { runInAction } from 'mobx';
 import { Query, type QueryUpdateOptionsAllVariants } from 'mobx-tanstack-query';
+import {
+  annotation,
+  applyObservable,
+  observableMap,
+  type ObservableAnnotationsArray,
+} from 'yummies/mobx';
 import type { Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
 import type {
@@ -30,6 +30,11 @@ export type EndpointQueryInternalSync<TEndpoint extends AnyEndpoint> = Pick<
   InternalQueryState<TEndpoint['__params']>,
   'params' | 'uniqKey'
 >;
+
+const annotations: ObservableAnnotationsArray<EndpointQuery<any>> = [
+  [annotation.computed('struct'), 'params'],
+  [annotation.observable('ref'), 'response'],
+];
 
 /**
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/)
@@ -75,7 +80,7 @@ export class EndpointQuery<
 
         runInAction(() => {
           internal.query.response = null;
-          if (!comparer.structural(params, internal.params)) {
+          if (!observableMap.comparer.structural(params, internal.params)) {
             internal.params = params;
           }
         });
@@ -114,9 +119,7 @@ export class EndpointQuery<
 
     this._internal = internal;
 
-    computed.struct(this, 'params');
-    observable.ref(this, 'response');
-    makeObservable(this);
+    applyObservable(this, annotations, true);
   }
 
   /**

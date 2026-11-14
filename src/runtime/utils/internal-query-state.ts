@@ -1,13 +1,13 @@
-import {
-  action,
-  comparer,
-  makeObservable,
-  observable,
-  runInAction,
-} from 'mobx';
+import { action, runInAction } from 'mobx';
 import type { QueryStartParams } from 'mobx-tanstack-query';
 import { callFunction } from 'yummies/common';
 import { hasEnumerableKeys } from 'yummies/data';
+import {
+  annotation,
+  applyObservable,
+  observableMap,
+  type ObservableAnnotationsArray,
+} from 'yummies/mobx';
 import type { AnyObject, Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from '../endpoint.types.js';
 import type { EndpointInfiniteQuery } from '../endpoint-infinite-query.js';
@@ -46,6 +46,13 @@ export interface InternalQueryState<TParams extends AnyObject = AnyObject> {
   /** Clears params-related override bookkeeping and param fields (e.g. on destroy). */
   reset(): void;
 }
+
+const annotations: ObservableAnnotationsArray<
+  InternalQueryState<any>
+> = [
+  [annotation.observable('ref'), 'params', 'mergePageParam', 'uniqKey'],
+  [action, 'setParamsImperative', 'reset'],
+];
 
 export function createInternalQueryState<TParams extends AnyObject>(
   endpoint: AnyEndpoint,
@@ -186,13 +193,13 @@ export function createInternalQueryState<TParams extends AnyObject>(
         } else if (
           hadPriorInputSample &&
           inputResolved !== lastInputResolved &&
-          !comparer.shallow(inputResolved, lastInputResolved)
+          !observableMap.comparer.shallow(inputResolved, lastInputResolved)
         ) {
           imperativeOverride = false;
           resolvedParams = inputResolved;
           lastInputResolved = inputResolved;
         } else {
-          if (comparer.shallow(inputResolved, state.params)) {
+          if (observableMap.comparer.shallow(inputResolved, state.params)) {
             imperativeOverride = false;
             resolvedParams = inputResolved;
           } else {
@@ -202,15 +209,18 @@ export function createInternalQueryState<TParams extends AnyObject>(
         }
 
         runInAction(() => {
-          if (!comparer.shallow(state.params, resolvedParams)) {
+          if (!observableMap.comparer.shallow(state.params, resolvedParams)) {
             state.params = resolvedParams;
           }
-          if (!comparer.shallow(state.uniqKey, resolvedUniqKey)) {
+          if (!observableMap.comparer.shallow(state.uniqKey, resolvedUniqKey)) {
             state.uniqKey = resolvedUniqKey;
           }
           if (
             isInfinite &&
-            !comparer.shallow(state.mergePageParam, resolvedMergePageParam)
+            !observableMap.comparer.shallow(
+              state.mergePageParam,
+              resolvedMergePageParam,
+            )
           ) {
             state.mergePageParam = resolvedMergePageParam;
           }
@@ -236,11 +246,7 @@ export function createInternalQueryState<TParams extends AnyObject>(
     },
   };
 
-  return makeObservable(state, {
-    params: observable.ref,
-    mergePageParam: observable.ref,
-    uniqKey: observable.ref,
-    setParamsImperative: action,
-    reset: action,
-  });
+  applyObservable(state, annotations);
+
+  return state;
 }

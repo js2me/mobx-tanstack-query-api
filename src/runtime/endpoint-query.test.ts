@@ -1,15 +1,9 @@
 import { noop } from 'es-toolkit';
-import {
-  comparer,
-  computed,
-  makeObservable,
-  observable,
-  reaction,
-  runInAction,
-} from 'mobx';
+import { computed, observable, reaction, runInAction } from 'mobx';
 import { Query } from 'mobx-tanstack-query';
 import { describe, expect, it, vi } from 'vitest';
 import { sleep } from 'yummies/async';
+import { annotation, applyObservable, observableMap } from 'yummies/mobx';
 import { mockEndpointRequestOnce } from '../testing/mock-endpoint-request-once.js';
 import {
   createHttpClientWithGuardFetch,
@@ -314,12 +308,10 @@ describe('EndpointQuery structural computed recreation loop', () => {
       });
 
       constructor() {
-        makeObservable(this, {
-          data: computed({
-            equals: comparer.structural,
-          }),
-          rows: computed,
-        });
+        applyObservable(this, [
+          [annotation.computed('struct'), 'data'],
+          [computed, 'rows'],
+        ]);
       }
 
       get data() {
@@ -381,12 +373,10 @@ describe('EndpointQuery structural computed recreation loop', () => {
       });
 
       constructor() {
-        makeObservable(this, {
-          data: computed({
-            equals: comparer.structural,
-          }),
-          rows: computed,
-        });
+        applyObservable(this, [
+          [annotation.computed('struct'), 'data'],
+          [computed, 'rows'],
+        ]);
       }
 
       get data() {
@@ -501,12 +491,10 @@ describe('regression: class field toQuery + structural parent', () => {
       });
 
       constructor(private readonly signal: AbortSignal) {
-        makeObservable(this, {
-          data: computed({
-            equals: comparer.structural,
-          }),
-          rows: computed,
-        });
+        applyObservable(this, [
+          [annotation.computed('struct'), 'data'],
+          [computed, 'rows'],
+        ]);
       }
 
       get data() {
@@ -580,12 +568,10 @@ describe('regression: class field toQuery + structural parent', () => {
       });
 
       constructor(private readonly signal: AbortSignal) {
-        makeObservable(this, {
-          data: computed({
-            equals: comparer.structural,
-          }),
-          rows: computed,
-        });
+        applyObservable(this, [
+          [annotation.computed('struct'), 'data'],
+          [computed, 'rows'],
+        ]);
       }
 
       get data() {
@@ -915,7 +901,7 @@ describe('derived class constructor order regression', () => {
           },
           retry: false,
           gcTime: 0,
-          dynamicOptionsComparer: comparer.structural,
+          dynamicOptionsComparer: observableMap.comparer.structural,
         },
         mutations: {
           gcTime: 0,
