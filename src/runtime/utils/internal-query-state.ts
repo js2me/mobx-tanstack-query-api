@@ -43,9 +43,7 @@ export interface InternalQueryState<TParams extends AnyObject = AnyObject> {
   reset(): void;
 }
 
-const annotations: ObservableAnnotationsArray<
-  InternalQueryState<any>
-> = [
+const annotations: ObservableAnnotationsArray<InternalQueryState<any>> = [
   [annotation.observableRef, 'params', 'mergePageParam', 'uniqKey'],
   [action, 'setParamsImperative', 'reset'],
 ];

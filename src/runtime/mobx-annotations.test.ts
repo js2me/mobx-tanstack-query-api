@@ -1,10 +1,7 @@
 import { isComputedProp, isObservableProp, reaction, runInAction } from 'mobx';
 import { describe, expect, it, vi } from 'vitest';
 import * as annotation from 'yummies/mobx';
-import {
-  applyObservable,
-  type ObservableAnnotationsArray,
-} from 'yummies/mobx';
+import { applyObservable, type ObservableAnnotationsArray } from 'yummies/mobx';
 
 const annotations = [
   [annotation.observableRef, 'input'],

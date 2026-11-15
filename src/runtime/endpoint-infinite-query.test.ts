@@ -4,10 +4,7 @@ import { InfiniteQuery } from 'mobx-tanstack-query';
 import { describe, expect, it, vi } from 'vitest';
 import { sleep } from 'yummies/async';
 import * as annotation from 'yummies/mobx';
-import {
-  applyObservable,
-  type ObservableAnnotationsArray,
-} from 'yummies/mobx';
+import { applyObservable, type ObservableAnnotationsArray } from 'yummies/mobx';
 import { mockEndpointRequestOnce } from '../testing/mock-endpoint-request-once.js';
 import {
   createHttpClientWithGuardFetch,
