@@ -26,13 +26,10 @@ jobs:
 
       - run: corepack enable
 
-      - name: Select MobX version
-        run: |
-          node -e "const fs = require('node:fs'); const p = JSON.parse(fs.readFileSync('package.json', 'utf8')); p.devDependencies.mobx = process.env.MOBX_VERSION; fs.writeFileSync('package.json', JSON.stringify(p, null, 2) + '\n');"
-        env:
-          MOBX_VERSION: ${{ matrix.mobx-version }}
+      - run: pnpm install --frozen-lockfile
 
-      - run: pnpm install --no-frozen-lockfile
+      - name: Select MobX version
+        run: pnpm add --save-dev mobx@${{ matrix.mobx-version }}
 
       - run: pnpm check
 
