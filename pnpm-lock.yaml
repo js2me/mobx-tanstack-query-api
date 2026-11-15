@@ -39,8 +39,8 @@ importers:
         specifier: ^28.0.0
         version: 28.0.0
       yummies:
-        specifier: ^7.23.0
-        version: 7.23.0(mobx@7.1.6)
+        specifier: ^7.23.1
+        version: 7.23.1(mobx@7.1.6)
       zod:
         specifier: '>=4'
         version: 4.4.3
@@ -4312,8 +4312,8 @@ packages:
       react:
         optional: true
 
-  yummies@7.23.0:
-    resolution: {integrity: sha512-1qb6pHW+q4xpTSF1x85oHClwvLa7xV8w/iObb8CY0CXYB4FxHWnl9XWPVglFI60vbW5iw3VgpucjMFHLxzdcjw==}
+  yummies@7.23.1:
+    resolution: {integrity: sha512-JvK1LuZIeLkG2vSRErqf9JZbKAglqJMeXWPY0byfYQbarWRq5NGExKaiJa6s+77FiIAhslI0SA1y3fp3d9fzZw==}
     peerDependencies:
       mobx: ^6.12.4 || ^7.0.0
       react: ^18 || ^19
@@ -7582,7 +7582,7 @@ snapshots:
       '@tanstack/query-core': 5.101.4
       linked-abort-controller: 1.1.1
       mobx: 7.1.6
-      yummies: 7.23.0(mobx@7.1.6)
+      yummies: 7.23.1(mobx@7.1.6)
     transitivePeerDependencies:
       - react
 
@@ -9119,7 +9119,7 @@ snapshots:
     optionalDependencies:
       mobx: 7.1.6
 
-  yummies@7.23.0(mobx@7.1.6):
+  yummies@7.23.1(mobx@7.1.6):
     dependencies:
       class-variance-authority: 0.7.1
       clsx: 2.1.1
