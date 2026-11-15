@@ -1,6 +1,7 @@
-import { action, observable } from 'mobx';
+import { action } from 'mobx';
 import { type BooleanOptional, type IStringifyOptions, stringify } from 'qs';
-import { applyObservable } from 'yummies/mobx';
+import * as annotation from 'yummies/mobx';
+import { applyObservable, type ObservableAnnotationsArray } from 'yummies/mobx';
 import type { AnyObject, Class, Defined, Maybe } from 'yummies/types';
 import type { PickDefinement } from './definements.js';
 import type { AnyEndpoint } from './endpoint.types.js';
@@ -101,6 +102,11 @@ export interface HttpClientConfig<TMeta = unknown> {
   ) => Promise<RequestParams | void> | RequestParams | void;
 }
 
+const annotations: ObservableAnnotationsArray<HttpClient<any>> = [
+  [annotation.observableRef, 'badResponse', 'meta'],
+  [action, 'setMeta', 'setBadResponse'],
+];
+
 export class HttpClient<TMeta = unknown> {
   private config: HttpClientConfig<TMeta>;
   private fetch: Required<HttpClientConfig<TMeta>>['fetch'];
@@ -137,10 +143,7 @@ export class HttpClient<TMeta = unknown> {
 
     this.updateConfig(this.config);
 
-    applyObservable(this, [
-      [observable.ref, 'badResponse', 'meta'],
-      [action, 'setMeta', 'setBadResponse'],
-    ]);
+    applyObservable(this, annotations);
   }
 
   get baseUrl() {

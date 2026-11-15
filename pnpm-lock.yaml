@@ -26,24 +26,21 @@ importers:
       jiti:
         specifier: ^2.7.0
         version: 2.7.0
-      mobx:
-        specifier: ^6.13.6
-        version: 6.16.1
       mobx-tanstack-query:
-        specifier: ^7.2.2
-        version: 7.2.2(@tanstack/query-core@5.101.4)(mobx@6.16.1)
+        specifier: ^7.4.0
+        version: 7.4.0(@tanstack/query-core@5.101.4)(mobx@7.1.6)
       qs:
         specifier: ^6.15.3
         version: 6.15.3
       swagger-typescript-api:
         specifier: ^13.13.0
-        version: 13.13.0(magicast@0.5.4)(mobx@6.16.1)
+        version: 13.13.0(magicast@0.5.4)(mobx@7.1.6)
       ts-morph:
         specifier: ^28.0.0
         version: 28.0.0
       yummies:
-        specifier: ^7.20.1
-        version: 7.20.1(mobx@6.16.1)
+        specifier: ^7.23.1
+        version: 7.23.1(mobx@7.1.6)
       zod:
         specifier: '>=4'
         version: 4.4.3
@@ -81,6 +78,9 @@ importers:
       lefthook:
         specifier: ^1.13.6
         version: 1.13.6
+      mobx:
+        specifier: ^7.0.0
+        version: 7.1.6
       msw:
         specifier: ^2.15.0
         version: 2.15.0(@types/node@25.9.5)(typescript@6.0.3)
@@ -3109,14 +3109,14 @@ packages:
   mlly@1.8.2:
     resolution: {integrity: sha512-d+ObxMQFmbt10sretNDytwt85VrbkhhUA/JBGm1MPaWJ65Cl4wOgLaB1NYvJSZ0Ef03MMEU/0xpPMXUIQ29UfA==}
 
-  mobx-tanstack-query@7.2.2:
-    resolution: {integrity: sha512-9uMib3gGtn53c8kLsnufQS9yjRCrZFIYlqh3VoVvNDdmgvAQ0Z1i0K09Rmmdsj15pGq1MuRDLNIkn1O+ATUWyg==}
+  mobx-tanstack-query@7.4.0:
+    resolution: {integrity: sha512-LfkHxGKHLAHtoyfdfn+FmjV0TxLlFl6gmRKGAtVAjlIX1MLNR1r8JNmttcY+NIkFJxNsDro6Rch65haFHaeZmA==}
     peerDependencies:
       '@tanstack/query-core': ^5.90.2
-      mobx: ^6.12.4
+      mobx: ^6.12.4 || ^7.0.0
 
-  mobx@6.16.1:
-    resolution: {integrity: sha512-syNcDdX3KT+Jq3je6eGjBhuc24Z68td2VG0zNFqRswaE433D9SNH5VRy/xrGbJsUixfppLLccXhAW9JSf6n+SQ==}
+  mobx@7.1.6:
+    resolution: {integrity: sha512-ZCiX6zxYeWaPnBLnH/OHJCFV5FysL41I7ndHntYv/mU4bWvpmP0N46Z+ujg/DoRv2K+7748/HvgFn1Jm8jiObQ==}
 
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
@@ -4305,6 +4305,17 @@ packages:
     resolution: {integrity: sha512-H/AxRy+SjVlfpeI0TkiVkU/M2n+XpR1XGt5yS5r7GsP9Iz3mr17dbq9DLW18PmMlyKO78+yvH/9Z9VAnVuV3og==}
     peerDependencies:
       mobx: ^6.12.4
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      mobx:
+        optional: true
+      react:
+        optional: true
+
+  yummies@7.23.1:
+    resolution: {integrity: sha512-JvK1LuZIeLkG2vSRErqf9JZbKAglqJMeXWPY0byfYQbarWRq5NGExKaiJa6s+77FiIAhslI0SA1y3fp3d9fzZw==}
+    peerDependencies:
+      mobx: ^6.12.4 || ^7.0.0
       react: ^18 || ^19
     peerDependenciesMeta:
       mobx:
@@ -7566,16 +7577,16 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.4
 
-  mobx-tanstack-query@7.2.2(@tanstack/query-core@5.101.4)(mobx@6.16.1):
+  mobx-tanstack-query@7.4.0(@tanstack/query-core@5.101.4)(mobx@7.1.6):
     dependencies:
       '@tanstack/query-core': 5.101.4
       linked-abort-controller: 1.1.1
-      mobx: 6.16.1
-      yummies: 7.20.1(mobx@6.16.1)
+      mobx: 7.1.6
+      yummies: 7.23.1(mobx@7.1.6)
     transitivePeerDependencies:
       - react
 
-  mobx@6.16.1: {}
+  mobx@7.1.6: {}
 
   mri@1.2.0: {}
 
@@ -8423,7 +8434,7 @@ snapshots:
 
   swagger-schema-official@2.0.0-bab6bed: {}
 
-  swagger-typescript-api@13.13.0(magicast@0.5.4)(mobx@6.16.1):
+  swagger-typescript-api@13.13.0(magicast@0.5.4)(mobx@7.1.6):
     dependencies:
       '@apidevtools/swagger-parser': 12.1.0(openapi-types@12.1.3)
       '@biomejs/js-api': 6.0.0(@biomejs/wasm-nodejs@2.5.2)
@@ -8441,7 +8452,7 @@ snapshots:
       type-fest: 5.8.0
       typescript: 6.0.3
       yaml: 2.9.0
-      yummies: 7.20.1(mobx@6.16.1)
+      yummies: 7.20.1(mobx@7.1.6)
     transitivePeerDependencies:
       - '@biomejs/wasm-bundler'
       - '@biomejs/wasm-web'
@@ -9097,7 +9108,7 @@ snapshots:
       y18n: 5.0.8
       yargs-parser: 21.1.1
 
-  yummies@7.20.1(mobx@6.16.1):
+  yummies@7.20.1(mobx@7.1.6):
     dependencies:
       class-variance-authority: 0.7.1
       clsx: 2.1.1
@@ -9106,7 +9117,18 @@ snapshots:
       nanoid: 5.1.16
       tailwind-merge: 3.6.0
     optionalDependencies:
-      mobx: 6.16.1
+      mobx: 7.1.6
+
+  yummies@7.23.1(mobx@7.1.6):
+    dependencies:
+      class-variance-authority: 0.7.1
+      clsx: 2.1.1
+      dayjs: 1.11.21
+      dompurify: 3.4.12
+      nanoid: 5.1.16
+      tailwind-merge: 3.6.0
+    optionalDependencies:
+      mobx: 7.1.6
 
   zod@4.4.3: {}
 

@@ -4,17 +4,13 @@ import type {
   InfiniteData,
   InfiniteQueryObserverResult,
 } from '@tanstack/query-core';
-import {
-  comparer,
-  computed,
-  makeObservable,
-  observable,
-  runInAction,
-} from 'mobx';
+import { runInAction } from 'mobx';
 import {
   InfiniteQuery,
   type InfiniteQueryUpdateOptionsAllVariants,
 } from 'mobx-tanstack-query';
+import * as annotation from 'yummies/mobx';
+import { applyObservable, type ObservableAnnotationsArray } from 'yummies/mobx';
 import { typeGuard } from 'yummies/type-guard';
 import type { AnyObject, Maybe, MaybeFalsy } from 'yummies/types';
 import type { AnyEndpoint } from './endpoint.types.js';
@@ -29,6 +25,11 @@ import {
   createInternalQueryState,
   type InternalQueryState,
 } from './utils/internal-query-state.js';
+
+const annotations = [
+  [annotation.computedStruct, 'params'],
+  [annotation.observableRef, 'response'],
+] satisfies ObservableAnnotationsArray<any>;
 
 /**
  * [**Documentation**](https://js2me.github.io/mobx-tanstack-query-api/endpoint-queries/)
@@ -79,7 +80,7 @@ export class EndpointInfiniteQuery<
 
         runInAction(() => {
           internal.query.response = null;
-          if (!comparer.structural(params, internal.params)) {
+          if (!annotation.comparer.structural(params, internal.params)) {
             internal.params = params;
           }
         });
@@ -125,9 +126,7 @@ export class EndpointInfiniteQuery<
 
     this._internal = internal;
 
-    computed.struct(this, 'params');
-    observable.ref(this, 'response');
-    makeObservable(this);
+    applyObservable(this, annotations, true);
   }
 
   /**
