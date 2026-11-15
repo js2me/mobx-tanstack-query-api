@@ -1,7 +1,15 @@
 import { isComputedProp, isObservableProp, reaction, runInAction } from 'mobx';
 import { describe, expect, it, vi } from 'vitest';
 import * as annotation from 'yummies/mobx';
-import { applyObservable } from 'yummies/mobx';
+import {
+  applyObservable,
+  type ObservableAnnotationsArray,
+} from 'yummies/mobx';
+
+const annotations = [
+  [annotation.observableRef, 'input'],
+  [annotation.computedStruct, 'snapshot'],
+] satisfies ObservableAnnotationsArray<any>;
 
 describe('MobX annotation compatibility', () => {
   it('preserves ref observables and structural computed equality', () => {
@@ -9,10 +17,7 @@ describe('MobX annotation compatibility', () => {
       input: { value: number } = { value: 1 };
 
       constructor() {
-        applyObservable(this, [
-          [annotation.observableRef, 'input'],
-          [annotation.computedStruct, 'snapshot'],
-        ]);
+        applyObservable(this, annotations);
       }
 
       get snapshot() {

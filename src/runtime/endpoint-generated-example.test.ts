@@ -3,11 +3,18 @@ import { observable, reaction, runInAction } from 'mobx';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 import { sleep } from 'yummies/async';
 import * as annotation from 'yummies/mobx';
-import { applyObservable } from 'yummies/mobx';
+import {
+  applyObservable,
+  type ObservableAnnotationsArray,
+} from 'yummies/mobx';
 import { Endpoint } from './endpoint.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
 import type { RequestParams } from './http-client.js';
 import type { HttpMultistatusResponse } from './http-response.js';
+
+const annotations = [
+  [annotation.computedStruct, 'data'],
+] satisfies ObservableAnnotationsArray<any>;
 
 type StarData = Record<string, unknown>;
 
@@ -222,7 +229,7 @@ describe('Endpoint generated example', () => {
       });
 
       constructor() {
-        applyObservable(this, [[annotation.computedStruct, 'data']]);
+        applyObservable(this, annotations);
       }
 
       get data(): { foo?: string } | null {

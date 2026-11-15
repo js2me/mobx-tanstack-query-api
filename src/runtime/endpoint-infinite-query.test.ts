@@ -4,7 +4,10 @@ import { InfiniteQuery } from 'mobx-tanstack-query';
 import { describe, expect, it, vi } from 'vitest';
 import { sleep } from 'yummies/async';
 import * as annotation from 'yummies/mobx';
-import { applyObservable } from 'yummies/mobx';
+import {
+  applyObservable,
+  type ObservableAnnotationsArray,
+} from 'yummies/mobx';
 import { mockEndpointRequestOnce } from '../testing/mock-endpoint-request-once.js';
 import {
   createHttpClientWithGuardFetch,
@@ -12,6 +15,11 @@ import {
 } from '../testing/vitest-test-helpers.js';
 import { Endpoint } from './endpoint.js';
 import { EndpointQueryClient } from './endpoint-query-client.js';
+
+const annotations = [
+  [annotation.computedStruct, 'data'],
+  [computed, 'rows'],
+] satisfies ObservableAnnotationsArray<any>;
 
 const createEndpointForInfiniteQueryTests = () => {
   const queryClient = new EndpointQueryClient({
@@ -410,10 +418,7 @@ describe('EndpointInfiniteQuery structural computed recreation loop', () => {
       });
 
       constructor() {
-        applyObservable(this, [
-          [annotation.computedStruct, 'data'],
-          [computed, 'rows'],
-        ]);
+        applyObservable(this, annotations);
       }
 
       get data() {
@@ -480,10 +485,7 @@ describe('EndpointInfiniteQuery structural computed recreation loop', () => {
       });
 
       constructor() {
-        applyObservable(this, [
-          [annotation.computedStruct, 'data'],
-          [computed, 'rows'],
-        ]);
+        applyObservable(this, annotations);
       }
 
       get data() {
@@ -603,10 +605,7 @@ describe('regression: class field toInfiniteQuery + structural parent', () => {
       });
 
       constructor(private readonly signal: AbortSignal) {
-        applyObservable(this, [
-          [annotation.computedStruct, 'data'],
-          [computed, 'rows'],
-        ]);
+        applyObservable(this, annotations);
       }
 
       get data() {
@@ -685,10 +684,7 @@ describe('regression: class field toInfiniteQuery + structural parent', () => {
       });
 
       constructor(private readonly signal: AbortSignal) {
-        applyObservable(this, [
-          [annotation.computedStruct, 'data'],
-          [computed, 'rows'],
-        ]);
+        applyObservable(this, annotations);
       }
 
       get data() {
