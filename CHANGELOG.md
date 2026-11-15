@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.60.0
+
+### Minor Changes
+
+- [#108](https://github.com/js2me/mobx-tanstack-query-api/pull/108) [`0e5a5b5`](https://github.com/js2me/mobx-tanstack-query-api/commit/0e5a5b5efce007170d266396ca5d86c57fc2c887) Thanks [@js2me](https://github.com/js2me)! - Add MobX 7 peer support and use Yummies' cross-major MobX annotation compatibility helpers for runtime observable initialization.
+
 ## 0.59.0
 
 ### Minor Changes
