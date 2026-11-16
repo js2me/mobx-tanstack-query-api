@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.60.1
+
+### Patch Changes
+
+- [#110](https://github.com/js2me/mobx-tanstack-query-api/pull/110) [`4d6e664`](https://github.com/js2me/mobx-tanstack-query-api/commit/4d6e6641c574531d093ebe7f0c465cd3ddfb0db2) Thanks [@js2me](https://github.com/js2me)! - Bump yummies to 7.23.2 to fix MobX 6 bundler compatibility.
+
 ## 0.60.0
 
 ### Minor Changes
