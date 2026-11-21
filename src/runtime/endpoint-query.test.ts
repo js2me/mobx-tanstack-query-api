@@ -29,6 +29,33 @@ const createEndpointForQueryTests = () => {
   return createTestEndpoint({ queryClient }).endpoint;
 };
 
+describe('EndpointQuery structural sharing', () => {
+  it.each([undefined, false])(
+    'handles equal refetch results with structuralSharing=%s',
+    async (structuralSharing) => {
+      const { endpoint, fetchMock } = createTestEndpoint({
+        queryClient: new EndpointQueryClient(),
+      });
+      fetchMock.mockImplementation(async () =>
+        Response.json({ value: 'item' }),
+      );
+      const query = endpoint.toQuery({
+        params: { id: 1 },
+        enabled: false,
+        structuralSharing,
+      });
+
+      const first = await query.refetch({ throwOnError: true });
+      const second = await query.refetch({ throwOnError: true });
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(second.data).toEqual({ value: 'item' });
+      expect(second.data === first.data).toBe(structuralSharing !== false);
+      query.destroy();
+    },
+  );
+});
+
 describe('EndpointQuery reactive options input updates', () => {
   it('reactively updates queryKey when only uniqKey changes', async () => {
     const endpoint = createEndpointForQueryTests();
