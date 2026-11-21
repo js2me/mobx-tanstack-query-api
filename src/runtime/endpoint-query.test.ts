@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { findPackageJSON } from 'node:module';
 import { noop } from 'es-toolkit';
 import { computed, observable, reaction, runInAction } from 'mobx';
 import { Query } from 'mobx-tanstack-query';
@@ -30,7 +32,17 @@ const createEndpointForQueryTests = () => {
 };
 
 describe('EndpointQuery structural sharing', () => {
+  const manifest = findPackageJSON('mobx-tanstack-query', import.meta.url);
+  if (!manifest) throw new Error('Missing mobx-tanstack-query manifest');
+  const { version } = JSON.parse(readFileSync(manifest, 'utf8'));
+
   it.each([
+    {
+      name: `default in mobx-tanstack-query ${version}`,
+      defaults: {},
+      options: {},
+      sharesData: version.startsWith('8.'),
+    },
     {
       name: 'enabled on query',
       defaults: {},
