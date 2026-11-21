@@ -1,5 +1,11 @@
 # mobx-tanstack-query-api
 
+## 0.61.0
+
+### Minor Changes
+
+- [#112](https://github.com/js2me/mobx-tanstack-query-api/pull/112) [`d739651`](https://github.com/js2me/mobx-tanstack-query-api/commit/d739651ff515de013573d00e1cdd10adc6cf0cc7) Thanks [@js2me](https://github.com/js2me)! - Add support for `mobx-tanstack-query` 8 alongside the existing `^7.4.0` range. With the v8 defaults, endpoint queries and infinite queries preserve the `data` reference when a refetch returns equal JSON data. Set `structuralSharing: false` on a query or in `EndpointQueryClient` query defaults to keep the previous behavior.
+
 ## 0.60.1
 
 ### Patch Changes
