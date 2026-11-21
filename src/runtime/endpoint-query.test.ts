@@ -31,7 +31,12 @@ const createEndpointForQueryTests = () => {
 
 describe('EndpointQuery structural sharing', () => {
   it.each([
-    { name: 'default', defaults: {}, options: {}, sharesData: true },
+    {
+      name: 'enabled on query',
+      defaults: {},
+      options: { structuralSharing: true },
+      sharesData: true,
+    },
     {
       name: 'disabled on query',
       defaults: {},
