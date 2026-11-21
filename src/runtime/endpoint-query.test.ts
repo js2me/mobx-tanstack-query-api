@@ -30,11 +30,27 @@ const createEndpointForQueryTests = () => {
 };
 
 describe('EndpointQuery structural sharing', () => {
-  it.each([undefined, false])(
-    'handles equal refetch results with structuralSharing=%s',
-    async (structuralSharing) => {
+  it.each([
+    { name: 'default', defaults: {}, options: {}, sharesData: true },
+    {
+      name: 'disabled on query',
+      defaults: {},
+      options: { structuralSharing: false },
+      sharesData: false,
+    },
+    {
+      name: 'disabled on client',
+      defaults: { structuralSharing: false },
+      options: {},
+      sharesData: false,
+    },
+  ])(
+    'handles equal refetch results with structural sharing $name',
+    async ({ defaults, options, sharesData }) => {
       const { endpoint, fetchMock } = createTestEndpoint({
-        queryClient: new EndpointQueryClient(),
+        queryClient: new EndpointQueryClient({
+          defaultOptions: { queries: defaults },
+        }),
       });
       fetchMock.mockImplementation(async () =>
         Response.json({ value: 'item' }),
@@ -42,7 +58,7 @@ describe('EndpointQuery structural sharing', () => {
       const query = endpoint.toQuery({
         params: { id: 1 },
         enabled: false,
-        structuralSharing,
+        ...options,
       });
 
       const first = await query.refetch({ throwOnError: true });
@@ -50,7 +66,7 @@ describe('EndpointQuery structural sharing', () => {
 
       expect(fetchMock).toHaveBeenCalledTimes(2);
       expect(second.data).toEqual({ value: 'item' });
-      expect(second.data === first.data).toBe(structuralSharing !== false);
+      expect(second.data === first.data).toBe(sharesData);
       query.destroy();
     },
   );
