@@ -13,6 +13,7 @@ jobs:
       matrix:
         node-version: [24]
         mobx-version: ['^6.13.6', '^7.0.0']
+        query-version: ['^7.4.0', '^8.0.0']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout tree
@@ -28,8 +29,10 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Select MobX version
-        run: pnpm add --save-dev mobx@${{ matrix.mobx-version }}
+      - name: Select MobX and mobx-tanstack-query versions
+        run: |
+          pnpm add --save-dev "mobx@${{ matrix.mobx-version }}"
+          pnpm add "mobx-tanstack-query@${{ matrix.query-version }}"
 
       - run: pnpm check
 

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { findPackageJSON } from 'node:module';
 import { noop } from 'es-toolkit';
 import { computed, observable, reaction, runInAction } from 'mobx';
 import { Query } from 'mobx-tanstack-query';
@@ -28,6 +30,64 @@ const createEndpointForQueryTests = () => {
   });
   return createTestEndpoint({ queryClient }).endpoint;
 };
+
+describe('EndpointQuery structural sharing', () => {
+  const manifest = findPackageJSON('mobx-tanstack-query', import.meta.url);
+  if (!manifest) throw new Error('Missing mobx-tanstack-query manifest');
+  const { version } = JSON.parse(readFileSync(manifest, 'utf8'));
+
+  it.each([
+    {
+      name: `default in mobx-tanstack-query ${version}`,
+      defaults: {},
+      options: {},
+      sharesData: version.startsWith('8.'),
+    },
+    {
+      name: 'enabled on query',
+      defaults: {},
+      options: { structuralSharing: true },
+      sharesData: true,
+    },
+    {
+      name: 'disabled on query',
+      defaults: {},
+      options: { structuralSharing: false },
+      sharesData: false,
+    },
+    {
+      name: 'disabled on client',
+      defaults: { structuralSharing: false },
+      options: {},
+      sharesData: false,
+    },
+  ])(
+    'handles equal refetch results with structural sharing $name',
+    async ({ defaults, options, sharesData }) => {
+      const { endpoint, fetchMock } = createTestEndpoint({
+        queryClient: new EndpointQueryClient({
+          defaultOptions: { queries: defaults },
+        }),
+      });
+      fetchMock.mockImplementation(async () =>
+        Response.json({ value: 'item' }),
+      );
+      const query = endpoint.toQuery({
+        params: { id: 1 },
+        enabled: false,
+        ...options,
+      });
+
+      const first = await query.refetch({ throwOnError: true });
+      const second = await query.refetch({ throwOnError: true });
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(second.data).toEqual({ value: 'item' });
+      expect(second.data === first.data).toBe(sharesData);
+      query.destroy();
+    },
+  );
+});
 
 describe('EndpointQuery reactive options input updates', () => {
   it('reactively updates queryKey when only uniqKey changes', async () => {
